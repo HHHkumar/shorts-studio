@@ -195,6 +195,22 @@ Where you decide what the video is about.
 | **Target length** | 40–50s performs best for Shorts. 180–240s is the sweet spot for explainers. |
 | **Gemini model** | Flash is fast and cheap. Pro is worth it for hard maths. The list is built from your own key, so it only offers models you can actually use. |
 
+#### Curiosity high — what is trending now
+
+Press **What is trending now?** and Gemini *searches the live web* — it is not answering from
+memory — then judges which of what it finds would actually make a good video. You get eight ideas,
+each with why it is being talked about and the counter-intuitive angle to build around. Click one
+and it fills the topic box.
+
+It searches your domain: science and technology in curiosity mode, or grid, generation, storage and
+standards news in electrical mode. **Where this came from** lists the pages it actually read, so you
+can check a claim yourself.
+
+> **Trending is not the same as true.** A story spreading fast is exactly the kind that turns out to
+> be half right. Verify the answer in step 3, and run the DeepSeek check if you have a key.
+
+This needs a **2.5 model** (Flash or Pro) — older models cannot search. It costs one Gemini request.
+
 **Your intro (optional).** Type a greeting — *"Hi, it's Hemanth here. Ready for today's question?"* —
 and it becomes the first thing the video says. There are one-click presets. **Gemini never rewrites
 this**: whatever you type is spoken and shown word for word.

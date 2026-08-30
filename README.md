@@ -60,6 +60,7 @@ The preview and the render consume the identical `VideoProps` object, so what yo
 | `server/gemini.mjs` | Prompt, response schema, and repair of the model's output |
 | `server/deepseek.mjs` | Independent second opinion on the answer, and report repair |
 | `server/stock.mjs` | Pexels + NASA image search, and safe download to disk |
+| `server/trends.mjs` | Live web search via Gemini grounding, for trending topic ideas |
 | `server/sketch-catalogue.mjs` | What Gemini is told about the animation library |
 | `server/gemini.test.mjs` | Regression suite for the prompt and output repair (`npm test`) |
 | `server/tts.mjs` | ElevenLabs calls and word-timing extraction |

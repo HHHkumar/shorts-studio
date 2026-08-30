@@ -21,6 +21,7 @@ import { listVoices, speak, VOICE_MODELS } from './tts.mjs';
 import { jobs as renderJobs, startRender, paths } from './render.mjs';
 import { ensureAudioAssets, MUSIC_MOODS } from './audio-gen.mjs';
 import { validateContent, DEEPSEEK_MODELS } from './deepseek.mjs';
+import { findTrending } from './trends.mjs';
 import { searchStock, downloadStock } from './stock.mjs';
 import { generateSeo } from './seo.mjs';
 
@@ -170,6 +171,15 @@ app.post('/api/stock/pick', ok(async (req, res) => {
   const safeJob = String(jobId || 'default').replace(/[^a-zA-Z0-9_-]+/g, '-').slice(0, 40) || 'default';
   const saved = await downloadStock({ url, id, jobId: safeJob, publicDir: paths.PUBLIC_DIR });
   res.json(saved);
+}));
+
+// --- what is worth making a video about right now ----------------------------
+
+app.post('/api/trending', ok(async (req, res) => {
+  const { apiKey, model, options } = req.body || {};
+  if (!apiKey) throw new Error('No Gemini API key was sent. Add it on the Keys step.');
+  const result = await findTrending(apiKey, model || 'gemini-2.5-flash', options || {});
+  res.json(result);
 }));
 
 // --- the second opinion: DeepSeek checks Gemini's question -------------------

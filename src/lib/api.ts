@@ -85,6 +85,25 @@ export interface StockImage {
   height: number;
 }
 
+export interface TrendingItem {
+  /** A specific, searchable topic, ready to drop into the topic box. */
+  topic: string;
+  /** One sentence on why it is being talked about now. */
+  why: string;
+  /** The counter-intuitive angle a video should be built around. */
+  angle: string;
+  /** 1-10, how strongly it is trending. */
+  heat: number;
+}
+
+export interface TrendingResult {
+  items: TrendingItem[];
+  /** The pages Gemini actually consulted, so a claim can be checked. */
+  sources: { title: string; uri: string }[];
+  /** What it searched for. Useful when the results look off. */
+  searches: string[];
+}
+
 export interface VoiceOption {
   id: string;
   name: string;
@@ -172,6 +191,10 @@ export const api = {
 
   validate(apiKey: string, model: string, content: QuizContent, options: TopicForm) {
     return post<{ report: ValidationReport }>('/api/validate', { apiKey, model, content, options });
+  },
+
+  trending(apiKey: string, model: string, options: Partial<TopicForm> & { region?: string }) {
+    return post<TrendingResult>('/api/trending', { apiKey, model, options });
   },
 
   generate(apiKey: string, model: string, options: TopicForm) {

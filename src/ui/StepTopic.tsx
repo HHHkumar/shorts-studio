@@ -14,6 +14,7 @@ import {
 } from '../lib/api';
 import type { ContentType } from '../lib/api';
 import { subtopicsFor } from '../lib/subtopics';
+import { TrendingPanel } from './TrendingPanel';
 import type { DesignSettings, Orientation, QuizContent } from '../lib/types';
 import { ComboInput, ErrorNote, Note, Select, Slider, Spinner, TextArea, TextInput } from './controls';
 
@@ -222,6 +223,18 @@ export const StepTopic: React.FC<{
           hint="Flash is fast and cheap. Pro is smarter for hard maths."
         />
       </div>
+
+      <div className="section-title">Curiosity high — what is trending now</div>
+      <p style={{ color: 'var(--dim)', fontSize: 14, marginTop: -4, marginBottom: 12 }}>
+        Searches the live web for what people are actually talking about, and judges which of it
+        would make a good video. Pick one and it fills the topic box above.
+      </p>
+      <TrendingPanel
+        form={form}
+        geminiKey={geminiKey}
+        geminiModel={geminiModel}
+        onPick={(topic) => set('topic')(topic)}
+      />
 
       <div className="section-title">Your intro (optional)</div>
       <TextInput
