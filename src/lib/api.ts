@@ -261,6 +261,7 @@ export const ELECTRICAL_SUBJECTS = [
   'Basic Electrical Engineering',
   'Network Theory / Circuits',
   'Electrical Machines',
+  'Power Generation',
   'Power Systems',
   'Transmission & Distribution',
   'Switchgear & Protection',
@@ -288,6 +289,7 @@ export const EXAMS = [
   'State AE / JE (Electrical)',
   'PSU — UPPCL / DMRC / NTPC / BHEL',
   'ITI / Wireman / Electrician trade',
+  'Working professional / plant engineer',
 ];
 
 export const LEVELS = [
@@ -296,6 +298,7 @@ export const LEVELS = [
   'High school (age 14-18)',
   'Undergraduate',
   'Competitive exam (JEE / NEET / Olympiad)',
+  'Working professional / plant engineer',
   'General adult audience',
 ];
 

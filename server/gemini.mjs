@@ -232,6 +232,62 @@ function budgetLines(budget) {
   return lines;
 }
 
+// ---------------------------------------------------------------------------
+// Exam preparation
+// ---------------------------------------------------------------------------
+
+/**
+ * What each paper actually asks for. The same syllabus topic makes a very
+ * different question for GATE than for an ITI trade test, and getting this
+ * wrong is the difference between useful revision and a video nobody finishes.
+ */
+const EXAM_STYLE = {
+  'GATE EE': 'Analytical and numerical. One or two steps of real derivation, standard symbols, '
+    + 'and a distractor that catches a common conceptual error. Assume a strong degree-level base.',
+  'ESE / IES (Electrical)': 'Conceptual breadth with some numerics. Favour standards, definitions '
+    + 'and comparisons between methods. Assume degree level.',
+  'SSC JE (Electrical)': 'Direct application of a standard formula, or straight factual recall. '
+    + 'Solvable in under a minute. Diploma level, no calculus.',
+  'RRB JE (Electrical)': 'Definitions, standard values and single-formula numericals. '
+    + 'Diploma level, quick to answer, no derivation.',
+  'State AE / JE (Electrical)': 'Standard formulas plus basic theory, in the style of a state '
+    + 'engineering services paper. Diploma to degree level.',
+  'PSU — UPPCL / DMRC / NTPC / BHEL': 'GATE-flavoured but a step easier. Practical plant and '
+    + 'utility context is welcome. Degree level.',
+  'ITI / Wireman / Electrician trade': 'Strictly practical. Wiring, tools, ratings, cable sizes, '
+    + 'earthing, IE rules and safety. Absolutely no calculus and no derivations.',
+  'Working professional / plant engineer': 'Written for someone who does this job. Operational '
+    + 'reality over textbook theory: what actually happens on the plant, why it is done that way, '
+    + 'typical values, failure modes and safe practice. No exam framing.',
+};
+
+function examLines(o) {
+  if (o.contentType !== 'electrical') return [];
+
+  const exam = o.exam && EXAM_STYLE[o.exam] ? o.exam : 'GATE EE';
+  const professional = exam === 'Working professional / plant engineer';
+
+  const lines = ['', professional
+    ? 'THIS IS PROFESSIONAL CONTENT for people working in the field, not a curiosity short.'
+    : 'THIS IS EXAM PREPARATION, not a curiosity short.'];
+
+  lines.push('- Audience: ' + exam);
+  lines.push('- Style required: ' + EXAM_STYLE[exam]);
+  lines.push('- Syllabus area: ' + o.subject + '. Stay inside it.');
+  lines.push('- The question must be answerable from standard course material, with one');
+  lines.push('  unambiguously correct option. No trick wording.');
+  lines.push('- Use the symbols, units and terminology of Indian engineering practice.');
+  lines.push('- Make the wrong options the mistakes candidates actually make - a swapped formula,');
+  lines.push('  a missing root three, a confused per-phase and per-line value - not random numbers.');
+
+  if (!professional) {
+    lines.push('- The hook may still be attention-grabbing, but the question itself must look like');
+    lines.push('  it came off a real paper. Accuracy matters more than surprise here.');
+  }
+
+  return lines;
+}
+
 function curiosityHint(c) {
   const n = Number(c) || 5;
   if (n <= 3) return '  (Low: keep it a straightforward textbook question, plainly worded.)';
@@ -270,6 +326,7 @@ function buildPrompt(o) {
   if (o.avoid && o.avoid.trim()) lines.push('- Avoid these topics or question types: ' + o.avoid.trim());
   if (o.extra && o.extra.trim()) lines.push('- Extra instructions from the creator: ' + o.extra.trim());
 
+  examLines(o).forEach((l) => lines.push(l));
   budgetLines(budget).forEach((l) => lines.push(l));
 
   lines.push('');

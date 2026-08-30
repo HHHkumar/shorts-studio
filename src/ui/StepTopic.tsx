@@ -13,8 +13,9 @@ import {
   type TopicForm,
 } from '../lib/api';
 import type { ContentType } from '../lib/api';
+import { subtopicsFor } from '../lib/subtopics';
 import type { DesignSettings, Orientation, QuizContent } from '../lib/types';
-import { ErrorNote, Note, Select, Slider, Spinner, TextArea, TextInput } from './controls';
+import { ComboInput, ErrorNote, Note, Select, Slider, Spinner, TextArea, TextInput } from './controls';
 
 const CURIOSITY_WORDS = [
   'Plain textbook question',
@@ -60,6 +61,9 @@ export const StepTopic: React.FC<{
     setForm((prev) => ({ ...prev, [key]: value }));
 
   const landscape = design.orientation === 'landscape';
+
+  // Suggestions follow the chosen subject, in either mode.
+  const subtopics = subtopicsFor(form.subject);
   const examMode = form.contentType === 'electrical';
 
   // Switching mode swaps the subject list, so the old subject would be orphaned.
@@ -149,12 +153,18 @@ export const StepTopic: React.FC<{
           options={examMode ? ELECTRICAL_SUBJECTS : SUBJECTS}
           onChange={set('subject')}
         />
-        <TextInput
+        <ComboInput
           label="Specific topic (optional)"
           value={form.topic}
+          options={subtopics}
           onChange={set('topic')}
           placeholder={examMode ? 'e.g. transformer efficiency, ACSR conductors' : 'e.g. black holes, titration, prime numbers'}
-          hint="Leave this empty and Gemini picks something interesting for you."
+          hint={
+            subtopics.length
+              ? 'Click the box for ' + subtopics.length +
+                ' suggestions in this area, or type your own. Empty means Gemini chooses.'
+              : 'Leave this empty and Gemini picks something interesting for you.'
+          }
         />
         {examMode ? (
           <Select
