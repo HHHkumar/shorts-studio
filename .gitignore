@@ -1,0 +1,21 @@
+# Installed packages. Never commit these - they are rebuilt by `npm install`,
+# they are hundreds of megabytes, and some are specific to your machine.
+node_modules
+
+# Your finished videos. Kept on disk, not in the repo.
+out/*
+!out/.gitkeep
+
+# Voiceover clips and downloaded stock photos, regenerated per video.
+public/generated/*
+!public/generated/.gitkeep
+
+# Music beds and sound effects - synthesised on first boot.
+public/audio
+
+# Scratch output from render tests.
+stills/
+
+# Secrets, if you ever add a .env. API keys currently live in the browser.
+.env
+.env.local

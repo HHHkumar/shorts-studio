@@ -1,0 +1,38 @@
+{
+  "name": "shorts-studio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "AI short-video studio: Gemini questions + ElevenLabs voiceover + Remotion 9:16 render",
+  "scripts": {
+    "start": "concurrently -k -n SERVER,APP -c magenta,cyan \"node server/index.mjs\" \"vite\"",
+    "dev": "npm run start",
+    "server": "node server/index.mjs",
+    "app": "vite",
+    "studio": "remotion studio src/remotion/index.ts",
+    "test": "node server/gemini.test.mjs"
+  },
+  "dependencies": {
+    "@remotion/bundler": "^4.0.518",
+    "@remotion/cli": "^4.0.518",
+    "@remotion/media-utils": "^4.0.518",
+    "@remotion/player": "^4.0.518",
+    "@remotion/renderer": "^4.0.518",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "music-metadata": "^11.15.0",
+    "p5": "^2.3.2",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "remotion": "^4.0.518"
+  },
+  "devDependencies": {
+    "@types/p5": "^1.7.7",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.5",
+    "@vitejs/plugin-react-swc": "^4.3.3",
+    "concurrently": "^10.0.5",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2"
+  }
+}

@@ -1,0 +1,381 @@
+import React from 'react';
+import { interpolate, useCurrentFrame, useVideoConfig } from 'remotion';
+import { activeOption, alignOptions } from '../../lib/options-timing';
+import type { Theme } from '../../lib/theme';
+import { hexToRgba } from '../../lib/theme';
+import type { QuizContent, Scene } from '../../lib/types';
+import { ReadAlong } from '../ReadAlong';
+import { autoFontSize, Pill, Stage, useEnter, useMetrics } from '../ui';
+import { Visual } from '../Visual';
+
+const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+export interface SceneProps {
+  theme: Theme;
+  scene: Scene;
+  content: QuizContent;
+  /** For 'explain' scenes: which step this is, and how many there are. */
+  stepIndex: number;
+  stepTotal: number;
+  showVisuals: boolean;
+  /** Read-along text is the whole point; this only exists to turn it off. */
+  showText: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// The answer list, shared by the options, countdown and answer beats
+// ---------------------------------------------------------------------------
+
+const OptionsBoard: React.FC<{
+  theme: Theme;
+  options: string[];
+  correctIndex: number;
+  /** 'read' lights each row as it is spoken, 'hold' is flat, 'reveal' marks the answer. */
+  phase: 'read' | 'hold' | 'reveal';
+  /** Seconds at which each option starts being read. Only used by 'read'. */
+  starts?: number[];
+  offset?: number;
+  compact?: boolean;
+}> = ({ theme, options, correctIndex, phase, starts, offset = 0, compact }) => {
+  const frame = useCurrentFrame();
+  const { fps, durationInFrames } = useVideoConfig();
+  const m = useMetrics();
+  const time = frame / fps - offset;
+  const speaking = phase === 'read' && starts ? activeOption(starts, time, durationInFrames / fps) : -1;
+
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(' + m.optionColumns + ', minmax(0, 1fr))',
+        gap: compact ? 18 : 22,
+        width: '100%',
+      }}
+    >
+      {options.map((opt, i) => (
+        <OptionRow
+          key={i}
+          theme={theme}
+          index={i}
+          text={opt}
+          isCorrect={i === correctIndex}
+          phase={phase}
+          // All four are on screen almost immediately - a quiz viewer has to be
+          // able to weigh every option. Only the highlight follows the voice.
+          entryDelay={phase === 'read' ? 3 + i * 5 : 0}
+          isSpeaking={speaking === i}
+          revealFrame={frame}
+          compact={!!compact}
+        />
+      ))}
+    </div>
+  );
+};
+
+const OptionRow: React.FC<{
+  theme: Theme;
+  index: number;
+  text: string;
+  isCorrect: boolean;
+  phase: 'read' | 'hold' | 'reveal';
+  entryDelay: number;
+  isSpeaking: boolean;
+  revealFrame: number;
+  compact: boolean;
+}> = ({ theme, index, text, isCorrect, phase, entryDelay, isSpeaking, revealFrame, compact }) => {
+  const revealed = phase === 'reveal';
+  const entry = useEnter(entryDelay, theme);
+
+  const pop = revealed && isCorrect
+    ? interpolate(revealFrame, [0, 10, 18], [1, 1.07, 1.03], { extrapolateRight: 'clamp' })
+    : isSpeaking ? 1.035 : 1;
+  const dim = revealed && !isCorrect
+    ? interpolate(revealFrame, [0, 12], [1, 0.32], { extrapolateRight: 'clamp' })
+    : 1;
+
+  const highlighted = revealed ? isCorrect : isSpeaking;
+  const bg = revealed && isCorrect
+    ? hexToRgba(theme.correct, 0.2)
+    : isSpeaking ? theme.accentSoft : theme.surface;
+  const border = revealed && isCorrect ? theme.correct : isSpeaking ? theme.accent : theme.border;
+  const m = useMetrics();
+  const size = autoFontSize(text, compact ? m.optionMax - 6 : m.optionMax, compact ? m.optionMin : m.optionMin + 6);
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 22,
+        padding: compact ? '18px 26px' : '24px 28px',
+        background: bg,
+        border: theme.borderWidth + 'px solid ' + border,
+        borderRadius: theme.radius,
+        boxShadow: highlighted
+          ? '0 0 40px ' + hexToRgba(revealed ? theme.correct : theme.accent, 0.4)
+          : theme.shadow,
+        opacity: (phase === 'read' ? entry : 1) * dim,
+        transform:
+          'translateX(' + (phase === 'read' ? (1 - entry) * -50 : 0) + 'px) scale(' + pop + ')',
+        textAlign: 'left',
+      }}
+    >
+      <div
+        style={{
+          flex: '0 0 auto',
+          width: compact ? 56 : 64,
+          height: compact ? 56 : 64,
+          borderRadius: theme.layout === 'nerdy' ? 4 : 999,
+          background: revealed && isCorrect ? theme.correct : theme.accentSoft,
+          color: revealed && isCorrect ? theme.bg : theme.accent,
+          border: '2px solid ' + (revealed && isCorrect ? theme.correct : theme.accent),
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontFamily: theme.fontDisplay,
+          fontSize: compact ? 30 : 34,
+          fontWeight: 800,
+        }}
+      >
+        {revealed && isCorrect ? '✓' : LETTERS[index]}
+      </div>
+      <div
+        style={{
+          fontFamily: theme.fontBody,
+          fontSize: size,
+          fontWeight: 600,
+          color: theme.text,
+          lineHeight: 1.2,
+        }}
+      >
+        {text}
+      </div>
+    </div>
+  );
+};
+
+// ---------------------------------------------------------------------------
+// The seven scene types. Talking scenes show the spoken words and nothing else.
+// ---------------------------------------------------------------------------
+
+/** The optional greeting the creator writes, played before anything else. */
+export const IntroScene: React.FC<SceneProps> = ({ theme, scene, content, showVisuals, showText }) => {
+  const m = useMetrics();
+  return (
+    <Stage theme={theme}>
+      {showText ? (
+        <ReadAlong
+          theme={theme}
+          words={scene.words}
+          offset={scene.captionOffset}
+          fallbackText={scene.narration}
+          maxSize={m.headlineMax}
+          minSize={m.headlineMin}
+        />
+      ) : null}
+    </Stage>
+  );
+};
+
+export const HookScene: React.FC<SceneProps> = ({ theme, scene, content, showVisuals, showText }) => {
+  const p = useEnter(0, theme);
+  const m = useMetrics();
+  return (
+    <Stage theme={theme}>
+      {showText ? (
+        <ReadAlong
+          theme={theme}
+          words={scene.words}
+          offset={scene.captionOffset}
+          fallbackText={scene.narration}
+          maxSize={m.headlineMax}
+          minSize={m.headlineMin}
+        />
+      ) : null}
+      {/* No diagram here on purpose: anything shown before the answer is a spoiler. */}
+    </Stage>
+  );
+};
+
+export const QuestionScene: React.FC<SceneProps> = ({ theme, scene, content, showVisuals, showText }) => {
+  const p = useEnter(0, theme);
+  const m = useMetrics();
+  return (
+    <Stage theme={theme}>
+      {showText ? (
+        <ReadAlong
+          theme={theme}
+          words={scene.words}
+          offset={scene.captionOffset}
+          fallbackText={scene.narration || content.question}
+          maxSize={Math.round(m.headlineMax * 0.8)}
+          minSize={Math.round(m.headlineMin * 0.85)}
+        />
+      ) : null}
+    </Stage>
+  );
+};
+
+export const OptionsScene: React.FC<SceneProps> = ({ theme, scene, content }) => {
+  const { fps, durationInFrames } = useVideoConfig();
+  const starts = alignOptions(scene.words, content.options, durationInFrames / fps);
+  return (
+    <Stage theme={theme}>
+      <OptionsBoard
+        theme={theme}
+        options={content.options}
+        correctIndex={content.correctIndex}
+        phase="read"
+        starts={starts}
+        offset={scene.captionOffset}
+      />
+    </Stage>
+  );
+};
+
+export const CountdownScene: React.FC<SceneProps> = ({ theme, content }) => {
+  const frame = useCurrentFrame();
+  const { fps, durationInFrames } = useVideoConfig();
+  const remaining = Math.max(0, Math.ceil((durationInFrames - frame) / fps));
+  const secondProgress = ((durationInFrames - frame) / fps) % 1;
+  const m = useMetrics();
+  const ring = m.ring;
+  const stroke = 14;
+  const r = (ring - stroke) / 2;
+  const circumference = 2 * Math.PI * r;
+  const left = 1 - frame / Math.max(1, durationInFrames);
+
+  return (
+    <Stage theme={theme}>
+      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 24, alignItems: 'center' }}>
+        <OptionsBoard
+          theme={theme}
+          options={content.options}
+          correctIndex={content.correctIndex}
+          phase="hold"
+          compact
+        />
+        <div style={{ position: 'relative', width: ring, height: ring, marginTop: 4 }}>
+          <svg width={ring} height={ring} style={{ transform: 'rotate(-90deg)' }}>
+            <circle cx={ring / 2} cy={ring / 2} r={r} fill="none" stroke={hexToRgba(theme.text, 0.14)} strokeWidth={stroke} />
+            <circle
+              cx={ring / 2}
+              cy={ring / 2}
+              r={r}
+              fill="none"
+              stroke={theme.accent}
+              strokeWidth={stroke}
+              strokeLinecap="round"
+              strokeDasharray={circumference}
+              strokeDashoffset={circumference * (1 - left)}
+            />
+          </svg>
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontFamily: theme.fontDisplay,
+              fontSize: 116,
+              fontWeight: 900,
+              color: theme.accent,
+              transform: 'scale(' + (1 + 0.12 * Math.max(0, secondProgress - 0.75) * 4) + ')',
+              textShadow: theme.glow !== 'none' ? theme.glow : undefined,
+            }}
+          >
+            {remaining}
+          </div>
+        </div>
+      </div>
+    </Stage>
+  );
+};
+
+export const AnswerScene: React.FC<SceneProps> = ({ theme, scene, content, showText }) => (
+  <Stage theme={theme}>
+    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 30 }}>
+      <OptionsBoard
+        theme={theme}
+        options={content.options}
+        correctIndex={content.correctIndex}
+        phase="reveal"
+        compact
+      />
+      {showText ? (
+        <ReadAlong
+          theme={theme}
+          words={scene.words}
+          offset={scene.captionOffset}
+          fallbackText={scene.narration || content.answerLine}
+          maxSize={62}
+          minSize={40}
+          color={theme.correct}
+        />
+      ) : null}
+    </div>
+  </Stage>
+);
+
+export const ExplainScene: React.FC<SceneProps> = ({
+  theme,
+  scene,
+  stepIndex,
+  stepTotal,
+  showVisuals,
+  showText,
+}) => {
+  const p = useEnter(0, theme);
+  const m = useMetrics();
+  return (
+    <Stage theme={theme}>
+      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 36, alignItems: 'center' }}>
+        {showText ? (
+          <ReadAlong
+            theme={theme}
+            words={scene.words}
+            offset={scene.captionOffset}
+            fallbackText={scene.narration}
+            maxSize={Math.round(m.headlineMax * 0.76)}
+            minSize={Math.round(m.headlineMin * 0.82)}
+          />
+        ) : null}
+        {showVisuals ? <Visual theme={theme} visual={scene.visual} /> : null}
+      </div>
+    </Stage>
+  );
+};
+
+export const OutroScene: React.FC<SceneProps> = ({ theme, scene, content, showVisuals, showText }) => {
+  const p = useEnter(4, theme);
+  const m = useMetrics();
+  return (
+    <Stage theme={theme}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 40, alignItems: 'center', width: '100%' }}>
+        {showText ? (
+          <ReadAlong
+            theme={theme}
+            words={scene.words}
+            offset={scene.captionOffset}
+            fallbackText={scene.narration || content.outro}
+            maxSize={Math.round(m.headlineMax * 0.84)}
+            minSize={Math.round(m.headlineMin * 0.9)}
+          />
+        ) : null}
+        {showVisuals ? <Visual theme={theme} visual={scene.visual} /> : null}
+      </div>
+    </Stage>
+  );
+};
+
+export const SCENE_COMPONENTS: Record<Scene['kind'], React.FC<SceneProps>> = {
+  intro: IntroScene,
+  hook: HookScene,
+  question: QuestionScene,
+  options: OptionsScene,
+  countdown: CountdownScene,
+  answer: AnswerScene,
+  explain: ExplainScene,
+  outro: OutroScene,
+};

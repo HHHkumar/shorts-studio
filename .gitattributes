@@ -1,0 +1,8 @@
+# Normalise line endings so the same file does not look "changed" on another
+# machine just because Windows and Git disagree about newlines.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.mp3 binary
+*.mp4 binary
+*.wav binary
