@@ -186,7 +186,9 @@ Where you decide what the video is about.
 | **What kind of video** | **Curiosity STEM** for a general audience, or **Electrical exam prep** for candidates revising. |
 | **Exam** *(exam prep only)* | Sets the depth. GATE and ESE want derivation and analysis; SSC and RRB want standard formulas at speed; ITI wants practical wiring and safety with no calculus. |
 | **Format** | Portrait or landscape. **Pick this first** — it changes how much script is written and how the frame is laid out. |
-| **Subject / topic** | Leave the topic empty and Gemini picks something interesting for you. |
+| **Subject** | The broad area. In exam mode this is the syllabus section. |
+| **Sub-topic** | A dropdown of suggestions for that subject — 38 for Power Generation, for example. Pick one to concentrate a run of videos on a single section, or leave it on *Any*. |
+| **Or type your own topic** | Free text. Whatever is in this box is what gets used; clear it to let Gemini choose. |
 | **Who is watching** | Sets vocabulary and assumed background. |
 | **Difficulty** | *Very easy* through *Brutal*. |
 | **Question style** | *Mathematical* = the viewer must calculate. *Theoretical* = they must reason. *Real-world* = anchored in daily life. |

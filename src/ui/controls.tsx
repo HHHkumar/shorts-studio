@@ -55,41 +55,6 @@ export const TextInput: React.FC<{
   </Field>
 );
 
-/**
- * A text box with a dropdown of suggestions attached.
- *
- * Used for the topic field: the suggestions make it easy to work through one
- * section systematically, while the box stays free text so anything not on the
- * list can still be typed.
- */
-export const ComboInput: React.FC<{
-  label: string;
-  hint?: string;
-  value: string;
-  options: string[];
-  onChange: (v: string) => void;
-  placeholder?: string;
-}> = ({ label, hint, value, options, onChange, placeholder }) => {
-  const listId = React.useId();
-  return (
-    <Field label={label} hint={hint}>
-      <input
-        type="text"
-        list={listId}
-        value={value}
-        placeholder={placeholder}
-        autoComplete="off"
-        onChange={(e) => onChange(e.target.value)}
-      />
-      <datalist id={listId}>
-        {options.map((o) => (
-          <option key={o} value={o} />
-        ))}
-      </datalist>
-    </Field>
-  );
-};
-
 export const TextArea: React.FC<{
   label: string;
   hint?: string;

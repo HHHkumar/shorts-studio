@@ -16,7 +16,7 @@ import type { ContentType } from '../lib/api';
 import { subtopicsFor } from '../lib/subtopics';
 import { TrendingPanel } from './TrendingPanel';
 import type { DesignSettings, Orientation, QuizContent } from '../lib/types';
-import { ComboInput, ErrorNote, Note, Select, Slider, Spinner, TextArea, TextInput } from './controls';
+import { ErrorNote, Note, Select, Slider, Spinner, TextArea, TextInput } from './controls';
 
 const CURIOSITY_WORDS = [
   'Plain textbook question',
@@ -154,18 +154,24 @@ export const StepTopic: React.FC<{
           options={examMode ? ELECTRICAL_SUBJECTS : SUBJECTS}
           onChange={set('subject')}
         />
-        <ComboInput
-          label="Specific topic (optional)"
+        {/* A real dropdown, not a datalist: a datalist shows no arrow, and once
+            the box has text it filters itself down to nothing. */}
+        <Select
+          label={'Sub-topic' + (subtopics.length ? ' — ' + subtopics.length + ' in this area' : '')}
+          value={subtopics.includes(form.topic) ? form.topic : ''}
+          options={[
+            { id: '', label: subtopics.length ? 'Any — let Gemini choose' : 'No sub-topics for this subject' },
+            ...subtopics.map((t) => ({ id: t, label: t })),
+          ]}
+          onChange={set('topic')}
+          hint="Concentrate a run of videos on one section, or leave it on Any."
+        />
+        <TextInput
+          label="Or type your own topic"
           value={form.topic}
-          options={subtopics}
           onChange={set('topic')}
           placeholder={examMode ? 'e.g. transformer efficiency, ACSR conductors' : 'e.g. black holes, titration, prime numbers'}
-          hint={
-            subtopics.length
-              ? 'Click the box for ' + subtopics.length +
-                ' suggestions in this area, or type your own. Empty means Gemini chooses.'
-              : 'Leave this empty and Gemini picks something interesting for you.'
-          }
+          hint="Whatever is in this box is what gets used. Clear it to let Gemini choose."
         />
         {examMode ? (
           <Select
