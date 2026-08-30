@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   api,
+  DIAGRAM_DENSITIES,
   DIFFICULTIES,
   ELECTRICAL_SUBJECTS,
   EXAMS,
@@ -221,6 +222,13 @@ export const StepTopic: React.FC<{
           }
         />
         <Select label="Tone of voice" value={form.tone} options={TONES} onChange={set('tone')} />
+        <Select
+          label="How many diagrams"
+          value={form.diagramDensity || 'rich'}
+          options={DIAGRAM_DENSITIES}
+          onChange={(v) => set('diagramDensity')(v as 'sparse' | 'balanced' | 'rich')}
+          hint="Charts, circuits and animations drawn into the video. Rich puts one on nearly every scene."
+        />
         <Select
           label="Gemini model"
           value={geminiModel}

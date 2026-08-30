@@ -26,6 +26,8 @@ export interface TopicForm {
   orientation?: 'portrait' | 'landscape';
   /** Which exam the questions are aimed at. Empty for general-interest videos. */
   exam?: string;
+  /** How hard Gemini should push to put a diagram on every scene. */
+  diagramDensity?: 'sparse' | 'balanced' | 'rich';
 }
 
 export interface VoiceSettings {
@@ -259,6 +261,7 @@ export const DEFAULT_TOPIC_FORM: TopicForm = {
   avoid: '',
   extra: '',
   intro: '',
+  diagramDensity: 'rich',
 };
 
 export const DEFAULT_VOICE_SETTINGS: VoiceSettings = {
@@ -313,6 +316,12 @@ export const EXAMS = [
   'PSU — UPPCL / DMRC / NTPC / BHEL',
   'ITI / Wireman / Electrician trade',
   'Working professional / plant engineer',
+];
+
+export const DIAGRAM_DENSITIES = [
+  { id: 'sparse', label: 'Sparse — only where it really helps' },
+  { id: 'balanced', label: 'Balanced — most explanation scenes' },
+  { id: 'rich', label: 'Rich — every scene that can take one (recommended)' },
 ];
 
 export const LEVELS = [

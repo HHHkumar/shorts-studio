@@ -21,7 +21,14 @@ export const Visual: React.FC<{ theme: Theme; visual?: SceneVisual }> = ({ theme
   else if (visual.kind === 'compare' && visual.items?.length) body = <Compare theme={theme} items={visual.items} />;
   else if (visual.kind === 'icon' && visual.items?.length) body = <Icon theme={theme} item={visual.items[0]} />;
   else if (visual.kind === 'sketch' && visual.sketch) {
-    body = <Sketch theme={theme} name={visual.sketch} params={visual.params || {}} />;
+    body = (
+      <Sketch
+        theme={theme}
+        name={visual.sketch}
+        params={visual.params || {}}
+        items={visual.items || []}
+      />
+    );
   }
 
   if (!body) return null;
@@ -53,17 +60,19 @@ export const Visual: React.FC<{ theme: Theme; visual?: SceneVisual }> = ({ theme
  * The sketch is looked up by name; an unknown name draws nothing rather than
  * throwing, so a model that invents one degrades to a plain scene.
  */
-const Sketch: React.FC<{ theme: Theme; name: string; params: SketchParams }> = ({
-  theme,
-  name,
-  params,
-}) => {
+const Sketch: React.FC<{
+  theme: Theme;
+  name: string;
+  params: SketchParams;
+  items: { label: string; value?: number; symbol?: string }[];
+}> = ({ theme, name, params, items }) => {
   const { width } = useVideoConfig();
   const m = useMetrics();
 
   // Every hook runs before any early return: bailing out above useCallback
   // would change the hook order between an known and an unknown sketch name.
   const paramKey = JSON.stringify(params);
+  const itemKey = JSON.stringify(items);
   const draw = React.useCallback(
     (a: SketchArgs) => {
       const def = SKETCHES[name];
@@ -71,6 +80,7 @@ const Sketch: React.FC<{ theme: Theme; name: string; params: SketchParams }> = (
       def.draw({
         ...a,
         params,
+        items,
         colors: {
           accent: theme.accent,
           text: theme.text,
@@ -81,7 +91,7 @@ const Sketch: React.FC<{ theme: Theme; name: string; params: SketchParams }> = (
       });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [name, paramKey, theme.accent, theme.text, theme.textDim, theme.correct, theme.bg],
+    [name, paramKey, itemKey, theme.accent, theme.text, theme.textDim, theme.correct, theme.bg],
   );
 
   const def = SKETCHES[name];

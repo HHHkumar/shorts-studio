@@ -127,9 +127,15 @@ const SYSTEM = [
   'The four options must all be plausible. Exactly one is correct. correctIndex is 0-based.',
   'Do not put "A)", "B)" or bullet characters inside the option strings.',
   '',
-  'DIAGRAMS. Only the explain and outro scenes may carry a "visual". Every other scene must',
-  'use "none". A diagram before the reveal tells the viewer the answer before they have guessed,',
-  'which ruins the video. Never force one; "none" is a perfectly good answer anywhere.',
+  'DIAGRAMS. Use them generously. A wall of text is a weak video; showing the thing is what makes',
+  'an explainer worth watching. Reach for one whenever there is something to show.',
+  '',
+  'Where they are allowed:',
+  '- explain and outro scenes: any kind.',
+  '- question scene: a SETUP diagram only - the circuit, the apparatus, the geometry being asked',
+  '  about. It must not hint at which option is correct. Use "sketch" or "formula" here, never',
+  '  bars, compare or icon, and never a graph or pie, because a plotted curve usually IS the answer.',
+  '- hook, options, countdown and answer: always "none".',
   '- formula : one short equation in plain unicode, e.g. "F = m × a" or "v² = u² + 2as".',
   '            Under 30 characters, in the "formula" field. Best for a calculation step.',
   '- bars    : 2 to 4 quantities compared. Each item needs a label and a numeric value, all in',
@@ -261,6 +267,19 @@ const EXAM_STYLE = {
     + 'typical values, failure modes and safe practice. No exam framing.',
 };
 
+const DIAGRAM_DENSITY = {
+  sparse: 'Use a diagram only where it genuinely earns its place - roughly one explain scene in three.',
+  balanced: 'Put a diagram on most explain scenes, and on the question scene when there is a setup worth showing.',
+  rich: 'Put a diagram on EVERY explain scene, and a setup diagram on the question scene. '
+    + 'Vary the kind - do not use the same one twice in a row. If nothing fits a scene, prefer a '
+    + 'sketch over leaving it bare.',
+};
+
+function densityLine(o) {
+  const key = DIAGRAM_DENSITY[o.diagramDensity] ? o.diagramDensity : 'balanced';
+  return '- Diagram density: ' + DIAGRAM_DENSITY[key];
+}
+
 function examLines(o) {
   if (o.contentType !== 'electrical') return [];
 
@@ -326,6 +345,7 @@ function buildPrompt(o) {
   if (o.avoid && o.avoid.trim()) lines.push('- Avoid these topics or question types: ' + o.avoid.trim());
   if (o.extra && o.extra.trim()) lines.push('- Extra instructions from the creator: ' + o.extra.trim());
 
+  lines.push(densityLine(o));
   examLines(o).forEach((l) => lines.push(l));
   budgetLines(budget).forEach((l) => lines.push(l));
 
@@ -660,7 +680,19 @@ const VISUAL_KINDS = ['none', 'formula', 'bars', 'compare', 'icon', 'sketch'];
  * picture there gives the answer away; plus the answer scene itself, whose
  * screen is already filled by the four options lighting up.
  */
-const NO_DIAGRAM_KINDS = new Set(['intro', 'hook', 'question', 'options', 'countdown', 'answer']);
+const NO_DIAGRAM_KINDS = new Set(['intro', 'hook', 'options', 'countdown', 'answer']);
+
+/**
+ * The question scene may show the situation being asked about - the circuit,
+ * the apparatus, the geometry - but nothing that hints at which option is
+ * right. A plotted curve or a pie chart usually *is* the answer, so those two
+ * stay out, and the caption is dropped because a caption is the easiest place
+ * for the answer to leak.
+ */
+const SETUP_SAFE_SKETCHES = new Set([
+  'circuit', 'transformer', 'phasor', 'waveform', 'block-flow', 'projectile',
+  'pendulum', 'orbit', 'atom', 'refraction', 'vector-field', 'wave-interference', 'sine-wave',
+]);
 
 /** Only known knobs, only finite numbers, only short labels. */
 function normalizeParams(raw) {
@@ -693,7 +725,17 @@ function normalizeVisual(raw, sceneKind) {
   const kind = VISUAL_KINDS.includes(raw.kind) ? raw.kind : 'none';
   if (kind === 'none') return { kind: 'none' };
 
-  const caption = clean(raw.caption).slice(0, 60);
+  const setupOnly = sceneKind === 'question';
+  if (setupOnly) {
+    if (kind === 'sketch') {
+      if (!SETUP_SAFE_SKETCHES.has(clean(raw.sketch))) return { kind: 'none' };
+    } else if (kind !== 'formula') {
+      // bars, compare and icon nearly always encode the answer.
+      return { kind: 'none' };
+    }
+  }
+
+  const caption = setupOnly ? '' : clean(raw.caption).slice(0, 60);
   const items = (Array.isArray(raw.items) ? raw.items : [])
     .map((it) => ({
       label: clean(it && it.label).slice(0, 40),
@@ -707,7 +749,15 @@ function normalizeVisual(raw, sceneKind) {
     // here, where falling back to no diagram at all is still tidy.
     const name = clean(raw.sketch);
     if (!SKETCH_NAMES.includes(name)) return { kind: 'none' };
-    return { kind, sketch: name, caption, params: normalizeParams(raw.params) };
+    // Sketches share the items array: block-flow uses it for stage labels,
+    // pie for slices, circuit for component values.
+    return {
+      kind,
+      sketch: name,
+      caption,
+      params: normalizeParams(raw.params),
+      items: items.slice(0, 5).map((it) => ({ label: it.label, value: it.value, symbol: it.symbol })),
+    };
   }
 
   if (kind === 'formula') {

@@ -195,6 +195,7 @@ Where you decide what the video is about.
 | **Narration language** | The language spoken *and* shown. Kannada, Hindi, Tamil and Telugu render in their own script — pair with a matching voice in step 4 and the Multilingual v2 model. |
 | **Curiosity factor** | The most important dial. **8 or 9** is the sweet spot: counter-intuitive enough to make people comment. |
 | **Target length** | 40–50s performs best for Shorts. 180–240s is the sweet spot for explainers. |
+| **How many diagrams** | *Rich* (the default) puts a chart, circuit or animation on nearly every scene. *Balanced* on most explanation scenes. *Sparse* only where it really helps. |
 | **Gemini model** | Flash is fast and cheap. Pro is worth it for hard maths. The list is built from your own key, so it only offers models you can actually use. |
 
 #### Curiosity high — what is trending now
@@ -278,7 +279,11 @@ Everything here is instant, free, and never touches the voiceover.
   anything shown earlier gives it away. As well as static ones (a formula box, comparison bars, a
   side-by-side panel, an icon) Gemini can choose a **live animation** from a fixed library of ten:
   wave interference, a travelling wave, orbits, a projectile arc, a pendulum, a vector field,
-  spreading particles, a graph being drawn, an atom, and light refracting.
+  spreading particles, a graph being drawn, an atom, light refracting — plus six built for
+  electrical and power work: a **circuit** (series or parallel), a **phasor diagram** and power
+  triangle, an AC **waveform** (phase shift, rectified, PWM), a **block flow** that lights up
+  stage by stage (boiler → turbine → condenser → pump), a **transformer** with turns ratio, and
+  a **pie** for a fuel mix or a loss breakdown.
 - **Drift topic symbols** — faint themed emoji behind everything.
 - **Backdrop photos** — press **Find backdrop photos** and it searches Pexels and NASA per scene,
   using a search term Gemini wrote for that scene. **Nothing is applied for you**: a photo library

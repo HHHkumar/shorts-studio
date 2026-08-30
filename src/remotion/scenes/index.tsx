@@ -212,6 +212,8 @@ export const QuestionScene: React.FC<SceneProps> = ({ theme, scene, content, sho
           minSize={Math.round(m.headlineMin * 0.85)}
         />
       ) : null}
+      {/* Setup only - the server strips anything that could reveal the answer. */}
+      {showVisuals ? <Visual theme={theme} visual={scene.visual} /> : null}
     </Stage>
   );
 };

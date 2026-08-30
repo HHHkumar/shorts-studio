@@ -33,8 +33,16 @@ export interface SketchParams {
   labelB?: string;
 }
 
+export interface SketchItem {
+  label: string;
+  value?: number;
+  symbol?: string;
+}
+
 export interface DrawArgs extends SketchArgs {
   params: SketchParams;
+  /** Shared with the other diagram kinds: labelled parts, or values to weigh. */
+  items: SketchItem[];
   colors: SketchColors;
 }
 
@@ -58,6 +66,13 @@ const ctx2d = (p: p5): CanvasRenderingContext2D =>
   p.drawingContext as unknown as CanvasRenderingContext2D;
 
 const dashed = (p: p5, on: boolean) => ctx2d(p).setLineDash(on ? [8, 10] : []);
+
+/** The accent at a given opacity, so a series of slices stays distinguishable. */
+function shade(p: p5, hex: string, alpha: number) {
+  const c = p.color(hex);
+  c.setAlpha(alpha);
+  return c;
+}
 
 const num = (v: unknown, fallback: number, lo: number, hi: number): number => {
   const n = Number(v);
@@ -503,6 +518,329 @@ export const SKETCHES: Record<string, SketchDef> = {
 
       label(p, params.labelA || '', width * 0.16, cy - 36, colors, 26);
       label(p, params.labelB || '', width * 0.16, cy + 36, colors, 26);
+    },
+  },
+
+  // -------------------------------------------------------------------------
+  circuit: {
+    shape: 'wide',
+    label: 'Circuit',
+    describe: 'a source with two or three components in series or parallel',
+    uses: 'mode ("series" or "parallel"), count (2-3), labelA (source), items (component labels)',
+    draw: ({ p, progress, width, height, params, items, colors }) => {
+      const parallel = String(params.mode || 'series') === 'parallel';
+      const n = Math.round(num(params.count, Math.max(2, Math.min(3, items.length || 2)), 2, 3));
+      const left = width * 0.12;
+      const right = width * 0.88;
+      const top = height * 0.26;
+      const bottom = height * 0.76;
+      const midY = (top + bottom) / 2;
+
+      // The source, drawn as a battery on the left rail.
+      p.noFill();
+      p.stroke(colors.text);
+      p.strokeWeight(4);
+      p.line(left, top, left, midY - 16);
+      p.line(left, midY + 16, left, bottom);
+      p.strokeWeight(6);
+      p.line(left - 18, midY - 16, left + 18, midY - 16);
+      p.strokeWeight(3);
+      p.line(left - 9, midY + 16, left + 9, midY + 16);
+      // Inside the loop: at the canvas edge it had nowhere to sit.
+      label(p, params.labelA || '', left + 46, midY, colors, 24);
+
+      const boxW = 84;
+      const box = (x: number, y: number, text: string, lit: boolean) => {
+        p.stroke(lit ? colors.accent : colors.text);
+        p.strokeWeight(4);
+        p.fill(colors.bg);
+        p.rect(x - boxW / 2, y - 16, boxW, 32);
+        p.noFill();
+        label(p, text, x, y - 38, colors, 22);
+      };
+
+      if (parallel) {
+        const branchL = left + (right - left) * 0.3;
+        const branchR = right - (right - left) * 0.12;
+        p.stroke(colors.text);
+        p.strokeWeight(4);
+        p.line(left, top, branchL, top);
+        p.line(left, bottom, branchL, bottom);
+        p.line(branchR, top, right, top);
+        p.line(branchR, bottom, right, bottom);
+        p.line(right, top, right, bottom);
+        p.line(branchL, top, branchL, bottom);
+        p.line(branchR, top, branchR, bottom);
+
+        const bx = (branchL + branchR) / 2;
+        for (let i = 0; i < n; i++) {
+          const y = top + ((i + 1) * (bottom - top)) / (n + 1);
+          p.stroke(colors.text);
+          p.strokeWeight(4);
+          p.line(branchL, y, bx - boxW / 2, y);
+          p.line(bx + boxW / 2, y, branchR, y);
+          box(bx, y, (items[i] && items[i].label) || '', progress > i / (n + 2));
+        }
+      } else {
+        p.stroke(colors.text);
+        p.strokeWeight(4);
+        p.line(left, top, right, top);
+        p.line(left, bottom, right, bottom);
+        p.line(right, top, right, bottom);
+        for (let i = 0; i < n; i++) {
+          const x = left + ((i + 1) * (right - left)) / (n + 1);
+          box(x, top, (items[i] && items[i].label) || '', progress > i / (n + 2));
+        }
+      }
+    },
+  },
+
+  // -------------------------------------------------------------------------
+  phasor: {
+    shape: 'square',
+    label: 'Phasor diagram',
+    describe: 'voltage and current phasors with the angle between them, or the power triangle',
+    uses: 'angle (-90 to 90 degrees), mode ("phasor" or "power-triangle"), labelA, labelB',
+    draw: ({ p, progress, width, height, params, colors }) => {
+      const deg = num(params.angle, 35, -90, 90);
+      const rad = (deg * Math.PI) / 180;
+      const triangle = String(params.mode || 'phasor') === 'power-triangle';
+      const cx = width * 0.18;
+      // Room below the axis as well as above: a lagging current is drawn
+      // downwards, and at 0.74 it ran off the bottom of the canvas.
+      const cy = height * 0.52;
+      const len = Math.min(width, height) * 0.56;
+      const grow = Math.min(1, 0.3 + progress);
+
+      p.stroke(colors.dim);
+      p.strokeWeight(2);
+      p.line(cx - 20, cy, width * 0.96, cy);
+      p.line(cx, cy + len * 0.75, cx, height * 0.06);
+
+      const arrow = (a: number, l: number, colour: string, text: string) => {
+        const ex = cx + Math.cos(a) * l;
+        const ey = cy - Math.sin(a) * l;
+        p.stroke(colour);
+        p.strokeWeight(6);
+        p.line(cx, cy, ex, ey);
+        p.push();
+        p.translate(ex, ey);
+        p.rotate(-a);
+        p.line(0, 0, -18, -8);
+        p.line(0, 0, -18, 8);
+        p.pop();
+        label(p, text, ex + 18, ey - 16, colors, 24);
+      };
+
+      if (triangle) {
+        const ex = cx + Math.cos(rad) * len * grow;
+        const ey = cy - Math.sin(rad) * len * grow;
+        arrow(rad, len * grow, colors.accent, params.labelA || 'S');
+        p.stroke(colors.text);
+        p.strokeWeight(4);
+        p.line(cx, cy, ex, cy);
+        p.line(ex, cy, ex, ey);
+        label(p, params.labelB || 'P', (cx + ex) / 2, cy + 28, colors, 22);
+        label(p, 'Q', ex + 24, (cy + ey) / 2, colors, 22);
+      } else {
+        // Convention: a positive angle is a LAGGING current, drawn below the
+        // voltage reference. Drawing it above would say "leading" to anyone who
+        // reads phasor diagrams, whatever the caption claimed.
+        arrow(0, len * grow, colors.text, params.labelA || 'V');
+        arrow(-rad, len * grow * 0.82, colors.accent, params.labelB || 'I');
+      }
+
+      p.noFill();
+      p.stroke(colors.accent);
+      p.strokeWeight(3);
+      const a0 = Math.min(0, rad);
+      const a1 = Math.max(0, rad);
+      if (a1 - a0 > 0.01) p.arc(cx, cy, 132, 132, a0, a1);
+      label(p, Math.abs(Math.round(deg)) + '°', cx + 104, cy + Math.sin(rad) * 48, colors, 22);
+    },
+  },
+
+  // -------------------------------------------------------------------------
+  waveform: {
+    shape: 'wide',
+    label: 'Waveform',
+    describe: 'an AC waveform: two signals out of phase, or a rectified or switched output',
+    uses: 'mode ("phase", "half-wave", "full-wave", "pwm"), angle (phase shift in degrees), frequency (1-4)',
+    draw: ({ p, time, width, height, params, colors }) => {
+      const mode = String(params.mode || 'phase');
+      const k = num(params.frequency, 2, 1, 4);
+      const shift = (num(params.angle, 60, -180, 180) * Math.PI) / 180;
+      const mid = height / 2;
+      const amp = height * 0.3;
+
+      p.stroke(colors.dim);
+      p.strokeWeight(2);
+      p.line(0, mid, width, mid);
+
+      const plot = (fn: (x: number) => number, colour: string, weight: number) => {
+        p.noFill();
+        p.stroke(colour);
+        p.strokeWeight(weight);
+        p.beginShape();
+        for (let x = 0; x <= width; x += 3) p.vertex(x, mid - fn(x) * amp);
+        p.endShape();
+      };
+
+      const raw = (x: number, phase = 0) =>
+        Math.sin((x / width) * Math.PI * 2 * k - time * 2 + phase);
+
+      if (mode === 'half-wave') {
+        plot((x) => raw(x), colors.dim, 3);
+        plot((x) => Math.max(0, raw(x)), colors.accent, 6);
+      } else if (mode === 'full-wave') {
+        plot((x) => raw(x), colors.dim, 3);
+        plot((x) => Math.abs(raw(x)), colors.accent, 6);
+      } else if (mode === 'pwm') {
+        plot((x) => raw(x) * 0.5, colors.dim, 3);
+        plot((x) => (raw(x) > 0 ? 0.85 : -0.85), colors.accent, 6);
+      } else {
+        plot((x) => raw(x), colors.text, 5);
+        plot((x) => raw(x, shift), colors.accent, 6);
+      }
+    },
+  },
+
+  // -------------------------------------------------------------------------
+  'block-flow': {
+    shape: 'wide',
+    label: 'Block flow',
+    describe: 'labelled boxes joined by arrows, lighting up in order - a process or plant flow',
+    uses: 'items (3-5 stage labels, e.g. Boiler, Turbine, Condenser, Pump)',
+    draw: ({ p, progress, width, height, items, colors }) => {
+      const stages = items.slice(0, 5).map((i) => i.label).filter(Boolean);
+      if (stages.length < 2) return;
+
+      const gap = 26;
+      const boxW = (width - gap * (stages.length - 1) - 20) / stages.length;
+      const boxH = Math.min(96, height * 0.44);
+      const y = height / 2;
+
+      stages.forEach((text, i) => {
+        const x = 10 + i * (boxW + gap);
+        // Each stage lights as the narration reaches it.
+        const lit = progress > (i + 0.4) / (stages.length + 0.5);
+
+        p.stroke(lit ? colors.accent : colors.dim);
+        p.strokeWeight(lit ? 5 : 3);
+        p.fill(colors.bg);
+        p.rect(x, y - boxH / 2, boxW, boxH, 8);
+
+        p.noStroke();
+        p.fill(lit ? colors.accent : colors.dim);
+        p.textAlign(p.CENTER, p.CENTER);
+        p.textSize(text.length > 12 ? 20 : 24);
+        p.text(text, x + boxW / 2, y);
+
+        if (i < stages.length - 1) {
+          const ax = x + boxW + 4;
+          p.stroke(lit ? colors.accent : colors.dim);
+          p.strokeWeight(4);
+          p.line(ax, y, ax + gap - 8, y);
+          p.line(ax + gap - 8, y, ax + gap - 16, y - 6);
+          p.line(ax + gap - 8, y, ax + gap - 16, y + 6);
+        }
+      });
+    },
+  },
+
+  // -------------------------------------------------------------------------
+  transformer: {
+    shape: 'square',
+    label: 'Transformer',
+    describe: 'a core with primary and secondary windings, for turns ratio and voltage transformation',
+    uses: 'ratio (0.2-5, secondary turns relative to primary), labelA (primary), labelB (secondary)',
+    draw: ({ p, time, width, height, params, colors }) => {
+      const ratio = num(params.ratio, 0.5, 0.2, 5);
+      const cx = width / 2;
+      const cy = height / 2;
+      const coreW = width * 0.34;
+      const coreH = height * 0.62;
+
+      p.noFill();
+      p.stroke(colors.text);
+      p.strokeWeight(6);
+      p.rect(cx - coreW / 2, cy - coreH / 2, coreW, coreH);
+      p.strokeWeight(2);
+      p.line(cx, cy - coreH / 2, cx, cy + coreH / 2);
+
+      const coil = (x: number, turns: number, colour: string) => {
+        p.stroke(colour);
+        p.strokeWeight(5);
+        p.noFill();
+        const n = Math.max(3, Math.min(9, Math.round(turns)));
+        const span = coreH * 0.8;
+        for (let i = 0; i < n; i++) {
+          const y = cy - span / 2 + (i * span) / (n - 1);
+          p.arc(x, y, 52, span / n + 8, -Math.PI / 2, Math.PI / 2);
+        }
+      };
+
+      coil(cx - coreW / 2, 6, colors.text);
+      coil(cx + coreW / 2, 6 * ratio, colors.accent);
+
+      // A pulse around the core shows the flux linking the two windings.
+      const pulse = (Math.sin(time * 3) + 1) / 2;
+      p.stroke(colors.accent);
+      p.strokeWeight(2 + pulse * 3);
+      p.noFill();
+      p.rect(cx - coreW / 2 + 12, cy - coreH / 2 + 12, coreW - 24, coreH - 24);
+
+      label(p, params.labelA || '', cx - coreW / 2 - 56, cy, colors, 24);
+      label(p, params.labelB || '', cx + coreW / 2 + 56, cy, colors, 24);
+    },
+  },
+
+  // -------------------------------------------------------------------------
+  pie: {
+    shape: 'square',
+    label: 'Proportions',
+    describe: 'a pie showing how a whole splits up - shares, losses, a fuel mix',
+    uses: 'items (2-5 slices, each with a label and a value; they need not add to 100)',
+    draw: ({ p, progress, width, height, items, colors }) => {
+      const slices = items
+        .filter((i) => Number.isFinite(Number(i.value)) && Number(i.value) > 0)
+        .slice(0, 5)
+        .map((i) => ({ label: i.label, value: Number(i.value) }));
+      if (slices.length < 2) return;
+
+      const total = slices.reduce((n, s) => n + s.value, 0);
+      const cx = width / 2;
+      const cy = height * 0.32;
+      const r = Math.min(width, height) * 0.26;
+      // Stepping the opacity keeps neighbours distinct however many slices
+      // there are; alternating two colours fails as soon as there are three.
+      const alphaFor = (i: number) => 255 - i * 42;
+
+      let angle = -Math.PI / 2;
+      slices.forEach((slice, i) => {
+        const sweep = (slice.value / total) * Math.PI * 2 * Math.min(1, progress * 1.3);
+        p.noStroke();
+        p.fill(shade(p, colors.accent, alphaFor(i)));
+        p.arc(cx, cy, r * 2, r * 2, angle, angle + sweep, p.PIE);
+        angle += sweep;
+      });
+
+      // A legend below, so no label can ever run off the edge of the canvas.
+      const rowH = 30;
+      const top = cy + r + 34;
+      slices.forEach((slice, i) => {
+        const y = top + i * rowH;
+        p.noStroke();
+        p.fill(shade(p, colors.accent, alphaFor(i)));
+        p.rect(width * 0.2, y - 9, 20, 18, 3);
+        p.fill(colors.text);
+        p.textAlign(p.LEFT, p.CENTER);
+        p.textSize(22);
+        p.text(slice.label, width * 0.2 + 32, y);
+        p.fill(colors.dim);
+        p.textAlign(p.RIGHT, p.CENTER);
+        p.text(Math.round((slice.value / total) * 100) + '%', width * 0.8, y);
+      });
     },
   },
 };

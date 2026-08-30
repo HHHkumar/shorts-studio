@@ -67,6 +67,42 @@ export const SKETCH_CATALOGUE = [
     when: 'refraction, lenses, Snell’s law, why a straw looks bent',
     uses: 'angle (10-70 degrees of incidence), ratio (1.1-2.4 refractive index), labelA / labelB (the two media)',
   },
+  {
+    name: 'circuit',
+    describe: 'a source with two or three components in series or parallel',
+    when: 'series and parallel resistance, current division, basic circuit questions',
+    uses: 'mode ("series" or "parallel"), count (2-3), labelA (source, e.g. "12 V"), items (component labels, e.g. "4 ohm")',
+  },
+  {
+    name: 'phasor',
+    describe: 'voltage and current phasors with the angle between them, or the power triangle',
+    when: 'power factor, leading and lagging loads, real and reactive power',
+    uses: 'angle (0-90; POSITIVE means the current LAGS, as for an inductive load; negative leads), mode ("phasor" or "power-triangle"), labelA (e.g. V), labelB (e.g. I)',
+  },
+  {
+    name: 'waveform',
+    describe: 'an AC waveform: two signals out of phase, or a rectified or switched output',
+    when: 'AC theory, phase shift, rectifiers, inverters and PWM',
+    uses: 'mode ("phase", "half-wave", "full-wave", "pwm"), angle (phase shift), frequency (1-4)',
+  },
+  {
+    name: 'block-flow',
+    describe: 'labelled boxes joined by arrows, lighting up in order',
+    when: 'a process or plant flow: boiler to turbine to condenser, or any staged sequence',
+    uses: 'items (3-5 stage labels)',
+  },
+  {
+    name: 'transformer',
+    describe: 'a core with primary and secondary windings',
+    when: 'turns ratio, step-up and step-down, voltage and current transformation',
+    uses: 'ratio (0.2-5, secondary turns relative to primary), labelA (primary), labelB (secondary)',
+  },
+  {
+    name: 'pie',
+    describe: 'a pie showing how a whole splits up',
+    when: 'shares, losses, a fuel mix, where the energy goes',
+    uses: 'items (2-5 slices, each with a label and a value)',
+  },
 ];
 
 export const SKETCH_NAMES = SKETCH_CATALOGUE.map((s) => s.name);
