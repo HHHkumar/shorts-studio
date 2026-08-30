@@ -1,474 +1,542 @@
-# Shorts Studio — the complete beginner's guide
+# Shorts Studio — the complete guide
 
-You do not need to know how to code to use this. If you can copy and paste, you can make videos with it.
+You do not need to know how to code to use this. If you can copy and paste, you can run it.
 
----
-
-## 1. What this thing actually does
-
-You pick a subject and press a button. Then:
-
-1. **Google Gemini** invents a multiple-choice question, the four answer options, the explanation, and the exact words a narrator should say.
-2. **ElevenLabs** turns those words into a real human-sounding voiceover.
-3. **Remotion** draws the video — 1080 × 1920, the tall shape used by YouTube Shorts, Instagram Reels and TikTok — and glues the voiceover onto it.
-4. You get an `.mp4` file you can upload anywhere.
-
-The whole thing runs on your own computer, in your own browser. Nothing gets uploaded to anybody except Google and ElevenLabs.
-
-**How long does one video take?** About 3–4 minutes of your time, most of which is waiting. The very first video takes longer, because the tool has to download its rendering engine once.
+This guide covers everything: what the tool is, how to start it, how to make a video, how to keep
+your work safe with Git, and how to run the same tool on a second computer.
 
 ---
 
-## 2. What you need before you start
+## Contents
 
-### A. Node.js
+1. [What this tool actually is](#1-what-this-tool-actually-is)
+2. [Setting up, once](#2-setting-up-once)
+3. [Starting it, every time](#3-starting-it-every-time)
+4. [Making a video — the seven steps](#4-making-a-video--the-seven-steps)
+5. [Git — your undo button](#5-git--your-undo-button)
+6. [GitHub — your backup and your bridge](#6-github--your-backup-and-your-bridge)
+7. [Running it on another computer](#7-running-it-on-another-computer)
+8. [What it costs](#8-what-it-costs)
+9. [When something goes wrong](#9-when-something-goes-wrong)
+10. [Where things are saved](#10-where-things-are-saved)
+11. [Questions people ask](#11-questions-people-ask)
+12. [A checklist for good videos](#12-a-checklist-for-good-videos)
 
-This is the program that runs the tool. Check whether you already have it:
+---
 
-1. Press the **Windows key**, type `powershell`, press **Enter**.
-2. Type this and press Enter:
+## 1. What this tool actually is
+
+You pick a subject, press a button, and about three minutes later you have a finished video with a
+real human-sounding voiceover, ready to upload.
+
+Four services do the work, and they all run from one page in your browser:
+
+| | What it does | Needed? |
+|---|---|---|
+| **Google Gemini** | Writes the question, the four options, the explanation and the exact words the narrator says. Also writes your title, tags and description at the end. | Required |
+| **ElevenLabs** | Turns that script into speech. | Required |
+| **DeepSeek** | Solves the question independently and says whether it agrees with Gemini. | Optional |
+| **Pexels + NASA** | Free photos to sit behind the text. NASA needs no key. | Optional |
+
+The video itself is drawn on your own computer by **Remotion**, which is why rendering costs nothing.
+
+### Two kinds of video
+
+- **Curiosity STEM** — counter-intuitive science and maths questions for a general audience.
+- **Electrical exam prep** — questions in the style of a real paper, aimed at a specific exam:
+  GATE EE, ESE/IES, SSC JE, RRB JE, State AE/JE, PSU (UPPCL/DMRC/NTPC/BHEL), or ITI/Wireman.
+
+### Two shapes
+
+- **Portrait 9:16** — Shorts, Reels, TikTok. 30 to 90 seconds.
+- **Landscape 16:9** — a proper explainer for YouTube. 2 to 5 minutes.
+
+**How long does one video take?** Roughly 3–4 minutes of your attention, most of it waiting. The very
+first video takes longer, because the tool downloads its rendering engine once.
+
+---
+
+## 2. Setting up, once
+
+### Node.js
+
+This is the program that runs everything. Check whether you already have it — press the **Windows
+key**, type `powershell`, press **Enter**, then type:
 
 ```bash
 node -v
 ```
 
-If you see something like `v20.11.0` or higher, you are fine. If you see an error, go to [nodejs.org](https://nodejs.org), download the big green **LTS** button, run the installer, click Next until it finishes, then **close and reopen PowerShell** and try again.
+A reply like `v20.11.0` or higher means you are fine. An error means you need it: go to
+[nodejs.org](https://nodejs.org), download the big green **LTS** button, click Next through the
+installer, then **close and reopen PowerShell**.
 
-### B. Two API keys
+### Your API keys
 
-An "API key" is just a long password that lets this tool use an online service on your behalf. You need two of them. Both are free to start.
+An "API key" is a long password that lets this tool use an online service on your behalf.
 
-**Gemini key** (writes the questions)
+**Gemini** (required — writes the questions)
 
 1. Go to <https://aistudio.google.com/app/apikey>
-2. Sign in with any Google account.
-3. Click **Create API key**.
-4. Click the copy icon. The key looks like `AIzaSyD…`, about 39 characters.
+2. Sign in with any Google account → **Create API key** → copy it.
+3. It looks like `AIzaSyD…`
 
-**ElevenLabs key** (does the voice)
+**ElevenLabs** (required — does the voice)
 
-1. Go to <https://elevenlabs.io> and create a free account.
-2. Go to <https://elevenlabs.io/app/settings/api-keys>
-3. Click **Create API key**, give it any name, click Create.
-4. Copy it. It looks like `sk_1a2b3c…`
+1. Go to <https://elevenlabs.io> and make a free account.
+2. Go to <https://elevenlabs.io/app/settings/api-keys> → **Create API key** → copy it.
+3. It looks like `sk_1a2b3c…`
 
-**DeepSeek key** (optional — double-checks the answer)
+**DeepSeek** (optional — double-checks the answer)
 
-1. Go to <https://platform.deepseek.com/api_keys>
-2. Sign in, click **Create new API key**, then copy it. It looks like `sk-1a2b3c…`
+1. Go to <https://platform.deepseek.com/api_keys> → **Create new API key** → copy it.
+2. It looks like `sk-1a2b3c…`
 
-You can skip this one. If you add it, step 3 gains a **Check the answer** button that hands the
-question to a completely different model, which solves it from scratch and tells you whether it
-agrees with Gemini. A check costs a fraction of a cent.
+Worth adding. Gemini writes the question *and* marks its own answer, so nothing catches a
+confidently wrong one. A check costs a fraction of a cent.
 
-**Pexels key** (optional — backdrop photos)
+**Pexels** (optional — backdrop photos)
 
-1. Go to <https://www.pexels.com/api/>
-2. Sign up free, click **Get Started**, then copy the key.
+1. Go to <https://www.pexels.com/api/> → sign up free → **Get Started** → copy the key.
 
-Also optional. It lets step 5 search for a photo to sit behind each scene. NASA's public-domain
-library is searched alongside it and needs no key at all, so even without a Pexels key you get good
-coverage for space, physics and earth science.
+Without it you still get NASA's public-domain library, which is excellent for space and physics but
+thin for chemistry and biology.
 
-> **Keep these private.** Anybody who has your key can spend your credits. Do not put them in a screenshot, a video, or a message to anyone.
+> **Keep these private.** Anybody holding your key can spend your credits. Never put one in a
+> screenshot, a video, or a message. They are stored only in your browser, never in a file — which is
+> also why they are never uploaded to GitHub.
 
-Paste both somewhere safe for a minute — Notepad is fine — because you will need them in a moment.
+### Install the packages
 
----
-
-## 3. One-time setup
-
-Do this **once, ever**.
-
-1. Open PowerShell.
-2. Go into the tool's folder by typing this (including the quote marks) and pressing Enter:
+Open PowerShell and go to the project:
 
 ```bash
-cd "C:\Users\heman\OneDrive\Desktop\ncert math\shorts-studio"
+cd C:\Projects\shorts-studio
 ```
 
-3. Type this and press Enter, then wait 1–3 minutes:
+Then:
 
 ```bash
 npm install
 ```
 
-You will see a lot of text scroll past. Warnings in yellow are normal. As long as it finishes without a red `ERR!`, you are done.
+This takes one to three minutes. Yellow warnings are normal — only a red `ERR!` means trouble.
 
-> ### If you get "running scripts is disabled on this system"
+> ### If you see "running scripts is disabled on this system"
 >
-> This is a Windows security default, not a problem with the tool. Windows refuses to run npm's
-> PowerShell launcher until you say otherwise. There are two ways past it.
+> This is a Windows security default, not a fault in the tool. Two ways past it.
 >
-> **The easy way — change nothing.** Add `.cmd` to the command:
+> **The easy way, changing nothing** — add `.cmd`:
 >
 > ```bash
 > npm.cmd install
 > ```
 >
-> Use `npm.cmd` everywhere this guide says `npm`, including `npm.cmd start`. That is all.
+> Use `npm.cmd` everywhere this guide says `npm`. That is the whole fix.
 >
-> **The permanent way — allow your own scripts.** Run this once:
+> **The permanent way** — run this once and press `Y`:
 >
 > ```bash
 > Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 > ```
 >
-> Press `Y` and Enter. `RemoteSigned` lets scripts written on your own computer run, while anything
-> downloaded from the internet still has to be signed. It applies to your user account only, and it is
-> the setting Microsoft recommends for people who develop on Windows. After this, plain `npm` works.
+> `RemoteSigned` lets scripts written on your own computer run, while anything downloaded from the
+> internet must still be signed. It applies to your account only, and it is what Microsoft recommends
+> for people who develop on Windows.
 
 ---
 
-## 4. Starting the tool (every time)
+## 3. Starting it, every time
 
-1. Open PowerShell.
-2. Paste the `cd "C:\Users\..."` line from above and press Enter.
-3. Type this and press Enter:
+```bash
+cd C:\Projects\shorts-studio
+```
 
 ```bash
 npm start
 ```
 
-4. Wait about five seconds. **Your browser opens by itself.** If it does not, look in PowerShell for a line that says `Local: http://localhost:5173/` (the number might be 5174 or similar) and click it.
+Wait about five seconds and your browser opens by itself. If it does not, look in PowerShell for a
+line reading `Local: http://localhost:5173/` — the number may differ — and click it.
 
-**Leave the PowerShell window open the whole time you are using the tool.** That black window *is* the engine. If you close it, the tool stops working. When you are completely finished, click on the PowerShell window and press `Ctrl + C` to shut it down.
+**Leave the PowerShell window open the whole time.** That black window *is* the engine. Closing it
+stops the tool. When you are finished for the day, click it and press `Ctrl + C`.
 
 ---
 
-## 5. The six steps
+## 4. Making a video — the seven steps
 
-Across the top of the page there are six numbered buttons. You move left to right. Steps you have not earned yet are greyed out — that is deliberate, so you cannot get lost.
+Seven numbered buttons run across the top. You move left to right. Steps you have not earned yet stay
+greyed out on purpose, so you cannot get lost.
 
 ### Step 1 — Keys
 
-Paste your Gemini key in the first box and your ElevenLabs key in the second.
+Paste your keys and press **Test my keys**. You want green ticks. It also reports how many
+ElevenLabs voice credits you have left this month.
 
-Click **Test my keys**. You want two green ticks. It also tells you how many voice credits you have left this month.
-
-You only ever do this once. The keys are remembered in your browser, on this computer only.
-
-> If a key is rejected, the most common cause is an accidental space at the start or end. Delete the box's contents and paste again carefully.
-
-Click **Continue**.
+You do this once, ever. If a key is rejected, the cause is almost always a stray space — clear the
+box and paste again.
 
 ### Step 2 — Topic
 
-This is where you decide what the video is about. Every setting has a short explanation under it. The ones worth understanding:
+Where you decide what the video is about.
 
 | Setting | What it does |
 |---|---|
-| **What kind of video** | **Curiosity STEM** for a general audience, or **Electrical exam prep** for candidates revising. Exam prep swaps the subject list for the electrical syllabus and asks for questions in the style of a real paper. |
-| **Exam** *(exam prep only)* | GATE EE, ESE/IES, SSC JE, RRB JE, State AE/JE, PSU, or ITI/Wireman. This sets the depth: GATE and ESE want derivation and analysis, SSC and RRB want standard formulas at speed, ITI wants practical wiring and safety with no calculus. |
-| **Format** | **Portrait 9:16** for Shorts, Reels and TikTok (30–90 seconds). **Landscape 16:9** for a real explainer on YouTube proper (2–5 minutes). Pick this first: it changes how much script Gemini writes and how the video is laid out. |
-| **Subject** | The broad field, e.g. Physics, Biology, Computer Science. |
-| **Specific topic** | Optional. Leave it empty and Gemini picks something interesting inside the subject for you. Fill it in when you want a particular thing, e.g. `photosynthesis` or `binary search`. |
-| **Who is watching** | Sets the vocabulary and the assumed background knowledge. |
-| **Difficulty** | How hard the question is, from *Very easy* to *Brutal*. |
-| **Question style** | *Mathematical* = the viewer must calculate something. *Theoretical* = the viewer must reason, no arithmetic. *Real-world application* = anchored in everyday life. *Balanced* = a bit of both. |
-| **Narration language** | The language the voice speaks *and* the language shown on screen. Kannada, Hindi, Tamil, Telugu and the rest render in their own script. Pair this with a matching ElevenLabs voice in step 4 and use the Multilingual v2 voice model. |
-| **Curiosity factor** | The most important dial. Low = a plain textbook question. High = a counter-intuitive result that makes people comment. **8 or 9 is the sweet spot for social media.** |
-| **Target length** | How long the finished video runs. **40–50 seconds performs best for Shorts**; below about 40 there is no room to explain anything. In landscape, 180–240 seconds is the sweet spot. |
-| **Tone of voice** | How the script is written — hyped, calm, witty, patient. |
-| **Gemini model** | *Flash* is fast and cheap and fine for almost everything. *Pro* is worth it for genuinely hard maths. |
+| **What kind of video** | **Curiosity STEM** for a general audience, or **Electrical exam prep** for candidates revising. |
+| **Exam** *(exam prep only)* | Sets the depth. GATE and ESE want derivation and analysis; SSC and RRB want standard formulas at speed; ITI wants practical wiring and safety with no calculus. |
+| **Format** | Portrait or landscape. **Pick this first** — it changes how much script is written and how the frame is laid out. |
+| **Subject / topic** | Leave the topic empty and Gemini picks something interesting for you. |
+| **Who is watching** | Sets vocabulary and assumed background. |
+| **Difficulty** | *Very easy* through *Brutal*. |
+| **Question style** | *Mathematical* = the viewer must calculate. *Theoretical* = they must reason. *Real-world* = anchored in daily life. |
+| **Narration language** | The language spoken *and* shown. Kannada, Hindi, Tamil and Telugu render in their own script — pair with a matching voice in step 4 and the Multilingual v2 model. |
+| **Curiosity factor** | The most important dial. **8 or 9** is the sweet spot: counter-intuitive enough to make people comment. |
+| **Target length** | 40–50s performs best for Shorts. 180–240s is the sweet spot for explainers. |
+| **Gemini model** | Flash is fast and cheap. Pro is worth it for hard maths. The list is built from your own key, so it only offers models you can actually use. |
 
-#### Your intro (optional)
+**Your intro (optional).** Type a greeting — *"Hi, it's Hemanth here. Ready for today's question?"* —
+and it becomes the first thing the video says. There are one-click presets. **Gemini never rewrites
+this**: whatever you type is spoken and shown word for word.
 
-Type a greeting and it becomes the first thing the video says — *"Hi, it's Hemanth here. Ready for
-today's question?"* or *"Welcome back to \<your channel\>."* There are one-click presets to start from.
-
-**Gemini never rewrites this.** Whatever you type is spoken and shown word for word. Leave it empty
-and the video jumps straight into the hook.
-
-#### Longer explainers
-
-In landscape the target runs from two to five minutes, and the script is budgeted to actually reach it.
-
-The tool works backwards from the number you pick: 300 seconds is about 780 spoken words, so after
-the question, the options and the answer are accounted for it asks for **15 explanation scenes of
-about 46 words each**. Those scenes are told to follow an arc rather than restate one point — ground
-the idea, the key concept, the mechanism, a worked example with real numbers, the common
-misconception, then where it shows up in real life.
-
-The answer options sit in a 2×2 grid instead of a stack, to suit the wider frame.
-
-> **Watch the length in step 3.** It says how many seconds of speech the script actually contains. If
-> it came out well under what you asked for, you get a warning — press **Write a different question**
-> and try again, or switch to a stronger Gemini model. Regenerating is free; discovering it after the
-> voiceover is not.
-
-> **A five-minute video is not cheap in voice credits.** About 4,400 characters, so roughly **two
-> long explainers a month** on the ElevenLabs free tier, against 10–20 shorts. Step 4 tells you the
-> cost before you spend it.
-
-Under **Advanced** you can tell Gemini what to avoid, or give it a free-text instruction like *"use an example from Indian railways"*.
-
-Click **Generate the question**. It takes 5–20 seconds.
+Press **Generate the question**. Five to twenty seconds.
 
 ### Step 3 — Script
 
-Now you check Gemini's homework. **This is the most important step, and it is the one people skip.**
+You check Gemini's homework. **This is the most important step and the one people skip.**
 
-You will see:
+> **Only the spoken words appear on screen.** The narration *is* the on-screen text — shown a few
+> words at a time, each word lighting up as it is said. There is no separate headline to keep in
+> step, and no labels, step counters or subject chips cluttering the frame.
 
-- **The question** and its four options. The green one is the correct answer. If Gemini marked the wrong one as correct, click **mark correct** next to the right one. Any text here can be edited by clicking in it.
-- **The script**, split into scenes, each with one box: 🎙️ **Spoken out loud**.
+Every line is editable. **Read the question and satisfy yourself the marked answer is right** — AI is
+confidently wrong sometimes, and ten seconds here saves publishing something embarrassing.
 
-> ### What you write is what appears
->
-> There is only ever **one** text in the video, and it is the narration. Whatever a scene says out
-> loud is also drawn on screen, a few words at a time, with each word lighting up as it is spoken.
->
-> That means you never have to keep two versions of anything in step. Edit the spoken line and the
-> on-screen text changes with it, automatically and exactly.
->
-> Keep each line **short** — 12 to 22 words. It has to work as speech *and* as big type on a phone.
+**The second opinion.** With a DeepSeek key you get a **Check the answer** button:
 
-**Read the question and check the answer is genuinely right.** AI is confidently wrong sometimes. Ten seconds of checking here saves you publishing something embarrassing.
-
-> **Only the spoken words appear on screen.** There are no labels, step counters or subject chips
-> over the video, and diagrams only appear from the explanation onwards — anything shown before the
-> reveal would give the answer away.
-
-#### The second opinion (if you added a DeepSeek key)
-
-Gemini writes the question *and* marks its own answer, so nothing catches a confidently wrong one.
-Press **Check the answer** and DeepSeek solves the question independently, then reports back:
-
-| Badge | What it means |
+| Badge | Meaning |
 |---|---|
-| ✅ **DeepSeek agrees** | Both models got the same answer. Good sign. |
-| ⚠️ **DeepSeek has reservations** | The answer stands, but something needs a look — an ambiguous option, a wrong number in a diagram, a shaky claim in the fun fact. |
-| ❌ **DeepSeek disagrees** | The two models got **different answers**. One of them is wrong. |
+| ✅ **DeepSeek agrees** | Both models got the same answer. |
+| ⚠️ **Reservations** | The answer stands, but something needs a look. |
+| ❌ **DeepSeek disagrees** | They got **different answers**. One is wrong. |
 
-On a disagreement you get a one-click **Mark ⟨X⟩ correct** button — but read the reasoning first.
-DeepSeek is not automatically right either; the value is that you now *know* to look.
+On a disagreement you get a one-click button to switch the marked answer — but read the reasoning
+first. DeepSeek is not automatically right either; the value is knowing to look. Pick **Reasoner** for
+hard maths.
 
-Choose **Reasoner** as the checking model for hard maths: it is slower but far better at catching a
-wrong calculation. **Chat** is fine for everything else.
+Edit the question afterwards and the badge is replaced by *"the check is out of date"* — a stale tick
+is never left pretending the new version was verified.
 
-The report is tied to the exact question it checked. Edit the question, the options or the marked
-answer and the badge is replaced by *"The check is out of date"* — a stale tick is never left on
-screen pretending the new version was verified.
-
-If you do not like the question at all, click **Write a different question** to go back and generate a fresh one.
-
-Meanwhile, on the right, a **live phone preview** has appeared. It is silent for now and the timings are estimates — that gets fixed in the next step.
-
-Click **Looks good, add a voice**.
+**Watch the length.** The heading says how many seconds of speech the script contains. If it came out
+well under your target you get a warning — regenerate now, while it is still free.
 
 ### Step 4 — Voice
 
-Pick a voice from the dropdown. These are the voices on *your* ElevenLabs account. Click **Hear this voice** to sample it.
+Pick a voice from your own ElevenLabs account and press **Hear this voice** to sample it. If the list
+is empty, add any voice from the [Voice Library](https://elevenlabs.io/app/voice-library) and reload.
 
-> **No voices in the list?** Open the [ElevenLabs Voice Library](https://elevenlabs.io/app/voice-library), click **Add** on any voice you like, then reload this page.
+The cost is shown before you spend anything. Press **Make the voiceover**.
 
-The **voice model** dropdown controls quality versus cost. *Multilingual v2* sounds best and is the right default. *Flash* is the cheapest if you are making a lot of videos.
+> **This is where sync happens.** Every clip is decoded in your browser and measured for real — exact
+> length, where sound starts, where it stops. Each scene is then made exactly as long as its own clip,
+> always rounding *up*, so a line can never be cut off. The subtitles are nudged by the few
+> milliseconds of silence every MP3 carries at its start, which lands the highlight on the right
+> syllable.
 
-Under **Fine-tune the delivery** you can adjust stability, style and speed. You can safely ignore all of it the first few times.
+**The options light up as they are read**, because the narration reads them in order.
 
-The blue box tells you roughly how many credits this will cost, before you spend anything.
-
-Click **Make the voiceover**. It records one clip per scene and shows you progress like *"Recording line 3 of 7"*. A 45-second video takes about 20–40 seconds to record.
-
-**The options light up as they are read.** Because the narration reads the four options in order,
-each row on screen highlights at the exact moment the voice reaches it.
-
-**This is where the sync happens.** After recording, the tool decodes every clip in your browser and
-measures it for real — exact length, where the sound actually starts, and where it stops. Each scene
-is then made exactly as long as its own clip, always rounding *up*, so a line can never be cut off.
-The clip is played from that scene's first frame, so there is nothing that can drift.
-
-It also nudges the subtitles by the few milliseconds of silence every MP3 carries at its start, which
-is what puts the highlighted word on the exact syllable being spoken.
-
-Open **Show the sync report** to see the numbers per scene: clip length, where speech ends, and the
-caption nudge. If a line ever sounds clipped, turn off **Trim trailing silence** in step 5.
-
-The preview on the right now plays with sound. Press play and watch it.
+Open **Show the sync report** to see the numbers per scene. If a line ever sounds clipped, turn off
+**Trim trailing silence** in step 5.
 
 ### Step 5 — Look
 
-Change anything here as much as you like. It is instant, it is free, and it never touches the voiceover.
+Everything here is instant, free, and never touches the voiceover.
 
-- **Dark or light** — dark is the safe default for social media.
-- **Layout** — four presets:
-  - **Simple** — clean and readable. Works for any subject.
-  - **Elegant** — serif type, calm pacing, documentary feel.
-  - **Nerdy** — terminal green on graph paper. Great for maths and code.
-  - **Flashy** — loud colours, big bounce. Built for the scroll feed and the one that usually performs best.
-- **Highlight colour** — override the layout's accent colour.
-- **Thinking time** — how long the countdown timer runs before the answer. 3–5 seconds.
-- **Breathing room** — extra silence after each spoken line. Raise it if the video feels rushed.
-- **Show the spoken words on screen** — the read-along text. **Leave this on.** Most people watch short videos on mute.
-- **Progress bar** — a thin line across the top that fills up. Helps retention.
-- **Draw the diagrams** — shown only on the explanation and outro scenes, never before the answer.
-  Gemini picks a small graphic where one genuinely helps. As well as the static ones (a formula box,
-  comparison bars, a side-by-side panel, an icon) it can choose a **live animation** from a fixed
-  library of ten: wave interference, a travelling wave, orbits, a projectile arc, a pendulum, a
-  vector field, spreading particles, a graph being drawn, an atom with electron shells, and light
-  refracting at a boundary. Gemini picks one by name and sets its knobs — it never writes code, so a
-  bad choice simply falls back to no diagram rather than breaking the render.
-  a **formula** box for a calculation step, **comparison bars** for "which is bigger", a **side-by-side**
-  panel for before/after, or a single big **icon**. Scenes that do not need one simply do not get one.
-- **Drift topic symbols** — faint themed emoji floating behind everything, so a text-only video does
-  not look like a slide deck.
-- **Trim trailing silence** — cuts the dead air the voice model leaves at the end of each line, which
-  is what makes the pacing feel tight. Turn it off if any line ever sounds clipped.
+- **Dark or light**, and four layouts: **Simple** (clean), **Elegant** (serif, documentary),
+  **Nerdy** (terminal green on graph paper), **Flashy** (loud, best in a feed).
+- **Highlight colour**, **thinking time** (3–5s), **breathing room**.
+- **Show the spoken words** — the read-along text. Leave it on; most people watch on mute.
+- **Draw the diagrams** — only on explanation and outro scenes, never before the answer, because
+  anything shown earlier gives it away. As well as static ones (a formula box, comparison bars, a
+  side-by-side panel, an icon) Gemini can choose a **live animation** from a fixed library of ten:
+  wave interference, a travelling wave, orbits, a projectile arc, a pendulum, a vector field,
+  spreading particles, a graph being drawn, an atom, and light refracting.
+- **Drift topic symbols** — faint themed emoji behind everything.
+- **Backdrop photos** — press **Find backdrop photos** and it searches Pexels and NASA per scene,
+  using a search term Gemini wrote for that scene. **Nothing is applied for you**: a photo library
+  will cheerfully return a beach for "gravity". Click the ones that fit, skip the rest.
+- **Sound** — three built-in music beds (calm, tense, upbeat), or load your own file. The music
+  **ducks automatically** under the narration. Effects: a countdown tick, an option whoosh, an answer
+  chime, and a sweep between scenes.
 
-#### Backdrop photos
-
-Press **Find backdrop photos** and the tool searches **Pexels** and **NASA** for every scene, using a
-search term Gemini wrote for that scene specifically. You then click the one you want, or skip the
-scene entirely.
-
-**Nothing is applied for you, on purpose.** A photo library will cheerfully return a beach for
-"gravity", and an unrelated backdrop makes a science video look worse rather than better. You can
-edit the search words for any scene and search again.
-
-Chosen photos sit *behind* the text, dimmed and slightly blurred, with a slow drift so a still does
-not look frozen. **How strongly the photo shows** controls the balance — around 0.45 reads as
-atmosphere without fighting the words.
-
-Both libraries are free for commercial use and neither requires credit, but the photographer and
-NASA are added to the caption you copy in step 6 anyway.
-
-#### Sound
-
-- **Background music** — three built-in beds: *Calm pad* (soft chords, stays out of the way),
-  *Tense pulse* (a low heartbeat, good for hard questions) and *Upbeat* (a light arpeggio). They are
-  generated on your own computer, so there is no licensing question about using them. The music
-  **ducks automatically** underneath the narration, so it never fights the voice.
-- **Use my own music file** — load an MP3, WAV, M4A, AAC or OGG instead. It ducks the same way.
-- **Music volume** — 0.20 to 0.25 sits nicely behind a voice. Higher starts to compete.
-- **Sound effects** — a tick each countdown second, a whoosh as each option arrives, a chime when the
-  answer turns green, and a sweep between scenes.
-
-Watch the phone preview while you change things. Skim through the whole video here before you render — fixing something now takes a second, fixing it after a render takes minutes.
-
-Click **Make the video**.
+Play the phone preview before rendering. Fixing something here takes a second; after a render it
+takes minutes.
 
 ### Step 6 — Export
 
-Choose a quality (**Normal** is right almost always) and click **Render the video**.
+Choose a quality (**Normal** is right almost always) and press **Render the video**.
 
-> **The first render is slow.** The very first time, the tool downloads a special rendering browser, roughly 150 MB. That can take a few minutes and looks like nothing is happening. It only ever happens once. Every render after that starts in seconds.
+> **The first render is the slow one.** The very first time, the tool downloads a rendering browser
+> of about 150 MB. It can look like nothing is happening for several minutes. It only ever happens
+> once per computer.
 
-A progress bar shows *Drawing frames… 340 / 1260*. A 45-second video usually takes 1–3 minutes depending on your computer.
+A 45-second video takes one to three minutes. You get a player, a download button, and the file is
+saved into the `out` folder automatically.
 
-When it finishes you get a video player right there. Watch it. Then:
+### Step 7 — Publish
 
-- **Download the MP4** — saves it to your Downloads folder.
-- **Copy the caption & hashtags** — puts a ready-made caption on your clipboard for the upload form.
+Gemini writes your upload kit from the finished video: **several title options** to choose from, a
+description, tags, hashtags, suggested thumbnail text, and a pinned comment. Each has a copy button.
 
-The file is also saved automatically inside the `shorts-studio\out` folder, named with the date and time.
-
-At the bottom, **New question, same style** starts a fresh video keeping all your look settings — this is how you make a batch quickly.
-
----
-
-### Step 7 — Title, tags and description
-
-Everything the upload form asks for, written from the video you just made.
-
-Type your channel or site once — it is remembered — then press **Write the metadata**. You get:
-
-- **Five title options** with live character counts, so you can pick the angle you want. One plain
-  and searchable, one question-shaped, one challenge-shaped, one naming the exam, one naming the
-  concept.
-- **A description** whose first line carries the topic and the exam, since that is the line that
-  shows in search results.
-- **Tags**, capped at YouTube's real limit — the site counts the whole comma-separated string, not
-  the number of tags, so the list is trimmed to fit rather than rejected at upload.
-- **Hashtags**, **thumbnail text** and a **pinned comment**.
-
-Every field has a one-click **Copy**. Edit the question afterwards and the whole pack is marked out
-of date, so you never paste a title describing a video you changed.
+For exam-prep videos the title and first line of the description lead with the exam name, subject and
+topic, because that is what people actually type into search.
 
 ---
 
-## 6. What it costs
+## 5. Git — your undo button
 
-| Service | Free allowance | What one video uses |
+Git takes **snapshots** of your project. It is the reason a mistake can never cost you more than a
+few minutes.
+
+Three ideas, and that is genuinely all you need:
+
+- **A commit** is a labelled snapshot. "Here is what everything looked like at 4pm."
+- **Your history** is the list of those snapshots.
+- **You can always go back** to any of them.
+
+Git deliberately ignores three things: `node_modules` (hundreds of megabytes, rebuilt by
+`npm install`), your finished videos, and generated audio. Everything that matters is tracked.
+
+### The only commands you need
+
+See what you have changed:
+
+```bash
+git status
+```
+
+Stage everything you changed:
+
+```bash
+git add -A
+```
+
+Save the snapshot:
+
+```bash
+git commit -m "describe what you changed"
+```
+
+The message is for future-you. "Made the countdown longer" beats "update".
+
+See your history:
+
+```bash
+git log --oneline
+```
+
+### Undoing things
+
+Throw away changes to one file you have messed up:
+
+```bash
+git restore path/to/file
+```
+
+Throw away **all** uncommitted changes and go back to your last snapshot:
+
+```bash
+git restore .
+```
+
+> ⚠️ That last one is not itself undoable. It discards everything you have changed since your last
+> commit. Commit often and it is never frightening.
+
+---
+
+## 6. GitHub — your backup and your bridge
+
+**GitHub is a website that stores a copy of your project in the cloud.** It does two jobs: it is a
+backup if your laptop dies, and it is how the same project reaches a second computer.
+
+Your project lives at **github.com/HHHkumar/shorts-studio**, and it is **private** — only you can see
+it.
+
+Send your latest snapshots up:
+
+```bash
+git push
+```
+
+Bring down changes made on another machine:
+
+```bash
+git pull
+```
+
+### The rhythm that keeps it painless
+
+**Pull before you start. Push before you stop.**
+
+A full session looks like this:
+
+```bash
+git pull
+```
+
+…do your work, then…
+
+```bash
+git add -A
+```
+
+```bash
+git commit -m "what you changed"
+```
+
+```bash
+git push
+```
+
+If you forget and edit the same file on both machines, Git will ask you to reconcile the two
+versions. Irritating, but nothing is ever lost.
+
+> **If a push fails with "Permission denied to \<some other name\>"**, Windows has a different GitHub
+> account saved. That is exactly why your project's address includes your username:
+> `https://HHHkumar@github.com/HHHkumar/shorts-studio.git`. It tells Git which account to use.
+
+---
+
+## 7. Running it on another computer
+
+Everything you need is on GitHub, so this is four commands.
+
+**1.** Open PowerShell where you want the project to live, then:
+
+```bash
+git clone https://HHHkumar@github.com/HHHkumar/shorts-studio.git
+```
+
+**2.** Go into it:
+
+```bash
+cd shorts-studio
+```
+
+**3.** Install the packages (this is why `node_modules` is not in the repo — it is rebuilt here):
+
+```bash
+npm install
+```
+
+**4.** Start it:
+
+```bash
+npm start
+```
+
+### Three things that do not travel, by design
+
+- **Your API keys.** They live in your browser, never in a file. Paste them into step 1 again.
+- **The rendering browser.** The first render on the new machine downloads it again (~150 MB, once).
+- **Your finished videos.** They are too big for a repo. They stay on the machine that made them.
+
+After that, both computers are equal. Pull before you start, push before you stop, and they stay in
+step.
+
+---
+
+## 8. What it costs
+
+| Service | Free allowance | One video uses |
 |---|---|---|
-| **Gemini** | A generous free tier | One request. Realistically free. |
-| **ElevenLabs** | 10,000 characters/month on the free plan | A short uses 500–900 characters, so **10–20 a month free**. A five-minute explainer uses about 4,400 — **two a month**. |
-| **DeepSeek** (optional) | Pay as you go, no free tier | A fraction of a cent per check. |
-| **Pexels / NASA** (optional) | Free | Nothing. Photos are downloaded to your own computer. |
-| **Rendering** | Free | Runs on your own computer. Costs electricity. |
+| **Gemini** | A generous free tier | One or two requests. Realistically free. |
+| **ElevenLabs** | 10,000 characters a month | A short uses 500–900 characters (**10–20 a month free**). A five-minute explainer uses about 4,400 (**two a month**). |
+| **DeepSeek** *(optional)* | Pay as you go, no free tier | A fraction of a cent per check. |
+| **Pexels / NASA** *(optional)* | Free | Nothing. |
+| **Rendering** | Unlimited | Your own computer. Costs electricity. |
 
-Changing the look, re-rendering, or editing on-screen text costs **nothing**. Only pressing *Generate the question* and *Make the voiceover* spends anything.
+Changing the look, re-rendering, editing text and picking photos all cost **nothing**. Only
+*Generate the question*, *Make the voiceover*, *Check the answer* and *Publish* spend anything.
 
-To stretch your ElevenLabs credits: lower the target length in step 2, and use the *Flash* voice model.
+To stretch ElevenLabs credits: shorter targets, and the **Flash** voice model.
 
 ---
 
-## 7. When something goes wrong
+## 9. When something goes wrong
 
 | What you see | What it means | What to do |
 |---|---|---|
-| Red box: *"The helper server is not running"* | The PowerShell window was closed. | Reopen PowerShell, `cd` into the folder, run `npm start`, reload the page. |
-| *"That Gemini API key was rejected"* | Bad key, usually a stray space. | Re-copy the key from Google AI Studio and paste it again. |
-| *"That ElevenLabs API key was rejected"* | Same, for ElevenLabs. | Re-copy from the API Keys page. |
-| *"Your ElevenLabs character quota is used up"* | Out of voice credits for the month. | Wait for the reset, shorten the video, or upgrade the plan. |
-| *"That DeepSeek API key was rejected"* | Bad key. | Re-copy it from platform.deepseek.com. |
+| *"running scripts is disabled on this system"* | Windows blocks npm's launcher by default. | Use `npm.cmd`, or run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once. |
+| Red box: *"The helper server is not running"* | The PowerShell window was closed. | Reopen it, `cd` to the folder, `npm start`, reload the page. |
+| *"That … API key was rejected"* | Bad key, usually a stray space. | Re-copy it from the provider and paste again. |
+| *"Your ElevenLabs character quota is used up"* | Out of voice credits this month. | Wait for the reset, shorten the video, or upgrade. |
 | *"Your DeepSeek account has no credit left"* | DeepSeek has no free tier. | Top up, or clear the key to turn the check off. |
-| *"Gemini rate limit hit"* | You generated too fast. | Wait about a minute, press Generate again. |
-| *"Gemini refused this topic"* | A safety filter blocked it. | Change the topic wording. |
-| No voices in the dropdown | Your ElevenLabs account has no voices saved. | Add one from the Voice Library, reload the page. |
-| Render sits at 0% for ages on the first go | It is downloading the rendering browser. | Wait. It only happens once. Do not close the tab. |
-| *"The output file is locked"* | A video player still has the last render open. | Close the player, render again. |
-| *"running scripts is disabled on this system"* | Windows blocks npm's PowerShell launcher by default. | Use `npm.cmd install` / `npm.cmd start`, or run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once. |
-| The browser never opens | Something else is on the same port. | Look in PowerShell for the `Local:` line and click that address. |
-| A spoken line sounds clipped at the end | Trailing silence was trimmed too aggressively. | Step 5 → turn off **Trim trailing silence**, then render again. |
-| A diagram shows wrong numbers | Gemini invented them. | Step 3 → fix or shorten that scene, or turn off **Draw the diagrams** in step 5. |
-| Text is cut off on screen | The on-screen headline is too long. | Go to step 3 and shorten that scene's 📺 box. |
-| Everything is broken and confusing | — | Step 6 → **Reset everything**, then start from step 1. |
+| *"Gemini rate limit hit"* | You generated too fast. | Wait a minute and try again. |
+| *"Your key cannot use that Gemini model"* | The model is not available to your key. | Reload the page — the dropdown rebuilds from your own key. |
+| No voices in the dropdown | Your ElevenLabs account has no voices saved. | Add one from the Voice Library, reload. |
+| Render stuck at 0% the first time | It is downloading the rendering browser. | Wait. It happens once per computer. |
+| *"The output file is locked"* | A video player still has the last render open. | Close it and render again. |
+| A spoken line sounds clipped | Trailing silence trimmed too aggressively. | Step 5 → turn off **Trim trailing silence**. |
+| A diagram shows wrong numbers | Gemini invented them. | Fix that scene in step 3, or turn off **Draw the diagrams**. |
+| The script is far shorter than asked | Gemini underwrote it. | Step 3 warns you. Regenerate, or switch to a stronger model. |
+| Push fails: *"Permission denied to …"* | Windows has another GitHub account saved. | Make sure the address includes `HHHkumar@`. |
+| A change seems to have no effect | An old server is still running from before. | `Ctrl + C` in PowerShell, then `npm start` again. |
+| Everything is confusing | — | Step 7 → **Reset everything**, then start from step 1. |
 
 ---
 
-## 8. Where things are saved
+## 10. Where things are saved
 
-Inside `shorts-studio`:
+Inside `C:\Projects\shorts-studio`:
 
-- `out\` — your finished videos. **This is the folder you want.** Nothing here is ever deleted automatically.
-- `public\generated\` — the voiceover clips. Cleaned up automatically after a day.
-- Your keys and settings — stored in your browser, not in a file.
+- **`out\`** — your finished videos. **This is the folder you want.** Nothing here is ever deleted
+  automatically, and nothing here goes to GitHub.
+- `public\generated\` — voiceover clips and downloaded photos. Cleared automatically after a day.
+- `public\audio\` — the music beds and effects, regenerated on first boot.
+- `.git\` — your snapshots. Do not touch it; that is Git's business.
+- Your keys and settings — in your browser, not in any file.
 
 ---
 
-## 9. Questions people ask
+## 11. Questions people ask
 
 **Can I use my own voice?**
-Yes. Clone your voice on the ElevenLabs website; it then appears in the step-4 dropdown automatically.
-
-**Can I make it longer than 90 seconds?**
-The slider stops at 90 because Shorts and Reels cap out around there. The tool itself has no limit — a longer script just makes a longer video.
+Yes. Clone it on the ElevenLabs website and it appears in the step 4 dropdown.
 
 **Can I change the fonts and colours?**
-Yes. Open `src\lib\theme.ts` in Notepad. Everything visual lives in that one file, with comments. Save it and the preview updates instantly.
+Yes. `src\lib\theme.ts` holds every visual choice, with comments. Save it and the preview updates
+instantly. If you break it, `git restore src/lib/theme.ts` puts it back.
 
 **Does it work offline?**
-No. Gemini, ElevenLabs and the one-time renderer download all need the internet. Once everything is downloaded, re-rendering an existing video works offline.
+No. Gemini, ElevenLabs and the one-time renderer download all need the internet. Re-rendering a video
+you already generated works offline.
 
 **Is my data going anywhere?**
-Your topic settings go to Google. Your script goes to ElevenLabs. Nothing else leaves your computer. The helper server only listens on `127.0.0.1`, which means nothing else on your network can reach it.
+Your topic settings go to Google, your script to ElevenLabs, and your question to DeepSeek if you
+enabled it. Nothing else leaves the computer — the helper server listens only on `127.0.0.1`, so
+nothing on your network can reach it.
+
+**Why is my project not in OneDrive any more?**
+OneDrive was syncing `node_modules` — tens of thousands of files — which is slow and can lock files
+mid-render. Git does the job properly, so the project moved to `C:\Projects`.
 
 **Can I sell the videos I make?**
-Check each service's terms yourself — Google's, ElevenLabs', and Remotion's. Note in particular that **Remotion is free for individuals and small teams but requires a paid company licence for larger companies**. See <https://remotion.dev/license>.
+Check each service's terms. Note in particular that **Remotion is free for individuals and small
+teams but needs a paid company licence beyond that** — see <https://remotion.dev/license>.
 
 **Something is still wrong.**
 Look at the PowerShell window. The last few red lines usually say plainly what failed.
 
 ---
 
-## 10. A short checklist for good videos
+## 12. A checklist for good videos
 
-- Curiosity factor **8 or 9**. Boring questions do not get watched.
-- Target length **40–50 seconds**.
-- **Read the question in step 3 and verify the answer.**
-- Run the DeepSeek check. A disagreement between two models is the cheapest bug report you will get.
-- Keep on-screen headlines under 12 words.
-- Karaoke subtitles **on** — most viewers are on mute.
-- **Flashy** layout for reach, **Nerdy** or **Elegant** for a subject-specialist audience.
-- Thinking time of 3–5 seconds. Too long and people scroll away.
+- Curiosity factor at **8 or 9**. Boring questions do not get watched.
+- 40–50 seconds for Shorts; 180–240 for explainers.
+- **Read the question in step 3 and verify the answer yourself.**
+- Run the DeepSeek check — a disagreement between two models is the cheapest bug report you will get.
+- Keep the read-along text on; most viewers are on mute.
+- Only pick backdrop photos that genuinely fit. An unrelated one makes it look worse, not better.
+- Thinking time of 3–5 seconds. Longer and people scroll away.
+- **Commit and push when you finish.** It takes ten seconds and it is the whole safety net.
