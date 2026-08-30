@@ -5,6 +5,7 @@
 // ---------------------------------------------------------------------------
 
 import { SKETCH_NAMES, sketchPromptLines } from './sketch-catalogue.mjs';
+import { fetchRetrying } from './retry.mjs';
 
 const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models';
 
@@ -291,7 +292,7 @@ export async function listModels(apiKey) {
 
   for (let page = 0; page < 5; page++) {
     const url = ENDPOINT + '?pageSize=200' + (pageToken ? '&pageToken=' + encodeURIComponent(pageToken) : '');
-    const res = await fetch(url, { headers: { 'x-goog-api-key': apiKey } });
+    const res = await fetchRetrying(url, { headers: { 'x-goog-api-key': apiKey } });
     const raw = await res.text();
     if (!res.ok) throw new Error(explainGeminiError(res.status, raw));
 
@@ -367,7 +368,7 @@ export async function generateContent(apiKey, model, options) {
     },
   };
 
-  const res = await fetch(ENDPOINT + '/' + encodeURIComponent(model) + ':generateContent', {
+  const res = await fetchRetrying(ENDPOINT + '/' + encodeURIComponent(model) + ':generateContent', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
     body: JSON.stringify(body),
@@ -433,7 +434,10 @@ function explainGeminiError(status, raw) {
     return 'Your key cannot use that Gemini model. Reload the page so the dropdown refreshes with the models your key does have, then pick one from the top of the list.';
   }
   if (status === 429) return 'Gemini rate limit hit. Wait about a minute and press Generate again.';
-  if (status >= 500) return 'Google had a server error (' + status + '). Press Generate again in a moment.';
+  if (status === 503) {
+    return 'Google’s servers are busy right now, and the tool already retried three times. Wait a few seconds and press the button again — or switch to a Flash model, which is far less contended than Pro.';
+  }
+  if (status >= 500) return 'Google had a server error (' + status + '). It was retried automatically; try again in a moment.';
   return 'Gemini error ' + status + ': ' + (detail || 'unknown');
 }
 

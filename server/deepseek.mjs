@@ -8,6 +8,7 @@
 // ---------------------------------------------------------------------------
 
 const ENDPOINT = 'https://api.deepseek.com/chat/completions';
+import { fetchRetrying } from './retry.mjs';
 
 export const DEEPSEEK_MODELS = [
   { id: 'deepseek-chat', label: 'DeepSeek Chat — fast and cheap (recommended)' },
@@ -134,7 +135,7 @@ export async function validateContent(apiKey, model, content, options) {
   // and using it there removes any chance of prose wrapped around the JSON.
   if (!/reasoner/i.test(chosen)) body.response_format = { type: 'json_object' };
 
-  const res = await fetch(ENDPOINT, {
+  const res = await fetchRetrying(ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + apiKey },
     body: JSON.stringify(body),

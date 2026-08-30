@@ -7,12 +7,13 @@
 // ---------------------------------------------------------------------------
 
 import { parseBuffer } from 'music-metadata';
+import { fetchRetrying } from './retry.mjs';
 
 const API = 'https://api.elevenlabs.io/v1';
 const OUTPUT_FORMAT = 'mp3_44100_128'; // constant bitrate => reliable duration
 
 export async function listVoices(apiKey) {
-  const res = await fetch(API + '/voices', { headers: { 'xi-api-key': apiKey } });
+  const res = await fetchRetrying(API + '/voices', { headers: { 'xi-api-key': apiKey } });
   const raw = await res.text();
   if (!res.ok) throw new Error(explainError(res.status, raw));
   const data = JSON.parse(raw);
@@ -52,7 +53,7 @@ export async function speak(apiKey, text, settings) {
     API + '/text-to-speech/' + encodeURIComponent(settings.voiceId) +
     '/with-timestamps?output_format=' + OUTPUT_FORMAT;
 
-  let res = await fetch(url, {
+  let res = await fetchRetrying(url, {
     method: 'POST',
     headers: { 'xi-api-key': apiKey, 'Content-Type': 'application/json' },
     body,
@@ -64,7 +65,7 @@ export async function speak(apiKey, text, settings) {
     const plainUrl =
       API + '/text-to-speech/' + encodeURIComponent(settings.voiceId) +
       '?output_format=' + OUTPUT_FORMAT;
-    const plain = await fetch(plainUrl, {
+    const plain = await fetchRetrying(plainUrl, {
       method: 'POST',
       headers: { 'xi-api-key': apiKey, 'Content-Type': 'application/json' },
       body,

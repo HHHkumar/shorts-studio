@@ -8,6 +8,7 @@
 // ---------------------------------------------------------------------------
 
 const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models';
+import { fetchRetrying } from './retry.mjs';
 
 const RESPONSE_SCHEMA = {
   type: 'OBJECT',
@@ -109,7 +110,7 @@ export async function generateSeo(apiKey, model, content, options) {
     },
   };
 
-  const res = await fetch(ENDPOINT + '/' + encodeURIComponent(model) + ':generateContent', {
+  const res = await fetchRetrying(ENDPOINT + '/' + encodeURIComponent(model) + ':generateContent', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
     body: JSON.stringify(body),
@@ -204,6 +205,9 @@ function explainError(status, raw) {
     return 'That Gemini API key was rejected. Check it on the Keys step.';
   }
   if (status === 429) return 'Gemini rate limit hit. Wait a minute and press Write metadata again.';
-  if (status >= 500) return 'Google had a server error (' + status + '). Try again in a moment.';
+  if (status === 503) {
+    return 'Google’s servers are busy right now, and the tool already retried three times. Wait a few seconds and try again, or switch to a Flash model.';
+  }
+  if (status >= 500) return 'Google had a server error (' + status + '). It was retried automatically; try again in a moment.';
   return 'Gemini error ' + status + ': ' + (detail || 'unknown');
 }

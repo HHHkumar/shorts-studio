@@ -12,6 +12,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { fetchRetrying } from './retry.mjs';
 
 const PEXELS_ENDPOINT = 'https://api.pexels.com/v1/search';
 const NASA_ENDPOINT = 'https://images-api.nasa.gov/search';
@@ -36,7 +37,7 @@ async function searchPexels(apiKey, query, orientation, perPage) {
     '&per_page=' + perPage +
     '&orientation=' + (orientation === 'landscape' ? 'landscape' : 'portrait');
 
-  const res = await fetch(url, { headers: { Authorization: apiKey } });
+  const res = await fetchRetrying(url, { headers: { Authorization: apiKey } });
   if (!res.ok) {
     if (res.status === 401) throw new Error('That Pexels API key was rejected. Copy it again from pexels.com/api.');
     if (res.status === 429) throw new Error('Pexels rate limit hit. Wait a minute and search again.');
