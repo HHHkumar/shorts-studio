@@ -105,9 +105,45 @@ const Sketch: React.FC<{
   return <P5Sketch draw={draw} width={canvasWidth} height={tall} />;
 };
 
+/**
+ * An equation, shown in full or not at all.
+ *
+ * This used to be a fixed size with `text-overflow: ellipsis`, which turned
+ * "1 Year = 365 x 24 = 8,760 hours" into "1 Year = 365 x 24 = 87...". That is
+ * not a cosmetic problem: a clipped equation is a WRONG equation, stated
+ * confidently on screen, and a viewer has no way to know what was cut. So
+ * nothing here truncates - the type shrinks to fit, and wraps to a second line
+ * before it would get too small to read.
+ */
 const Formula: React.FC<{ theme: Theme; text: string }> = ({ theme, text }) => {
   const p = useEnter(2, theme);
-  const size = text.length > 34 ? 52 : text.length > 20 ? 66 : 82;
+  const { width } = useVideoConfig();
+  const m = useMetrics();
+
+  const mono = theme.layout !== 'elegant';
+  // Room inside the box: the stage margins, then this card's own padding and
+  // border. The serif display face runs narrower than the monospace one.
+  const available = width - m.padX * 2 - 46 * 2 - 6;
+  const perChar = mono ? 0.62 : 0.55;
+  const estimate = (size: number) => text.length * (size * perChar + 1);
+
+  let size = 34;
+  let oneLine = false;
+  for (let candidate = 82; candidate >= 34; candidate -= 2) {
+    if (estimate(candidate) <= available) {
+      size = candidate;
+      oneLine = true;
+      break;
+    }
+  }
+  if (!oneLine) {
+    // Two lines at a readable size beats one line nobody can read.
+    for (let candidate = 62; candidate >= 26; candidate -= 2) {
+      size = candidate;
+      if (estimate(candidate) <= available * 1.9) break;
+    }
+  }
+
   return (
     <div
       style={{
@@ -119,14 +155,14 @@ const Formula: React.FC<{ theme: Theme; text: string }> = ({ theme, text }) => {
         borderRadius: theme.radius,
         boxShadow: theme.glow !== 'none' ? theme.glow : theme.shadow,
         maxWidth: '100%',
-        fontFamily: theme.layout === 'elegant' ? theme.fontDisplay : "'Cascadia Mono', Consolas, 'Courier New', monospace",
+        fontFamily: mono ? "'Cascadia Mono', Consolas, 'Courier New', monospace" : theme.fontDisplay,
         fontSize: size,
         fontWeight: 700,
         color: theme.text,
         letterSpacing: 1,
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
+        lineHeight: 1.25,
+        textAlign: 'center',
+        whiteSpace: oneLine ? 'nowrap' : 'normal',
       }}
     >
       {text}

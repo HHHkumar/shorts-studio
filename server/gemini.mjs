@@ -137,7 +137,8 @@ const SYSTEM = [
   '  bars, compare or icon, and never a graph or pie, because a plotted curve usually IS the answer.',
   '- hook, options, countdown and answer: always "none".',
   '- formula : one short equation in plain unicode, e.g. "F = m × a" or "v² = u² + 2as".',
-  '            Under 30 characters, in the "formula" field. Best for a calculation step.',
+  '            Keep it under 40 characters: it is shown on one line on a card. Longer than 64'
+  + ' and it is dropped rather than cut, because half an equation is a wrong equation.',
   '- bars    : 2 to 4 quantities compared. Each item needs a label and a numeric value, all in',
   '            the SAME unit, and the unit goes in "caption", e.g. "Surface gravity, m/s²".',
   '            Best for "which is bigger". Never invent numbers you are not confident about.',
@@ -796,8 +797,12 @@ function normalizeVisual(raw, sceneKind) {
   }
 
   if (kind === 'formula') {
-    const formula = clean(raw.formula).slice(0, 42);
-    return formula ? { kind, formula, caption } : { kind: 'none' };
+    const formula = clean(raw.formula);
+    // Never cut an equation to length. Half of "1 Year = 365 x 24 = 8,760" is
+    // not a shorter fact, it is a false one, and it would be stated on screen
+    // with total confidence. Past what the card can hold, drop it instead.
+    if (!formula || formula.length > 64) return { kind: 'none' };
+    return { kind, formula, caption };
   }
 
   if (kind === 'bars') {

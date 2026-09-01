@@ -52,5 +52,24 @@ ok('phasor keeps its angle',
 ok('invented sketch still rejected',
    vis('explain', { kind:'sketch', sketch:'not-a-real-one' }).kind === 'none');
 
+// --- formulas are shown whole or not at all ----------------------------------
+// A clipped equation is not a shorter fact, it is a false one, stated on screen
+// with total confidence and no way for a viewer to know something was cut.
+const realFormula = '1 Year = 365 x 24 = 8,760 hours';
+ok('a real formula survives intact',
+   vis('explain', { kind:'formula', formula: realFormula }).formula === realFormula,
+   String(vis('explain', { kind:'formula', formula: realFormula }).formula));
+
+const long40 = 'E = Pmax x LF x T = 100 x 0.6 x 8760 MWh';
+ok('a 40 character formula is not cut',
+   vis('explain', { kind:'formula', formula: long40 }).formula === long40);
+
+const tooLong = 'E = '.padEnd(70, 'x');
+ok('a formula too long for the card is dropped, never truncated',
+   vis('explain', { kind:'formula', formula: tooLong }).kind === 'none');
+
+ok('an empty formula is dropped',
+   vis('explain', { kind:'formula', formula: '   ' }).kind === 'none');
+
 console.log(fails ? '\n' + fails + ' FAILURES' : '\nall visual checks passed');
 process.exit(fails ? 1 : 0);
