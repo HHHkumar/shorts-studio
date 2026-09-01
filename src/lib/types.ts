@@ -56,6 +56,11 @@ export interface WordTiming {
 export interface QuizContent {
   /** Missing on videos made before explainer mode existed; treat as 'mcq'. */
   videoKind?: VideoKind;
+  /**
+   * True when a person started this script from a blank scaffold rather than
+   * generating it. Only used to stop the editor talking about what Gemini did.
+   */
+  handWritten?: boolean;
   subject: string;
   topic: string;
   difficulty: string;

@@ -324,6 +324,29 @@ topic, because that is what people actually type into search.
 
 ---
 
+### Writing the script yourself
+
+You do not have to let Gemini write it. On step 2, set the **format** and the **target length**,
+then press **✍️ Write it myself** instead of Generate.
+
+That drops you straight into step 3 with an empty script of the right shape — the correct beats in
+the correct order, and about the right number of them for the length you chose. A 180-second
+explainer gives you 18 scenes to fill in; a 45-second quiz gives you the question, the four options,
+the countdown, the answer and a few explanation cards.
+
+It costs nothing and needs no Gemini key. Credits are only ever spent on step 4, the voice.
+
+In step 3 every scene has a **kind** dropdown, **↑ ↓** to reorder and **✕** to delete, and there is
+an **Add a scene** button underneath. A bar shows how many seconds you have written against the
+length you asked for.
+
+> **One thing that is not a slider.** You cannot set how long a scene lasts. A scene lasts exactly
+> as long as its recorded narration — that is the whole reason the words on screen stay locked to
+> the voice. The bar in step 3 is an estimate at the voice's own speaking pace; the real length
+> arrives with the voiceover in step 4.
+
+---
+
 ### Moving backdrops
 
 Step 4 has a **Moving backdrop** — a slow animation under everything, so a scene reads as produced

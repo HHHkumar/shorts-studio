@@ -5,8 +5,9 @@ import {
   type TopicForm,
   type ValidationReport,
 } from '../lib/api';
-import type { QuizContent, ScenePanel, ScriptLine } from '../lib/types';
+import type { QuizContent, ScenePanel, SceneKind, ScriptLine } from '../lib/types';
 import { missingLabels } from '../lib/options-timing';
+import { scriptSeconds } from '../lib/blank-script';
 import { ErrorNote, Note, Select, Spinner } from './controls';
 
 const LETTERS = ['A', 'B', 'C', 'D'];
@@ -153,6 +154,46 @@ const ReportCard: React.FC<{ report: ValidationReport; onApply: () => void }> = 
   );
 };
 
+/**
+ * How much has been written against how much was asked for.
+ *
+ * Deliberately a reading of the words, not a promise about the video: a scene
+ * lasts exactly as long as its recorded narration, so the real length only
+ * exists once the voice has been made. This is the same 2.6 words a second the
+ * generator budgets with, which makes it a good guide and not a guarantee.
+ */
+const LengthMeter: React.FC<{ written: number; target: number }> = ({ written, target }) => {
+  if (!target) return null;
+  const ratio = written / target;
+  const pct = Math.min(100, Math.round(ratio * 100));
+  const tone = ratio < 0.7 ? 'var(--warn, #d18b2c)' : ratio > 1.3 ? 'var(--warn, #d18b2c)' : 'var(--good)';
+
+  return (
+    <div style={{ margin: '0 0 14px' }}>
+      <div
+        style={{
+          height: 8,
+          borderRadius: 999,
+          background: 'var(--line)',
+          overflow: 'hidden',
+        }}
+      >
+        <div style={{ width: pct + '%', height: '100%', background: tone }} />
+      </div>
+      <div style={{ marginTop: 6, fontSize: 13.5, color: 'var(--dim)' }}>
+        About <b style={{ color: tone }}>{Math.round(written)}s</b> written of the {target}s you asked
+        for.{' '}
+        {ratio < 0.7
+          ? 'Short — add scenes or say more in each.'
+          : ratio > 1.3
+            ? 'Long — trim a little, or raise the target on step 2.'
+            : 'That is about right.'}{' '}
+        The real length is set by the recorded voice, not by this estimate.
+      </div>
+    </div>
+  );
+};
+
 export const StepScript: React.FC<{
   content: QuizContent;
   setContent: (updater: (prev: QuizContent) => QuizContent) => void;
@@ -183,11 +224,54 @@ export const StepScript: React.FC<{
   onNext,
 }) => {
   const explainer = content.videoKind === 'explainer';
+  const mine = content.handWritten === true;
+
+  /**
+   * The kinds worth offering by hand. The panel layouts are not here because a
+   * panel is content in its own right and only the generator writes one - but a
+   * scene keeps whichever kind it arrived with, so a generated diagram can
+   * still be moved or removed without being forced to become something else.
+   */
+  const KINDS_FOR_HAND: SceneKind[] = explainer
+    ? ['intro', 'title', 'explain', 'outro']
+    : ['intro', 'hook', 'question', 'options', 'countdown', 'answer', 'explain', 'outro'];
+
+  const kindOptions = (current: SceneKind) => {
+    const ids = KINDS_FOR_HAND.includes(current) ? KINDS_FOR_HAND : [current, ...KINDS_FOR_HAND];
+    return ids.map((id) => ({ id, label: id }));
+  };
+
+  /** Scene edits all rewrite the script, and all of them invalidate the audio. */
+  const editScript = (fn: (lines: ScriptLine[]) => ScriptLine[]) =>
+    patch((prev) => ({ ...prev, script: fn([...prev.script]) }), true);
+
+  const addScene = () =>
+    editScript((lines) => {
+      // Before the outro, because the sign-off is always last.
+      const at = lines.length && lines[lines.length - 1].kind === 'outro'
+        ? lines.length - 1
+        : lines.length;
+      lines.splice(at, 0, { kind: 'explain', narration: '' });
+      return lines;
+    });
+
+  const removeScene = (index: number) => editScript((lines) => {
+    lines.splice(index, 1);
+    return lines;
+  });
+
+  const moveScene = (index: number, by: number) => editScript((lines) => {
+    const to = index + by;
+    if (to < 0 || to >= lines.length) return lines;
+    const [moved] = lines.splice(index, 1);
+    lines.splice(to, 0, moved);
+    return lines;
+  });
   const totalSeconds = content.script.reduce((sum, s) => sum + estimateSeconds(s.narration), 0);
 
   // A script that came out far under target is worth catching here, while
   // regenerating is still free - after step 4 it has cost voice credits.
-  const lengthGap = form.targetSeconds > 0 && totalSeconds < form.targetSeconds * 0.75;
+  const lengthGap = !mine && form.targetSeconds > 0 && totalSeconds < form.targetSeconds * 0.75;
 
   const [checking, setChecking] = useState(false);
   const [checkError, setCheckError] = useState<string | null>(null);
@@ -235,14 +319,15 @@ export const StepScript: React.FC<{
 
   return (
     <div className="panel">
-      <h2>Step 3 — Check what Gemini wrote</h2>
+      <h2>Step 3 — {mine ? 'Write your script' : 'Check what Gemini wrote'}</h2>
       <p className="lede">
-        Everything below is editable. Fix anything that looks wrong <b>now</b>, before you spend voice
-        credits on it. If it all looks good, just press Continue.
+        {mine
+          ? 'Type what the voice should say, one scene at a time. Add, remove and reorder scenes as you like. Nothing here costs anything — the credits are only spent on the next step.'
+          : 'Everything below is editable. Fix anything that looks wrong now, before you spend voice credits on it. If it all looks good, just press Continue.'}
       </p>
 
-      <div className="section-title">Second opinion</div>
-      {explainer ? (
+      {mine ? null : <div className="section-title">Second opinion</div>}
+      {mine ? null : explainer ? (
         <Note kind="info" title="Not available on explainers yet">
           The DeepSeek check works by solving the question independently and comparing answers. An
           explainer has no question to solve, so there is nothing for it to disagree with. Checking
@@ -345,6 +430,8 @@ export const StepScript: React.FC<{
         The script — {content.script.length} scenes, about {Math.round(totalSeconds)} seconds of speech
       </div>
 
+      <LengthMeter written={scriptSeconds(content.script)} target={form.targetSeconds} />
+
       {lengthGap ? (
         <Note kind="warn" title={'This is a ' + Math.round(totalSeconds) + ' second script, not ' + form.targetSeconds}>
           Gemini wrote {Math.round((totalSeconds / form.targetSeconds) * 100)}% of the length you asked
@@ -356,9 +443,37 @@ export const StepScript: React.FC<{
       {content.script.map((line, i) => (
         <div className="scene" key={i}>
           <div className="scene-head">
-            <span className="kind">{line.kind}</span>
+            <select
+              className="kind-select"
+              value={line.kind}
+              onChange={(e) => setScriptLine(i, { kind: e.target.value as SceneKind }, true)}
+              title="What this scene is for"
+            >
+              {kindOptions(line.kind).map((k) => (
+                <option key={k.id} value={k.id}>{k.label}</option>
+              ))}
+            </select>
             <span style={{ fontSize: 13, color: 'var(--dim)' }}>{KIND_HELP[line.kind] || ''}</span>
             <span className="len">~{estimateSeconds(line.narration)}s</span>
+            <button className="scene-btn" onClick={() => moveScene(i, -1)} disabled={i === 0} title="Move up">
+              ↑
+            </button>
+            <button
+              className="scene-btn"
+              onClick={() => moveScene(i, 1)}
+              disabled={i === content.script.length - 1}
+              title="Move down"
+            >
+              ↓
+            </button>
+            <button
+              className="scene-btn danger"
+              onClick={() => removeScene(i)}
+              disabled={content.script.length <= 1}
+              title="Delete this scene"
+            >
+              ✕
+            </button>
           </div>
           <div className="scene-body">
             <div className="field">
@@ -404,9 +519,13 @@ export const StepScript: React.FC<{
         </div>
       ))}
 
+      <div className="actions" style={{ marginTop: 4 }}>
+        <button className="btn" onClick={addScene}>+ Add a scene</button>
+      </div>
+
       <div className="actions">
         <button className="btn ghost" onClick={onBack}>
-          ← {explainer ? 'Write a different storyboard' : 'Write a different question'}
+          ← {mine ? 'Back to the settings' : explainer ? 'Write a different storyboard' : 'Write a different question'}
         </button>
         <div className="spacer" />
         <button className="btn primary" onClick={onNext}>

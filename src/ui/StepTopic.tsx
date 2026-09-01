@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { blankContent } from '../lib/blank-script';
 import {
   api,
   DIAGRAM_DENSITIES,
@@ -91,6 +92,15 @@ export const StepTopic: React.FC<{
       contentType: type,
       subject: type === 'electrical' ? ELECTRICAL_SUBJECTS[2] : SUBJECTS[0],
     }));
+
+  /**
+   * Skip Gemini entirely and go straight to the editor with an empty script of
+   * the right shape. No key is needed for this, and nothing is spent.
+   */
+  const writeItMyself = () => {
+    const { content } = blankContent({ ...form, orientation: design.orientation });
+    onGenerated(content);
+  };
 
   const generate = async () => {
     setBusy(true);
@@ -351,8 +361,11 @@ export const StepTopic: React.FC<{
           ← Back
         </button>
         <div className="spacer" />
+        <button className="btn" onClick={writeItMyself} disabled={busy}>
+          ✍️ Write it myself
+        </button>
         <button className="btn primary big" style={{ width: 'auto' }} onClick={generate} disabled={busy}>
-          {busy ? <Spinner /> : '✨'} Generate the question
+          {busy ? <Spinner /> : '✨'} {explainerMode ? 'Generate the storyboard' : 'Generate the question'}
         </button>
       </div>
     </div>
