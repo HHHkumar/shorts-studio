@@ -349,19 +349,85 @@ function cleanOldAudio() {
   }
 }
 
-fs.mkdirSync(GENERATED_DIR, { recursive: true });
-fs.mkdirSync(paths.OUT_DIR, { recursive: true });
-cleanOldAudio();
+// Say something before doing anything. Every line below this used to run in
+// silence, so a slow disk or a locked file was indistinguishable from a crash:
+// the window simply sat there with nothing in it.
+console.log('');
+console.log('  Starting the Shorts Studio helper...');
 
-// Music beds and effects are synthesised once, then reused for every video.
-const audio = ensureAudioAssets(paths.PUBLIC_DIR);
-if (audio.written.length) console.log('  Generated ' + audio.written.length + ' audio assets.');
+/** Housekeeping must never be the reason the server does not come up. */
+const step = (what, fn) => {
+  const started = Date.now();
+  try {
+    const result = fn();
+    const ms = Date.now() - started;
+    if (ms > 400) console.log('  ' + what + ' took ' + (ms / 1000).toFixed(1) + 's.');
+    return result;
+  } catch (err) {
+    console.log('  Could not ' + what + ': ' + ((err && err.message) || err));
+    console.log('  Carrying on anyway.');
+    return null;
+  }
+};
 
-app.listen(PORT, '127.0.0.1', () => {
+step('create the working folders', () => {
+  fs.mkdirSync(GENERATED_DIR, { recursive: true });
+  fs.mkdirSync(paths.OUT_DIR, { recursive: true });
+});
+
+// Windows will sometimes hand out a port another process already holds, only to
+// fail a moment later. Announcing success from the listen callback therefore
+// printed "helper is running" and then "port is already taken" immediately
+// underneath it. The banner waits instead, and the error cancels it, so the
+// window never claims something that is not true.
+let announce = null;
+
+const server = app.listen(PORT, '127.0.0.1', () => {
+  announce = setTimeout(() => {
+    console.log('');
+    console.log('  Shorts Studio helper is running (port ' + PORT + ').');
+    console.log('  Your browser should open by itself in a moment.');
+    console.log('  If it does not, use the "Local:" address printed just below by VITE.');
+    console.log('  Finished videos are saved in:  ' + paths.OUT_DIR);
+    console.log('');
+
+    // Deliberately after listening. Neither of these is needed to answer a
+    // request, and doing them first meant the port stayed shut while they ran.
+    step('tidy up old voiceovers', cleanOldAudio);
+    const audio = step('prepare the music and effects', () => ensureAudioAssets(paths.PUBLIC_DIR));
+    if (audio && audio.written.length) {
+      console.log('  Generated ' + audio.written.length + ' audio assets.');
+    }
+  }, 250);
+  announce.unref?.();
+});
+
+// The listen error fires on the server, not on the app. Attached to the app it
+// would never run - and this is the branch that matters most, because a second
+// copy already holding the port is the usual reason the helper never appears.
+server.on('error', (err) => {
+  if (announce) clearTimeout(announce);
   console.log('');
-  console.log('  Shorts Studio helper is running (port ' + PORT + ').');
-  console.log('  Your browser should open by itself in a moment.');
-  console.log('  If it does not, use the "Local:" address printed just below by VITE.');
-  console.log('  Finished videos are saved in:  ' + paths.OUT_DIR);
+  if (err && err.code === 'EADDRINUSE') {
+    console.log('  Port ' + PORT + ' is already taken, so the helper cannot start.');
+    console.log('  Another copy of the tool is almost certainly still running.');
+    console.log('  Close the other PowerShell window, or run this and try again:');
+    console.log('');
+    console.log('    Get-NetTCPConnection -LocalPort ' + PORT + ' -State Listen |');
+    console.log('      ForEach-Object { Stop-Process -Id $_.OwningProcess -Force }');
+  } else if (err && err.code === 'EACCES') {
+    console.log('  Windows refused to open port ' + PORT + '. Check your firewall settings.');
+  } else {
+    console.log('  The helper could not start: ' + ((err && err.message) || err));
+  }
   console.log('');
+  process.exit(1);
+});
+
+process.on('uncaughtException', (err) => {
+  // Without this the process exits printing a stack trace nobody can act on.
+  console.log('');
+  console.log('  The helper stopped unexpectedly: ' + ((err && err.message) || err));
+  console.log('  Press Ctrl + C, then run npm start again.');
+  process.exit(1);
 });
