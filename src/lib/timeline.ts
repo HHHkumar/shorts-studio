@@ -58,8 +58,11 @@ export function buildScenes(
       seconds = minSecondsFor(line);
     }
 
-    // Round up, never down: half a frame of clipped speech is audible.
-    const durationInFrames = Math.max(1, Math.ceil(seconds * fps));
+    // Round up, never down: half a frame of clipped speech is audible. The
+    // final guard is the important one: Math.max(1, NaN) is NaN, so without it
+    // a single bad measurement makes every later scene overlap the last.
+    const rounded = Math.ceil(seconds * fps);
+    const durationInFrames = Number.isFinite(rounded) ? Math.max(1, rounded) : Math.max(1, Math.ceil(minSecondsFor(line) * fps));
 
     scenes.push({
       ...line,
@@ -79,11 +82,17 @@ export function buildScenes(
   return { scenes, totalDurationInFrames: Math.max(fps, cursor) };
 }
 
-/** The most trustworthy length we have for a clip. */
+/** A number we are willing to lay a timeline out with. */
+const usable = (n: unknown): n is number => typeof n === 'number' && Number.isFinite(n) && n > 0;
+
+/** The most trustworthy length we have for a clip, or 0 if we have none. */
 export function trueDuration(a: AudioResult): number {
-  const measured = a.measuredDuration;
-  if (typeof measured === 'number' && measured > 0) return measured;
-  return a.duration;
+  if (usable(a.measuredDuration)) return a.measuredDuration;
+  // Guarded rather than returned raw: a duration that came back as undefined or
+  // NaN used to flow straight into the frame maths, and one NaN there poisons
+  // the running cursor - so every scene after it gets a nonsense start frame
+  // and they stop being laid end to end.
+  return usable(a.duration) ? a.duration : 0;
 }
 
 /**
@@ -95,8 +104,9 @@ export function trueDuration(a: AudioResult): number {
  */
 function audibleLength(a: AudioResult, design: DesignSettings): number {
   const full = trueDuration(a);
+  if (!usable(full)) return 0;
   if (!design.trimTrailingSilence) return full;
-  if (typeof a.speechEnd !== 'number' || a.speechEnd <= 0) return full;
+  if (!usable(a.speechEnd)) return full;
   // Leave a little air after the last sound so nothing sounds guillotined.
   return Math.min(full, a.speechEnd + 0.12);
 }
