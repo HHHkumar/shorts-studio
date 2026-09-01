@@ -94,6 +94,12 @@ export const P5Sketch: React.FC<{
     return () => {
       instance.current?.remove();
       instance.current = null;
+      // p5.remove() does not reliably take its canvas with it, and the leftover
+      // sat FIRST in the container - so after switching sketch the stale canvas
+      // was the one on screen and the new one was laid out below it, off the
+      // edge. That is what made a changed backdrop look like no change at all.
+      // React never renders children here, so clearing the node is safe.
+      container.current?.replaceChildren();
     };
     // Rebuilt when the canvas size changes, and when the sketch itself does.
     // Keeping one instance and swapping only the draw function left whatever
