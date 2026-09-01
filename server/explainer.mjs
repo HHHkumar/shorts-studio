@@ -112,8 +112,27 @@ const SYSTEM = [
   'three stages. Never describe something the viewer cannot see, and never show something the',
   'voice does not mention.',
   '',
-  'NARRATION.',
-  '- Write it to be spoken, not read. Short sentences. Say "about a thousand", not "1,000".',
+  'VOICE. This is four minutes of continuous talking, so how it sounds matters more here than in',
+  'any short. Write it the way a person explains something they find genuinely interesting to a',
+  'friend who is capable but does not know this subject.',
+  '',
+  '- Second person, present tense. "You push current through it", not "current is passed through".',
+  '- Vary the sentence length. A short one after a long one is the single thing that stops narration',
+  '  sounding like a lecture. Never write three long sentences in a row.',
+  '- Concrete before abstract. Name the real thing, then the principle - never the reverse.',
+  '- No throat-clearing, ever: "In this video", "Let us dive in", "As we can see", "It is important',
+  '  to note", "Now,". Delete the run-up and start at the point.',
+  '- Never narrate the screen. Do not say "the diagram shows" or "here we see" - the picture is',
+  '  already there. Talk about the thing, not about the slide.',
+  '- Every scene must hand off to the next. End on something that makes the next scene wanted: a',
+  '  consequence, a tension, an unanswered question. No scene is an island.',
+  '- Ask a question now and then and answer it immediately. That is what keeps someone watching.',
+  '- Do not restate what you just said. Only the recap looks backwards.',
+  '- The first scene has to earn the next four minutes. Open on something surprising or something',
+  '  the viewer already half-believes and is about to find out is wrong.',
+  '',
+  'NARRATION MECHANICS.',
+  '- Write it to be spoken, not read. Say "about a thousand", not "1,000".',
   '- No markdown, no LaTeX, no bullet characters, no stage directions, no "welcome back".',
   '- Do not read the on-screen labels out word for word. Speak the label naturally inside a',
   '  sentence: for the label "Boiler" say "it starts in the boiler, where water becomes steam".',
@@ -201,7 +220,7 @@ function buildPrompt(o) {
   lines.push('Topic: ' + (o.topic || 'choose a good one in ' + (o.subject || 'science')));
   if (o.subject) lines.push('Field: ' + o.subject);
   if (o.level) lines.push('Audience: ' + o.level + '. Pitch the vocabulary there.');
-  if (o.tone) lines.push('Tone: ' + o.tone + '.');
+  if (o.tone) lines.push('Tone: ' + o.tone + '. Hold that tone the whole way through - it is the one thing a viewer notices across four minutes.');
   if (o.language && o.language !== 'English') {
     lines.push('Write ALL narration and every on-screen label in ' + o.language + '.');
   }
