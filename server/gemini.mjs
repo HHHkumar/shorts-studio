@@ -510,25 +510,87 @@ export async function callGemini(apiKey, model, { system, prompt, schema, temper
     throw new Error('Gemini ran out of room before finishing. Lower the target length and try again.');
   }
 
-  const text = (candidate.content && candidate.content.parts ? candidate.content.parts : [])
-    .map((p) => p.text || '')
-    .join('')
-    .trim();
+  const parts = (candidate.content && candidate.content.parts) || [];
 
-  if (!text) throw new Error('Gemini returned an empty script. Try again.');
+  // Thinking models return their reasoning as parts flagged `thought`. Joining
+  // those in front of the answer produces a string that is prose followed by
+  // JSON, which then fails to parse - and the brace-scan fallback below would
+  // happily lock on to a brace inside the reasoning and produce nonsense. The
+  // answer is only ever in the parts that are not thoughts.
+  const answerParts = parts.filter((p) => p && p.thought !== true);
+  const text = answerParts.map((p) => p.text || '').join('').trim();
 
-  let parsed;
-  try {
-    parsed = JSON.parse(text);
-  } catch {
-    // Very rare with responseSchema, but be forgiving anyway.
-    const start = text.indexOf('{');
-    const end = text.lastIndexOf('}');
-    if (start === -1 || end === -1) throw new Error('Could not read the script Gemini sent back. Try again.');
-    parsed = JSON.parse(text.slice(start, end + 1));
+  if (!text) {
+    const thoughtOnly = parts.length > 0;
+    console.log(
+      '[gemini] ' + (label || 'call') + ' returned no answer'
+      + ' (parts: ' + parts.length + ', finishReason: ' + (candidate.finishReason || 'none') + ')',
+    );
+    throw new Error(
+      thoughtOnly
+        ? 'This model returned its reasoning but no script. That usually means it does not support '
+          + 'the structured output this tool asks for. Pick a different model in the dropdown.'
+        : 'Gemini returned an empty script. Try again.',
+    );
+  }
+
+  const parsed = parseJsonLoosely(text);
+  if (!parsed) {
+    // Print what actually arrived, so a model that answers in an unexpected
+    // shape can be identified instead of guessed at.
+    console.log('[gemini] ' + (label || 'call') + ' sent unreadable output. First 300 characters:');
+    console.log(text.slice(0, 300));
+    throw new Error(
+      'This model did not answer in the format the tool needs. Pick another model in the dropdown - '
+      + 'the PowerShell window shows what it sent instead.',
+    );
   }
 
   return parsed;
+}
+
+/**
+ * Read the JSON out of a reply, whether it arrived bare, in a code fence, or
+ * with a sentence in front of it. Returns null rather than throwing, so the
+ * caller can report something useful instead of a raw SyntaxError.
+ */
+export function parseJsonLoosely(text) {
+  const attempt = (candidate) => {
+    try {
+      const value = JSON.parse(candidate);
+      // Must be a plain object. Every schema here returns one, and an array
+      // slipping through would be normalised into a script full of nothing.
+      return value && typeof value === 'object' && !Array.isArray(value) ? value : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const direct = attempt(text);
+  if (direct) return direct;
+
+  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (fenced) {
+    const inFence = attempt(fenced[1].trim());
+    if (inFence) return inFence;
+  }
+
+  // Try each opening brace in turn rather than just the first one. Reasoning
+  // text is full of braces - "use {a} and {b}" - and anchoring on the first
+  // would splice that prose onto the real answer and fail. Walking forward
+  // finds the brace where the actual object starts.
+  const end = text.lastIndexOf('}');
+  if (end === -1) return null;
+  let from = 0;
+  for (let tries = 0; tries < 50; tries++) {
+    const start = text.indexOf('{', from);
+    if (start === -1 || start >= end) break;
+    const braced = attempt(text.slice(start, end + 1));
+    if (braced) return braced;
+    from = start + 1;
+  }
+
+  return null;
 }
 
 function explainGeminiError(status, raw) {

@@ -1,4 +1,4 @@
-import { normalizeContent, scriptBudget } from './gemini.mjs';
+import { parseJsonLoosely, normalizeContent, scriptBudget } from './gemini.mjs';
 const base = { subject:'S', topic:'T', difficulty:'D', intro:'' };
 let fails = 0;
 const ok = (name, cond, extra='') => { console.log((cond?'  ok  ':'  FAIL') + '  ' + name + (extra?'  '+extra:'')); if(!cond) fails++; };
@@ -51,6 +51,30 @@ ok('compare needs 2 sides', sk({kind:'compare',items:[{label:'a',symbol:'x'}]}).
 const b300 = scriptBudget(300,'landscape'), b45 = scriptBudget(45,'portrait');
 ok('300s budget', b300.explainCount===15 && b300.totalWords===780, JSON.stringify(b300));
 ok('45s budget', b45.explainCount===2, JSON.stringify(b45));
+
+// --- reading a reply from a model we have never seen ------------------------
+// A new model family is the thing most likely to answer in a shape the tool has
+// not met. None of this may throw: it either finds the JSON or reports that it
+// could not, so a failure names a cause instead of surfacing a raw SyntaxError.
+const NL = String.fromCharCode(10);
+const FENCE = '```';
+const parseCases = [
+  ['bare JSON', '{"topic":"x"}'],
+  ['a code fence', FENCE + 'json' + NL + '{"topic":"x"}' + NL + FENCE],
+  ['a fence with no language', FENCE + NL + '{"topic":"x"}' + NL + FENCE],
+  ['a sentence in front', 'Here is the script:' + NL + '{"topic":"x"}'],
+  ['trailing commentary', '{"topic":"x"}' + NL + 'Let me know if you want changes.'],
+];
+for (const [name, input] of parseCases) {
+  const got = parseJsonLoosely(input);
+  ok('parses ' + name, !!got && got.topic === 'x', JSON.stringify(got));
+}
+ok('reasoning full of braces does not become the answer',
+   (parseJsonLoosely('I should use {a} and {b}. Now the JSON: {"topic":"real"}') || {}).topic === 'real');
+ok('unreadable output returns null rather than throwing',
+   parseJsonLoosely('I am unable to help with that request.') === null);
+ok('an empty reply returns null', parseJsonLoosely('') === null);
+ok('a bare array is not mistaken for the object', parseJsonLoosely('[1,2,3]') === null);
 
 console.log(fails ? '\n' + fails + ' FAILURES' : '\nall checks passed');
 process.exit(fails ? 1 : 0);

@@ -166,11 +166,29 @@ const WORDS_PER_SECOND = 2.6;
  * a layout to build and be understood before the next one arrives. Anything
  * faster and the reveals trip over each other.
  */
+/** About nine seconds of speech - long enough for a layout to build and land. */
+const PREFERRED_WORDS_PER_SCENE = 26;
+
+/**
+ * Enough scenes for a five minute video, and not so many that the model is
+ * asked for a wall of JSON it will take minutes to produce.
+ */
+const MAX_SCENES = 36;
+
 export function storyboardBudget(targetSeconds) {
   const target = Math.max(60, Math.min(600, Number(targetSeconds) || 240));
   const totalWords = Math.round(target * WORDS_PER_SECOND);
-  const wordsPerScene = 24;
-  const scenes = Math.max(6, Math.min(22, Math.round(totalWords / wordsPerScene)));
+
+  const scenes = Math.max(6, Math.min(MAX_SCENES, Math.round(totalWords / PREFERRED_WORDS_PER_SCENE)));
+
+  // Words per scene is DERIVED from the scene count, never assumed. Fixing it
+  // at 26 and then capping the scene count meant the prompt asked for
+  // 22 x 24 = 528 words while claiming to want 300 seconds, or 780 - so every
+  // long explainer came out a third short, and the two numbers in the prompt
+  // contradicted each other. The model followed the per-scene figure, because
+  // that is the one it can act on.
+  const wordsPerScene = Math.round(totalWords / scenes);
+
   return { target, totalWords, scenes, wordsPerScene };
 }
 
@@ -191,11 +209,15 @@ function buildPrompt(o) {
   if (o.extra) lines.push('Also: ' + o.extra + '.');
   lines.push('');
 
-  lines.push('LENGTH. This must run about ' + b.target + ' seconds when read aloud.');
-  lines.push('That is roughly ' + b.totalWords + ' spoken words in total.');
-  lines.push('Write ' + b.scenes + ' scenes of about ' + b.wordsPerScene + ' words each.');
-  lines.push('This is the requirement people get wrong most often: a short script makes a short');
-  lines.push('video, and there is no way to stretch it afterwards. Count as you go.');
+  lines.push('LENGTH. Write EXACTLY ' + b.scenes + ' scenes.');
+  lines.push('Each scene needs about ' + b.wordsPerScene + ' words of narration - not 10, not 15.');
+  lines.push('That comes to roughly ' + b.totalWords + ' spoken words, which reads aloud in about '
+    + b.target + ' seconds. Those three numbers agree; keep all three.');
+  lines.push('');
+  lines.push('This is the requirement that gets missed most often. A scene with one short sentence');
+  lines.push('in it is half a scene. Give every one of them a complete thought: say the thing, then');
+  lines.push('say what it means or why it matters. There is no way to stretch a short script');
+  lines.push('afterwards - the video simply comes out at half the length that was asked for.');
   lines.push('');
 
   lines.push('The last scene is the outro' + (o.extra ? '' : ' - a short sign-off') + '.');

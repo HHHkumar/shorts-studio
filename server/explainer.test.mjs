@@ -30,9 +30,32 @@ test('a four minute explainer asks for a script that is actually four minutes', 
   assert.ok(b.scenes >= 20, 'expected plenty of scenes, got ' + b.scenes);
 });
 
+test('the prompt never asks for two different lengths at once', () => {
+  // The regression that made every long explainer come out a third short: a
+  // fixed 24 words a scene, then a scene cap, so 300 seconds was requested as
+  // 22 x 24 = 528 words - a 203 second script - while the prompt still claimed
+  // to want 300. Scenes x words must always land back on the target.
+  for (const target of [60, 120, 180, 240, 300, 420, 600]) {
+    const b = storyboardBudget(target);
+    const implied = (b.scenes * b.wordsPerScene) / 2.6;
+    assert.ok(
+      Math.abs(implied - b.target) <= b.target * 0.05,
+      target + 's target implies a ' + Math.round(implied) + 's script',
+    );
+  }
+});
+
+test('scenes stay long enough to read and short enough to hold', () => {
+  for (const target of [60, 180, 300, 600]) {
+    const b = storyboardBudget(target);
+    const seconds = b.wordsPerScene / 2.6;
+    assert.ok(seconds >= 8 && seconds <= 20, target + 's gives ' + seconds.toFixed(1) + 's a scene');
+  }
+});
+
 test('scene count stays sane at both extremes', () => {
   assert.ok(storyboardBudget(30).scenes >= 6);
-  assert.ok(storyboardBudget(6000).scenes <= 22);
+  assert.ok(storyboardBudget(6000).scenes <= 36);
 });
 
 console.log('\npanels');
