@@ -5,7 +5,8 @@ import {
   type TopicForm,
   type ValidationReport,
 } from '../lib/api';
-import type { QuizContent, ScriptLine } from '../lib/types';
+import type { QuizContent, ScenePanel, ScriptLine } from '../lib/types';
+import { missingLabels } from '../lib/options-timing';
 import { ErrorNote, Note, Select, Spinner } from './controls';
 
 const LETTERS = ['A', 'B', 'C', 'D'];
@@ -18,6 +19,73 @@ const KIND_HELP: Record<string, string> = {
   answer: 'The correct option lights up green.',
   explain: 'One idea per card. Keep each one short.',
   outro: 'The fun fact and the call to action.',
+  title: 'A title card naming the question the video answers.',
+  metaphor: 'Something familiar on the left, the real thing on the right.',
+  diagram: 'Boxes and arrows. They appear as the narration reaches each one.',
+  process: 'Steps in order, with the highlight travelling along them.',
+  versus: 'Two things side by side, revealed point against point.',
+  timeline: 'Dated entries down a spine.',
+  grid: 'Several equal things, each with a symbol.',
+  recap: 'The takeaways, ticking in one at a time.',
+};
+
+/** Which scene kinds carry a drawn layout rather than plain narration. */
+const PANEL_KINDS = new Set([
+  'title', 'metaphor', 'diagram', 'process', 'versus', 'timeline', 'grid', 'recap',
+]);
+
+/** Everything drawn on this scene, in the order the narration should cover it. */
+function panelLabels(panel: ScenePanel | undefined): string[] {
+  if (!panel) return [];
+  const out: string[] = [];
+  if (panel.leftLabel) out.push(panel.leftLabel);
+  if (panel.rightLabel) out.push(panel.rightLabel);
+  (panel.nodes || []).forEach((n) => out.push(n.label));
+  (panel.steps || []).forEach((st) => out.push(st.label));
+  return out.filter(Boolean);
+}
+
+/**
+ * A read-only look at what the scene draws, plus the one thing a director can
+ * break by rewriting narration: a label the voice no longer says can only be
+ * revealed on a guess, so it is called out here rather than discovered later.
+ */
+const PanelSummary: React.FC<{ line: ScriptLine }> = ({ line }) => {
+  const labels = panelLabels(line.panel);
+  if (!labels.length) return null;
+  const missing = new Set(missingLabels(line.narration, labels));
+
+  return (
+    <div className="field">
+      <label>🖼️ Drawn on screen</label>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+        {labels.map((label, i) => (
+          <span
+            key={i}
+            title={missing.has(label) ? 'The narration never says this, so it cannot be timed to the voice.' : 'Timed to the voice.'}
+            style={{
+              padding: '5px 11px',
+              borderRadius: 999,
+              fontSize: 13.5,
+              border: '1px solid ' + (missing.has(label) ? 'var(--warn, #d18b2c)' : 'var(--line)'),
+              color: missing.has(label) ? 'var(--warn, #d18b2c)' : 'var(--dim)',
+            }}
+          >
+            {missing.has(label) ? '⚠ ' : ''}
+            {label}
+          </span>
+        ))}
+      </div>
+      {missing.size ? (
+        <div className="hint">
+          The marked labels are not spoken in this scene, so they will appear on a guess rather than
+          on the voice. Mention them in the narration above, in the order shown.
+        </div>
+      ) : (
+        <div className="hint">Each of these appears as the narration reaches it.</div>
+      )}
+    </div>
+  );
 };
 
 const estimateSeconds = (text: string): number => {
@@ -114,6 +182,7 @@ export const StepScript: React.FC<{
   onBack,
   onNext,
 }) => {
+  const explainer = content.videoKind === 'explainer';
   const totalSeconds = content.script.reduce((sum, s) => sum + estimateSeconds(s.narration), 0);
 
   // A script that came out far under target is worth catching here, while
@@ -173,7 +242,14 @@ export const StepScript: React.FC<{
       </p>
 
       <div className="section-title">Second opinion</div>
-      {!deepseekKey.trim() ? (
+      {explainer ? (
+        <Note kind="info" title="Not available on explainers yet">
+          The DeepSeek check works by solving the question independently and comparing answers. An
+          explainer has no question to solve, so there is nothing for it to disagree with. Checking
+          the claims in a storyboard is a different job and is not built yet — read the script below
+          yourself, and be especially careful with any number or date.
+        </Note>
+      ) : !deepseekKey.trim() ? (
         <Note kind="info" title="The answer has not been checked">
           Gemini marked its own answer. Add a <b>DeepSeek key</b> on step 1 and a different model will
           solve the question independently and tell you whether it agrees. It costs a fraction of a
@@ -219,10 +295,10 @@ export const StepScript: React.FC<{
         </Note>
       ) : null}
 
-      <div className="section-title">The question</div>
+      <div className="section-title">{explainer ? 'The subject' : 'The question'}</div>
       <div className="qa-card">
-        <div className="field" style={{ marginBottom: 14 }}>
-          <label>Question</label>
+        <div className="field" style={{ marginBottom: explainer ? 0 : 14 }}>
+          <label>{explainer ? 'The question this video answers' : 'Question'}</label>
           <textarea
             rows={2}
             value={content.question}
@@ -255,7 +331,7 @@ export const StepScript: React.FC<{
           </div>
         ))}
 
-        <div className="field" style={{ marginTop: 14 }}>
+        <div className="field" style={{ marginTop: 14, display: explainer ? 'none' : undefined }}>
           <label>Fun fact (shown at the end)</label>
           <textarea
             rows={2}
@@ -295,15 +371,19 @@ export const StepScript: React.FC<{
               />
               <div className="hint">Write it exactly as it should sound. No symbols like ^ or *.</div>
             </div>
-            <div className="field">
-              <label>📺 Big text on screen</label>
-              <input
-                type="text"
-                value={line.onScreen}
-                onChange={(e) => setScriptLine(i, { onScreen: e.target.value }, false)}
-              />
-              <div className="hint">Keep it under about 12 words or it will be shrunk to fit.</div>
-            </div>
+            {PANEL_KINDS.has(line.kind) ? (
+              <PanelSummary line={line} />
+            ) : (
+              <div className="field">
+                <label>📺 Big text on screen</label>
+                <input
+                  type="text"
+                  value={line.onScreen}
+                  onChange={(e) => setScriptLine(i, { onScreen: e.target.value }, false)}
+                />
+                <div className="hint">Keep it under about 12 words or it will be shrunk to fit.</div>
+              </div>
+            )}
             {line.kind === 'explain' ? (
               <div className="field">
                 <label>Supporting lines (one per line, optional)</label>
@@ -326,7 +406,7 @@ export const StepScript: React.FC<{
 
       <div className="actions">
         <button className="btn ghost" onClick={onBack}>
-          ← Write a different question
+          ← {explainer ? 'Write a different storyboard' : 'Write a different question'}
         </button>
         <div className="spacer" />
         <button className="btn primary" onClick={onNext}>

@@ -68,6 +68,22 @@ export const StepTopic: React.FC<{
   const subtopics = subtopicsFor(form.subject);
   const examMode = form.contentType === 'electrical';
 
+  const explainerMode = form.videoKind === 'explainer';
+
+  /**
+   * An explainer needs room to breathe: a wide frame and at least three
+   * minutes. Switching to it moves both, and switching back returns the length
+   * to something a short can actually hold.
+   */
+  const setVideoKind = (kind: 'mcq' | 'explainer') => {
+    setForm((prev) => ({
+      ...prev,
+      videoKind: kind,
+      targetSeconds: kind === 'explainer' ? Math.max(180, prev.targetSeconds) : Math.min(90, prev.targetSeconds),
+    }));
+    if (kind === 'explainer') setDesign((prev) => ({ ...prev, orientation: 'landscape' }));
+  };
+
   // Switching mode swaps the subject list, so the old subject would be orphaned.
   const setContentType = (type: ContentType) =>
     setForm((prev) => ({
@@ -83,6 +99,7 @@ export const StepTopic: React.FC<{
       // The format decides the whole length budget, so it travels with the form.
       const { content } = await api.generate(geminiKey.trim(), geminiModel, {
         ...form,
+        videoKind: form.videoKind || 'mcq',
         orientation: design.orientation,
       });
       onGenerated(content);
@@ -97,9 +114,32 @@ export const StepTopic: React.FC<{
     <div className="panel">
       <h2>Step 2 — What should the video be about?</h2>
       <p className="lede">
-        Set the dials, press the button, and Gemini writes the question, the four options, the
-        explanation and the exact words the voice will say.
+        {explainerMode
+          ? 'Set the dials, press the button, and Gemini writes the storyboard: the scenes, what is drawn in each of them, and the exact words the voice will say.'
+          : 'Set the dials, press the button, and Gemini writes the question, the four options, the explanation and the exact words the voice will say.'}
       </p>
+
+      <div className="section-title">How it is told</div>
+      <div className="tiles" style={{ gridTemplateColumns: '1fr 1fr' }}>
+        <button
+          className={'tile' + (!explainerMode ? ' active' : '')}
+          onClick={() => setVideoKind('mcq')}
+        >
+          <div className="t">❓ Quiz</div>
+          <div className="s">
+            A question, four options, a countdown and the reveal. The format that stops a scroll.
+          </div>
+        </button>
+        <button
+          className={'tile' + (explainerMode ? ' active' : '')}
+          onClick={() => setVideoKind('explainer')}
+        >
+          <div className="t">🎬 Explainer</div>
+          <div className="s">
+            No question. Analogies, diagrams and a walk through how something works, scene by scene.
+          </div>
+        </button>
+      </div>
 
       <div className="section-title">What kind of video</div>
       <div className="tiles" style={{ gridTemplateColumns: '1fr 1fr' }}>

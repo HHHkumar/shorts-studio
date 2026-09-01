@@ -431,17 +431,35 @@ function rank(id) {
 // ---------------------------------------------------------------------------
 
 export async function generateContent(apiKey, model, options) {
+  const parsed = await callGemini(apiKey, model, {
+    system: SYSTEM,
+    prompt: buildPrompt(options),
+    schema: RESPONSE_SCHEMA,
+    temperature: 0.4 + (Number(options.curiosity) || 5) * 0.06,
+  });
+  return normalizeContent(parsed, options);
+}
+
+/**
+ * One structured-JSON call to Gemini, with every failure translated into
+ * something a person can act on.
+ *
+ * Shared with the explainer storyboard: the two generators differ only in their
+ * prompt and their schema, and duplicating the retry, parse and error handling
+ * would mean fixing the same bug twice.
+ */
+export async function callGemini(apiKey, model, { system, prompt, schema, temperature }) {
   const body = {
-    systemInstruction: { parts: [{ text: SYSTEM }] },
-    contents: [{ role: 'user', parts: [{ text: buildPrompt(options) }] }],
+    systemInstruction: { parts: [{ text: system }] },
+    contents: [{ role: 'user', parts: [{ text: prompt }] }],
     generationConfig: {
-      temperature: 0.4 + (Number(options.curiosity) || 5) * 0.06,
+      temperature,
       topP: 0.95,
       // No maxOutputTokens on purpose. On the 2.5 models the thinking tokens
       // count against it, so a fixed 8192 truncated long scripts before they
       // were finished; each model's own maximum is the right ceiling here.
       responseMimeType: 'application/json',
-      responseSchema: RESPONSE_SCHEMA,
+      responseSchema: schema,
     },
   };
 
@@ -492,7 +510,7 @@ export async function generateContent(apiKey, model, options) {
     parsed = JSON.parse(text.slice(start, end + 1));
   }
 
-  return normalizeContent(parsed, options);
+  return parsed;
 }
 
 function explainGeminiError(status, raw) {

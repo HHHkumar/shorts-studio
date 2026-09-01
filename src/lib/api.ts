@@ -1,9 +1,11 @@
-import type { QuizContent, ScriptLine, VideoProps } from './types';
+import type { QuizContent, ScriptLine, VideoKind, VideoProps } from './types';
 import type { AudioResult } from './timeline';
 
 export type ContentType = 'general' | 'electrical';
 
 export interface TopicForm {
+  /** 'mcq' = a question with a reveal. 'explainer' = a narrated storyboard. */
+  videoKind?: VideoKind;
   /** 'general' = curiosity-led STEM. 'electrical' = exam prep for electricalmcqs.in. */
   contentType: ContentType;
   subject: string;
@@ -247,6 +249,7 @@ export const api = {
 };
 
 export const DEFAULT_TOPIC_FORM: TopicForm = {
+  videoKind: 'mcq',
   contentType: 'general',
   exam: 'GATE EE',
   subject: 'Physics',

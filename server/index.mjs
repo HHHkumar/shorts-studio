@@ -17,6 +17,7 @@ import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 
 import { generateContent, listModels } from './gemini.mjs';
+import { generateStoryboard } from './explainer.mjs';
 import { listVoices, speak, VOICE_MODELS } from './tts.mjs';
 import { jobs as renderJobs, startRender, paths } from './render.mjs';
 import { ensureAudioAssets, MUSIC_MOODS } from './audio-gen.mjs';
@@ -199,7 +200,12 @@ app.post('/api/validate', ok(async (req, res) => {
 app.post('/api/generate', ok(async (req, res) => {
   const { apiKey, model, options } = req.body || {};
   if (!apiKey) throw new Error('No Gemini API key was sent. Add it on the Keys step.');
-  const content = await generateContent(apiKey, model || 'gemini-2.5-flash', options || {});
+  const o = options || {};
+  // Two quite different videos, two prompts, one route. The rest of the
+  // pipeline cannot tell them apart, which is the point.
+  const content = o.videoKind === 'explainer'
+    ? await generateStoryboard(apiKey, model || 'gemini-2.5-flash', o)
+    : await generateContent(apiKey, model || 'gemini-2.5-flash', o);
   res.json({ content });
 }));
 

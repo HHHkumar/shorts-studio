@@ -1,9 +1,15 @@
 import type { WordTiming } from './types';
 
 // ---------------------------------------------------------------------------
-// Work out when each answer option is being spoken, so its row can light up at
-// exactly that moment. The narration reads the four options in order, so this
-// is a forward scan: find where each option's words begin in the spoken stream.
+// Work out when each labelled thing is being spoken, so it can appear or light
+// up at exactly that moment. The narration works through them in order, so this
+// is a forward scan: find where each label's words begin in the spoken stream.
+//
+// Written for the four answer options, but every explainer panel uses it too -
+// process steps, diagram boxes, timeline entries, recap points. That is the
+// whole trick behind the reveals: nothing is timed by guesswork, everything is
+// timed by the voice. A storyboard never has to author a reveal order, because
+// the order is already in what the narrator says.
 // ---------------------------------------------------------------------------
 
 const STOPWORDS = new Set([
@@ -83,4 +89,51 @@ export function activeOption(starts: number[], time: number, sceneSeconds: numbe
     if (time >= starts[i] && time < end) return i;
   }
   return -1;
+}
+
+/**
+ * The general form: `alignOptions` under a name that does not lie about what
+ * it is used for. Both point at the same scan.
+ */
+export const alignLabels = alignOptions;
+
+/**
+ * How many entries have been reached by now, for panels that build up rather
+ * than highlight. Always at least one, so a scene is never blank on entry.
+ */
+export function revealedCount(starts: number[], time: number): number {
+  let n = 1;
+  for (let i = 0; i < starts.length; i++) {
+    if (Number.isFinite(starts[i]) && time >= starts[i]) n = i + 1;
+  }
+  return Math.min(Math.max(n, 1), starts.length);
+}
+
+/**
+ * Which of these labels the narration never says.
+ *
+ * The reveals are timed by matching labels against the spoken words, so a label
+ * the narrator never mentions can only fall back to an even spread. Same
+ * matching rules as `alignLabels`, so the warning in the editor agrees with
+ * what the renderer will actually do.
+ */
+export function missingLabels(narration: string, labels: string[]): string[] {
+  const spoken = narration.split(/\s+/).map(normalise).filter(Boolean);
+  const missing: string[] = [];
+  let cursor = 0;
+
+  for (const label of labels) {
+    const keys = keyWords(label);
+    if (!keys.length) continue;
+    let found = -1;
+    for (let i = cursor; i < spoken.length; i++) {
+      if (spoken[i] !== keys[0]) continue;
+      if (keys.length > 1 && !spoken.slice(i + 1, i + 6).includes(keys[1])) continue;
+      found = i;
+      break;
+    }
+    if (found === -1) missing.push(label);
+    else cursor = found + 1;
+  }
+  return missing;
 }

@@ -7,6 +7,7 @@ import type { QuizContent, Scene } from '../../lib/types';
 import { ReadAlong } from '../ReadAlong';
 import { autoFontSize, Pill, Stage, useEnter, useMetrics } from '../ui';
 import { Visual } from '../Visual';
+import { PANEL_COMPONENTS, type PanelName } from '../Panel';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
 
@@ -371,6 +372,78 @@ export const OutroScene: React.FC<SceneProps> = ({ theme, scene, content, showVi
   );
 };
 
+
+// ---------------------------------------------------------------------------
+// The explainer scenes
+//
+// These invert the priority of an MCQ beat. There, the spoken line is the whole
+// picture and a diagram sits underneath it. Here the layout is the picture, and
+// the narration runs along the bottom as a subtitle - because a three-minute
+// explainer that puts every spoken word across the middle of the frame is just
+// a wall of text with a voice over it.
+//
+// The words shown are still exactly the words spoken. Only the size changed.
+// ---------------------------------------------------------------------------
+
+/** The narration as a subtitle band, pinned to the bottom of the frame. */
+const CaptionBand: React.FC<{ scene: Scene; theme: Theme }> = ({ scene, theme }) => {
+  const m = useMetrics();
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        left: m.padX,
+        right: m.padX,
+        bottom: Math.round(m.padBottom * 0.42),
+        display: 'flex',
+        justifyContent: 'center',
+      }}
+    >
+      <ReadAlong
+        theme={theme}
+        words={scene.words}
+        offset={scene.captionOffset}
+        fallbackText={scene.narration}
+        maxSize={m.landscape ? 40 : 38}
+        minSize={m.landscape ? 30 : 28}
+      />
+    </div>
+  );
+};
+
+/**
+ * Builds a scene component around one panel primitive. Every explainer scene is
+ * the same shape - a panel filling the stage, the narration underneath - so the
+ * only thing that varies is which layout gets drawn.
+ */
+function explainerScene(name: PanelName): React.FC<SceneProps> {
+  const Panel = PANEL_COMPONENTS[name];
+  const Component: React.FC<SceneProps> = ({ theme, scene, showVisuals, showText }) => (
+    <Stage theme={theme}>
+      {showVisuals && scene.panel ? (
+        <Panel
+          theme={theme}
+          panel={scene.panel}
+          words={scene.words}
+          offset={scene.captionOffset}
+        />
+      ) : null}
+      {showText ? <CaptionBand scene={scene} theme={theme} /> : null}
+    </Stage>
+  );
+  Component.displayName = 'Scene_' + name;
+  return Component;
+}
+
+export const TitleScene = explainerScene('title');
+export const MetaphorScene = explainerScene('metaphor');
+export const DiagramScene = explainerScene('diagram');
+export const ProcessScene = explainerScene('process');
+export const VersusScene = explainerScene('versus');
+export const TimelineScene = explainerScene('timeline');
+export const GridScene = explainerScene('grid');
+export const RecapScene = explainerScene('recap');
+
 export const SCENE_COMPONENTS: Record<Scene['kind'], React.FC<SceneProps>> = {
   intro: IntroScene,
   hook: HookScene,
@@ -380,4 +453,12 @@ export const SCENE_COMPONENTS: Record<Scene['kind'], React.FC<SceneProps>> = {
   answer: AnswerScene,
   explain: ExplainScene,
   outro: OutroScene,
+  title: TitleScene,
+  metaphor: MetaphorScene,
+  diagram: DiagramScene,
+  process: ProcessScene,
+  versus: VersusScene,
+  timeline: TimelineScene,
+  grid: GridScene,
+  recap: RecapScene,
 };

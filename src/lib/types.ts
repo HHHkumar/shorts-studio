@@ -10,15 +10,40 @@ export type LayoutName = 'simple' | 'elegant' | 'nerdy' | 'flashy';
 export type MusicMood = 'none' | 'calm' | 'tense' | 'upbeat' | 'custom';
 export type Orientation = 'portrait' | 'landscape';
 
+/**
+ * Two quite different videos come out of this tool.
+ *
+ * 'mcq'       - a question, four options, a countdown and a reveal.
+ * 'explainer' - a narrative that builds understanding scene by scene, with no
+ *               question in it at all. Analogies and diagrams, not equations.
+ */
+export type VideoKind = 'mcq' | 'explainer';
+
 export type SceneKind =
+  // Shared
   | 'intro'
+  | 'outro'
+  | 'explain'
+  // MCQ only
   | 'hook'
   | 'question'
   | 'options'
   | 'countdown'
   | 'answer'
-  | 'explain'
-  | 'outro';
+  // Explainer only - each is a distinct on-screen layout
+  | 'title'
+  | 'metaphor'
+  | 'diagram'
+  | 'process'
+  | 'versus'
+  | 'timeline'
+  | 'grid'
+  | 'recap';
+
+/** The explainer scene kinds, in the order they normally appear. */
+export const EXPLAINER_KINDS: SceneKind[] = [
+  'title', 'metaphor', 'diagram', 'process', 'versus', 'timeline', 'grid', 'recap',
+];
 
 /** One spoken word with the exact second it is said. Used for karaoke captions. */
 export interface WordTiming {
@@ -29,6 +54,8 @@ export interface WordTiming {
 
 /** What Gemini invents. Pure content — no timing, no styling. */
 export interface QuizContent {
+  /** Missing on videos made before explainer mode existed; treat as 'mcq'. */
+  videoKind?: VideoKind;
   subject: string;
   topic: string;
   difficulty: string;
@@ -91,6 +118,67 @@ export interface SceneVisual {
   };
 }
 
+/** One box in a labelled diagram. */
+export interface PanelNode {
+  id: string;
+  label: string;
+  /** A single emoji or symbol drawn inside the box. */
+  symbol?: string;
+  /** Grid position. Left to right, top to bottom. Both default to a flow layout. */
+  col?: number;
+  row?: number;
+  /** Marks this box as the one the narration is about. */
+  accent?: boolean;
+}
+
+/** An arrow between two boxes. */
+export interface PanelEdge {
+  from: string;
+  to: string;
+  /** A word or two riding on the arrow, e.g. "flux" or "230 V". */
+  label?: string;
+  /** Dashed arrows read as "indirect" or "returns". */
+  dashed?: boolean;
+}
+
+/** One entry in a process, timeline, grid or recap. */
+export interface PanelStep {
+  /** The short line that appears on screen. Also what the reveal matches on. */
+  label: string;
+  /** An optional second line, smaller. */
+  detail?: string;
+  /** A single emoji or symbol. */
+  symbol?: string;
+  /** Timeline only: the year or stage marker. */
+  when?: string;
+}
+
+/**
+ * The layout content for an explainer scene - the plan's "props".
+ *
+ * Deliberately one flat optional bag rather than a union: Gemini's structured
+ * output does not express discriminated unions, and this matches how
+ * SceneVisual already works. Each scene component reads only its own fields.
+ */
+export interface ScenePanel {
+  /** Big text on title, section and recap cards. */
+  title?: string;
+  subtitle?: string;
+  /** metaphor / versus: the two sides being held up against each other. */
+  leftLabel?: string;
+  rightLabel?: string;
+  leftSymbol?: string;
+  rightSymbol?: string;
+  /** metaphor / versus: the short lines under each side. */
+  leftPoints?: string[];
+  rightPoints?: string[];
+  /** diagram: the boxes and the arrows between them. */
+  nodes?: PanelNode[];
+  edges?: PanelEdge[];
+  /** process / timeline / grid / recap: the entries, in order. */
+  steps?: PanelStep[];
+}
+
 export interface ScriptLine {
   kind: SceneKind;
   /** Exactly what the voice should say. Plain words — no markdown, no LaTeX. */
@@ -101,6 +189,8 @@ export interface ScriptLine {
   bullets?: string[];
   /** Optional diagram for this beat. */
   visual?: SceneVisual;
+  /** Explainer scenes only: the content of this scene's layout. */
+  panel?: ScenePanel;
   /** 2-4 concrete words for finding a backdrop photo, written by Gemini. */
   imageQuery?: string;
   /** Chosen backdrop, relative to public/. Empty until the creator picks one. */

@@ -40,10 +40,17 @@ Four services do the work, and they all run from one page in your browser:
 
 The video itself is drawn on your own computer by **Remotion**, which is why rendering costs nothing.
 
+### Two ways to tell it
+
+- **Quiz** — a question, four options, a countdown and the reveal. The format that stops a scroll.
+- **Explainer** — no question at all. A storyboard that builds understanding scene by scene using
+  analogies and diagrams: a title card, an analogy, a labelled diagram, the steps, a comparison, a
+  timeline, and a recap. Aimed at 3 to 5 minutes in 16:9.
+
 ### Two kinds of video
 
-- **Curiosity STEM** — counter-intuitive science and maths questions for a general audience.
-- **Electrical exam prep** — questions in the style of a real paper, aimed at a specific exam:
+- **Curiosity STEM** — counter-intuitive science and maths for a general audience.
+- **Electrical exam prep** — in the style of a real paper, aimed at a specific exam:
   GATE EE, ESE/IES, SSC JE, RRB JE, State AE/JE, PSU (UPPCL/DMRC/NTPC/BHEL), or ITI/Wireman.
 
 ### Two shapes
@@ -183,6 +190,7 @@ Where you decide what the video is about.
 
 | Setting | What it does |
 |---|---|
+| **How it is told** | **Quiz** or **Explainer**. Choosing Explainer switches to 16:9 and at least three minutes, because that is what the format needs. |
 | **What kind of video** | **Curiosity STEM** for a general audience, or **Electrical exam prep** for candidates revising. |
 | **Exam** *(exam prep only)* | Sets the depth. GATE and ESE want derivation and analysis; SSC and RRB want standard formulas at speed; ITI wants practical wiring and safety with no calculus. |
 | **Format** | Portrait or landscape. **Pick this first** — it changes how much script is written and how the frame is laid out. |
