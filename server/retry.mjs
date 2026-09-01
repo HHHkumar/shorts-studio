@@ -37,14 +37,26 @@ function delayFor(res, attempt) {
 export async function fetchRetrying(url, init, options = {}) {
   const attempts = Math.max(1, options.attempts ?? 3);
   const onRetry = options.onRetry;
+  // Without this a stalled connection hangs until undici's own 300s limit and
+  // then fails with UND_ERR_HEADERS_TIMEOUT, which tells a creator nothing.
+  const timeoutMs = options.timeoutMs ?? 120000;
 
   let lastError = null;
 
   for (let attempt = 0; attempt < attempts; attempt++) {
     let res;
     try {
-      res = await fetch(url, init);
+      res = await fetch(url, { ...init, signal: AbortSignal.timeout(timeoutMs) });
     } catch (err) {
+      // A timeout is not a transient blip - retrying it just makes the creator
+      // wait the same amount again - so it stops here with a clear message.
+      if (err && (err.name === 'TimeoutError' || err.name === 'AbortError')) {
+        throw new Error(
+          'No reply after ' + Math.round(timeoutMs / 1000) + ' seconds, so the tool gave up. '
+          + 'This is usually a very long script on a slow model: try a Flash model, or ask for a '
+          + 'shorter video.',
+        );
+      }
       // A dropped connection is worth one more go; a bad URL is not, but that
       // will fail identically on the retry and surface the same error.
       lastError = err;

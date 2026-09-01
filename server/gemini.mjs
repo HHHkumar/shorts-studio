@@ -436,6 +436,7 @@ export async function generateContent(apiKey, model, options) {
     prompt: buildPrompt(options),
     schema: RESPONSE_SCHEMA,
     temperature: 0.4 + (Number(options.curiosity) || 5) * 0.06,
+    label: 'quiz',
   });
   return normalizeContent(parsed, options);
 }
@@ -448,7 +449,7 @@ export async function generateContent(apiKey, model, options) {
  * prompt and their schema, and duplicating the retry, parse and error handling
  * would mean fixing the same bug twice.
  */
-export async function callGemini(apiKey, model, { system, prompt, schema, temperature }) {
+export async function callGemini(apiKey, model, { system, prompt, schema, temperature, label }) {
   const body = {
     systemInstruction: { parts: [{ text: system }] },
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
@@ -463,14 +464,30 @@ export async function callGemini(apiKey, model, { system, prompt, schema, temper
     },
   };
 
-  const res = await fetchRetrying(ENDPOINT + '/' + encodeURIComponent(model) + ':generateContent', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
-    body: JSON.stringify(body),
-  });
+  const started = Date.now();
+  const res = await fetchRetrying(
+    ENDPOINT + '/' + encodeURIComponent(model) + ':generateContent',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+      body: JSON.stringify(body),
+    },
+    {
+      // A long explainer on a thinking model genuinely takes minutes. Cutting
+      // it off at the default would throw away work that was about to arrive.
+      timeoutMs: 240000,
+      onRetry: (attempt, reason) =>
+        console.log('[gemini] ' + (label || 'call') + ': ' + reason + ', retrying (' + attempt + '/2)'),
+    },
+  );
 
   const raw = await res.text();
-  if (!res.ok) throw new Error(explainGeminiError(res.status, raw));
+  const seconds = Math.round((Date.now() - started) / 1000);
+  if (!res.ok) {
+    console.log('[gemini] ' + (label || 'call') + ' failed after ' + seconds + 's (' + res.status + ')');
+    throw new Error(explainGeminiError(res.status, raw));
+  }
+  console.log('[gemini] ' + (label || 'call') + ' answered in ' + seconds + 's');
 
   let payload;
   try {

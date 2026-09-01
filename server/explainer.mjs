@@ -211,6 +211,7 @@ export async function generateStoryboard(apiKey, model, options) {
     prompt: buildPrompt(options),
     schema: RESPONSE_SCHEMA,
     temperature: 0.55 + (Number(options.curiosity) || 5) * 0.03,
+    label: 'storyboard',
   });
   return normalizeStoryboard(parsed, options);
 }

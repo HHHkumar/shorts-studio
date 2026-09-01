@@ -201,11 +201,24 @@ app.post('/api/generate', ok(async (req, res) => {
   const { apiKey, model, options } = req.body || {};
   if (!apiKey) throw new Error('No Gemini API key was sent. Add it on the Keys step.');
   const o = options || {};
+  const explainer = o.videoKind === 'explainer';
+  const chosen = model || 'gemini-2.5-flash';
+
+  // Say what is happening before it happens. A long explainer can take a
+  // couple of minutes, and a silent window is indistinguishable from a hang.
+  console.log(
+    '[generate] ' + (explainer ? 'storyboard' : 'quiz') + ' - ' + chosen
+    + ', ' + (o.targetSeconds || '?') + 's target'
+    + (explainer ? ' - long scripts take a while, please wait' : ''),
+  );
+
   // Two quite different videos, two prompts, one route. The rest of the
   // pipeline cannot tell them apart, which is the point.
-  const content = o.videoKind === 'explainer'
-    ? await generateStoryboard(apiKey, model || 'gemini-2.5-flash', o)
-    : await generateContent(apiKey, model || 'gemini-2.5-flash', o);
+  const content = explainer
+    ? await generateStoryboard(apiKey, chosen, o)
+    : await generateContent(apiKey, chosen, o);
+
+  console.log('[generate] done - ' + content.script.length + ' scenes');
   res.json({ content });
 }));
 
