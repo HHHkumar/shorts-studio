@@ -1,4 +1,4 @@
-import { parseJsonLoosely, normalizeContent, scriptBudget } from './gemini.mjs';
+import { parseJsonLoosely, normalizeContent, rejectedThinking, scriptBudget, thinkingFor } from './gemini.mjs';
 const base = { subject:'S', topic:'T', difficulty:'D', intro:'' };
 let fails = 0;
 const ok = (name, cond, extra='') => { console.log((cond?'  ok  ':'  FAIL') + '  ' + name + (extra?'  '+extra:'')); if(!cond) fails++; };
@@ -75,6 +75,35 @@ ok('unreadable output returns null rather than throwing',
    parseJsonLoosely('I am unable to help with that request.') === null);
 ok('an empty reply returns null', parseJsonLoosely('') === null);
 ok('a bare array is not mistaken for the object', parseJsonLoosely('[1,2,3]') === null);
+
+// --- keeping a thinking model from thinking itself out of room -------------
+// A Gemini 3 Flash spent 87 seconds on a NINETY second script and finished with
+// MAX_TOKENS having written no JSON at all: the reasoning and the answer share
+// one budget, so the answer never got any.
+
+ok('a 3.x model gets the level knob',
+   JSON.stringify(thinkingFor('gemini-3.7-flash')) === '{"thinkingLevel":"low"}',
+   JSON.stringify(thinkingFor('gemini-3.7-flash')));
+ok('a 3 pro model gets it too', !!thinkingFor('gemini-3-pro').thinkingLevel);
+ok('a 2.5 model gets a budget instead',
+   thinkingFor('gemini-2.5-flash').thinkingConfig.thinkingBudget === 8192);
+ok('2.5 pro gets a budget', !!thinkingFor('gemini-2.5-pro').thinkingConfig);
+ok('an older model gets nothing, because it does not think',
+   thinkingFor('gemini-1.5-flash') === null);
+ok('an unrecognisable name gets nothing rather than a guess',
+   thinkingFor('some-other-model') === null);
+
+// The field is dropped and retried on rejection, so telling the two kinds of
+// 400 apart is what stops a real error being retried pointlessly - and stops a
+// thinking rejection being reported as a broken key.
+ok('a complaint about the thinking field is recognised',
+   rejectedThinking('Unknown name "thinkingLevel" at generationConfig'));
+ok('a thinkingBudget complaint is recognised',
+   rejectedThinking('thinkingBudget is not supported for this model'));
+ok('a bad key is NOT mistaken for a thinking problem',
+   !rejectedThinking('API key not valid. Please pass a valid API key.'));
+ok('a quota error is NOT mistaken for one',
+   !rejectedThinking('Resource has been exhausted (e.g. check quota).'));
 
 console.log(fails ? '\n' + fails + ' FAILURES' : '\nall checks passed');
 process.exit(fails ? 1 : 0);

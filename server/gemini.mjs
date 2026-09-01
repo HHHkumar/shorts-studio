@@ -450,8 +450,30 @@ export async function generateContent(apiKey, model, options) {
  * prompt and their schema, and duplicating the retry, parse and error handling
  * would mean fixing the same bug twice.
  */
+/**
+ * Stop a thinking model from spending its entire output budget reasoning.
+ *
+ * A Gemini 3 Flash was seen taking 87 seconds over a NINETY SECOND script -
+ * about nine scenes - and then finishing with MAX_TOKENS having emitted no
+ * JSON at all. The thinking counts against the same budget as the answer, so
+ * left alone the model can reason itself out of room before it starts writing.
+ *
+ * The knob differs by generation, and a model that does not recognise the one
+ * it is sent rejects the whole request, so the caller drops it and retries.
+ */
+export function thinkingFor(model) {
+  const version = parseFloat((String(model).match(/gemini-(\d+(?:\.\d+)?)/i) || [])[1] || '0');
+  if (version >= 3) return { thinkingLevel: 'low' };
+  if (version >= 2.5) return { thinkingConfig: { thinkingBudget: 8192 } };
+  return null;
+}
+
+/** True when a 400 is complaining about the thinking field rather than the ask. */
+export const rejectedThinking = (raw) =>
+  /thinking|thinkingLevel|thinkingConfig|thinkingBudget|Unknown name|not supported/i.test(String(raw));
+
 export async function callGemini(apiKey, model, { system, prompt, schema, temperature, label }) {
-  const body = {
+  const buildBody = (thinking) => JSON.stringify({
     systemInstruction: { parts: [{ text: system }] },
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
     generationConfig: {
@@ -462,16 +484,16 @@ export async function callGemini(apiKey, model, { system, prompt, schema, temper
       // were finished; each model's own maximum is the right ceiling here.
       responseMimeType: 'application/json',
       responseSchema: schema,
+      ...(thinking || {}),
     },
-  };
+  });
 
-  const started = Date.now();
-  const res = await fetchRetrying(
+  const send = (thinking) => fetchRetrying(
     ENDPOINT + '/' + encodeURIComponent(model) + ':generateContent',
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
-      body: JSON.stringify(body),
+      body: buildBody(thinking),
     },
     {
       // A long explainer on a thinking model genuinely takes minutes. Cutting
@@ -482,7 +504,18 @@ export async function callGemini(apiKey, model, { system, prompt, schema, temper
     },
   );
 
-  const raw = await res.text();
+  const started = Date.now();
+  const thinking = thinkingFor(model);
+  let res = await send(thinking);
+  let raw = await res.text();
+
+  // An older or unusual model may not know the field. Losing the request over
+  // an optimisation would be worse than doing without it.
+  if (!res.ok && res.status === 400 && thinking && rejectedThinking(raw)) {
+    console.log('[gemini] ' + (label || 'call') + ': model does not take a thinking setting, retrying without');
+    res = await send(null);
+    raw = await res.text();
+  }
   const seconds = Math.round((Date.now() - started) / 1000);
   if (!res.ok) {
     console.log('[gemini] ' + (label || 'call') + ' failed after ' + seconds + 's (' + res.status + ')');
@@ -507,7 +540,22 @@ export async function callGemini(apiKey, model, { system, prompt, schema, temper
     );
   }
   if (candidate.finishReason === 'MAX_TOKENS') {
-    throw new Error('Gemini ran out of room before finishing. Lower the target length and try again.');
+    // Blaming the script length here was wrong and sent people the wrong way:
+    // a ninety second explainer is about nine scenes, and it still happened,
+    // because the budget went on reasoning rather than on the answer. Say which
+    // of the two actually ran out.
+    const wrote = ((candidate.content && candidate.content.parts) || [])
+      .filter((part) => part && part.thought !== true)
+      .some((part) => part.text);
+    console.log('[gemini] ' + (label || 'call') + ' hit MAX_TOKENS after ' + seconds
+      + 's (wrote some answer: ' + wrote + ')');
+    throw new Error(
+      wrote
+        ? 'Gemini ran out of room part way through the script. Lower the target length and try again.'
+        : 'This model spent its whole budget thinking and never started writing. It is a known '
+          + 'trait of the newest Flash models on long structured output. Pick a 2.5 model in the '
+          + 'dropdown - they are reliable for this - or try again.',
+    );
   }
 
   const parts = (candidate.content && candidate.content.parts) || [];
