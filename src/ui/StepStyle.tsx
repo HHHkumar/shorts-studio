@@ -4,6 +4,7 @@ import { getTheme, LAYOUT_INFO } from '../lib/theme';
 import type { DesignSettings, LayoutName, MusicMood, QuizContent, ThemeMode } from '../lib/types';
 import { Check, ErrorNote, Note, Select, Slider, Spinner } from './controls';
 import { StockPicker } from './StockPicker';
+import { AMBIENT_GROUPS } from '../remotion/ambient';
 
 const ACCENTS = [
   { name: 'Layout default', value: '' },
@@ -186,6 +187,37 @@ export const StepStyle: React.FC<{
           hint="Cuts the dead air the voice leaves at the end of each line. Turn off if any line sounds clipped."
           checked={design.trimTrailingSilence}
           onChange={(v) => set('trimTrailingSilence', v)}
+        />
+      </div>
+
+      <div className="section-title">Moving backdrop</div>
+      <p className="lede" style={{ marginTop: 0 }}>
+        A slow animation under everything, so a scene reads as produced rather than as text on a
+        flat colour. It is capped well below the text at any setting.
+      </p>
+      <div className="grid">
+        <Select
+          label="Which one"
+          value={design.ambient}
+          options={[
+            { id: 'auto', label: 'Auto — chosen from the topic' },
+            { id: 'none', label: 'None' },
+            ...AMBIENT_GROUPS.flatMap((g) =>
+              g.items.map((i) => ({ id: i.name, label: g.group + ' — ' + i.label })),
+            ),
+          ]}
+          onChange={(v) => set('ambient', v)}
+          hint="Auto matches the subject: a circuit board for electronics, a galaxy for space, contours for climate."
+        />
+        <Slider
+          label="How strong"
+          value={design.ambientIntensity}
+          min={0}
+          max={1}
+          step={0.05}
+          onChange={(v) => set('ambientIntensity', v)}
+          suffix=""
+          hint="Turn it up for a busier look. Even at full it stays under the words."
         />
       </div>
 

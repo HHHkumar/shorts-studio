@@ -5,6 +5,7 @@ import type { VideoProps } from '../lib/types';
 import { SCENE_COMPONENTS } from './scenes';
 import { Backdrop, ProgressBar, SceneFade } from './ui';
 import { MotifLayer } from './Visual';
+import { AmbientLayer } from './AmbientLayer';
 import { Soundtrack } from './Soundtrack';
 import { StockLayer } from './StockLayer';
 
@@ -16,13 +17,27 @@ import { StockLayer } from './StockLayer';
 export const QuizVideo: React.FC<VideoProps> = ({ content, scenes, design }) => {
   const theme = getTheme(design);
   const frame = useCurrentFrame();
-  const { durationInFrames } = useVideoConfig();
+  const { durationInFrames, width, height } = useVideoConfig();
 
   const explainScenes = scenes.filter((s) => s.kind === 'explain');
 
   return (
     <AbsoluteFill style={{ backgroundColor: theme.bg }}>
       <Backdrop theme={theme} />
+
+      {/* Outside every Sequence on purpose: its frame counter is the whole
+          video's, so the motion runs through the cuts instead of restarting. */}
+      {design.ambient && design.ambient !== 'none' ? (
+        <AmbientLayer
+          theme={theme}
+          content={content}
+          name={design.ambient}
+          intensity={design.ambientIntensity}
+          width={width}
+          height={height}
+        />
+      ) : null}
+
       {design.showMotif ? <MotifLayer theme={theme} symbols={content.motifSymbols || []} /> : null}
 
       {scenes.map((scene) => {

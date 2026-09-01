@@ -230,6 +230,13 @@ export interface DesignSettings {
   showVisuals: boolean;
   /** Drift topic symbols across the background. */
   showMotif: boolean;
+  /**
+   * Which animated backdrop runs under the whole video. A name from
+   * src/remotion/ambient.ts, 'auto' to choose one from the topic, or 'none'.
+   */
+  ambient: string;
+  /** 0-1. Capped low in the renderer so it can never fight the captions. */
+  ambientIntensity: number;
   /** Draw the chosen stock photos behind each scene. */
   showStock: boolean;
   /** 0-1. How strongly the backdrop photo shows through. */

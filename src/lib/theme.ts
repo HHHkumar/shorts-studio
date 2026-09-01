@@ -193,6 +193,8 @@ export const DEFAULT_DESIGN: DesignSettings = {
   trimTrailingSilence: true,
   showVisuals: true,
   showMotif: true,
+  ambient: 'auto',
+  ambientIntensity: 0.6,
   showStock: true,
   stockOpacity: 0.45,
   music: 'calm',

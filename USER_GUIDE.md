@@ -324,6 +324,22 @@ topic, because that is what people actually type into search.
 
 ---
 
+### Moving backdrops
+
+Step 4 has a **Moving backdrop** — a slow animation under everything, so a scene reads as produced
+rather than as text on a flat colour. Thirty of them, in ten families: drifting particles, flow
+fields, constellations, waves, orbits, a circuit-board grid, light beams, spirals, equaliser bars
+and contour maps.
+
+**Auto** picks one from your subject: a circuit board for electronics, a lattice for transmission,
+equaliser bars for power generation, a galaxy for astronomy, contours for climate.
+
+It is capped well below the text at every setting, so it can never make a caption hard to read.
+Turning it up makes it busier, not more distracting. It costs roughly **20% more render time** with
+the heaviest of them; set it to *None* if you want the fastest possible render.
+
+---
+
 ### A note on units
 
 Voice models read **10 MW** as "ten mili wag". Any unit symbol with a number in front of it —

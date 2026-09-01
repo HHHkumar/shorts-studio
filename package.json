@@ -10,7 +10,7 @@
     "server": "node server/index.mjs",
     "app": "vite",
     "studio": "remotion studio src/remotion/index.ts",
-    "test": "node server/gemini.test.mjs && node server/retry.test.mjs && node server/trends.test.mjs && node server/visuals.test.mjs && node server/explainer.test.mjs && node server/speech.test.mjs && node src/lib/subtopics.test.mjs"
+    "test": "node server/gemini.test.mjs && node server/retry.test.mjs && node server/trends.test.mjs && node server/visuals.test.mjs && node server/explainer.test.mjs && node server/speech.test.mjs && node src/lib/subtopics.test.mjs && node src/lib/ambient-pick.test.mjs"
   },
   "dependencies": {
     "@remotion/bundler": "^4.0.518",
