@@ -324,6 +324,17 @@ topic, because that is what people actually type into search.
 
 ---
 
+### A note on units
+
+Voice models read **10 MW** as "ten mili wag". Any unit symbol with a number in front of it —
+MW, kV, kWh, MVA, Hz, Ω, °C, % and the rest — is expanded for the **voice only**. The narrator says
+"ten megawatts"; the screen still shows `10 MW`, and the highlight lands on it at the right moment.
+
+A symbol with no number before it is left alone, so "A transformer" stays an article and does not
+become "ampere transformer". Write units the way you normally would.
+
+---
+
 ## 5. Git — your undo button
 
 Git takes **snapshots** of your project. It is the reason a mistake can never cost you more than a

@@ -218,6 +218,13 @@ export const StepVoice: React.FC<{
             credit per character, so this is about {characters.toLocaleString()} credits.
           </Note>
 
+          <Note kind="info" title="Units are spoken in full">
+            Left alone, the voice reads <b>10 MW</b> as “ten mili wag”. Any unit symbol with a number
+            in front of it — MW, kV, kWh, Hz, Ω, °C — is expanded for the voice only, so it says
+            “ten megawatts” while the screen keeps <b>10 MW</b>. Write units however you normally
+            would; a symbol with no number before it is never touched.
+          </Note>
+
           {busy ? (
             <>
               <div className="bar">

@@ -6,6 +6,7 @@
 // the picture/sound sync frame-accurate instead of guessed.
 // ---------------------------------------------------------------------------
 
+import { collapseTimings, expandForSpeech } from './speech.mjs';
 import { parseBuffer } from 'music-metadata';
 import { fetchRetrying } from './retry.mjs';
 
@@ -34,6 +35,9 @@ export async function speak(apiKey, text, settings) {
   const line = (text || '').trim();
   if (!line) return null;
 
+  // The voice hears "ten megawatts"; the screen keeps "10 MW". See speech.mjs.
+  const { spoken, written, map } = expandForSpeech(line);
+
   const voiceSettings = {
     stability: clamp(settings.stability, 0, 1, 0.45),
     similarity_boost: clamp(settings.similarity, 0, 1, 0.75),
@@ -44,7 +48,7 @@ export async function speak(apiKey, text, settings) {
   if (speed !== 1) voiceSettings.speed = speed;
 
   const body = JSON.stringify({
-    text: line,
+    text: spoken,
     model_id: settings.modelId || 'eleven_multilingual_v2',
     voice_settings: voiceSettings,
   });
@@ -91,7 +95,9 @@ export async function speak(apiKey, text, settings) {
   if (alignment && Array.isArray(alignment.characters)) {
     const starts = alignment.character_start_times_seconds || [];
     const ends = alignment.character_end_times_seconds || [];
-    words = charsToWords(alignment.characters, starts, ends);
+    // Timed against the spoken text, then folded back onto the written words,
+    // so a caption never shows the expansion the voice needed.
+    words = collapseTimings(charsToWords(alignment.characters, starts, ends), written, map);
     alignmentEnd = ends.length ? ends[ends.length - 1] : 0;
   }
 
