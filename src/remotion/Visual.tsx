@@ -102,7 +102,7 @@ const Sketch: React.FC<{
   // Round diagrams get a square box so they are not lost in a wide, short band.
   const canvasWidth = def.shape === 'square' ? Math.min(full, tall) : full;
 
-  return <P5Sketch draw={draw} width={canvasWidth} height={tall} />;
+  return <P5Sketch id={name} draw={draw} width={canvasWidth} height={tall} />;
 };
 
 /**

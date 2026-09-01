@@ -33,7 +33,12 @@ export const P5Sketch: React.FC<{
   width: number;
   height: number;
   style?: React.CSSProperties;
-}> = ({ draw, width, height, style }) => {
+  /**
+   * Which sketch this is. Changing it builds a fresh canvas rather than
+   * swapping the draw function underneath the running one - see below.
+   */
+  id?: string;
+}> = ({ draw, width, height, style, id }) => {
   const container = useRef<HTMLDivElement>(null);
   const instance = useRef<p5 | null>(null);
   const frame = useCurrentFrame();
@@ -62,6 +67,16 @@ export const P5Sketch: React.FC<{
         p.randomSeed(1);
         p.noiseSeed(1);
         p.clear();
+        // p5 keeps fill, stroke and weight between draws. A sketch that sets
+        // noStroke() and one that never sets a fill would otherwise inherit
+        // each other's state whenever they share an instance, and the second
+        // would draw with settings it never asked for.
+        p.noStroke();
+        p.noFill();
+        p.strokeWeight(1);
+        p.strokeCap(p.ROUND);
+        p.rectMode(p.CORNER);
+        p.ellipseMode(p.CENTER);
         s.draw({
           p,
           frame: s.frame,
@@ -80,8 +95,10 @@ export const P5Sketch: React.FC<{
       instance.current?.remove();
       instance.current = null;
     };
-    // Rebuilt only if the canvas size changes.
-  }, [width, height]);
+    // Rebuilt when the canvas size changes, and when the sketch itself does.
+    // Keeping one instance and swapping only the draw function left whatever
+    // the previous sketch had put on the canvas to show through a switch.
+  }, [width, height, id]);
 
   // Synchronous on purpose: the renderer may screenshot immediately after the
   // commit, so redrawing in a passive effect can capture the previous frame.

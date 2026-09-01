@@ -62,6 +62,7 @@ export const AmbientLayer: React.FC<{
       }}
     >
       <P5Sketch
+        id={chosen}
         draw={draw}
         width={Math.round(width * scale)}
         height={Math.round(height * scale)}
