@@ -396,9 +396,23 @@ render — all identical.
 > and the title and tags on step 7 are written by Gemini. Keep your Gemini key even if you write with
 > Claude; step 2 reminds you.
 
-**On cost:** Gemini has a generous free tier. Claude does not — it is paid per use from the first
-request. One question is a fraction of a cent; a five-minute storyboard is a few cents. Claude Opus
-is the strongest, Sonnet is cheaper and faster for straightforward questions.
+**On cost — read this before switching.** Gemini has a generous free tier. Claude has **none**: you
+are billed from the first request, and you have to add a payment method before any key will work.
+
+Rough cost of one video's worth of writing, at the published rates:
+
+| | Claude Opus 5 | Claude Sonnet 5 |
+|---|---|---|
+| One quiz | ~9c | ~4c |
+| One five-minute storyboard | ~35c | ~14c |
+
+Estimates, not quotes — the real figure moves with how long the script is and how much the model
+thinks. Two things follow from them. **Output dominates**, so the storyboard costs far more than the
+quiz and the model choice matters more than anything else you can change. And **a day of making
+shorts on Opus is a few dollars, not a few cents** — set a spend limit in the Anthropic console so a
+runaway loop cannot surprise you.
+
+If cost matters more than the last few percent of quality, Sonnet is the sensible default here.
 
 ---
 
@@ -611,7 +625,7 @@ step.
 |---|---|---|
 | **Gemini** | A generous free tier | One or two requests. Realistically free. |
 | **ElevenLabs** | 10,000 characters a month | A short uses 500–900 characters (**10–20 a month free**). A five-minute explainer uses about 4,400 (**two a month**). |
-| **Claude** *(optional)* | Pay as you go, no free tier | A fraction of a cent a question; a few cents for a five-minute storyboard. |
+| **Claude** *(optional)* | Pay as you go, **no free tier** | Opus: about **9c** a quiz, **35c** a five-minute storyboard. Sonnet: about **4c** and **14c**. |
 | **DeepSeek** *(optional)* | Pay as you go, no free tier | A fraction of a cent per check. |
 | **Pexels / NASA** *(optional)* | Free | Nothing. |
 | **Rendering** | Unlimited | Your own computer. Costs electricity. |
