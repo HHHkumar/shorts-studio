@@ -328,6 +328,7 @@ export const App: React.FC = () => {
               seo={seo}
               setSeo={setSeo}
               orientation={design.orientation}
+              design={design}
               onBack={() => go(5)}
             />
           ) : null}

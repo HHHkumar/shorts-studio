@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { api, contentFingerprint, type SeoPack, type TopicForm } from '../lib/api';
-import type { QuizContent } from '../lib/types';
+import type { QuizContent, DesignSettings } from '../lib/types';
 import { ErrorNote, Note, Spinner, TextInput } from './controls';
+import { ThumbnailMaker } from './ThumbnailMaker';
 
 /**
  * The upload form, prepared.
@@ -83,6 +84,7 @@ export const StepPublish: React.FC<{
   seo: SeoPack | null;
   setSeo: (s: SeoPack | null) => void;
   orientation: string;
+  design: DesignSettings;
   onBack: () => void;
 }> = ({
   content,
@@ -94,6 +96,7 @@ export const StepPublish: React.FC<{
   seo,
   setSeo,
   orientation,
+  design,
   onBack,
 }) => {
   const [busy, setBusy] = useState(false);
@@ -217,6 +220,8 @@ export const StepPublish: React.FC<{
           />
         </>
       ) : null}
+
+      <ThumbnailMaker content={content} design={design} suggested={fresh?.thumbnailText} />
 
       <div className="actions">
         <button className="btn ghost" onClick={onBack}>

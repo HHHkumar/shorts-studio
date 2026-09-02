@@ -21,7 +21,7 @@ import { generateContent, listModels } from './gemini.mjs';
 import { generateStoryboard } from './explainer.mjs';
 import { CLAUDE_MODELS, DEFAULT_CLAUDE_MODEL, listClaudeModels } from './claude.mjs';
 import { listVoices, speak, VOICE_MODELS } from './tts.mjs';
-import { jobs as renderJobs, startRender, paths } from './render.mjs';
+import { jobs as renderJobs, renderThumbnail, startRender, paths } from './render.mjs';
 import { ensureAudioAssets, MUSIC_MOODS } from './audio-gen.mjs';
 import { validateContent, DEEPSEEK_MODELS } from './deepseek.mjs';
 import { findTrending } from './trends.mjs';
@@ -243,6 +243,29 @@ app.post('/api/generate', ok(async (req, res) => {
 
   console.log('[generate] done - ' + content.script.length + ' scenes');
   res.json({ content });
+}));
+
+// --- the thumbnail ----------------------------------------------------------
+
+app.post('/api/thumbnail', ok(async (req, res) => {
+  const { content, design, title, kicker, badge, figure, symbol, layout } = req.body || {};
+  if (!content) throw new Error('Generate a video before making a thumbnail for it.');
+
+  const started = Date.now();
+  console.log('[thumbnail] rendering the ' + (layout || 'statement') + ' layout...');
+  const out = await renderThumbnail({
+    content,
+    design,
+    title: title || '',
+    kicker: kicker || '',
+    badge: badge || '',
+    figure: figure || '',
+    symbol: symbol || '',
+    layout: layout || 'statement',
+  });
+  console.log('[thumbnail] done in ' + Math.round((Date.now() - started) / 1000) + 's - '
+    + Math.round(out.bytes / 1024) + ' KB');
+  res.json(out);
 }));
 
 // --- title, tags and description for the upload form ------------------------

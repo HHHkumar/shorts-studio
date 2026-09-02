@@ -1,14 +1,17 @@
 import React from 'react';
 import { Composition } from 'remotion';
 import { makeDemoProps } from '../lib/demo';
+import { DEFAULT_DESIGN } from '../lib/theme';
 import { dimensionsFor, FPS, PORTRAIT } from '../lib/types';
 import type { VideoProps } from '../lib/types';
 import { QuizVideo } from './QuizVideo';
+import { Thumbnail, THUMBNAIL_ID, THUMB_HEIGHT, THUMB_WIDTH } from './Thumbnail';
 
 export const COMPOSITION_ID = 'QuizVideo';
 
 export const RemotionRoot: React.FC = () => {
   return (
+    <>
     <Composition
       id={COMPOSITION_ID}
       component={QuizVideo}
@@ -30,5 +33,27 @@ export const RemotionRoot: React.FC = () => {
         };
       }}
     />
+
+    {/* A still, at YouTube's thumbnail size. Same theme as the video it
+        belongs to, so the two read as one piece of work. */}
+    <Composition
+      id={THUMBNAIL_ID}
+      component={Thumbnail}
+      width={THUMB_WIDTH}
+      height={THUMB_HEIGHT}
+      fps={FPS}
+      durationInFrames={1}
+      defaultProps={{
+        content: makeDemoProps().content,
+        design: DEFAULT_DESIGN,
+        title: 'Which one hits the ground *first*?',
+        kicker: 'Physics',
+        badge: '',
+        figure: '',
+        symbol: '🌙',
+        layout: 'question' as const,
+      }}
+    />
+    </>
   );
 };

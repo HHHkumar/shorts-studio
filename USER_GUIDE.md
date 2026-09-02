@@ -13,6 +13,7 @@ your work safe with Git, and how to run the same tool on a second computer.
 2. [Setting up, once](#2-setting-up-once)
 3. [Starting it, every time](#3-starting-it-every-time)
 4. [Making a video — the seven steps](#4-making-a-video--the-seven-steps)
+   - [Making a thumbnail](#making-a-thumbnail)
    - [Using Claude instead of Gemini](#using-claude-instead-of-gemini)
    - [Writing the script yourself](#writing-the-script-yourself)
    - [Moving backdrops](#moving-backdrops)
@@ -374,6 +375,33 @@ description, tags, hashtags, suggested thumbnail text, and a pinned comment. Eac
 
 For exam-prep videos the title and first line of the description lead with the exam name, subject and
 topic, because that is what people actually type into search.
+
+---
+
+### Making a thumbnail
+
+Step 7 has a **Thumbnail** section. It renders a 1280 × 720 image in the same colours as the video,
+on your own machine, so it costs nothing and you can make as many as you like.
+
+| Layout | Use it when |
+|---|---|
+| **Statement** | One bold claim. Works for most videos. |
+| **Question** | A huge **?** beside the text. Classic quiz thumbnail. |
+| **Number** | The answer is a figure — 8,760 · 60% · 50 Hz. The strongest of the four when it fits. |
+| **Split** | Text on the left, one big emoji on the right. |
+
+Wrap a word in `*asterisks*` to colour it with your accent — `hits the ground *first*` puts *first* in
+the highlight colour. It is the single thing that makes a thumbnail read as designed rather than
+typed.
+
+If you wrote the title and tags first, the **thumbnail text** Gemini suggested is filled in for you.
+
+> **Judge it in the small box.** Two previews appear: one about 320 pixels wide and one full size.
+> YouTube shows a thumbnail at roughly **210 pixels** in a feed, so the small one is the honest test.
+> If you cannot read it at a glance there, cut words out — six or fewer is the target, and the field
+> warns you above that. Shrinking the type to fit more in is what makes thumbnails invisible.
+
+The PNG is saved into `out\` next to your videos. Press **Save the PNG** to put it wherever you like.
 
 ---
 

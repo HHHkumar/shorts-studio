@@ -10,7 +10,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { bundle } from '@remotion/bundler';
-import { ensureBrowser, renderMedia, selectComposition } from '@remotion/renderer';
+import { ensureBrowser, renderMedia, renderStill, selectComposition } from '@remotion/renderer';
 
 // fileURLToPath is required here: the project path may contain spaces.
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -133,6 +133,29 @@ function friendlyRenderError(err) {
     return 'Network problem while preparing the renderer. Check your internet connection and try again.';
   }
   return msg;
+}
+
+/**
+ * Render one thumbnail PNG.
+ *
+ * Shares the video's bundle, so after the first render of a session this costs
+ * a couple of seconds rather than the minute a cold bundle takes. Synchronous
+ * from the caller's point of view - it is one frame, not nine thousand, so
+ * there is no job to poll.
+ */
+export async function renderThumbnail(inputProps) {
+  fs.mkdirSync(OUT_DIR, { recursive: true });
+  const fileName = 'thumbnail-' + Date.now() + '.png';
+  const output = path.join(OUT_DIR, fileName);
+
+  const serveUrl = await getBundle(() => undefined);
+  syncAudioIntoBundle(serveUrl);
+  await ensureBrowser();
+
+  const composition = await selectComposition({ serveUrl, id: 'Thumbnail', inputProps });
+  await renderStill({ composition, serveUrl, inputProps, output, imageFormat: 'png' });
+
+  return { fileName, url: '/out/' + fileName, bytes: fs.statSync(output).size };
 }
 
 export const paths = { ROOT, OUT_DIR, PUBLIC_DIR };

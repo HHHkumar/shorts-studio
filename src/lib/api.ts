@@ -1,4 +1,4 @@
-import type { QuizContent, ScriptLine, VideoKind, VideoProps } from './types';
+import type { DesignSettings, QuizContent, ScriptLine, VideoKind, VideoProps } from './types';
 import type { AudioResult } from './timeline';
 
 export type ContentType = 'general' | 'electrical';
@@ -169,6 +169,19 @@ export const api = {
     const data = await safeJson(res);
     if (!res.ok) throw new Error(data.error || 'Could not load the Claude model list.');
     return data.models as { id: string; label: string }[];
+  },
+
+  thumbnail(body: {
+    content: QuizContent;
+    design: DesignSettings;
+    title: string;
+    kicker: string;
+    badge: string;
+    figure: string;
+    symbol: string;
+    layout: string;
+  }) {
+    return post<{ fileName: string; url: string; bytes: number }>('/api/thumbnail', body);
   },
 
   async uploadMusic(file: File) {
