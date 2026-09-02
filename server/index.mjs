@@ -15,6 +15,7 @@ import cors from 'cors';
 import fs from 'node:fs';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
+import { spawn } from 'node:child_process';
 
 import { generateContent, listModels } from './gemini.mjs';
 import { generateStoryboard } from './explainer.mjs';
@@ -349,6 +350,23 @@ function cleanOldAudio() {
   }
 }
 
+const APP_URL = 'http://localhost:' + (process.env.APP_PORT || 5173) + '/';
+
+/** Open the app in the default browser. Never fatal - the URL is printed too. */
+function openBrowser(url) {
+  if (process.env.NO_OPEN) return;
+  try {
+    const cmd = process.platform === 'win32' ? 'cmd'
+      : process.platform === 'darwin' ? 'open' : 'xdg-open';
+    // The empty string is the window title argument `start` expects; without it
+    // a quoted URL is taken as the title and nothing opens.
+    const args = process.platform === 'win32' ? ['/c', 'start', '', url] : [url];
+    spawn(cmd, args, { detached: true, stdio: 'ignore' }).unref();
+  } catch {
+    // A machine with no default browser is not a reason to fail to start.
+  }
+}
+
 // Say something before doing anything. Every line below this used to run in
 // silence, so a slow disk or a locked file was indistinguishable from a crash:
 // the window simply sat there with nothing in it.
@@ -386,10 +404,14 @@ const server = app.listen(PORT, '127.0.0.1', () => {
   announce = setTimeout(() => {
     console.log('');
     console.log('  Shorts Studio helper is running (port ' + PORT + ').');
-    console.log('  Your browser should open by itself in a moment.');
-    console.log('  If it does not, use the "Local:" address printed just below by VITE.');
+    console.log('  Opening ' + APP_URL + ' in your browser.');
+    console.log('  If it does not appear, paste that address in yourself.');
     console.log('  Finished videos are saved in:  ' + paths.OUT_DIR);
     console.log('');
+
+    // Now that the helper can actually answer, send them to the app. Vite used
+    // to do this the moment IT was ready, which is well before this point.
+    openBrowser(APP_URL);
 
     // Deliberately after listening. Neither of these is needed to answer a
     // request, and doing them first meant the port stayed shut while they ran.

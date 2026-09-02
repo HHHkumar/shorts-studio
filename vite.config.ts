@@ -19,7 +19,14 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
-    open: true,
+    // Deterministic, because the helper opens the browser at this exact address
+    // once it is listening. Left to drift, Vite would quietly move to 5174 when
+    // 5173 was busy and the helper would open a page that is not there.
+    strictPort: true,
+    // NOT opened here. Vite is ready in under half a second while node is still
+    // loading the helper, so opening from this side raced the browser to a
+    // server that did not exist yet and greeted people with connection errors.
+    open: false,
     proxy: {
       '/api': 'http://localhost:3030',
       '/out': 'http://localhost:3030',

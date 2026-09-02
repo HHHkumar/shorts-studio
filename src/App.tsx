@@ -48,23 +48,49 @@ export const App: React.FC = () => {
   const [musicMoods, setMusicMoods] = useState<{ id: string; label: string }[]>([]);
   const [deepseekModels, setDeepseekModels] = useState<{ id: string; label: string }[]>([]);
   const [serverDown, setServerDown] = useState(false);
+  const [waitingForServer, setWaitingForServer] = useState(true);
 
+  /**
+   * Wait for the helper rather than giving up on it.
+   *
+   * Both halves start together, and the browser opens as soon as the web half
+   * is ready - which is well before node has finished loading the other one. A
+   * single attempt therefore lost the race on a cold start and put a permanent
+   * "the helper is not running" banner in front of a helper that was seconds
+   * from being up. Keep asking for a while before saying that.
+   */
   useEffect(() => {
     let cancelled = false;
+
     (async () => {
-      try {
-        const res = await fetch('/api/health');
-        if (!res.ok) throw new Error('bad status');
-        const data = await res.json();
-        if (cancelled) return;
-        setModels(data.geminiModels || []);
-        setVoiceModels(data.voiceModels || []);
-        setMusicMoods(data.musicMoods || []);
-        setDeepseekModels(data.deepseekModels || []);
-      } catch {
-        if (!cancelled) setServerDown(true);
+      const deadline = Date.now() + 20000;
+      for (let attempt = 0; !cancelled; attempt++) {
+        try {
+          const res = await fetch('/api/health');
+          if (!res.ok) throw new Error('bad status');
+          const data = await res.json();
+          if (cancelled) return;
+          setModels(data.geminiModels || []);
+          setVoiceModels(data.voiceModels || []);
+          setMusicMoods(data.musicMoods || []);
+          setDeepseekModels(data.deepseekModels || []);
+          setServerDown(false);
+          setWaitingForServer(false);
+          return;
+        } catch {
+          if (Date.now() >= deadline) {
+            if (!cancelled) {
+              setServerDown(true);
+              setWaitingForServer(false);
+            }
+            return;
+          }
+          // Quick at first, because it is usually ready within a second or two.
+          await new Promise((r) => setTimeout(r, Math.min(1500, 250 + attempt * 250)));
+        }
       }
     })();
+
     return () => {
       cancelled = true;
     };
@@ -153,7 +179,12 @@ export const App: React.FC = () => {
 
       <div className="main">
         <div>
-          {serverDown ? (
+          {waitingForServer ? (
+            <Note kind="info" title="Starting up…">
+              Waiting for the helper to finish loading. This takes a couple of seconds on a cold
+              start and clears by itself.
+            </Note>
+          ) : serverDown ? (
             <Note kind="error" title="The helper server is not running">
               Close this tab, go back to the terminal window, and run <span className="kbd">npm start</span>{' '}
               inside the <span className="kbd">shorts-studio</span> folder. Then reload this page.
