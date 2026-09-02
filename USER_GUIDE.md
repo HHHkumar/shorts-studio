@@ -13,6 +13,9 @@ your work safe with Git, and how to run the same tool on a second computer.
 2. [Setting up, once](#2-setting-up-once)
 3. [Starting it, every time](#3-starting-it-every-time)
 4. [Making a video — the seven steps](#4-making-a-video--the-seven-steps)
+   - [Writing the script yourself](#writing-the-script-yourself)
+   - [Moving backdrops](#moving-backdrops)
+   - [A note on units](#a-note-on-units)
 5. [Git — your undo button](#5-git--your-undo-button)
 6. [GitHub — your backup and your bridge](#6-github--your-backup-and-your-bridge)
 7. [Running it on another computer](#7-running-it-on-another-computer)
@@ -27,13 +30,14 @@ your work safe with Git, and how to run the same tool on a second computer.
 ## 1. What this tool actually is
 
 You pick a subject, press a button, and about three minutes later you have a finished video with a
-real human-sounding voiceover, ready to upload.
+real human-sounding voiceover, ready to upload. Or you write the script yourself and let the tool do
+the rest — see [Writing the script yourself](#writing-the-script-yourself).
 
 Four services do the work, and they all run from one page in your browser:
 
 | | What it does | Needed? |
 |---|---|---|
-| **Google Gemini** | Writes the question, the four options, the explanation and the exact words the narrator says. Also writes your title, tags and description at the end. | Required |
+| **Google Gemini** | Writes the question, the four options, the explanation and the exact words the narrator says — or, in explainer mode, the whole storyboard. Also writes your title, tags and description at the end. | Required |
 | **ElevenLabs** | Turns that script into speech. | Required |
 | **DeepSeek** | Solves the question independently and says whether it agrees with Gemini. | Optional |
 | **Pexels + NASA** | Free photos to sit behind the text. NASA needs no key. | Optional |
@@ -163,8 +167,20 @@ cd C:\Projects\shorts-studio
 npm start
 ```
 
-Wait about five seconds and your browser opens by itself. If it does not, look in PowerShell for a
-line reading `Local: http://localhost:5173/` — the number may differ — and click it.
+Two things start together: the **helper**, which talks to Gemini and ElevenLabs and does the
+rendering, and the **web page** you actually use. The helper opens your browser once it is ready, so
+give it a few seconds. If it does not appear, paste this in yourself:
+
+```bash
+http://localhost:5173/
+```
+
+That address never changes. If something else is already using it the tool stops and says so, rather
+than quietly moving to another one.
+
+> **"Starting up…" for a second or two is normal.** The page loads faster than the helper does, so on
+> a cold start it waits for it and tells you. It clears by itself. Only if it is still trying after
+> twenty seconds will it tell you the helper is genuinely missing.
 
 **Leave the PowerShell window open the whole time.** That black window *is* the engine. Closing it
 stops the tool. When you are finished for the day, click it and press `Ctrl + C`.
@@ -254,8 +270,31 @@ hard maths.
 Edit the question afterwards and the badge is replaced by *"the check is out of date"* — a stale tick
 is never left pretending the new version was verified.
 
-**Watch the length.** The heading says how many seconds of speech the script contains. If it came out
-well under your target you get a warning — regenerate now, while it is still free.
+**Watch the length.** A bar shows how many seconds you have written against the length you asked for.
+If a generated script came out well under target you also get a warning — regenerate now, while it is
+still free.
+
+> The bar is an estimate at the voice's own speaking pace. **You cannot set how long a scene lasts**,
+> and there is no slider for it anywhere. A scene lasts exactly as long as its recorded narration —
+> that is the whole reason the words on screen stay locked to the voice. The real length arrives with
+> the voiceover in step 4.
+
+**Rearranging the video.** Every scene has controls in its header:
+
+| Control | What it does |
+|---|---|
+| The **kind** dropdown | What the scene is for — hook, question, options, countdown, answer, explanation, outro. |
+| **↑ ↓** | Move the scene earlier or later. |
+| **✕** | Delete it. |
+| **+ Add a scene** | Adds an explanation scene before the outro. |
+
+Changing any of these means the voiceover has to be recorded again, and the page tells you so if you
+have already made one.
+
+**On an explainer**, a scene that draws a layout shows a **🖼️ Drawn on screen** row listing every
+label in it. A label marked **⚠** is one your narration never says — the reveals are timed by
+matching the spoken words against those labels, so an unmentioned label can only appear on a guess.
+Mention it in that scene's narration, in the order shown, and the warning clears.
 
 ### Step 4 — Voice
 
@@ -283,8 +322,10 @@ Everything here is instant, free, and never touches the voiceover.
   **Nerdy** (terminal green on graph paper), **Flashy** (loud, best in a feed).
 - **Highlight colour**, **thinking time** (3–5s), **breathing room**.
 - **Show the spoken words** — the read-along text. Leave it on; most people watch on mute.
-- **Draw the diagrams** — only on explanation and outro scenes, never before the answer, because
-  anything shown earlier gives it away. As well as static ones (a formula box, comparison bars, a
+- **Draw the diagrams** — on the explanation and outro scenes, and a **setup diagram on the question
+  scene**: the circuit, the apparatus or the geometry being asked about. Anything that could hint at
+  the answer is stripped from that one automatically — no charts, no pies, no comparison panels, and
+  no caption. As well as static ones (a formula box, comparison bars, a
   side-by-side panel, an icon) Gemini can choose a **live animation** from a fixed library of ten:
   wave interference, a travelling wave, orbits, a projectile arc, a pendulum, a vector field,
   spreading particles, a graph being drawn, an atom, light refracting — plus six built for
@@ -293,6 +334,8 @@ Everything here is instant, free, and never touches the voiceover.
   stage by stage (boiler → turbine → condenser → pump), a **transformer** with turns ratio, and
   a **pie** for a fuel mix or a loss breakdown.
 - **Drift topic symbols** — faint themed emoji behind everything.
+- **Moving backdrop** — one of thirty slow animations under the whole video. See
+  [Moving backdrops](#moving-backdrops) below.
 - **Backdrop photos** — press **Find backdrop photos** and it searches Pexels and NASA per scene,
   using a search term Gemini wrote for that scene. **Nothing is applied for you**: a photo library
   will cheerfully return a beach for "gravity". Click the ones that fit, skip the rest.
@@ -349,7 +392,7 @@ length you asked for.
 
 ### Moving backdrops
 
-Step 4 has a **Moving backdrop** — a slow animation under everything, so a scene reads as produced
+Step 5 has a **Moving backdrop** — a slow animation under everything, so a scene reads as produced
 rather than as text on a flat colour. Thirty of them, in ten families: drifting particles, flow
 fields, constellations, waves, orbits, a circuit-board grid, light beams, spirals, equaliser bars
 and contour maps.
@@ -537,8 +580,9 @@ step.
 | **Pexels / NASA** *(optional)* | Free | Nothing. |
 | **Rendering** | Unlimited | Your own computer. Costs electricity. |
 
-Changing the look, re-rendering, editing text and picking photos all cost **nothing**. Only
-*Generate the question*, *Make the voiceover*, *Check the answer* and *Publish* spend anything.
+Changing the look, re-rendering, editing text and picking photos all cost **nothing**, and neither
+does **Write it myself** — that path needs no Gemini key at all. Only *Generate the question*,
+*Make the voiceover*, *Check the answer* and *Publish* spend anything.
 
 To stretch ElevenLabs credits: shorter targets, and the **Flash** voice model.
 
@@ -549,7 +593,11 @@ To stretch ElevenLabs credits: shorter targets, and the **Flash** voice model.
 | What you see | What it means | What to do |
 |---|---|---|
 | *"running scripts is disabled on this system"* | Windows blocks npm's launcher by default. | Use `npm.cmd`, or run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once. |
-| Red box: *"The helper server is not running"* | The PowerShell window was closed. | Reopen it, `cd` to the folder, `npm start`, reload the page. |
+| Red box: *"The helper server is not running"* | The helper really is not there — the page waited twenty seconds first. | Reopen PowerShell, `cd` to the folder, `npm start`, reload the page. |
+| *"Port 3030 is already taken"* | A second copy of the tool is still running. | Close the other PowerShell window. The message prints the command to force it if you cannot find it. |
+| *"Port 5173 is already in use"* | Same thing, for the web half. | As above — close the other window and start again. |
+| *"This model spent its whole budget thinking"* | A newer Flash model reasoned until it had no room left to write. | Pick a **2.5** model in the dropdown. They are the reliable choice for long scripts. |
+| *"No reply after 240 seconds"* | The model stalled. | Try again, or switch to a Flash model. |
 | *"That … API key was rejected"* | Bad key, usually a stray space. | Re-copy it from the provider and paste again. |
 | *"Your ElevenLabs character quota is used up"* | Out of voice credits this month. | Wait for the reset, shorten the video, or upgrade. |
 | *"Your DeepSeek account has no credit left"* | DeepSeek has no free tier. | Top up, or clear the key to turn the check off. |
