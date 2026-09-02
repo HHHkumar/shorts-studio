@@ -16,6 +16,9 @@ public/audio
 # Scratch output from render tests.
 stills/
 
+# The built manual is committed on purpose - it is a deliverable people share,
+# and `npm run guide:pdf` rebuilds it from USER_GUIDE.md whenever that changes.
+
 # Secrets, if you ever add a .env. API keys currently live in the browser.
 .env
 .env.local
