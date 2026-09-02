@@ -3,8 +3,13 @@
 //
 // Same job, same contract: given a system prompt, a user prompt and a schema,
 // return the parsed object. `callClaude` is a drop-in for `callGemini`, so the
-// quiz generator, the storyboard generator and the SEO writer each pick a
-// provider and are otherwise untouched.
+// quiz generator and the storyboard generator pick a provider and are otherwise
+// untouched.
+//
+// Two callers deliberately do NOT: trends.mjs needs Google Search grounding to
+// answer about this week rather than from training, and seo.mjs builds its own
+// request with its own prompt. Both still use the Gemini key, and step 2 says so
+// when Claude is selected rather than letting it surface as a failure on step 7.
 //
 // Three things differ from the Gemini path and are worth knowing:
 //
@@ -62,12 +67,14 @@ export function toJsonSchema(node) {
     // Structured output needs to know exactly which keys may appear; without
     // this the model is free to invent fields the normalizer would drop anyway.
     out.additionalProperties = false;
-    // Every property is required, with the optional ones allowed to be null.
-    // JSON Schema has no "optional but validated" middle ground here, and a
-    // half-filled object is easier for the normalizer to handle than a missing
-    // key it has to guess about.
-    const required = Array.isArray(node.required) ? node.required : Object.keys(props);
-    out.required = Object.keys(props).filter((k) => required.includes(k) || true);
+    // Every property is listed as required, ignoring the schema's own
+    // `required` array. Strict structured output pairs `additionalProperties:
+    // false` with an exhaustive `required`, so a partial list is rejected. The
+    // cost is that the model must emit the optional keys too - an empty
+    // `visual`, a `panel` on a scene that does not draw one - and the
+    // normalizers already discard those, which is why this is safe here and
+    // would not be in general.
+    out.required = Object.keys(props);
   }
 
   if (type === 'array') out.items = toJsonSchema(node.items);

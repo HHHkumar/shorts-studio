@@ -100,6 +100,14 @@ An "API key" is a long password that lets this tool use an online service on you
 2. Go to <https://elevenlabs.io/app/settings/api-keys> → **Create API key** → copy it.
 3. It looks like `sk_1a2b3c…`
 
+**Claude** (optional — an alternative writer)
+
+1. Go to <https://console.anthropic.com> → **API Keys** → **Create Key** → copy it.
+2. It looks like `sk-ant-…`
+
+Only needed if you want Claude to write the questions or storyboards instead of Gemini. See
+[Using Claude instead of Gemini](#using-claude-instead-of-gemini).
+
 **DeepSeek** (optional — double-checks the answer)
 
 1. Go to <https://platform.deepseek.com/api_keys> → **Create new API key** → copy it.
@@ -371,9 +379,15 @@ topic, because that is what people actually type into search.
 
 ### Using Claude instead of Gemini
 
-Add a **Claude API key** on step 1 (from <https://console.anthropic.com>, it starts `sk-ant-`) and a
-**Who writes it** choice appears on step 2. Pick **Claude** and the question or the storyboard is
-written by Claude instead; pick **Gemini** and nothing changes.
+Add a **Claude API key** on step 1 and a **Who writes it** choice appears on step 2. Pick **Claude**
+and the question or the storyboard is written by Claude instead; pick **Gemini** and nothing changes.
+
+The choice only appears once a Claude key is present — a button that could only fail is worse than no
+button. Remove the key later and the tool quietly goes back to Gemini; your preference is remembered,
+so pasting the key back returns you to Claude.
+
+The **Claude model** dropdown replaces the Gemini one and is built from your own key, newest and most
+capable first — Opus above Sonnet above Haiku. Opus is the default.
 
 The rest of the tool does not care which one wrote it. The review gate, the voice, the diagrams, the
 render — all identical.
@@ -618,6 +632,10 @@ To stretch ElevenLabs credits: shorter targets, and the **Flash** voice model.
 | Red box: *"The helper server is not running"* | The helper really is not there — the page waited twenty seconds first. | Reopen PowerShell, `cd` to the folder, `npm start`, reload the page. |
 | *"Port 3030 is already taken"* | A second copy of the tool is still running. | Close the other PowerShell window. The message prints the command to force it if you cannot find it. |
 | *"Port 5173 is already in use"* | Same thing, for the web half. | As above — close the other window and start again. |
+| *"That Claude API key was rejected"* | Bad key, usually a stray space. | Re-copy it from console.anthropic.com. |
+| *"Your Anthropic account has no credit left"* | Claude has no free tier. | Top up, or switch **Who writes it** back to Gemini on step 2. |
+| *"Claude declined this topic"* | A safety classifier refused it. | Reword the topic, or use Gemini for that one. |
+| The **Who writes it** choice is missing | No Claude key is set. | Paste one on step 1; the choice appears by itself. |
 | *"This model spent its whole budget thinking"* | A newer Flash model reasoned until it had no room left to write. | Pick a **2.5** model in the dropdown. They are the reliable choice for long scripts. |
 | *"No reply after 240 seconds"* | The model stalled. | Try again, or switch to a Flash model. |
 | *"That … API key was rejected"* | Bad key, usually a stray space. | Re-copy it from the provider and paste again. |
