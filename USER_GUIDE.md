@@ -13,6 +13,7 @@ your work safe with Git, and how to run the same tool on a second computer.
 2. [Setting up, once](#2-setting-up-once)
 3. [Starting it, every time](#3-starting-it-every-time)
 4. [Making a video — the seven steps](#4-making-a-video--the-seven-steps)
+   - [Using Claude instead of Gemini](#using-claude-instead-of-gemini)
    - [Writing the script yourself](#writing-the-script-yourself)
    - [Moving backdrops](#moving-backdrops)
    - [A note on units](#a-note-on-units)
@@ -38,6 +39,7 @@ Four services do the work, and they all run from one page in your browser:
 | | What it does | Needed? |
 |---|---|---|
 | **Google Gemini** | Writes the question, the four options, the explanation and the exact words the narrator says — or, in explainer mode, the whole storyboard. Also writes your title, tags and description at the end. | Required |
+| **Anthropic Claude** | An alternative writer for the question or the storyboard. Pick which one on step 2. | Optional |
 | **ElevenLabs** | Turns that script into speech. | Required |
 | **DeepSeek** | Solves the question independently and says whether it agrees with Gemini. | Optional |
 | **Pexels + NASA** | Free photos to sit behind the text. NASA needs no key. | Optional |
@@ -367,6 +369,25 @@ topic, because that is what people actually type into search.
 
 ---
 
+### Using Claude instead of Gemini
+
+Add a **Claude API key** on step 1 (from <https://console.anthropic.com>, it starts `sk-ant-`) and a
+**Who writes it** choice appears on step 2. Pick **Claude** and the question or the storyboard is
+written by Claude instead; pick **Gemini** and nothing changes.
+
+The rest of the tool does not care which one wrote it. The review gate, the voice, the diagrams, the
+render — all identical.
+
+> **Two steps still use Gemini, whichever you pick.** **What is trending now** needs live web search,
+> and the title and tags on step 7 are written by Gemini. Keep your Gemini key even if you write with
+> Claude; step 2 reminds you.
+
+**On cost:** Gemini has a generous free tier. Claude does not — it is paid per use from the first
+request. One question is a fraction of a cent; a five-minute storyboard is a few cents. Claude Opus
+is the strongest, Sonnet is cheaper and faster for straightforward questions.
+
+---
+
 ### Writing the script yourself
 
 You do not have to let Gemini write it. On step 2, set the **format** and the **target length**,
@@ -576,6 +597,7 @@ step.
 |---|---|---|
 | **Gemini** | A generous free tier | One or two requests. Realistically free. |
 | **ElevenLabs** | 10,000 characters a month | A short uses 500–900 characters (**10–20 a month free**). A five-minute explainer uses about 4,400 (**two a month**). |
+| **Claude** *(optional)* | Pay as you go, no free tier | A fraction of a cent a question; a few cents for a five-minute storyboard. |
 | **DeepSeek** *(optional)* | Pay as you go, no free tier | A fraction of a cent per check. |
 | **Pexels / NASA** *(optional)* | Free | Nothing. |
 | **Rendering** | Unlimited | Your own computer. Costs electricity. |

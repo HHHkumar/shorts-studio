@@ -5,6 +5,7 @@ interface CheckResult {
   gemini: string;
   elevenlabs: string;
   deepseek: string;
+  claude: string;
   elevenlabsQuota?: { used: number; limit: number; left: number };
 }
 
@@ -12,20 +13,24 @@ export const StepKeys: React.FC<{
   geminiKey: string;
   elevenKey: string;
   deepseekKey: string;
+  claudeKey: string;
   pexelsKey: string;
   setGeminiKey: (v: string) => void;
   setElevenKey: (v: string) => void;
   setDeepseekKey: (v: string) => void;
+  setClaudeKey: (v: string) => void;
   setPexelsKey: (v: string) => void;
   onNext: () => void;
 }> = ({
   geminiKey,
   elevenKey,
   deepseekKey,
+  claudeKey,
   pexelsKey,
   setGeminiKey,
   setElevenKey,
   setDeepseekKey,
+  setClaudeKey,
   setPexelsKey,
   onNext,
 }) => {
@@ -47,6 +52,7 @@ export const StepKeys: React.FC<{
           geminiKey: geminiKey.trim(),
           elevenKey: elevenKey.trim(),
           deepseekKey: deepseekKey.trim(),
+          claudeKey: claudeKey.trim(),
         }),
       });
       const data = await res.json();
@@ -106,6 +112,14 @@ export const StepKeys: React.FC<{
           hint="Used to turn the narration script into a human-sounding voiceover."
         />
         <TextInput
+          label="Claude API key — optional"
+          password
+          value={claudeKey}
+          onChange={setClaudeKey}
+          placeholder="sk-ant-..."
+          hint="An alternative to Gemini for writing the questions and storyboards. Pick which one to use on step 2. Leave empty to stay on Gemini."
+        />
+        <TextInput
           label="DeepSeek API key — optional"
           password
           value={deepseekKey}
@@ -147,7 +161,8 @@ export const StepKeys: React.FC<{
           kind={
             result.gemini === 'ok' &&
             result.elevenlabs === 'ok' &&
-            (!deepseekKey.trim() || result.deepseek === 'ok')
+            (!deepseekKey.trim() || result.deepseek === 'ok') &&
+            (!claudeKey.trim() || result.claude === 'ok')
               ? 'good'
               : 'warn'
           }
@@ -160,6 +175,12 @@ export const StepKeys: React.FC<{
             <b style={{ display: 'inline' }}>ElevenLabs:</b>{' '}
             {result.elevenlabs === 'ok' ? '✅ working' : '❌ ' + result.elevenlabs}
           </div>
+          {claudeKey.trim() ? (
+            <div>
+              <b style={{ display: 'inline' }}>Claude:</b>{' '}
+              {result.claude === 'ok' ? '✅ working' : '❌ ' + result.claude}
+            </div>
+          ) : null}
           {deepseekKey.trim() ? (
             <div>
               <b style={{ display: 'inline' }}>DeepSeek:</b>{' '}

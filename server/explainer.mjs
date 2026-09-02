@@ -17,7 +17,7 @@
 // carry a reveal order that could disagree with the narration.
 // ---------------------------------------------------------------------------
 
-import { callGemini } from './gemini.mjs';
+import { callModel } from './gemini.mjs';
 
 /** Layouts the storyboard may choose from, plus the plain talking beats. */
 const PANEL_KINDS = [
@@ -247,7 +247,7 @@ function buildPrompt(o) {
 }
 
 export async function generateStoryboard(apiKey, model, options) {
-  const parsed = await callGemini(apiKey, model, {
+  const parsed = await callModel(options.provider, apiKey, model, {
     system: SYSTEM,
     prompt: buildPrompt(options),
     schema: RESPONSE_SCHEMA,

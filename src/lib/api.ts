@@ -3,9 +3,14 @@ import type { AudioResult } from './timeline';
 
 export type ContentType = 'general' | 'electrical';
 
+/** Which model writes the content. Everything else is unaffected by this. */
+export type Provider = 'gemini' | 'claude';
+
 export interface TopicForm {
   /** 'mcq' = a question with a reveal. 'explainer' = a narrated storyboard. */
   videoKind?: VideoKind;
+  /** Missing on forms saved before Claude was an option; treat as 'gemini'. */
+  provider?: Provider;
   /** 'general' = curiosity-led STEM. 'electrical' = exam prep for electricalmcqs.in. */
   contentType: ContentType;
   subject: string;
@@ -145,6 +150,7 @@ export const api = {
     return res.json() as Promise<{
       ok: boolean;
       geminiModels: { id: string; label: string }[];
+      claudeModels: { id: string; label: string }[];
       voiceModels: { id: string; label: string }[];
       musicMoods: { id: string; label: string }[];
       deepseekModels: { id: string; label: string }[];
@@ -155,6 +161,13 @@ export const api = {
     const res = await fetch('/api/gemini/models', { headers: { 'x-gemini-key': apiKey } });
     const data = await safeJson(res);
     if (!res.ok) throw new Error(data.error || 'Could not load the Gemini model list.');
+    return data.models as { id: string; label: string }[];
+  },
+
+  async claudeModels(apiKey: string) {
+    const res = await fetch('/api/claude/models', { headers: { 'x-claude-key': apiKey } });
+    const data = await safeJson(res);
+    if (!res.ok) throw new Error(data.error || 'Could not load the Claude model list.');
     return data.models as { id: string; label: string }[];
   },
 
@@ -250,6 +263,7 @@ export const api = {
 
 export const DEFAULT_TOPIC_FORM: TopicForm = {
   videoKind: 'mcq',
+  provider: 'gemini',
   contentType: 'general',
   exam: 'GATE EE',
   subject: 'Physics',

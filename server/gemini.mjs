@@ -6,6 +6,7 @@
 
 import { SKETCH_NAMES, sketchPromptLines } from './sketch-catalogue.mjs';
 import { fetchRetrying } from './retry.mjs';
+import { callClaude } from './claude.mjs';
 
 const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models';
 
@@ -431,8 +432,21 @@ function rank(id) {
 // Generation
 // ---------------------------------------------------------------------------
 
+/**
+ * One call to whichever model the creator picked.
+ *
+ * The two providers take the same four things and return the same parsed
+ * object, so everything above this line - the quiz prompt, the storyboard
+ * prompt, the schemas, the normalizers - is written once and does not care.
+ */
+export function callModel(provider, apiKey, model, request) {
+  return provider === 'claude'
+    ? callClaude(apiKey, model, request)
+    : callGemini(apiKey, model, request);
+}
+
 export async function generateContent(apiKey, model, options) {
-  const parsed = await callGemini(apiKey, model, {
+  const parsed = await callModel(options.provider, apiKey, model, {
     system: SYSTEM,
     prompt: buildPrompt(options),
     schema: RESPONSE_SCHEMA,

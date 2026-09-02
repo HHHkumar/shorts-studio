@@ -31,9 +31,11 @@ export const App: React.FC = () => {
   const [geminiKey, setGeminiKey] = useStoredState('geminiKey', '');
   const [elevenKey, setElevenKey] = useStoredState('elevenKey', '');
   const [deepseekKey, setDeepseekKey] = useStoredState('deepseekKey', '');
+  const [claudeKey, setClaudeKey] = useStoredState('claudeKey', '');
   const [pexelsKey, setPexelsKey] = useStoredState('pexelsKey', '');
   const [deepseekModel, setDeepseekModel] = useStoredState('deepseekModel', 'deepseek-chat');
   const [geminiModel, setGeminiModel] = useStoredState('geminiModel', 'gemini-2.5-flash');
+  const [claudeModel, setClaudeModel] = useStoredState('claudeModel', 'claude-opus-5');
   const [form, setForm] = useStoredState<TopicForm>('topicForm', DEFAULT_TOPIC_FORM);
   const [voiceSettings, setVoiceSettings] = useStoredState<VoiceSettings>('voice', DEFAULT_VOICE_SETTINGS);
   const [design, setDesign] = useStoredState<DesignSettings>('design', DEFAULT_DESIGN);
@@ -44,6 +46,7 @@ export const App: React.FC = () => {
   const [channelName, setChannelName] = useStoredState('channelName', '');
 
   const [models, setModels] = useState<{ id: string; label: string }[]>([]);
+  const [claudeModels, setClaudeModels] = useState<{ id: string; label: string }[]>([]);
   const [voiceModels, setVoiceModels] = useState<{ id: string; label: string }[]>([]);
   const [musicMoods, setMusicMoods] = useState<{ id: string; label: string }[]>([]);
   const [deepseekModels, setDeepseekModels] = useState<{ id: string; label: string }[]>([]);
@@ -71,6 +74,7 @@ export const App: React.FC = () => {
           const data = await res.json();
           if (cancelled) return;
           setModels(data.geminiModels || []);
+          setClaudeModels(data.claudeModels || []);
           setVoiceModels(data.voiceModels || []);
           setMusicMoods(data.musicMoods || []);
           setDeepseekModels(data.deepseekModels || []);
@@ -117,6 +121,26 @@ export const App: React.FC = () => {
       cancelled = true;
     };
   }, [geminiKey, setGeminiModel]);
+
+  // Same for Claude, against the user's own key.
+  useEffect(() => {
+    const key = claudeKey.trim();
+    if (key.length < 10) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const list = await api.claudeModels(key);
+        if (cancelled || !list.length) return;
+        setClaudeModels(list);
+        setClaudeModel((current) => (list.some((m) => m.id === current) ? current : list[0].id));
+      } catch {
+        // The static list stays; /api/generate explains any real problem.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [claudeKey, setClaudeModel]);
 
   const hasAudio = Object.keys(audio).length > 0;
 
@@ -196,10 +220,12 @@ export const App: React.FC = () => {
               geminiKey={geminiKey}
               elevenKey={elevenKey}
               deepseekKey={deepseekKey}
+              claudeKey={claudeKey}
               pexelsKey={pexelsKey}
               setGeminiKey={setGeminiKey}
               setElevenKey={setElevenKey}
               setDeepseekKey={setDeepseekKey}
+              setClaudeKey={setClaudeKey}
               setPexelsKey={setPexelsKey}
               onNext={() => go(1)}
             />
@@ -213,6 +239,10 @@ export const App: React.FC = () => {
               geminiModel={geminiModel}
               setGeminiModel={setGeminiModel}
               geminiModels={models}
+              claudeKey={claudeKey}
+              claudeModel={claudeModel}
+              setClaudeModel={setClaudeModel}
+              claudeModels={claudeModels}
               design={design}
               setDesign={setDesign}
               onBack={() => go(0)}

@@ -19,6 +19,7 @@ import { spawn } from 'node:child_process';
 
 import { generateContent, listModels } from './gemini.mjs';
 import { generateStoryboard } from './explainer.mjs';
+import { CLAUDE_MODELS, DEFAULT_CLAUDE_MODEL, listClaudeModels } from './claude.mjs';
 import { listVoices, speak, VOICE_MODELS } from './tts.mjs';
 import { jobs as renderJobs, startRender, paths } from './render.mjs';
 import { ensureAudioAssets, MUSIC_MOODS } from './audio-gen.mjs';
@@ -63,6 +64,7 @@ app.get('/api/health', (_req, res) => {
     geminiModels: GEMINI_MODELS,
     voiceModels: VOICE_MODELS,
     musicMoods: MUSIC_MOODS,
+    claudeModels: CLAUDE_MODELS,
     deepseekModels: DEEPSEEK_MODELS,
   });
 });
@@ -90,6 +92,12 @@ app.post('/api/music', express.raw({ type: '*/*', limit: '40mb' }), ok(async (re
   res.json({ src: 'generated/music/' + fileName, name: raw, bytes: req.body.length });
 }));
 
+app.get('/api/claude/models', ok(async (req, res) => {
+  const apiKey = req.header('x-claude-key');
+  if (!apiKey) throw new Error('No Claude API key was sent. Add it on the Keys step.');
+  res.json({ models: await listClaudeModels(apiKey) });
+}));
+
 // The real list, straight from the user's own key. The static list above is only
 // a fallback for the moment before a key has been entered.
 app.get('/api/gemini/models', ok(async (req, res) => {
@@ -105,8 +113,8 @@ app.get('/api/gemini/models', ok(async (req, res) => {
 // --- key check (free: it only lists models, it does not generate anything) ---
 
 app.post('/api/check-keys', ok(async (req, res) => {
-  const { geminiKey, elevenKey, deepseekKey } = req.body || {};
-  const result = { gemini: 'skipped', elevenlabs: 'skipped', deepseek: 'skipped' };
+  const { geminiKey, elevenKey, deepseekKey, claudeKey } = req.body || {};
+  const result = { gemini: 'skipped', elevenlabs: 'skipped', deepseek: 'skipped', claude: 'skipped' };
 
   if (geminiKey) {
     const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models', {
@@ -135,6 +143,15 @@ app.post('/api/check-keys', ok(async (req, res) => {
         r.status === 401
           ? 'That ElevenLabs key was rejected. Copy it again from elevenlabs.io.'
           : 'ElevenLabs replied with error ' + r.status + '.';
+    }
+  }
+
+  if (claudeKey) {
+    try {
+      await listClaudeModels(claudeKey);
+      result.claude = 'ok';
+    } catch (err) {
+      result.claude = (err && err.message) || 'That Claude key was rejected.';
     }
   }
 
@@ -200,15 +217,20 @@ app.post('/api/validate', ok(async (req, res) => {
 
 app.post('/api/generate', ok(async (req, res) => {
   const { apiKey, model, options } = req.body || {};
-  if (!apiKey) throw new Error('No Gemini API key was sent. Add it on the Keys step.');
+  if (!apiKey) {
+    throw new Error('No ' + ((options || {}).provider === 'claude' ? 'Claude' : 'Gemini')
+      + ' API key was sent. Add it on the Keys step.');
+  }
   const o = options || {};
   const explainer = o.videoKind === 'explainer';
-  const chosen = model || 'gemini-2.5-flash';
+  const claude = o.provider === 'claude';
+  const chosen = model || (claude ? DEFAULT_CLAUDE_MODEL : 'gemini-2.5-flash');
 
   // Say what is happening before it happens. A long explainer can take a
   // couple of minutes, and a silent window is indistinguishable from a hang.
   console.log(
-    '[generate] ' + (explainer ? 'storyboard' : 'quiz') + ' - ' + chosen
+    '[generate] ' + (explainer ? 'storyboard' : 'quiz')
+    + ' via ' + (claude ? 'Claude' : 'Gemini') + ' - ' + chosen
     + ', ' + (o.targetSeconds || '?') + 's target'
     + (explainer ? ' - long scripts take a while, please wait' : ''),
   );

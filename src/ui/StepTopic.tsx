@@ -41,6 +41,10 @@ export const StepTopic: React.FC<{
   geminiModel: string;
   setGeminiModel: (v: string) => void;
   geminiModels: { id: string; label: string }[];
+  claudeKey: string;
+  claudeModel: string;
+  setClaudeModel: (v: string) => void;
+  claudeModels: { id: string; label: string }[];
   design: DesignSettings;
   setDesign: (updater: (prev: DesignSettings) => DesignSettings) => void;
   onGenerated: (content: QuizContent) => void;
@@ -52,6 +56,10 @@ export const StepTopic: React.FC<{
   geminiModel,
   setGeminiModel,
   geminiModels,
+  claudeKey,
+  claudeModel,
+  setClaudeModel,
+  claudeModels,
   design,
   setDesign,
   onGenerated,
@@ -70,6 +78,13 @@ export const StepTopic: React.FC<{
   const examMode = form.contentType === 'electrical';
 
   const explainerMode = form.videoKind === 'explainer';
+
+  // Claude is only offerable once a key for it exists; without one the choice
+  // would be a button that fails.
+  const hasClaude = claudeKey.trim().length > 10;
+  const useClaude = hasClaude && form.provider === 'claude';
+  const writerKey = useClaude ? claudeKey : geminiKey;
+  const writerModel = useClaude ? claudeModel : geminiModel;
 
   /**
    * An explainer needs room to breathe: a wide frame and at least three
@@ -107,9 +122,10 @@ export const StepTopic: React.FC<{
     setError(null);
     try {
       // The format decides the whole length budget, so it travels with the form.
-      const { content } = await api.generate(geminiKey.trim(), geminiModel, {
+      const { content } = await api.generate(writerKey.trim(), writerModel, {
         ...form,
         videoKind: form.videoKind || 'mcq',
+        provider: useClaude ? 'claude' : 'gemini',
         orientation: design.orientation,
       });
       onGenerated(content);
@@ -279,14 +295,58 @@ export const StepTopic: React.FC<{
           onChange={(v) => set('diagramDensity')(v as 'sparse' | 'balanced' | 'rich')}
           hint="Charts, circuits and animations drawn into the video. Rich puts one on nearly every scene."
         />
-        <Select
-          label="Gemini model"
-          value={geminiModel}
-          options={geminiModels}
-          onChange={setGeminiModel}
-          hint="Flash is fast and cheap. Pro is smarter for hard maths."
-        />
+        {useClaude ? (
+          <Select
+            label="Claude model"
+            value={claudeModel}
+            options={claudeModels}
+            onChange={setClaudeModel}
+            hint="Opus is the strongest. Sonnet is faster and cheaper for straightforward questions."
+          />
+        ) : (
+          <Select
+            label="Gemini model"
+            value={geminiModel}
+            options={geminiModels}
+            onChange={setGeminiModel}
+            hint="Flash is fast and cheap. Pro is smarter for hard maths."
+          />
+        )}
       </div>
+
+      {hasClaude ? (
+        <>
+          <div className="section-title">Who writes it</div>
+          <div className="tiles" style={{ gridTemplateColumns: '1fr 1fr' }}>
+            <button
+              className={'tile' + (!useClaude ? ' active' : '')}
+              onClick={() => set('provider')('gemini')}
+            >
+              <div className="t">◆ Gemini</div>
+              <div className="s">
+                The default. Generous free tier, and the only one that can search the live web for
+                trending topics.
+              </div>
+            </button>
+            <button
+              className={'tile' + (useClaude ? ' active' : '')}
+              onClick={() => set('provider')('claude')}
+            >
+              <div className="t">✳ Claude</div>
+              <div className="s">
+                Writes the question or the storyboard instead. Paid per use — no free tier.
+              </div>
+            </button>
+          </div>
+          {useClaude ? (
+            <Note kind="info" title="Two steps still use Gemini">
+              <b>What is trending now</b> below needs live web search, and the title and tags on step
+              7 are written by Gemini. Both still use your Gemini key; everything else on this step
+              goes to Claude.
+            </Note>
+          ) : null}
+        </>
+      ) : null}
 
       <div className="section-title">Curiosity high — what is trending now</div>
       <p style={{ color: 'var(--dim)', fontSize: 14, marginTop: -4, marginBottom: 12 }}>
