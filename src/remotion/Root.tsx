@@ -5,7 +5,7 @@ import { DEFAULT_DESIGN } from '../lib/theme';
 import { dimensionsFor, FPS, PORTRAIT } from '../lib/types';
 import type { VideoProps } from '../lib/types';
 import { QuizVideo } from './QuizVideo';
-import { Thumbnail, THUMBNAIL_ID, THUMB_HEIGHT, THUMB_WIDTH } from './Thumbnail';
+import { Thumbnail, THUMBNAIL_ID, thumbSizeFor, type ThumbnailProps } from './Thumbnail';
 
 export const COMPOSITION_ID = 'QuizVideo';
 
@@ -39,10 +39,13 @@ export const RemotionRoot: React.FC = () => {
     <Composition
       id={THUMBNAIL_ID}
       component={Thumbnail}
-      width={THUMB_WIDTH}
-      height={THUMB_HEIGHT}
+      width={thumbSizeFor('landscape').width}
+      height={thumbSizeFor('landscape').height}
       fps={FPS}
       durationInFrames={1}
+      // The shape is a prop, so one composition covers the YouTube cover image
+      // and the portrait one a Short shows.
+      calculateMetadata={({ props }: { props: ThumbnailProps }) => thumbSizeFor(props.shape)}
       defaultProps={{
         content: makeDemoProps().content,
         design: DEFAULT_DESIGN,
@@ -52,6 +55,7 @@ export const RemotionRoot: React.FC = () => {
         figure: '',
         symbol: '🌙',
         layout: 'question' as const,
+        shape: 'landscape' as const,
       }}
     />
     </>

@@ -380,15 +380,27 @@ topic, because that is what people actually type into search.
 
 ### Making a thumbnail
 
-Step 7 has a **Thumbnail** section. It renders a 1280 × 720 image in the same colours as the video,
-on your own machine, so it costs nothing and you can make as many as you like.
+Step 7 has a **Thumbnail** section. It renders an image in the same colours as the video, on your own
+machine, so it costs nothing and you can make as many as you like.
+
+**Pick the shape first.** It defaults to the shape of the video you just made.
+
+| Shape | Size | For |
+|---|---|---|
+| **16:9** | 1280 × 720 | The YouTube cover image on a normal video. |
+| **9:16** | 1080 × 1920 | Shorts, Reels and TikTok. |
+
+The layouts adapt rather than being cropped: in 9:16 the **split** symbol moves above the text and
+the **question** mark sits on its own line, because a narrow frame cut into two columns leaves both
+too thin to carry anything. Everything is kept to the middle of a portrait frame on purpose — the
+apps put their own title, channel name and buttons over the top and bottom.
 
 | Layout | Use it when |
 |---|---|
 | **Statement** | One bold claim. Works for most videos. |
 | **Question** | A huge **?** beside the text. Classic quiz thumbnail. |
 | **Number** | The answer is a figure — 8,760 · 60% · 50 Hz. The strongest of the four when it fits. |
-| **Split** | Text on the left, one big emoji on the right. |
+| **Split** | Text and one big emoji — side by side in 16:9, stacked in 9:16. |
 
 Wrap a word in `*asterisks*` to colour it with your accent — `hits the ground *first*` puts *first* in
 the highlight colour. It is the single thing that makes a thumbnail read as designed rather than
@@ -396,8 +408,9 @@ typed.
 
 If you wrote the title and tags first, the **thumbnail text** Gemini suggested is filled in for you.
 
-> **Judge it in the small box.** Two previews appear: one about 320 pixels wide and one full size.
-> YouTube shows a thumbnail at roughly **210 pixels** in a feed, so the small one is the honest test.
+> **Judge it in the small box.** Two previews appear: one at the width the thing is really seen at
+> — about **320** pixels for a 16:9 row, about **200** for a portrait shelf — and one full size. The
+> small one is the honest test.
 > If you cannot read it at a glance there, cut words out — six or fewer is the target, and the field
 > warns you above that. Shrinking the type to fit more in is what makes thumbnails invisible.
 

@@ -248,11 +248,12 @@ app.post('/api/generate', ok(async (req, res) => {
 // --- the thumbnail ----------------------------------------------------------
 
 app.post('/api/thumbnail', ok(async (req, res) => {
-  const { content, design, title, kicker, badge, figure, symbol, layout } = req.body || {};
+  const { content, design, title, kicker, badge, figure, symbol, layout, shape } = req.body || {};
   if (!content) throw new Error('Generate a video before making a thumbnail for it.');
 
   const started = Date.now();
-  console.log('[thumbnail] rendering the ' + (layout || 'statement') + ' layout...');
+  console.log('[thumbnail] rendering the ' + (layout || 'statement') + ' layout, '
+    + (shape === 'portrait' ? '9:16' : '16:9') + '...');
   const out = await renderThumbnail({
     content,
     design,
@@ -262,6 +263,7 @@ app.post('/api/thumbnail', ok(async (req, res) => {
     figure: figure || '',
     symbol: symbol || '',
     layout: layout || 'statement',
+    shape: shape === 'portrait' ? 'portrait' : 'landscape',
   });
   console.log('[thumbnail] done in ' + Math.round((Date.now() - started) / 1000) + 's - '
     + Math.round(out.bytes / 1024) + ' KB');

@@ -180,6 +180,7 @@ export const api = {
     figure: string;
     symbol: string;
     layout: string;
+    shape: string;
   }) {
     return post<{ fileName: string; url: string; bytes: number }>('/api/thumbnail', body);
   },

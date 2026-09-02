@@ -6,15 +6,20 @@ import { ErrorNote, Note, Select, Spinner, TextInput } from './controls';
 // ---------------------------------------------------------------------------
 // The thumbnail.
 //
-// Rendered by Remotion at YouTube's 1280x720, using the same theme as the
-// video, so the two look like one piece of work rather than a video and a
-// separate poster somebody made afterwards.
+// Rendered by Remotion in the same theme as the video, so the two look like one
+// piece of work rather than a video and a separate poster somebody made
+// afterwards. Two shapes: 16:9 for a YouTube cover, 9:16 for a Short.
 //
-// The preview below is shown at 320 pixels wide on purpose. YouTube shows a
-// thumbnail at roughly 210 in a feed, and a design checked at full size is
-// checked at the one size nobody sees it. If the text is not readable in that
-// small box, it is not readable.
+// The small preview is deliberately the width the thing is actually seen at -
+// about 320 for a 16:9 row, about 200 for a portrait shelf. A design checked at
+// full size is checked at the one size nobody sees it, so that box, not the big
+// one, is the test.
 // ---------------------------------------------------------------------------
+
+const SHAPES = [
+  { id: 'landscape', label: '16:9 — YouTube cover image' },
+  { id: 'portrait', label: '9:16 — Shorts, Reels, TikTok' },
+];
 
 const LAYOUTS = [
   { id: 'statement', label: 'Statement — one bold claim' },
@@ -35,6 +40,8 @@ export const ThumbnailMaker: React.FC<{
   const [figure, setFigure] = useState('');
   const [symbol, setSymbol] = useState((content.motifSymbols || [])[0] || '');
   const [layout, setLayout] = useState('statement');
+  // Default to the shape of the video being made - that is the cover it needs.
+  const [shape, setShape] = useState(design.orientation === 'landscape' ? 'landscape' : 'portrait');
 
   const [url, setUrl] = useState('');
   const [busy, setBusy] = useState(false);
@@ -47,7 +54,7 @@ export const ThumbnailMaker: React.FC<{
     setError(null);
     try {
       const out = await api.thumbnail({
-        content, design, title, kicker, badge, figure, symbol, layout,
+        content, design, title, kicker, badge, figure, symbol, layout, shape,
       });
       // The filename changes every time, so the browser cannot show a stale one.
       setUrl(out.url);
@@ -62,11 +69,18 @@ export const ThumbnailMaker: React.FC<{
     <>
       <div className="section-title">Thumbnail</div>
       <p className="lede" style={{ marginTop: 0 }}>
-        A 1280 × 720 image in the same colours as the video. Rendered on your machine, so it costs
-        nothing and you can make as many as you like.
+        An image in the same colours as the video — 1280 × 720 for YouTube, or 1080 × 1920 for a
+        Short. Rendered on your machine, so it costs nothing and you can make as many as you like.
       </p>
 
       <div className="grid">
+        <Select
+          label="Shape"
+          value={shape}
+          options={SHAPES}
+          onChange={setShape}
+          hint="Defaults to the shape of the video you just made. A Short needs the portrait one."
+        />
         <Select
           label="Layout"
           value={layout}
@@ -111,7 +125,7 @@ export const ThumbnailMaker: React.FC<{
             value={symbol}
             onChange={setSymbol}
             placeholder="⚡"
-            hint="One emoji, drawn large on the right."
+            hint={shape === 'portrait' ? 'One emoji, drawn large above the text.' : 'One emoji, drawn large on the right.'}
           />
         ) : (
           <div />
@@ -152,7 +166,12 @@ export const ThumbnailMaker: React.FC<{
               <img
                 src={url}
                 alt="The thumbnail"
-                style={{ width: 320, borderRadius: 8, border: '1px solid var(--line)', display: 'block' }}
+                style={{
+                  width: shape === 'portrait' ? 200 : 320,
+                  borderRadius: 8,
+                  border: '1px solid var(--line)',
+                  display: 'block',
+                }}
               />
               <div style={{ fontSize: 12.5, color: 'var(--dim)', marginTop: 6 }}>
                 Roughly feed size — judge it here
@@ -162,17 +181,26 @@ export const ThumbnailMaker: React.FC<{
               <img
                 src={url}
                 alt="The thumbnail, larger"
-                style={{ width: '100%', borderRadius: 10, border: '1px solid var(--line)', display: 'block' }}
+                style={{
+                  // Capped by height in portrait: a 1080x1920 at full column
+                  // width is taller than the screen and pushes the note off it.
+                  width: shape === 'portrait' ? 'auto' : '100%',
+                  maxHeight: shape === 'portrait' ? 460 : undefined,
+                  borderRadius: 10,
+                  border: '1px solid var(--line)',
+                  display: 'block',
+                }}
               />
               <div style={{ fontSize: 12.5, color: 'var(--dim)', marginTop: 6 }}>
-                Full size — 1280 × 720
+                Full size — {shape === 'portrait' ? '1080 × 1920' : '1280 × 720'}
               </div>
             </div>
           </div>
 
           <Note kind="info" title="Read the small one, not the big one">
-            YouTube shows a thumbnail about that wide in a feed. If you cannot read it in the left
-            box at a glance, cut words out — shrinking the type is what makes thumbnails invisible.
+            A thumbnail is shown about that wide wherever it appears — a YouTube feed, a Shorts
+            shelf. If you cannot read it in the left box at a glance, cut words out; shrinking the
+            type to fit more in is what makes thumbnails invisible.
           </Note>
         </>
       ) : null}
