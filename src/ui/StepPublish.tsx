@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
 import { api, contentFingerprint, type SeoPack, type TopicForm } from '../lib/api';
-import type { QuizContent, DesignSettings } from '../lib/types';
+import type { QuizContent, DesignSettings, VideoProps } from '../lib/types';
 import { ErrorNote, Note, Spinner, TextInput } from './controls';
 import { ThumbnailMaker } from './ThumbnailMaker';
+
+interface KitResult {
+  url: string;
+  name: string;
+  bytes: number;
+  chapters: number;
+  hasThumbnail: boolean;
+}
 
 /**
  * The upload form, prepared.
@@ -85,6 +93,8 @@ export const StepPublish: React.FC<{
   setSeo: (s: SeoPack | null) => void;
   orientation: string;
   design: DesignSettings;
+  /** The built timeline, which is where real chapter timestamps come from. */
+  videoProps: VideoProps | null;
   onBack: () => void;
 }> = ({
   content,
@@ -97,11 +107,17 @@ export const StepPublish: React.FC<{
   setSeo,
   orientation,
   design,
+  videoProps,
   onBack,
 }) => {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [titleIndex, setTitleIndex] = useState(0);
+
+  const [thumbnailFile, setThumbnailFile] = useState('');
+  const [kit, setKit] = useState<KitResult | null>(null);
+  const [packing, setPacking] = useState(false);
+  const [kitError, setKitError] = useState<string | null>(null);
 
   // Metadata describes one specific question; editing the question invalidates it.
   const fingerprint = contentFingerprint(content);
@@ -123,6 +139,28 @@ export const StepPublish: React.FC<{
       setError(e instanceof Error ? e.message : String(e));
     } finally {
       setBusy(false);
+    }
+  };
+
+  const packKit = async () => {
+    setPacking(true);
+    setKitError(null);
+    try {
+      const out = await api.publishKit({
+        content,
+        design,
+        seo: fresh,
+        title: fresh?.titles[titleIndex] || '',
+        // The timeline, not the script: chapter marks are real frame positions.
+        scenes: videoProps?.scenes || [],
+        fps: videoProps?.fps || 30,
+        thumbnailFile,
+      });
+      setKit(out);
+    } catch (e) {
+      setKitError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setPacking(false);
     }
   };
 
@@ -221,7 +259,57 @@ export const StepPublish: React.FC<{
         </>
       ) : null}
 
-      <ThumbnailMaker content={content} design={design} suggested={fresh?.thumbnailText} />
+      <ThumbnailMaker
+        content={content}
+        design={design}
+        suggested={fresh?.thumbnailText}
+        onThumbnail={setThumbnailFile}
+      />
+
+      <div className="section-title">The upload kit</div>
+      <p className="lede" style={{ marginTop: 0 }}>
+        Everything above in one zip, saved beside your video. Useful because the boxes on this page
+        are gone the moment you close the tab, and the upload usually happens later.
+      </p>
+
+      <div className="actions">
+        <button className="btn primary" onClick={packKit} disabled={packing || !fresh}>
+          {packing ? <Spinner /> : '📦'} {kit ? 'Pack it again' : 'Pack the upload kit'}
+        </button>
+        {kit ? (
+          <a className="btn" href={kit.url} download={kit.name}>
+            ⬇ Save {kit.name}
+          </a>
+        ) : null}
+      </div>
+
+      <ErrorNote error={kitError} />
+
+      {!fresh ? (
+        <Note kind="info">
+          Write the metadata first — the kit is built out of it.
+        </Note>
+      ) : null}
+
+      {kit ? (
+        <Note kind="good" title={'Packed — ' + Math.max(1, Math.round(kit.bytes / 1024)) + ' KB'}>
+          <p style={{ marginTop: 0 }}>
+            Open <code>UPLOAD.txt</code> first: it is the whole form in order, with the character
+            counts already checked. The single fields are in their own files beside it for copying,
+            and <code>metadata.json</code> is there if you ever script the upload.
+          </p>
+          <p style={{ marginBottom: 0 }}>
+            {kit.chapters
+              ? kit.chapters + ' chapters were worked out from the real scene timings and are '
+                + 'already inside the description — you cannot type those accurately by hand.'
+              : 'No chapters: YouTube needs at least three, each ten seconds or longer, so short '
+                + 'videos do not get them.'}
+            {kit.hasThumbnail
+              ? ' The thumbnail is in there too.'
+              : ' Make a thumbnail above and pack again to include it.'}
+          </p>
+        </Note>
+      ) : null}
 
       <div className="actions">
         <button className="btn ghost" onClick={onBack}>

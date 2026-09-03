@@ -20,6 +20,7 @@ import { spawn } from 'node:child_process';
 import { generateContent, listModels } from './gemini.mjs';
 import { checkMotion, generateStoryboard } from './explainer.mjs';
 import { attachIcons } from './icons.mjs';
+import { buildPublishKit } from './publish-kit.mjs';
 import { CLAUDE_MODELS, DEFAULT_CLAUDE_MODEL, listClaudeModels } from './claude.mjs';
 import { listVoices, speak, VOICE_MODELS } from './tts.mjs';
 import { jobs as renderJobs, renderThumbnail, startRender, paths } from './render.mjs';
@@ -261,6 +262,38 @@ app.post('/api/generate', ok(async (req, res) => {
 
   console.log('[generate] done - ' + content.script.length + ' scenes');
   res.json({ content });
+}));
+
+// --- the upload kit ---------------------------------------------------------
+
+app.post('/api/publish-kit', ok(async (req, res) => {
+  const { content, design, seo, title, scenes, fps, thumbnailFile } = req.body || {};
+  if (!content) throw new Error('Generate a video before packing its upload kit.');
+
+  let thumbnail = null;
+  if (thumbnailFile) {
+    // basename only: this arrives from the page, and a name like
+    // "../../server/index.mjs" would otherwise read whatever it liked.
+    const file = path.join(paths.OUT_DIR, path.basename(String(thumbnailFile)));
+    if (fs.existsSync(file)) thumbnail = fs.readFileSync(file);
+    else console.log('[kit] the thumbnail has gone from out/, packing without it');
+  }
+
+  const kit = buildPublishKit({ content, design, seo, title, scenes, fps, thumbnail });
+  fs.mkdirSync(paths.OUT_DIR, { recursive: true });
+  fs.writeFileSync(path.join(paths.OUT_DIR, kit.name), kit.buffer);
+
+  console.log('[kit] ' + kit.name + ' - ' + Math.round(kit.buffer.length / 1024) + ' KB, '
+    + (kit.chapters ? kit.chapters + ' chapters' : 'no chapters')
+    + (kit.hasThumbnail ? ', with the thumbnail' : ', no thumbnail yet'));
+
+  res.json({
+    url: '/out/' + encodeURIComponent(kit.name),
+    name: kit.name,
+    bytes: kit.buffer.length,
+    chapters: kit.chapters,
+    hasThumbnail: kit.hasThumbnail,
+  });
 }));
 
 // --- the thumbnail ----------------------------------------------------------

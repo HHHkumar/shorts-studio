@@ -44,7 +44,7 @@ const PREFERRED = [
 ];
 
 const RANK = new Map(PREFERRED.map((p, i) => [p.prefix, i]));
-const NEEDS_ATTRIBUTION = new Set(PREFERRED.filter((p) => p.attribution).map((p) => p.prefix));
+export const NEEDS_ATTRIBUTION = new Set(PREFERRED.filter((p) => p.attribution).map((p) => p.prefix));
 
 /** Cache path. Outside public/, which is wiped between jobs. */
 function cacheFile(root) {

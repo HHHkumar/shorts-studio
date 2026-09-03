@@ -329,6 +329,7 @@ export const App: React.FC = () => {
               setSeo={setSeo}
               orientation={design.orientation}
               design={design}
+              videoProps={videoProps}
               onBack={() => go(5)}
             />
           ) : null}

@@ -33,7 +33,9 @@ export const ThumbnailMaker: React.FC<{
   design: DesignSettings;
   /** Gemini's suggested wording, when the metadata has been written. */
   suggested?: string;
-}> = ({ content, design, suggested }) => {
+  /** Told the filename whenever one is made, so the upload kit can include it. */
+  onThumbnail?: (fileName: string) => void;
+}> = ({ content, design, suggested, onThumbnail }) => {
   const [title, setTitle] = useState(suggested || content.hook || content.question || '');
   const [kicker, setKicker] = useState(content.subject || '');
   const [badge, setBadge] = useState('');
@@ -58,6 +60,7 @@ export const ThumbnailMaker: React.FC<{
       });
       // The filename changes every time, so the browser cannot show a stale one.
       setUrl(out.url);
+      if (onThumbnail) onThumbnail(out.fileName);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {

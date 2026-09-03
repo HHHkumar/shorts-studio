@@ -9,7 +9,7 @@
 // Model output cannot be exercised here - the keys live in the browser - so
 // this feeds the pipeline a storyboard shaped exactly like a model's reply and
 // puts it through every real stage after that: the normalizer, the motion
-// check, the icon fetch, the timeline, and the renderer itself.
+// check, the icon fetch, the timeline, the upload kit and the renderer.
 //
 // The point is that every function called below is the same one a live
 // generation calls. Nothing is stubbed except the model and the voice.
@@ -21,6 +21,7 @@ import { bundle } from '@remotion/bundler';
 import { ensureBrowser, renderMedia, selectComposition } from '@remotion/renderer';
 import { checkMotion, normalizeStoryboard } from '../server/explainer.mjs';
 import { attachIcons } from '../server/icons.mjs';
+import { buildPublishKit } from '../server/publish-kit.mjs';
 import { buildScenes } from '../src/lib/timeline.ts';
 import { DEFAULT_DESIGN } from '../src/lib/theme.ts';
 
@@ -172,7 +173,37 @@ check('the artwork survived the timeline',
 
 const props = { content, design, scenes, fps: FPS, totalDurationInFrames };
 
-console.log('\n=== 5. the renderer ===');
+console.log('\n=== 5. the upload kit ===');
+const SEO = {
+  titles: ['How does a fish get past a dam?', 'The ladder that saved a salmon run'],
+  description: 'A wall of concrete can end a salmon run that is ten thousand years old. '
+    + 'Here is what a fish ladder actually does about it.',
+  tags: ['rivers', 'salmon', 'fish ladder', 'civil engineering'],
+  hashtags: ['#rivers', '#engineering'],
+  pinnedComment: 'Which bit of infrastructure should we pull apart next?',
+  thumbnailText: 'A way over',
+};
+const kit = buildPublishKit({
+  content,
+  design,
+  seo: SEO,
+  title: SEO.titles[0],
+  scenes,
+  fps: FPS,
+  thumbnail: Buffer.from('89504e470d0a1a0a', 'hex'),
+});
+check('the kit is a well formed zip',
+  kit.buffer.readUInt32LE(0) === 0x04034b50
+  && kit.buffer.readUInt32LE(kit.buffer.length - 22) === 0x06054b50);
+check('it carries the thumbnail', kit.hasThumbnail);
+check('chapters were worked out from the real timeline', kit.chapters >= 3, kit.chapters + ' chapters');
+
+const kitPath = path.join(ROOT, 'out', kit.name);
+fs.mkdirSync(path.dirname(kitPath), { recursive: true });
+fs.writeFileSync(kitPath, kit.buffer);
+console.log('  ' + kitPath + '  (' + Math.round(kit.buffer.length / 1024) + ' KB)');
+
+console.log('\n=== 6. the renderer ===');
 await ensureBrowser();
 const serveUrl = await bundle({
   entryPoint: path.join(ROOT, 'src', 'remotion', 'index.ts'),

@@ -1,4 +1,4 @@
-import type { DesignSettings, QuizContent, ScriptLine, VideoKind, VideoProps } from './types';
+import type { DesignSettings, QuizContent, Scene, ScriptLine, VideoKind, VideoProps } from './types';
 import type { AudioResult } from './timeline';
 
 export type ContentType = 'general' | 'electrical';
@@ -183,6 +183,31 @@ export const api = {
     shape: string;
   }) {
     return post<{ fileName: string; url: string; bytes: number }>('/api/thumbnail', body);
+  },
+
+  /**
+   * Everything needed at the upload form, in one zip beside the .mp4.
+   *
+   * `scenes` is passed so the kit can work out real chapter timestamps - they
+   * come from the timeline that produced the video, and cannot be reconstructed
+   * from the content alone.
+   */
+  publishKit(body: {
+    content: QuizContent;
+    design: DesignSettings;
+    seo: SeoPack | null;
+    title: string;
+    scenes: Scene[];
+    fps: number;
+    thumbnailFile: string;
+  }) {
+    return post<{
+      url: string;
+      name: string;
+      bytes: number;
+      chapters: number;
+      hasThumbnail: boolean;
+    }>('/api/publish-kit', body);
   },
 
   async uploadMusic(file: File) {

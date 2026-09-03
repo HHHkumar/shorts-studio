@@ -14,6 +14,7 @@ your work safe with Git, and how to run the same tool on a second computer.
 3. [Starting it, every time](#3-starting-it-every-time)
 4. [Making a video — the seven steps](#4-making-a-video--the-seven-steps)
    - [Making a thumbnail](#making-a-thumbnail)
+   - [The upload kit](#the-upload-kit)
    - [Using Claude instead of Gemini](#using-claude-instead-of-gemini)
    - [Writing the script yourself](#writing-the-script-yourself)
    - [Scenes that move](#scenes-that-move)
@@ -372,8 +373,9 @@ saved into the `out` folder automatically.
 
 ### Step 7 — Publish
 
-Gemini writes your upload kit from the finished video: **several title options** to choose from, a
-description, tags, hashtags, suggested thumbnail text, and a pinned comment. Each has a copy button.
+Gemini writes the metadata from the finished video: **several title options** to choose from, a
+description, tags, hashtags, suggested thumbnail text, and a pinned comment. Each has a copy button,
+and all of it goes into [the upload kit](#the-upload-kit) at the bottom of the step.
 
 For exam-prep videos the title and first line of the description lead with the exam name, subject and
 topic, because that is what people actually type into search.
@@ -417,6 +419,55 @@ If you wrote the title and tags first, the **thumbnail text** Gemini suggested i
 > warns you above that. Shrinking the type to fit more in is what makes thumbnails invisible.
 
 The PNG is saved into `out\` next to your videos. Press **Save the PNG** to put it wherever you like.
+
+---
+
+### The upload kit
+
+The boxes on step 7 are gone the moment you close the tab, and the upload usually happens later — on
+another day, or from another machine. **Pack the upload kit** puts all of it in one zip beside your
+video, along with the thumbnail.
+
+```text
+how-does-a-fish-get-past-a-dam-upload-kit.zip
+├── UPLOAD.txt           the whole form, in order, with the character counts checked
+├── title.txt            one field per file, for fast copy-paste
+├── description.txt      complete and paste-ready — chapters and credits already in it
+├── tags.txt
+├── hashtags.txt
+├── pinned-comment.txt
+├── chapters.txt
+├── credits.txt
+├── metadata.json        if you ever script the upload
+└── thumbnail.png
+```
+
+Open **UPLOAD.txt** first. It walks the YouTube form field by field, counts every character against
+the real limit, and shouts if the title is over 100 — silently trimming it would hand you something
+YouTube cuts off mid-word, which you would only notice after publishing.
+
+**Two things in the kit cannot be copied off the page**, because only the tool knows them.
+
+**Chapters** are real timestamps, computed from the scene timings that produced the video. Nobody can
+type these accurately afterwards. They are already inside `description.txt`, so pasting that one
+block gets you the chapter bar under the scrubber for free.
+
+You do not always get them, and that is deliberate. YouTube ignores a chapter list unless it starts
+at `0:00`, has **three or more** marks, and none is **under ten seconds** — and it does not tell you
+it has ignored it. So short scenes are merged, and a video that cannot have a valid list gets none
+rather than a broken one. Shorts never get chapters.
+
+**Credits** lists what actually ended up in this video and what each thing asks for in return:
+
+| What is in the video | What it asks for |
+|---|---|
+| **Icons** | Named per set. Anything wanting a credit is flagged, and the exact line to paste is written for you — it is already in the description. |
+| **Photos** | Any stock you picked, with its credit line. |
+| **Music** | Always yours. It is synthesised here from scratch — not sampled, not licensed from anyone, so no copyright claim is possible. |
+| **Narration** | Flagged as a synthetic voice, since some platforms want that disclosed. |
+
+Pack it again any time — after changing the title, or after making a thumbnail. It rebuilds from
+whatever is on the page at that moment.
 
 ---
 
@@ -783,6 +834,9 @@ To stretch ElevenLabs credits: shorter targets, and the **Flash** voice model.
 | No moving scenes ever appear | The subject may not have a moment that moves — or the model skipped it. | Step 2 → **Extra instructions** → *act out the mechanism with a moving scene*. |
 | The script is far shorter than asked | Gemini underwrote it. | Step 3 warns you. Regenerate, or switch to a stronger model. |
 | Push fails: *"Permission denied to …"* | Windows has another GitHub account saved. | Make sure the address includes `HHHkumar@`. |
+| The kit has no chapters | The video is too short, or YouTube's rules cannot be met. | Normal on Shorts. Chapters need 60s+, three marks, ten seconds each. |
+| **Pack the upload kit** is greyed out | The metadata has not been written yet. | Press **Write the metadata** first — the kit is built from it. |
+| The kit has no thumbnail in it | It was packed before you made one. | Make the thumbnail, then press **Pack it again**. |
 | A change seems to have no effect | An old server is still running from before. | `Ctrl + C` in PowerShell, then `npm start` again. |
 | Everything is confusing | — | Step 7 → **Reset everything**, then start from step 1. |
 
