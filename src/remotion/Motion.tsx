@@ -1,6 +1,6 @@
 import React from 'react';
 import { interpolate, useCurrentFrame, useVideoConfig } from 'remotion';
-import { alignLabels } from '../lib/options-timing';
+import { alignCues } from '../lib/options-timing';
 import type { Theme } from '../lib/theme';
 import { hexToRgba } from '../lib/theme';
 import type { MotionActor, MotionBeat, WordTiming } from '../lib/types';
@@ -321,10 +321,11 @@ export const MotionPanel: React.FC<PanelProps> = ({ theme, panel, words, offset 
   const actors = (panel.actors || []).filter((a) => a && a.id);
   const beats = panel.beats || [];
 
-  // Beats fire on the words that describe them. Same alignment the panels use
-  // for reveals, so a stage and a diagram in the same video behave alike.
+  // Beats fire on the words that describe them. Matched one at a time, so a
+  // single cue the narrator paraphrased does not drag the other three off the
+  // voice with it.
   const cues = beats.map((b) => b.cue || '');
-  const starts = alignLabels(words, cues, seconds);
+  const starts = alignCues(words, cues, seconds);
 
   // A target resolves to where it was DECLARED, not to where it has animated
   // to. Targets are scenery - the dam, the ladder - and resolving an animated

@@ -7,7 +7,7 @@
 
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { MOTION_ACTIONS, normalizePanel, normalizeStoryboard, storyboardBudget } from './explainer.mjs';
+import { checkMotion, MOTION_ACTIONS, normalizePanel, normalizeStoryboard, storyboardBudget } from './explainer.mjs';
 
 let passed = 0;
 const test = (name, fn) => {
@@ -329,6 +329,196 @@ test('the verb list matches the one the renderer implements', () => {
     assert.ok(renderer.includes("case '" + verb + "'"), 'no case for ' + verb);
     assert.ok(renderer.includes(verb + ': '), 'no duration for ' + verb);
   }
+});
+
+test('the layouts offered to the model are the layouts the app knows', () => {
+  // These two lists are written separately - the server cannot import the
+  // TypeScript one - and a kind present in only one of them fails silently in
+  // the worst way: the schema refuses it, the normalizer downgrades it to a
+  // plain talking beat, and the result is indistinguishable from the model
+  // choosing not to use that layout. That is exactly how `motion` shipped
+  // dead the first time.
+  const types = readFileSync(new URL('../src/lib/types.ts', import.meta.url), 'utf8');
+  const declared = types.slice(types.indexOf('export const EXPLAINER_KINDS'));
+  const fromTypes = [...declared.slice(0, declared.indexOf(';')).matchAll(/'([a-z]+)'/g)]
+    .map((m) => m[1]);
+
+  const server = readFileSync(new URL('./explainer.mjs', import.meta.url), 'utf8');
+  const block = server.slice(server.indexOf('const PANEL_KINDS = ['));
+  const fromServer = [...block.slice(0, block.indexOf('];')).matchAll(/'([a-z]+)'/g)]
+    .map((m) => m[1]);
+
+  assert.deepEqual(fromServer.slice().sort(), fromTypes.slice().sort());
+});
+
+test('every layout offered to the model has a component that draws it', () => {
+  const server = readFileSync(new URL('./explainer.mjs', import.meta.url), 'utf8');
+  const block = server.slice(server.indexOf('const PANEL_KINDS = ['));
+  const kinds = [...block.slice(0, block.indexOf('];')).matchAll(/'([a-z]+)'/g)].map((m) => m[1]);
+
+  const panel = readFileSync(new URL('../src/remotion/Panel.tsx', import.meta.url), 'utf8');
+  const registry = panel.slice(panel.indexOf('export const PANEL_COMPONENTS'));
+  for (const kind of kinds) {
+    assert.ok(new RegExp('\\n  ' + kind + ':').test(registry), 'nothing draws ' + kind);
+  }
+});
+
+test('every layout the model may choose is normalized by name', () => {
+  // A kind with no branch in normalizePanel returns null, which throws the
+  // panel away and leaves a scene that talks but draws nothing.
+  const server = readFileSync(new URL('./explainer.mjs', import.meta.url), 'utf8');
+  const block = server.slice(server.indexOf('const PANEL_KINDS = ['));
+  const kinds = [...block.slice(0, block.indexOf('];')).matchAll(/'([a-z]+)'/g)].map((m) => m[1]);
+  for (const kind of kinds) {
+    assert.ok(server.includes("kind === '" + kind + "'"), 'no normalizer branch for ' + kind);
+  }
+});
+
+console.log('\nthe worked example in the prompt');
+
+// The example is the highest-leverage part of the motion instructions: a model
+// copies its shape far more faithfully than it follows prose rules. So the
+// example itself is checked, with the same validator that judges real output.
+// If someone rewrites the narration in the prompt and forgets the cues, this
+// fails rather than quietly teaching every future video the mistake.
+const EXAMPLE_NARRATION =
+  'A salmon heading upstream meets a wall of concrete it has no way over, and the whole run '
+  + 'collapses behind it. Cut a fish ladder into the side and the salmon climbs it in shallow '
+  + 'steps, one at a time, until it is past.';
+
+const EXAMPLE_CUES = ['upstream', 'wall of concrete', 'fish ladder', 'climbs'];
+
+test('the example narration is still the one written in the prompt', () => {
+  const src = readFileSync(new URL('./explainer.mjs', import.meta.url), 'utf8');
+  // The prompt wraps it across lines, so compare on the distinctive fragments.
+  for (const fragment of ['A salmon heading upstream meets a wall of concrete',
+    'Cut a fish ladder into the side', 'until it is past']) {
+    assert.ok(src.includes(fragment), 'prompt no longer contains: ' + fragment);
+  }
+});
+
+test('every cue in the example really is in the example narration', () => {
+  const c = {
+    script: [{
+      kind: 'motion',
+      narration: EXAMPLE_NARRATION,
+      panel: {
+        actors: [
+          { id: 'fish', icon: 'fish', x: 0.12, y: 0.62 },
+          { id: 'dam', icon: 'dam', x: 0.52, y: 0.55 },
+          { id: 'ladder', icon: 'stairs', x: 0.78, y: 0.42, hidden: true },
+        ],
+        beats: [
+          { actor: 'fish', action: 'move', to: 'dam', cue: EXAMPLE_CUES[0] },
+          { actor: 'fish', action: 'blocked', to: 'dam', cue: EXAMPLE_CUES[1] },
+          { actor: 'ladder', action: 'appear', cue: EXAMPLE_CUES[2] },
+          { actor: 'fish', action: 'climb', to: 'ladder', cue: EXAMPLE_CUES[3] },
+        ],
+      },
+    }],
+  };
+  assert.deepEqual(checkMotion(c), []);
+});
+
+test('the example survives the normalizer it is teaching the model to satisfy', () => {
+  const p = normalizePanel({
+    actors: [
+      { id: 'fish', icon: 'fish', x: 0.12, y: 0.62, accent: true },
+      { id: 'dam', icon: 'dam', x: 0.52, y: 0.55, scale: 1.4 },
+      { id: 'ladder', icon: 'stairs', x: 0.78, y: 0.42, hidden: true },
+    ],
+    beats: [
+      { actor: 'fish', action: 'move', to: 'dam', cue: 'upstream' },
+      { actor: 'fish', action: 'blocked', to: 'dam', cue: 'wall of concrete' },
+      { actor: 'ladder', action: 'appear', cue: 'fish ladder' },
+      { actor: 'fish', action: 'climb', to: 'ladder', cue: 'climbs' },
+    ],
+  }, 'motion');
+  assert.ok(p, 'the example the model is shown must not be thrown away');
+  assert.equal(p.actors.length, 3);
+  assert.equal(p.beats.length, 4);
+});
+
+console.log('\nwarnings on a freshly written storyboard');
+
+test('a cue the narration never says is reported', () => {
+  const notes = checkMotion({
+    script: [{
+      kind: 'motion',
+      narration: 'A salmon swims upstream and then the whole run collapses behind it.',
+      panel: {
+        actors: [{ id: 'a', icon: 'fish', x: 0.1, y: 0.5 }, { id: 'b', icon: 'dam', x: 0.6, y: 0.5 }],
+        beats: [{ actor: 'a', action: 'move', to: 'b', cue: 'concrete wall' }],
+      },
+    }],
+  });
+  assert.equal(notes.length, 1);
+  assert.match(notes[0], /never says/);
+});
+
+test('a beat with no cue at all is reported', () => {
+  const notes = checkMotion({
+    script: [{
+      kind: 'motion',
+      narration: 'A salmon swims upstream and then the whole run collapses behind it.',
+      panel: {
+        actors: [{ id: 'a', icon: 'fish', x: 0.1, y: 0.5 }, { id: 'b', icon: 'dam', x: 0.6, y: 0.5 }],
+        beats: [{ actor: 'a', action: 'pulse' }],
+      },
+    }],
+  });
+  assert.match(notes.join(' '), /no cue/);
+});
+
+test('two visible actors on the same spot are reported', () => {
+  const notes = checkMotion({
+    script: [{
+      kind: 'motion',
+      narration: 'A salmon swims upstream and then the whole run collapses behind it.',
+      panel: {
+        actors: [{ id: 'a', icon: 'fish', x: 0.5, y: 0.5 }, { id: 'b', icon: 'dam', x: 0.52, y: 0.5 }],
+        beats: [{ actor: 'a', action: 'move', to: 'b', cue: 'upstream' }],
+      },
+    }],
+  });
+  assert.match(notes.join(' '), /on top of each other/);
+});
+
+test('a hidden actor may share a spot, because it arrives later', () => {
+  const notes = checkMotion({
+    script: [{
+      kind: 'motion',
+      narration: 'A salmon swims upstream and then the whole run collapses behind it.',
+      panel: {
+        actors: [
+          { id: 'a', icon: 'fish', x: 0.5, y: 0.5 },
+          { id: 'b', icon: 'stairs', x: 0.5, y: 0.5, hidden: true },
+        ],
+        beats: [{ actor: 'a', action: 'move', to: 'b', cue: 'upstream' }],
+      },
+    }],
+  });
+  assert.equal(notes.length, 0, notes.join(' '));
+});
+
+test('a beat cued on the last few words is reported as unwatchable', () => {
+  const notes = checkMotion({
+    script: [{
+      kind: 'motion',
+      narration: 'The salmon meets the dam and the whole run finally collapses.',
+      panel: {
+        actors: [{ id: 'a', icon: 'fish', x: 0.1, y: 0.5 }, { id: 'b', icon: 'dam', x: 0.6, y: 0.5 }],
+        beats: [{ actor: 'a', action: 'blocked', to: 'b', cue: 'collapses' }],
+      },
+    }],
+  });
+  assert.match(notes.join(' '), /barely be seen/);
+});
+
+test('scenes that are not motion are left alone', () => {
+  assert.deepEqual(checkMotion({ script: [{ kind: 'diagram', narration: 'x', panel: { nodes: [] } }] }), []);
+  assert.deepEqual(checkMotion({}), []);
+  assert.deepEqual(checkMotion(null), []);
 });
 
 console.log('\n' + passed + ' checks passed\n');

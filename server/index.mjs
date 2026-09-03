@@ -18,7 +18,7 @@ import { randomUUID } from 'node:crypto';
 import { spawn } from 'node:child_process';
 
 import { generateContent, listModels } from './gemini.mjs';
-import { generateStoryboard } from './explainer.mjs';
+import { checkMotion, generateStoryboard } from './explainer.mjs';
 import { attachIcons } from './icons.mjs';
 import { CLAUDE_MODELS, DEFAULT_CLAUDE_MODEL, listClaudeModels } from './claude.mjs';
 import { listVoices, speak, VOICE_MODELS } from './tts.mjs';
@@ -254,6 +254,10 @@ app.post('/api/generate', ok(async (req, res) => {
         + ' icons need a credit in the description (CC BY).');
     }
   }
+
+  // A motion scene fails quietly - a cue the narrator never says still moves,
+  // just on a guess - so say so now, while a regenerate is still one click away.
+  for (const note of checkMotion(content)) console.log('[generate] check: ' + note);
 
   console.log('[generate] done - ' + content.script.length + ' scenes');
   res.json({ content });

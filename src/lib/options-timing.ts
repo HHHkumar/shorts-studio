@@ -137,3 +137,98 @@ export function missingLabels(narration: string, labels: string[]): string[] {
   }
   return missing;
 }
+
+/**
+ * When each beat of a motion scene fires, in seconds from the scene's start.
+ *
+ * Deliberately more forgiving than `alignLabels`, which is all-or-nothing: if
+ * one label of a reveal fails to match, the whole panel falls back to an even
+ * spread, and that is right there because a reveal order is a single sequence.
+ *
+ * A motion scene is not one sequence, it is several independent events, and the
+ * failure that actually happens in practice is ONE bad cue among four good
+ * ones - a paraphrase, a word the narrator dropped in rewriting. Throwing away
+ * three correct timings to punish the fourth makes the whole scene drift out of
+ * sync with the voice. So each cue is matched on its own, and the ones that
+ * miss are slotted evenly between the neighbours that hit.
+ */
+export function alignCues(
+  words: WordTiming[],
+  cues: string[],
+  sceneSeconds: number,
+): number[] {
+  const count = cues.length;
+  const evenly = cues.map((_, i) => (sceneSeconds * i) / Math.max(1, count));
+  if (!words.length || !count) return evenly;
+
+  const spoken = words.map((w) => normalise(w.word));
+  const found: number[] = new Array(count).fill(NaN);
+
+  // Forward scan, so two beats cued on the same word still land in order.
+  let cursor = 0;
+  for (let i = 0; i < count; i++) {
+    const keys = keyWords(cues[i] || '');
+    if (!keys.length) continue;
+    for (let j = cursor; j < spoken.length; j++) {
+      if (spoken[j] !== keys[0]) continue;
+      // One common word is weak evidence; ask the second to turn up close by.
+      if (keys.length > 1 && !spoken.slice(j + 1, j + 6).includes(keys[1])) continue;
+      found[i] = words[j].start;
+      cursor = j + 1;
+      break;
+    }
+  }
+
+  if (found.every((t) => !Number.isFinite(t))) return evenly;
+
+  // Fill each run of misses by spreading it between the hits either side. The
+  // ends are anchored to the scene itself so a miss at the start does not
+  // begin before the scene and one at the end still has room to play.
+  const out = found.slice();
+  let i = 0;
+  while (i < count) {
+    if (Number.isFinite(out[i])) {
+      i++;
+      continue;
+    }
+    let end = i;
+    while (end < count && !Number.isFinite(out[end])) end++;
+    const before = i > 0 ? out[i - 1] : 0;
+    const after = end < count ? out[end] : sceneSeconds;
+    const gaps = end - i + (end < count ? 1 : 0);
+    for (let k = i; k < end; k++) {
+      out[k] = before + ((after - before) * (k - i + 1)) / Math.max(1, gaps + (end < count ? 0 : 1));
+    }
+    i = end;
+  }
+
+  return out;
+}
+
+/**
+ * The cues in this narration that the renderer will not be able to find.
+ *
+ * Same matching rules as `alignCues`, so a warning here agrees with what the
+ * video actually does. Used by the editor and by the server's own check on a
+ * freshly written storyboard.
+ */
+export function missingCues(narration: string, cues: string[]): string[] {
+  const spoken = narration.split(/\s+/).map(normalise).filter(Boolean);
+  const missing: string[] = [];
+  let cursor = 0;
+
+  for (const cue of cues) {
+    const keys = keyWords(cue || '');
+    if (!keys.length) continue;
+    let found = -1;
+    for (let j = cursor; j < spoken.length; j++) {
+      if (spoken[j] !== keys[0]) continue;
+      if (keys.length > 1 && !spoken.slice(j + 1, j + 6).includes(keys[1])) continue;
+      found = j;
+      break;
+    }
+    if (found === -1) missing.push(cue);
+    else cursor = found + 1;
+  }
+  return missing;
+}

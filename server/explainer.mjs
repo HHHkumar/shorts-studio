@@ -18,10 +18,16 @@
 // ---------------------------------------------------------------------------
 
 import { callModel } from './gemini.mjs';
+// The renderer's own cue matcher, so a warning here agrees with what the video
+// actually does. Node strips the types on import; there is no second copy.
+import { missingCues } from '../src/lib/options-timing.ts';
 
 /** Layouts the storyboard may choose from, plus the plain talking beats. */
+/** Must stay in step with EXPLAINER_KINDS in src/lib/types.ts - a kind missing
+ *  here is not offered to the model and is quietly downgraded to `explain`,
+ *  which looks exactly like the model choosing not to use it. */
 const PANEL_KINDS = [
-  'title', 'metaphor', 'diagram', 'process', 'versus', 'timeline', 'grid', 'recap',
+  'title', 'metaphor', 'diagram', 'process', 'versus', 'timeline', 'grid', 'motion', 'recap',
 ];
 const SCENE_KINDS = [...PANEL_KINDS, 'explain', 'outro'];
 
@@ -206,31 +212,57 @@ const SYSTEM = [
   '             each side, and point 1 on the left must answer point 1 on the right.',
   '  timeline - how it came to be. 3-5 steps, each with `when`.',
   '  grid     - several parallel things of equal weight, each with a symbol. 3-6 steps.',
-  '  motion   - something HAPPENING, acted out. Use this when the point is an event or a',
-  '             mechanism in action rather than a structure: something being blocked, finding a',
-  '             way through, being carried, colliding, escaping. One or two per video, where the',
-  '             story genuinely moves. Never for a list or a comparison.',
-  '             actors: 2-4 things. `icon` is a PLAIN ENGLISH NOUN - "fish", "dam", "turbine" -',
-  '             never an icon set name, and never a phrase. The tool finds the picture.',
-  '             x and y place it: 0,0 is top left, 1,1 is bottom right, 0.5,0.5 is the middle.',
-  '             Spread them out; two actors at the same spot overlap into a mess.',
-  '             Set hidden:true on anything that should arrive later, then bring it on with an',
-  '             `appear` beat.',
-  '             beats: 3-6 things happening, in order. Each names an actor and one action:',
-  '               appear  - fades in. For a thing that arrives partway through.',
-  '               move    - travels to another actor (`to`) or a spot (x,y).',
+  '  motion   - something HAPPENING, acted out with moving pictures. Reach for this whenever the',
+  '             beat is an EVENT rather than a structure: something blocked, something escaping,',
+  '             something carried along, two things colliding, a barrier and then a way past it.',
+  '             If you can say "and then it..." about the beat, it is a motion scene.',
+  '             Do NOT use it for a list, a comparison, or a set of parts - those are grid,',
+  '             versus and diagram, and they do those jobs far better.',
+  '',
+  '             actors: 2-4 things. `icon` is a PLAIN ENGLISH NOUN - "fish", "dam", "turbine",',
+  '             "factory". One or two words, singular. Never an icon set name, never a phrase,',
+  '             never an emoji. The tool looks the word up in an icon library and draws it.',
+  '             x and y place each one: 0,0 is top left, 1,1 is bottom right, 0.5,0.5 the middle.',
+  '             Keep visible actors at least 0.2 apart or they overlap into one unreadable shape.',
+  '             A thing that arrives partway through gets hidden:true and an `appear` beat.',
+  '',
+  '             beats: 3-6 events, in the order they happen. Each names an actor and one action:',
+  '               appear  - fades in. For something that arrives partway through.',
+  '               move    - travels across and stops beside another actor (`to`) or a spot (x,y).',
   '               blocked - runs at `to`, is thrown back, tries again, gives up. "This way is shut."',
   '               climb   - steps up and over `to`. The way through, once one exists.',
-  '               pulse   - swells once, to say "this one".',
+  '               pulse   - swells once, to say "this one, now".',
   '               spin    - rotates on the spot. For anything turning.',
   '               exit    - drifts away and fades.',
-  '             EVERY beat needs a `cue`: one or two words taken from the narration of this scene,',
-  '             at the moment the beat should happen. The words must actually appear in the',
-  '             narration you wrote, in the same order as the beats. That is what times it.',
-  '             e.g. a salmon meeting a dam: actors fish(0.1,0.6), dam(0.5,0.5),',
-  '             ladder(0.5,0.5,hidden). beats: fish move to dam cue "upstream"; fish blocked at',
-  '             dam cue "wall of concrete"; ladder appear cue "fish ladder"; fish climb to',
-  '             ladder cue "climbs".',
+  '',
+  '             CUES ARE THE HARD PART. Read this twice. Every beat carries a `cue`: one or two',
+  '             words that you have ALREADY WRITTEN into this scene\'s narration. The beat fires',
+  '             at the moment the voice reaches those words. There are no timestamps anywhere.',
+  '               1. Every cue must appear VERBATIM in this scene\'s narration. Copy the words out',
+  '                  of the sentence you wrote. A cue that is not in the narration cannot fire.',
+  '               2. The cues must appear in the narration in the SAME ORDER as the beats.',
+  '               3. Never cue a beat on the last four words. It will not have time to play.',
+  '                  Write another clause after it.',
+  '               4. Pick distinctive words. "the", "it" and "this" appear everywhere and will',
+  '                  match the wrong moment.',
+  '',
+  '             A COMPLETE EXAMPLE. Note how every cue is lifted straight out of the narration,',
+  '             and how the sentence carries on after the final cue so the last beat can play:',
+  '',
+  '               narration: "A salmon heading upstream meets a wall of concrete it has no way',
+  '                 over, and the whole run collapses behind it. Cut a fish ladder into the side',
+  '                 and the salmon climbs it in shallow steps, one at a time, until it is past."',
+  '               panel.title: "A way over"',
+  '               actors:',
+  '                 fish   icon "fish"   x 0.12 y 0.62  label "Salmon"  accent true',
+  '                 dam    icon "dam"    x 0.52 y 0.55  label "Dam"     scale 1.4',
+  '                 ladder icon "stairs" x 0.78 y 0.42  label "Fish ladder"  hidden true',
+  '               beats:',
+  '                 fish   move    to dam     cue "upstream"',
+  '                 fish   blocked to dam     cue "wall of concrete"',
+  '                 ladder appear             cue "fish ladder"',
+  '                 fish   climb   to ladder  cue "climbs"',
+  '',
   '  recap    - what to take away. 3-4 steps. Use once, at the end.',
   '  explain  - a plain talking beat with no layout. Use sparingly, for a transition or an aside.',
   '  outro    - the sign-off. Once, last.',
@@ -238,6 +270,10 @@ const SYSTEM = [
   'STRUCTURE. A good explainer moves: why you should care -> the familiar analogy -> the real',
   'thing -> how it works -> what it means -> what to remember. Do not use the same layout twice',
   'in a row. Use metaphor at least once, diagram at least once, and recap exactly once at the end.',
+  'Include ONE motion scene wherever the subject has a moment that genuinely moves - a thing',
+  'blocked, carried, escaping, colliding, or finding a way past an obstacle. Most subjects have',
+  'one. Put it in the middle, where the mechanism is being explained, not at the start or the end.',
+  'Two at most, and none at all is better than forcing one onto a subject that does not move.',
   '',
   'LABELS. Two to five words. They are drawn inside boxes, so a label longer than about twenty',
   'characters will not fit. Symbols are one emoji, and only where one genuinely helps.',
@@ -596,4 +632,69 @@ export function normalizeStoryboard(input, options = {}) {
     motifSymbols: list(raw.motifSymbols, 6, 4).map(symbol).filter(Boolean),
     script,
   };
+}
+
+/**
+ * What is wrong with the motion scenes in a freshly written storyboard.
+ *
+ * A motion scene fails quietly. A cue the narrator never says still animates -
+ * just on a guess rather than on the voice - and nobody watching the render
+ * knows why it feels loose. So the storyboard is checked the moment it arrives,
+ * while the fix is still one regenerate away.
+ *
+ * Returns plain sentences, not error objects: these are read by a person in a
+ * black window, not handled by code.
+ */
+export function checkMotion(content) {
+  const notes = [];
+  const scenes = Array.isArray(content && content.script) ? content.script : [];
+
+  scenes.forEach((line, i) => {
+    if (!line || line.kind !== 'motion' || !line.panel) return;
+    const where = 'scene ' + (i + 1);
+    const beats = line.panel.beats || [];
+    const actors = line.panel.actors || [];
+
+    const cues = beats.map((b) => b.cue || '');
+    const unusable = cues.filter((c) => !c).length;
+    if (unusable) {
+      notes.push(where + ': ' + unusable + ' beat(s) have no cue, so they can only be guessed at.');
+    }
+
+    const missing = missingCues(line.narration || '', cues.filter(Boolean));
+    if (missing.length) {
+      notes.push(where + ': the narration never says ' + missing.map((c) => '"' + c + '"').join(', ')
+        + ', so those beats cannot fire on the voice.');
+    }
+
+    // A beat cued on the last handful of words has no room to play before the
+    // scene cuts. The animation is not wrong, it is just never seen.
+    const spoken = String(line.narration || '').split(/\s+/).filter(Boolean);
+    if (spoken.length > 6) {
+      // Whole words only: a substring test would match "is" inside "this".
+      const strip = (w) => w.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const tail = new Set(spoken.slice(-4).map(strip));
+      const late = cues.filter((c) => c && tail.has(strip(c.split(/\s+/)[0])));
+      if (late.length) {
+        notes.push(where + ': "' + late[0] + '" is cued on the last few words, so that beat will'
+          + ' barely be seen. Move it earlier in the sentence.');
+      }
+    }
+
+    // Two actors on the same spot draw on top of each other.
+    for (let a = 0; a < actors.length; a++) {
+      for (let b = a + 1; b < actors.length; b++) {
+        const dx = Math.abs(actors[a].x - actors[b].x);
+        const dy = Math.abs(actors[a].y - actors[b].y);
+        // Hidden actors are allowed to share a spot: they arrive later, usually
+        // exactly where the thing they replace or attach to already is.
+        if (dx < 0.12 && dy < 0.12 && !actors[a].hidden && !actors[b].hidden) {
+          notes.push(where + ': "' + actors[a].id + '" and "' + actors[b].id
+            + '" start almost on top of each other.');
+        }
+      }
+    }
+  });
+
+  return notes;
 }

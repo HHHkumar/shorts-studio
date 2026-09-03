@@ -24,6 +24,7 @@ your work safe with Git, and how to run the same tool on a second computer.
 7. [Running it on another computer](#7-running-it-on-another-computer)
 8. [What it costs](#8-what-it-costs)
 9. [When something goes wrong](#9-when-something-goes-wrong)
+   - [Checking the build itself](#checking-the-build-itself)
 10. [Where things are saved](#10-where-things-are-saved)
 11. [Questions people ask](#11-questions-people-ask)
 12. [A checklist for good videos](#12-a-checklist-for-good-videos)
@@ -517,6 +518,32 @@ that scene's narration — and fires when the voice reaches it. The salmon is th
 That is also why a motion scene shows the same **⚠** warning as any other layout in step 3: a cue
 your narration no longer contains is a beat that can never fire. Put the words back and it clears.
 
+**When you get one.** The storyboard is told to include one motion scene wherever the subject has a
+moment that genuinely moves — something blocked, carried, escaping, or finding a way past an
+obstacle — and to put it in the middle, where the mechanism is being explained. Two at most. On a
+subject that does not move, none is the right answer and you will get none.
+
+To ask for one directly, put it in **Extra instructions** on step 2:
+
+> *act out the mechanism with a moving scene*
+
+**The tool checks the storyboard and tells you.** A motion scene fails quietly — a beat whose cue is
+missing still animates, just on a guess instead of on the voice — so the black PowerShell window
+says so the moment the script arrives, while regenerating is still free:
+
+```text
+[generate] check: scene 4: the narration never says "sheer bulk", so those beats cannot fire on the voice.
+[generate] check: scene 4: "collapses" is cued on the last few words, so that beat will barely be seen.
+[generate] check: scene 4: "fish" and "dam" start almost on top of each other.
+```
+
+None of these break the video. They tell you it will be looser than it should be. Regenerating
+usually clears them; so does rewriting that scene's narration to contain the missing words.
+
+**One bad cue does not spoil the rest.** Each beat is matched to the voice on its own, so if the
+model writes three good cues and one it never says, the three still land exactly where they should
+and only the fourth is guessed at.
+
 > **Ask for it by asking for an event.** Motion is for something *happening* — being blocked, finding
 > a way through, escaping, being carried. For a list, a comparison or a structure, the other layouts
 > are better, and the storyboard is told to use them instead. Expect one or two motion scenes in a
@@ -751,10 +778,36 @@ To stretch ElevenLabs credits: shorter targets, and the **Flash** voice model.
 | *"The output file is locked"* | A video player still has the last render open. | Close it and render again. |
 | A spoken line sounds clipped | Trailing silence trimmed too aggressively. | Step 5 → turn off **Trim trailing silence**. |
 | A diagram shows wrong numbers | Gemini invented them. | Fix that scene in step 3, or turn off **Draw the diagrams**. |
+| A moving scene is out of step with the voice | A cue is missing from that scene's narration. | The window says which words. Put them back, or regenerate. |
+| A moving scene has a blank circle in it | No icon matched that word. | Step 3 → reword it to a plainer noun, e.g. "fish" not "salmonid". |
+| No moving scenes ever appear | The subject may not have a moment that moves — or the model skipped it. | Step 2 → **Extra instructions** → *act out the mechanism with a moving scene*. |
 | The script is far shorter than asked | Gemini underwrote it. | Step 3 warns you. Regenerate, or switch to a stronger model. |
 | Push fails: *"Permission denied to …"* | Windows has another GitHub account saved. | Make sure the address includes `HHHkumar@`. |
 | A change seems to have no effect | An old server is still running from before. | `Ctrl + C` in PowerShell, then `npm start` again. |
 | Everything is confusing | — | Step 7 → **Reset everything**, then start from step 1. |
+
+---
+
+### Checking the build itself
+
+If something feels broken and you want to know whether it is the tool or the model, run:
+
+```bash
+npm run simulate
+```
+
+It feeds a complete storyboard — deliberately including a few of the mistakes a model really makes —
+through every stage the real thing uses: the cleaner, the motion check, the icon fetch, the timeline
+and the renderer. It needs no API key and costs nothing. Every line should say `ok`.
+
+Add `-- --render` to also encode a real video from it, which takes a few minutes and proves the whole
+chain end to end:
+
+```bash
+npm run simulate -- --render
+```
+
+`npm test` is the faster, narrower version — it checks the rules without drawing anything.
 
 ---
 

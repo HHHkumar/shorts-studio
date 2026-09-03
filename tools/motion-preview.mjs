@@ -63,8 +63,17 @@ const RAW_PANEL_VERBS = {
   ],
 };
 
+// One cue the narrator never says, to prove the other three still land on the
+// voice instead of the whole scene collapsing onto an even spread.
+const RAW_PANEL_BROKEN = {
+  ...RAW_PANEL_DAM,
+  beats: RAW_PANEL_DAM.beats.map((b) =>
+    (b.cue === 'wall concrete' ? { ...b, cue: 'sheer bulk' } : b)),
+};
+
 const NARRATION = SCENARIO === 'verbs' ? NARRATION_VERBS : NARRATION_DAM;
-const RAW_PANEL = SCENARIO === 'verbs' ? RAW_PANEL_VERBS : RAW_PANEL_DAM;
+const RAW_PANEL = SCENARIO === 'verbs' ? RAW_PANEL_VERBS
+  : SCENARIO === 'broken' ? RAW_PANEL_BROKEN : RAW_PANEL_DAM;
 
 /** Fake word timings, evenly spread, standing in for ElevenLabs. */
 function timeWords(text, seconds) {
