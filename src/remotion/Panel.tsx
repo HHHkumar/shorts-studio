@@ -5,6 +5,7 @@ import type { Theme } from '../lib/theme';
 import { hexToRgba } from '../lib/theme';
 import type { PanelEdge, PanelNode, PanelStep, ScenePanel, WordTiming } from '../lib/types';
 import { autoFontSize, useEnter, useMetrics } from './ui';
+import { MotionPanel } from './Motion';
 
 // ---------------------------------------------------------------------------
 // The explainer scene primitives.
@@ -1154,6 +1155,7 @@ export const PANEL_COMPONENTS = {
   versus: VersusPanel,
   timeline: TimelinePanel,
   grid: GridPanel,
+  motion: MotionPanel,
   recap: RecapPanel,
 } as const;
 

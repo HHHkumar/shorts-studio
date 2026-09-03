@@ -38,11 +38,12 @@ export type SceneKind =
   | 'versus'
   | 'timeline'
   | 'grid'
+  | 'motion'
   | 'recap';
 
 /** The explainer scene kinds, in the order they normally appear. */
 export const EXPLAINER_KINDS: SceneKind[] = [
-  'title', 'metaphor', 'diagram', 'process', 'versus', 'timeline', 'grid', 'recap',
+  'title', 'metaphor', 'diagram', 'process', 'versus', 'timeline', 'grid', 'motion', 'recap',
 ];
 
 /** One spoken word with the exact second it is said. Used for karaoke captions. */
@@ -159,6 +160,85 @@ export interface PanelStep {
 }
 
 /**
+ * The artwork for an actor: an SVG path body and the box it was drawn in.
+ *
+ * Fetched by the server when the script is written, and carried inside the
+ * script from then on. Nothing is downloaded during a render - a frame has to
+ * be a pure function of its inputs, and one that waits on a network call is
+ * neither pure nor reliably fast.
+ */
+export interface ActorArt {
+  /** The inner markup of the source SVG. Uses currentColor, so it takes a theme colour. */
+  body: string;
+  width: number;
+  height: number;
+}
+
+/** One thing on the stage. Positions are 0-1 across the frame. */
+export interface MotionActor {
+  id: string;
+  /** A plain English noun, e.g. "fish". The server finds a picture of it. */
+  icon: string;
+  /** An optional caption under the shape. */
+  label?: string;
+  /** Where it starts. x runs left to right, y runs top to bottom. */
+  x: number;
+  y: number;
+  /** Size relative to the default, which is about a seventh of the frame. */
+  scale?: number;
+  /** Drawn in the accent colour rather than the text colour. */
+  accent?: boolean;
+  /** Held back until a beat brings it on. Use for things that arrive later. */
+  hidden?: boolean;
+  /** Filled in by the server from the icon library. */
+  art?: ActorArt;
+  /** Which icon was chosen, e.g. "mdi:fish". Shown in the editor, not on screen. */
+  iconName?: string;
+}
+
+/**
+ * What an actor can be told to do.
+ *
+ * A closed list on purpose, exactly like the sketch catalogue: the model picks
+ * a verb, it does not invent one. Every verb here is a whole little story beat
+ * that reads at a glance, because a viewer gets about two seconds to read it.
+ *
+ *   appear   fades and pops into place
+ *   move     travels to a new spot
+ *   blocked  runs at something, hits it, and is thrown back - twice
+ *   climb    steps up and over something, in stages
+ *   pulse    swells once, to say "this one, now"
+ *   spin     rotates on the spot
+ *   exit     drifts off and fades
+ */
+export type MotionAction =
+  | 'appear'
+  | 'move'
+  | 'blocked'
+  | 'climb'
+  | 'pulse'
+  | 'spin'
+  | 'exit';
+
+/** One thing happening to one actor. */
+export interface MotionBeat {
+  /** The id of the actor this happens to. */
+  actor: string;
+  action: MotionAction;
+  /** move / climb / blocked: where it is heading, or the id of what stops it. */
+  to?: string;
+  /** move / exit: an explicit destination, when no target actor makes sense. */
+  x?: number;
+  y?: number;
+  /**
+   * A word or two from this scene's narration. The beat fires when the voice
+   * reaches it, which is why nothing here carries a timestamp. Beats without a
+   * usable cue are spread evenly, the same fallback every other reveal uses.
+   */
+  cue?: string;
+}
+
+/**
  * The layout content for an explainer scene - the plan's "props".
  *
  * Deliberately one flat optional bag rather than a union: Gemini's structured
@@ -182,6 +262,9 @@ export interface ScenePanel {
   edges?: PanelEdge[];
   /** process / timeline / grid / recap: the entries, in order. */
   steps?: PanelStep[];
+  /** motion: the things on screen, and what happens to them. */
+  actors?: MotionActor[];
+  beats?: MotionBeat[];
 }
 
 export interface ScriptLine {

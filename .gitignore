@@ -13,6 +13,10 @@ public/generated/*
 # Music beds and sound effects - synthesised on first boot.
 public/audio
 
+# Downloaded icon shapes for motion scenes. Refetched on demand, and specific
+# to which nouns you happen to have used.
+.cache
+
 # Scratch output from render tests.
 stills/
 

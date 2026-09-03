@@ -16,6 +16,7 @@ your work safe with Git, and how to run the same tool on a second computer.
    - [Making a thumbnail](#making-a-thumbnail)
    - [Using Claude instead of Gemini](#using-claude-instead-of-gemini)
    - [Writing the script yourself](#writing-the-script-yourself)
+   - [Scenes that move](#scenes-that-move)
    - [Moving backdrops](#moving-backdrops)
    - [A note on units](#a-note-on-units)
 5. [Git — your undo button](#5-git--your-undo-button)
@@ -52,7 +53,7 @@ The video itself is drawn on your own computer by **Remotion**, which is why ren
 - **Quiz** — a question, four options, a countdown and the reveal. The format that stops a scroll.
 - **Explainer** — no question at all. A storyboard that builds understanding scene by scene using
   analogies and diagrams: a title card, an analogy, a labelled diagram, the steps, a comparison, a
-  timeline, and a recap. Aimed at 3 to 5 minutes in 16:9.
+  timeline, a scene where things actually move, and a recap. Aimed at 3 to 5 minutes in 16:9.
 
 ### Two kinds of video
 
@@ -303,7 +304,7 @@ Changing any of these means the voiceover has to be recorded again, and the page
 have already made one.
 
 **On an explainer**, a scene that draws a layout shows a **🖼️ Drawn on screen** row listing every
-label in it. A label marked **⚠** is one your narration never says — the reveals are timed by
+label in it — and on a [motion scene](#scenes-that-move), every cue that fires an animation. A label marked **⚠** is one your narration never says — the reveals are timed by
 matching the spoken words against those labels, so an unmentioned label can only appear on a guess.
 Mention it in that scene's narration, in the order shown, and the warning clears.
 
@@ -477,6 +478,53 @@ length you asked for.
 > as long as its recorded narration — that is the whole reason the words on screen stay locked to
 > the voice. The bar in step 3 is an estimate at the voice's own speaking pace; the real length
 > arrives with the voiceover in step 4.
+
+---
+
+### Scenes that move
+
+Most explainer layouts show a **structure** and light parts of it up as the voice reaches them. One
+does something different: **motion** acts an event out.
+
+A salmon swims at a dam. It is thrown back, twice. A fish ladder appears beside the dam, and the
+salmon climbs over it one step at a time. That is one scene, and the storyboard writes it in about
+eight lines.
+
+**Where the pictures come from.** The storyboard names things in **plain English** — "fish", "dam",
+"turbine" — and the tool finds each one in an open icon library of about 200,000 shapes. They are
+fetched once when the script is written, cached, and then live **inside your script**. Nothing is
+downloaded while the video renders, so a render is as fast and as repeatable as any other, and works
+offline once the script exists.
+
+Icons are drawn in your theme's own colours, so they never look pasted in from somewhere else.
+
+**Seven things can happen.** The storyboard picks from a fixed list — it cannot invent an eighth:
+
+| Verb | What you see |
+|---|---|
+| **appear** | Fades and pops in. For something that arrives partway through. |
+| **move** | Travels across and stops *beside* another thing. |
+| **blocked** | Runs at something, is thrown back, tries again, gives up. |
+| **climb** | Steps up and over something — the way through, once one exists. |
+| **pulse** | Swells once, to say *this one, now*. |
+| **spin** | Rotates on the spot. |
+| **exit** | Drifts away and fades. |
+
+**What times it.** Nothing here runs on a stopwatch. Each beat carries a **cue** — a word or two from
+that scene's narration — and fires when the voice reaches it. The salmon is thrown back on the words
+*"wall of concrete"*, not at 4.2 seconds. Rewrite the narration and the animation follows it.
+
+That is also why a motion scene shows the same **⚠** warning as any other layout in step 3: a cue
+your narration no longer contains is a beat that can never fire. Put the words back and it clears.
+
+> **Ask for it by asking for an event.** Motion is for something *happening* — being blocked, finding
+> a way through, escaping, being carried. For a list, a comparison or a structure, the other layouts
+> are better, and the storyboard is told to use them instead. Expect one or two motion scenes in a
+> video, not six.
+
+**A note on credits.** The tool prefers icon sets that ask for nothing in return — MIT and Apache
+licensed. If it ever has to fall back on a set that wants a credit, it says so in the black window
+when the script is written, and names the set to put in your description.
 
 ---
 

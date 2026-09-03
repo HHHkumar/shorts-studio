@@ -442,6 +442,7 @@ export const ProcessScene = explainerScene('process');
 export const VersusScene = explainerScene('versus');
 export const TimelineScene = explainerScene('timeline');
 export const GridScene = explainerScene('grid');
+export const MotionScene = explainerScene('motion');
 export const RecapScene = explainerScene('recap');
 
 export const SCENE_COMPONENTS: Record<Scene['kind'], React.FC<SceneProps>> = {
@@ -460,5 +461,6 @@ export const SCENE_COMPONENTS: Record<Scene['kind'], React.FC<SceneProps>> = {
   versus: VersusScene,
   timeline: TimelineScene,
   grid: GridScene,
+  motion: MotionScene,
   recap: RecapScene,
 };

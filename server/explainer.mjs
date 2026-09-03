@@ -36,6 +36,13 @@ const STEP_SCHEMA = {
   required: ['label'],
 };
 
+/**
+ * The verbs a storyboard may use on a motion scene. Closed on purpose: the same
+ * reason the sketch catalogue is closed. A model given free rein over motion
+ * writes plausible instructions for an engine that does not exist.
+ */
+export const MOTION_ACTIONS = ['appear', 'move', 'blocked', 'climb', 'pulse', 'spin', 'exit'];
+
 const RESPONSE_SCHEMA = {
   type: 'OBJECT',
   properties: {
@@ -93,6 +100,44 @@ const RESPONSE_SCHEMA = {
                 },
               },
               steps: { type: 'ARRAY', items: STEP_SCHEMA },
+              actors: {
+                type: 'ARRAY',
+                items: {
+                  type: 'OBJECT',
+                  properties: {
+                    id: { type: 'STRING', description: 'Short, unique, referenced by beats.' },
+                    icon: {
+                      type: 'STRING',
+                      description: 'A plain English noun for the thing, e.g. "fish". One or two words.',
+                    },
+                    label: { type: 'STRING', description: 'Optional caption under the shape.' },
+                    x: { type: 'NUMBER', description: '0 at the left edge, 1 at the right.' },
+                    y: { type: 'NUMBER', description: '0 at the top, 1 at the bottom.' },
+                    scale: { type: 'NUMBER', description: '1 is normal. 0.6 to 2.' },
+                    accent: { type: 'BOOLEAN', description: 'Draw in the accent colour.' },
+                    hidden: { type: 'BOOLEAN', description: 'Start off screen until an appear beat.' },
+                  },
+                  required: ['id', 'icon', 'x', 'y'],
+                },
+              },
+              beats: {
+                type: 'ARRAY',
+                items: {
+                  type: 'OBJECT',
+                  properties: {
+                    actor: { type: 'STRING', description: 'The id of the actor this happens to.' },
+                    action: { type: 'STRING', enum: MOTION_ACTIONS },
+                    to: { type: 'STRING', description: 'The id of the actor being moved toward.' },
+                    x: { type: 'NUMBER' },
+                    y: { type: 'NUMBER' },
+                    cue: {
+                      type: 'STRING',
+                      description: 'One or two words from the narration of THIS scene. The beat fires there.',
+                    },
+                  },
+                  required: ['actor', 'action'],
+                },
+              },
             },
           },
         },
@@ -161,6 +206,31 @@ const SYSTEM = [
   '             each side, and point 1 on the left must answer point 1 on the right.',
   '  timeline - how it came to be. 3-5 steps, each with `when`.',
   '  grid     - several parallel things of equal weight, each with a symbol. 3-6 steps.',
+  '  motion   - something HAPPENING, acted out. Use this when the point is an event or a',
+  '             mechanism in action rather than a structure: something being blocked, finding a',
+  '             way through, being carried, colliding, escaping. One or two per video, where the',
+  '             story genuinely moves. Never for a list or a comparison.',
+  '             actors: 2-4 things. `icon` is a PLAIN ENGLISH NOUN - "fish", "dam", "turbine" -',
+  '             never an icon set name, and never a phrase. The tool finds the picture.',
+  '             x and y place it: 0,0 is top left, 1,1 is bottom right, 0.5,0.5 is the middle.',
+  '             Spread them out; two actors at the same spot overlap into a mess.',
+  '             Set hidden:true on anything that should arrive later, then bring it on with an',
+  '             `appear` beat.',
+  '             beats: 3-6 things happening, in order. Each names an actor and one action:',
+  '               appear  - fades in. For a thing that arrives partway through.',
+  '               move    - travels to another actor (`to`) or a spot (x,y).',
+  '               blocked - runs at `to`, is thrown back, tries again, gives up. "This way is shut."',
+  '               climb   - steps up and over `to`. The way through, once one exists.',
+  '               pulse   - swells once, to say "this one".',
+  '               spin    - rotates on the spot. For anything turning.',
+  '               exit    - drifts away and fades.',
+  '             EVERY beat needs a `cue`: one or two words taken from the narration of this scene,',
+  '             at the moment the beat should happen. The words must actually appear in the',
+  '             narration you wrote, in the same order as the beats. That is what times it.',
+  '             e.g. a salmon meeting a dam: actors fish(0.1,0.6), dam(0.5,0.5),',
+  '             ladder(0.5,0.5,hidden). beats: fish move to dam cue "upstream"; fish blocked at',
+  '             dam cue "wall of concrete"; ladder appear cue "fish ladder"; fish climb to',
+  '             ladder cue "climbs".',
   '  recap    - what to take away. 3-4 steps. Use once, at the end.',
   '  explain  - a plain talking beat with no layout. Use sparingly, for a transition or an aside.',
   '  outro    - the sign-off. Once, last.',
@@ -273,6 +343,14 @@ const list = (v, max, len) =>
     .slice(0, max);
 
 /** One emoji or symbol, never a word. */
+/** A 0-1 stage coordinate. Anything off the scale is pulled back on screen. */
+const coord = (v, fallback) => {
+  const n = Number(v);
+  if (!Number.isFinite(n)) return fallback;
+  // 0.04 rather than 0, so a figure placed at the edge is not half cropped.
+  return Math.max(0.04, Math.min(0.96, n));
+};
+
 const symbol = (v) => {
   const s = clean(v, 8);
   if (!s) return '';
@@ -375,6 +453,62 @@ export function normalizePanel(raw, kind) {
       .slice(0, 10);
 
     return panel;
+  }
+
+  if (kind === 'motion') {
+    // A short heading above the action, when the scene wants one.
+    const heading = clean(o.title, 60);
+    if (heading) panel.title = heading;
+
+    const seen = new Set();
+    panel.actors = (Array.isArray(o.actors) ? o.actors : [])
+      .map((a) => {
+        const r = a && typeof a === 'object' ? a : {};
+        const id = clean(r.id, 24);
+        // The icon noun is what gets searched, so a whole sentence is useless.
+        const icon = clean(r.icon, 32);
+        if (!id || !icon || seen.has(id)) return null;
+        seen.add(id);
+        const actor = { id, icon, x: coord(r.x, 0.5), y: coord(r.y, 0.5) };
+        const label = clean(r.label, 24);
+        if (label) actor.label = label;
+        const scale = Number(r.scale);
+        if (Number.isFinite(scale)) actor.scale = Math.max(0.4, Math.min(2.5, scale));
+        if (r.accent === true) actor.accent = true;
+        if (r.hidden === true) actor.hidden = true;
+        return actor;
+      })
+      .filter(Boolean)
+      .slice(0, 5);
+
+    // One actor cannot act on anything, which is the whole point of the layout.
+    if (panel.actors.length < 2) return null;
+
+    const ids = new Set(panel.actors.map((a) => a.id));
+    panel.beats = (Array.isArray(o.beats) ? o.beats : [])
+      .map((b) => {
+        const r = b && typeof b === 'object' ? b : {};
+        const actor = clean(r.actor, 24);
+        const action = clean(r.action, 16);
+        // A beat aimed at an actor that was never declared moves nothing, and a
+        // verb outside the vocabulary has no implementation behind it.
+        if (!ids.has(actor) || !MOTION_ACTIONS.includes(action)) return null;
+        const beat = { actor, action };
+        const to = clean(r.to, 24);
+        // Pointing at itself would compute a zero-length move and read as a stall.
+        if (to && ids.has(to) && to !== actor) beat.to = to;
+        if (Number.isFinite(Number(r.x))) beat.x = coord(r.x, 0.5);
+        if (Number.isFinite(Number(r.y))) beat.y = coord(r.y, 0.5);
+        const cue = clean(r.cue, 40);
+        if (cue) beat.cue = cue;
+        return beat;
+      })
+      .filter(Boolean)
+      .slice(0, 8);
+
+    // Actors with nothing happening to them is a still life, not a motion
+    // scene; the other layouts draw a static arrangement far better.
+    return panel.beats.length ? panel : null;
   }
 
   if (kind === 'process') {

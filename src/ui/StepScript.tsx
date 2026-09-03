@@ -27,12 +27,13 @@ const KIND_HELP: Record<string, string> = {
   versus: 'Two things side by side, revealed point against point.',
   timeline: 'Dated entries down a spine.',
   grid: 'Several equal things, each with a symbol.',
+  motion: 'Things that move: something blocked, something finding a way through.',
   recap: 'The takeaways, ticking in one at a time.',
 };
 
 /** Which scene kinds carry a drawn layout rather than plain narration. */
 const PANEL_KINDS = new Set([
-  'title', 'metaphor', 'diagram', 'process', 'versus', 'timeline', 'grid', 'recap',
+  'title', 'metaphor', 'diagram', 'process', 'versus', 'timeline', 'grid', 'motion', 'recap',
 ]);
 
 /** Everything drawn on this scene, in the order the narration should cover it. */
@@ -43,6 +44,10 @@ function panelLabels(panel: ScenePanel | undefined): string[] {
   if (panel.rightLabel) out.push(panel.rightLabel);
   (panel.nodes || []).forEach((n) => out.push(n.label));
   (panel.steps || []).forEach((st) => out.push(st.label));
+  // On a motion scene the cues are what matter, not the captions: a cue the
+  // narration no longer contains is a beat that cannot fire, so the same
+  // warning that catches an unspoken label catches a dead beat too.
+  (panel.beats || []).forEach((b) => { if (b.cue) out.push(b.cue); });
   return out.filter(Boolean);
 }
 

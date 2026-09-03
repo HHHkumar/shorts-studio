@@ -19,6 +19,7 @@ import { spawn } from 'node:child_process';
 
 import { generateContent, listModels } from './gemini.mjs';
 import { generateStoryboard } from './explainer.mjs';
+import { attachIcons } from './icons.mjs';
 import { CLAUDE_MODELS, DEFAULT_CLAUDE_MODEL, listClaudeModels } from './claude.mjs';
 import { listVoices, speak, VOICE_MODELS } from './tts.mjs';
 import { jobs as renderJobs, renderThumbnail, startRender, paths } from './render.mjs';
@@ -241,6 +242,19 @@ app.post('/api/generate', ok(async (req, res) => {
     ? await generateStoryboard(apiKey, chosen, o)
     : await generateContent(apiKey, chosen, o);
 
+  // Motion scenes name their actors in plain English; the pictures are fetched
+  // now, once, and travel inside the script. Doing it during a render would put
+  // a network call inside a frame, which is both slow and non-deterministic.
+  const art = await attachIcons(content, { root: paths.ROOT });
+  if (art.resolved) {
+    console.log('[generate] found ' + art.resolved + ' animation icons'
+      + (art.missing.length ? ', no match for: ' + art.missing.join(', ') : ''));
+    if (art.attribution.length) {
+      console.log('[generate] note: ' + art.attribution.join(', ')
+        + ' icons need a credit in the description (CC BY).');
+    }
+  }
+
   console.log('[generate] done - ' + content.script.length + ' scenes');
   res.json({ content });
 }));
@@ -360,6 +374,11 @@ app.post('/api/render', ok(async (req, res) => {
   if (!props || !Array.isArray(props.scenes) || !props.scenes.length) {
     throw new Error('There is nothing to render yet. Generate a question first.');
   }
+  // Top up any motion scene added or edited by hand since it was generated.
+  // Actors that already have artwork are skipped, so this normally costs
+  // nothing at all.
+  await attachIcons(props, { root: paths.ROOT });
+
   const jobId = 'video-' + new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
   startRender(jobId, props, quality || 'medium');
   res.json({ jobId });

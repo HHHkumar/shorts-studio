@@ -6,7 +6,8 @@
 // with one side, a "symbol" that is really a word.
 
 import assert from 'node:assert/strict';
-import { normalizePanel, normalizeStoryboard, storyboardBudget } from './explainer.mjs';
+import { readFileSync } from 'node:fs';
+import { MOTION_ACTIONS, normalizePanel, normalizeStoryboard, storyboardBudget } from './explainer.mjs';
 
 let passed = 0;
 const test = (name, fn) => {
@@ -218,6 +219,116 @@ test('markdown in narration is stripped, because it would be read aloud', () => 
     script: [{ kind: 'explain', narration: 'This is **really** important.' }],
   }), {});
   assert.equal(c.script[0].narration, 'This is really important.');
+});
+
+console.log('\nmotion scenes');
+
+const motion = (over = {}) => normalizePanel({
+  title: 'A way over',
+  actors: [
+    { id: 'fish', icon: 'fish', x: 0.1, y: 0.6 },
+    { id: 'dam', icon: 'dam', x: 0.5, y: 0.5 },
+  ],
+  beats: [{ actor: 'fish', action: 'move', to: 'dam', cue: 'upstream' }],
+  ...over,
+}, 'motion');
+
+test('a well formed motion scene survives intact', () => {
+  const p = motion();
+  assert.equal(p.title, 'A way over');
+  assert.equal(p.actors.length, 2);
+  assert.deepEqual(p.beats[0], { actor: 'fish', action: 'move', to: 'dam', cue: 'upstream' });
+});
+
+test('one actor is not a scene, because nothing can act on anything', () => {
+  assert.equal(motion({ actors: [{ id: 'fish', icon: 'fish', x: 0.1, y: 0.6 }] }), null);
+});
+
+test('actors with nothing happening to them are not a motion scene', () => {
+  // A still arrangement is what every other layout already draws, better.
+  assert.equal(motion({ beats: [] }), null);
+});
+
+test('a verb outside the vocabulary is dropped, not passed on', () => {
+  // There is no implementation behind an invented verb, so the renderer would
+  // draw a motionless actor and nobody would know why.
+  assert.equal(motion({ beats: [{ actor: 'fish', action: 'teleport' }] }), null);
+});
+
+test('a beat aimed at an actor that was never declared is dropped', () => {
+  assert.equal(motion({ beats: [{ actor: 'otter', action: 'move' }] }), null);
+});
+
+test('a target that does not exist is forgotten, but the beat still plays', () => {
+  const p = motion({ beats: [{ actor: 'fish', action: 'pulse', to: 'nowhere' }] });
+  assert.equal(p.beats[0].to, undefined);
+  assert.equal(p.beats[0].action, 'pulse');
+});
+
+test('an actor cannot be told to move to itself', () => {
+  // That is a zero length journey, which reads on screen as a stall.
+  const p = motion({ beats: [{ actor: 'fish', action: 'move', to: 'fish' }] });
+  assert.equal(p.beats[0].to, undefined);
+});
+
+test('duplicate actor ids are dropped, because beats address them by id', () => {
+  const p = motion({
+    actors: [
+      { id: 'fish', icon: 'fish', x: 0.1, y: 0.6 },
+      { id: 'fish', icon: 'shark', x: 0.3, y: 0.6 },
+      { id: 'dam', icon: 'dam', x: 0.5, y: 0.5 },
+    ],
+  });
+  assert.deepEqual(p.actors.map((a) => a.id), ['fish', 'dam']);
+});
+
+test('coordinates off the frame are pulled back on to it', () => {
+  const p = motion({
+    actors: [
+      { id: 'fish', icon: 'fish', x: -3, y: 0.6 },
+      { id: 'dam', icon: 'dam', x: 99, y: 0.5 },
+    ],
+  });
+  assert.equal(p.actors[0].x, 0.04);
+  assert.equal(p.actors[1].x, 0.96);
+});
+
+test('a missing coordinate lands in the middle, not in the corner', () => {
+  const p = motion({
+    actors: [
+      { id: 'fish', icon: 'fish' },
+      { id: 'dam', icon: 'dam', x: 0.5, y: 0.5 },
+    ],
+  });
+  assert.equal(p.actors[0].x, 0.5);
+  assert.equal(p.actors[0].y, 0.5);
+});
+
+test('an absurd scale is clamped instead of filling the screen', () => {
+  const p = motion({
+    actors: [
+      { id: 'fish', icon: 'fish', x: 0.1, y: 0.6, scale: 40 },
+      { id: 'dam', icon: 'dam', x: 0.5, y: 0.5, scale: 0.001 },
+    ],
+  });
+  assert.equal(p.actors[0].scale, 2.5);
+  assert.equal(p.actors[1].scale, 0.4);
+});
+
+test('the verb list matches the one the renderer implements', () => {
+  // The same guard the sketch catalogue has. A verb offered to the model with
+  // no case behind it is a scene that silently does nothing, and the only way
+  // to notice is to render it and wonder why nothing moved.
+  const types = readFileSync(new URL('../src/lib/types.ts', import.meta.url), 'utf8');
+  const block = types.slice(types.indexOf('export type MotionAction'));
+  const declared = [...block.slice(0, block.indexOf(';')).matchAll(/'([a-z]+)'/g)].map((m) => m[1]);
+  assert.deepEqual(declared.slice().sort(), MOTION_ACTIONS.slice().sort());
+
+  const renderer = readFileSync(new URL('../src/remotion/Motion.tsx', import.meta.url), 'utf8');
+  for (const verb of MOTION_ACTIONS) {
+    assert.ok(renderer.includes("case '" + verb + "'"), 'no case for ' + verb);
+    assert.ok(renderer.includes(verb + ': '), 'no duration for ' + verb);
+  }
 });
 
 console.log('\n' + passed + ' checks passed\n');
