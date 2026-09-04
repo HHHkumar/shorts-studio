@@ -160,12 +160,77 @@ export const Stage: React.FC<{
 };
 
 /** Fades the whole scene in so hard cuts do not flicker. */
-export const SceneFade: React.FC<{ theme: Theme; children: React.ReactNode }> = ({ theme, children }) => {
+/** How long two scenes overlap at a cut. About a third of a second. */
+export const SCENE_OVERLAP = 10;
+
+
+/**
+ * How long this scene's narration actually is, in seconds.
+ *
+ * NOT the same as the composition duration inside a Sequence. Each scene is
+ * held open SCENE_OVERLAP frames past its narration so it can cross-fade with
+ * the next one, and `useVideoConfig` inside a Sequence reports that extended
+ * length. Everything that aligns to the voice - reveals, motion beats,
+ * narration effects - has to use the real one, or a fallback that spreads
+ * items "evenly across the scene" would quietly spread them across a third of
+ * a second more than the viewer ever hears.
+ */
+export function useSceneSeconds(): number {
+  const { fps, durationInFrames } = useVideoConfig();
+  return Math.max(0.1, (durationInFrames - SCENE_OVERLAP) / fps);
+}
+
+/**
+ * The join between one scene and the next.
+ *
+ * This used to be five frames of opacity on the incoming scene and nothing at
+ * all on the outgoing one, which is a hard cut with a flicker in front of it.
+ * A real crossfade needs both scenes on screen at once, so each Sequence is
+ * held open past its narration by SCENE_OVERLAP frames and spends them fading
+ * out while the next one fades in.
+ *
+ * `hold` is the scene's own length, NOT the extended one - it is the moment the
+ * next scene starts, and therefore the moment this one must begin to go.
+ *
+ * The slide is what stops it reading as a dissolve. Direction alternates so a
+ * whole video does not drift the same way, which becomes a tic by the fourth
+ * scene.
+ */
+export const SceneFade: React.FC<{
+  theme: Theme;
+  hold: number;
+  index: number;
+  children: React.ReactNode;
+}> = ({ theme, hold, index, children }) => {
   const frame = useCurrentFrame();
-  const opacity = interpolate(frame, [0, 5], [0, 1], { extrapolateRight: 'clamp' });
-  const scale =
-    theme.bounce > 0.5 ? interpolate(frame, [0, 8], [1.06, 1], { extrapolateRight: 'clamp' }) : 1;
-  return <AbsoluteFill style={{ opacity, transform: 'scale(' + scale + ')' }}>{children}</AbsoluteFill>;
+  const dir = index % 2 === 0 ? 1 : -1;
+
+  const arriving = interpolate(frame, [0, SCENE_OVERLAP], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+  const leaving = interpolate(frame, [hold, hold + SCENE_OVERLAP], [1, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+
+  // Comes in from one side and leaves towards the other, so the two scenes
+  // move the same way through the cut instead of passing each other.
+  const shift = (1 - arriving) * 46 * dir - (1 - leaving) * 46 * dir;
+  const scale = theme.bounce > 0.5
+    ? interpolate(arriving, [0, 1], [1.05, 1])
+    : interpolate(leaving, [0, 1], [1.03, 1]);
+
+  return (
+    <AbsoluteFill
+      style={{
+        opacity: Math.min(arriving, leaving),
+        transform: 'translateX(' + shift + 'px) scale(' + scale + ')',
+      }}
+    >
+      {children}
+    </AbsoluteFill>
+  );
 };
 
 /** The decorative background for each layout. */

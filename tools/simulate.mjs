@@ -152,6 +152,7 @@ check('every scene got a real start frame', scenes.every((s) => Number.isFinite(
 check('every scene got a real length', scenes.every((s) => Number.isFinite(s.durationInFrames) && s.durationInFrames > 0));
 check('no two scenes overlap', scenes.every((s, i) =>
   i === 0 || s.startFrame >= scenes[i - 1].startFrame + scenes[i - 1].durationInFrames));
+console.log('  cuts at: ' + scenes.map((x) => (x.startFrame / FPS).toFixed(1) + 's').join(', '));
 check('the video has a real total length', Number.isFinite(totalDurationInFrames) && totalDurationInFrames > 0,
   Math.round(totalDurationInFrames / FPS) + 's');
 

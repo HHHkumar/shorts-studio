@@ -2,6 +2,7 @@ import React from 'react';
 import { interpolate, useCurrentFrame, useVideoConfig } from 'remotion';
 import { alignCues } from '../lib/options-timing';
 import type { Theme } from '../lib/theme';
+import { useSceneSeconds } from './ui';
 import { hexToRgba } from '../lib/theme';
 import type { MotionActor, MotionBeat, WordTiming } from '../lib/types';
 import type { PanelProps } from './Panel';
@@ -353,8 +354,8 @@ const Figure: React.FC<{
 
 export const MotionPanel: React.FC<PanelProps> = ({ theme, panel, words, offset }) => {
   const frame = useCurrentFrame();
-  const { fps, durationInFrames, width, height } = useVideoConfig();
-  const seconds = durationInFrames / fps;
+  const { fps, width, height } = useVideoConfig();
+  const seconds = useSceneSeconds();
   const time = frame / fps - offset;
 
   const actors = (panel.actors || []).filter((a) => a && a.id);

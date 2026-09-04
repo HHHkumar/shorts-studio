@@ -5,10 +5,11 @@ import type { Theme } from '../../lib/theme';
 import { hexToRgba } from '../../lib/theme';
 import type { QuizContent, Scene } from '../../lib/types';
 import { ReadAlong } from '../ReadAlong';
-import { autoFontSize, Pill, Stage, useEnter, useMetrics } from '../ui';
+import { autoFontSize, Pill, Stage, useEnter, useMetrics, useSceneSeconds } from '../ui';
 import { Visual } from '../Visual';
 import { PANEL_COMPONENTS, type PanelName } from '../Panel';
 import { EffectLayer, useNarrationEffects, useSlowPush } from '../Effects';
+import { activeIndex, anchorFor } from '../../lib/panel-anchor';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
 
@@ -40,10 +41,11 @@ const OptionsBoard: React.FC<{
   compact?: boolean;
 }> = ({ theme, options, correctIndex, phase, starts, offset = 0, compact }) => {
   const frame = useCurrentFrame();
-  const { fps, durationInFrames } = useVideoConfig();
+  const { fps } = useVideoConfig();
+  const sceneSeconds = useSceneSeconds();
   const m = useMetrics();
   const time = frame / fps - offset;
-  const speaking = phase === 'read' && starts ? activeOption(starts, time, durationInFrames / fps) : -1;
+  const speaking = phase === 'read' && starts ? activeOption(starts, time, sceneSeconds) : -1;
 
   return (
     <div
@@ -221,8 +223,8 @@ export const QuestionScene: React.FC<SceneProps> = ({ theme, scene, content, sho
 };
 
 export const OptionsScene: React.FC<SceneProps> = ({ theme, scene, content }) => {
-  const { fps, durationInFrames } = useVideoConfig();
-  const starts = alignOptions(scene.words, content.options, durationInFrames / fps);
+  const sceneSeconds = useSceneSeconds();
+  const starts = alignOptions(scene.words, content.options, sceneSeconds);
   return (
     <Stage theme={theme}>
       <OptionsBoard
@@ -433,7 +435,15 @@ const CaptionBand: React.FC<{ scene: Scene; theme: Theme }> = ({ scene, theme })
 function explainerScene(name: PanelName): React.FC<SceneProps> {
   const Panel = PANEL_COMPONENTS[name];
   const Component: React.FC<SceneProps> = ({ theme, scene, showVisuals, showText }) => {
-    const { effects, time, shove } = useNarrationEffects(scene.words, scene.captionOffset);
+    const { effects, time, shove, seconds, landscape } = useNarrationEffects(
+      scene.words, scene.captionOffset,
+    );
+
+    // Which item the voice has reached, and therefore where on the frame the
+    // effects should fire. Worked out from the same reveal order the panel
+    // itself uses, so an effect lands on the box being talked about.
+    const active = activeIndex(scene.panel, scene.words, time, seconds);
+    const anchor = anchorFor(name, scene.panel, active, landscape);
     // The id is 's' plus the script position, which is all the push needs: a
     // number that alternates between neighbouring scenes.
     const push = useSlowPush(Number(String(scene.id).replace(/[^0-9]/g, '')) || 0);
@@ -441,7 +451,7 @@ function explainerScene(name: PanelName): React.FC<SceneProps> {
     return (
       <Stage theme={theme}>
         {/* Under the panel, never over it. */}
-        <EffectLayer theme={theme} effects={effects} time={time} />
+        <EffectLayer theme={theme} effects={effects} time={time} anchor={anchor} />
 
         {showVisuals && scene.panel ? (
           <div

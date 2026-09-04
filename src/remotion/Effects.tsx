@@ -1,11 +1,13 @@
 import React from 'react';
 import { AbsoluteFill, interpolate, random, useCurrentFrame, useVideoConfig } from 'remotion';
 import type { Theme } from '../lib/theme';
+import { useSceneSeconds } from './ui';
 import { hexToRgba } from '../lib/theme';
 import {
   detectEffects, effectProgress, envelope, type EffectKind, type TimedEffect,
 } from '../lib/motion-lexicon';
 import type { WordTiming } from '../lib/types';
+import type { Anchor } from '../lib/panel-anchor';
 
 // ---------------------------------------------------------------------------
 // What the narration's verbs look like.
@@ -35,13 +37,25 @@ interface Live {
   theme: Theme;
   width: number;
   height: number;
+  /**
+   * Where on the frame the narration is pointing, in pixels.
+   *
+   * The effects that have a middle - the spin, the bloom, the burst - fire
+   * HERE rather than at the centre of the frame. A spin on the word "turbine"
+   * appearing over the turbine is an explanation; the same spin in the middle
+   * of the frame is decoration.
+   */
+  ax: number;
+  ay: number;
 }
 
 /** Particles crossing the frame: steam into a turbine, water down a pipe. */
-const Flow: React.FC<Live> = ({ t, e, theme, width, height }) => (
+const Flow: React.FC<Live> = ({ t, e, theme, width, height, ay }) => (
   <>
     {Array.from({ length: 26 }, (_, i) => {
-      const lane = random('flow-lane' + i);
+      // Clustered on the anchor's row, so the flow visibly passes through the
+      // thing being talked about instead of washing over the whole frame.
+      const lane = ay / height + (random('flow-lane' + i) - 0.5) * 0.42;
       const speed = 0.6 + random('flow-speed' + i) * 0.8;
       // Each particle starts at its own offset, so they do not arrive in a rank.
       const along = (t * speed + random('flow-start' + i)) % 1;
@@ -52,7 +66,7 @@ const Flow: React.FC<Live> = ({ t, e, theme, width, height }) => (
           style={{
             position: 'absolute',
             left: along * (width + 120) - 60,
-            top: lane * height,
+            top: Math.max(0, Math.min(1, lane)) * height,
             width: size * 5,
             height: size,
             borderRadius: 999,
@@ -94,14 +108,16 @@ const Drift: React.FC<Live & { direction: 1 | -1 }> = ({ t, e, theme, width, hei
 );
 
 /** A slowly turning ring: turbines, wheels, orbits. */
-const Spin: React.FC<Live> = ({ t, e, theme, width, height }) => {
-  const size = Math.min(width, height) * 0.62;
+const Spin: React.FC<Live> = ({ t, e, theme, width, height, ax, ay }) => {
+  // Smaller now that it lands on the thing it means, rather than needing to be
+  // big enough to read as a deliberate background element.
+  const size = Math.min(width, height) * 0.42;
   return (
     <div
       style={{
         position: 'absolute',
-        left: width / 2 - size / 2,
-        top: height / 2 - size / 2,
+        left: ax - size / 2,
+        top: ay - size / 2,
         width: size,
         height: size,
         opacity: 0.3 * e,
@@ -127,11 +143,11 @@ const Spin: React.FC<Live> = ({ t, e, theme, width, height }) => {
 };
 
 /** A warm or cold wash over the whole frame. */
-const Wash: React.FC<Live & { colour: string }> = ({ e, colour }) => (
+const Wash: React.FC<Live & { colour: string }> = ({ e, colour, width, height, ax, ay }) => (
   <AbsoluteFill
     style={{
-      background: 'radial-gradient(ellipse at 50% 60%, ' + hexToRgba(colour, 0.3 * e)
-        + ' 0%, transparent 65%)',
+      background: 'radial-gradient(ellipse at ' + ((ax / width) * 100) + '% '
+        + ((ay / height) * 100) + '%, ' + hexToRgba(colour, 0.32 * e) + ' 0%, transparent 62%)',
     }}
   />
 );
@@ -197,7 +213,7 @@ const Spark: React.FC<Live> = ({ t, e, theme, width, height }) => (
 );
 
 /** Particles thrown outward from the middle: release, escape, explosion. */
-const Burst: React.FC<Live> = ({ t, e, theme, width, height }) => (
+const Burst: React.FC<Live> = ({ t, e, theme, width, height, ax, ay }) => (
   <>
     {Array.from({ length: 30 }, (_, i) => {
       const angle = (i / 30) * Math.PI * 2 + random('burst-a' + i);
@@ -209,8 +225,8 @@ const Burst: React.FC<Live> = ({ t, e, theme, width, height }) => (
           key={i}
           style={{
             position: 'absolute',
-            left: width / 2 + Math.cos(angle) * reach * eased,
-            top: height / 2 + Math.sin(angle) * reach * eased,
+            left: ax + Math.cos(angle) * reach * eased,
+            top: ay + Math.sin(angle) * reach * eased,
             width: size,
             height: size,
             borderRadius: 999,
@@ -223,14 +239,14 @@ const Burst: React.FC<Live> = ({ t, e, theme, width, height }) => (
 );
 
 /** A bloom from the centre. */
-const Glow: React.FC<Live> = ({ t, e, theme, width, height }) => {
-  const size = Math.min(width, height) * (0.4 + t * 0.5);
+const Glow: React.FC<Live> = ({ t, e, theme, width, height, ax, ay }) => {
+  const size = Math.min(width, height) * (0.3 + t * 0.4);
   return (
     <div
       style={{
         position: 'absolute',
-        left: width / 2 - size / 2,
-        top: height / 2 - size / 2,
+        left: ax - size / 2,
+        top: ay - size / 2,
         width: size,
         height: size,
         borderRadius: '50%',
@@ -349,7 +365,9 @@ export const EffectLayer: React.FC<{
   effects: TimedEffect[];
   /** Seconds into the scene, already corrected for the audio offset. */
   time: number;
-}> = ({ theme, effects, time }) => {
+  /** Where the narration is pointing, 0-1 across the frame. */
+  anchor: Anchor;
+}> = ({ theme, effects, time, anchor }) => {
   const { width, height } = useVideoConfig();
 
   const live = effects
@@ -365,7 +383,15 @@ export const EffectLayer: React.FC<{
         if (!Renderer) return null;
         return (
           <AbsoluteFill key={effect.kind + i}>
-            <Renderer t={t} e={envelope(t)} theme={theme} width={width} height={height} />
+            <Renderer
+              t={t}
+              e={envelope(t)}
+              theme={theme}
+              width={width}
+              height={height}
+              ax={anchor.x * width}
+              ay={anchor.y * height}
+            />
           </AbsoluteFill>
         );
       })}
@@ -381,8 +407,8 @@ export const EffectLayer: React.FC<{
  */
 export function useNarrationEffects(words: WordTiming[], offset: number) {
   const frame = useCurrentFrame();
-  const { fps, durationInFrames, width } = useVideoConfig();
-  const seconds = durationInFrames / fps;
+  const { fps, width, height } = useVideoConfig();
+  const seconds = useSceneSeconds();
   const time = frame / fps - offset;
 
   const effects = React.useMemo(
@@ -390,7 +416,13 @@ export function useNarrationEffects(words: WordTiming[], offset: number) {
     [words, seconds],
   );
 
-  return { effects, time, shove: impactShove(effects, time, width / 1920) };
+  return {
+    effects,
+    time,
+    seconds,
+    landscape: width > height,
+    shove: impactShove(effects, time, width / 1920),
+  };
 }
 
 /**

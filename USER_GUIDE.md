@@ -595,6 +595,19 @@ goes to the particles instead of the diagram, it has failed. Words that are comm
 rarely a real movement (*light*, *up*, *down*) are deliberately left out, because an effect firing on
 a sentence that did not mean it is worse than one that never fires.
 
+**Effects are aimed, not just timed.** When the voice says *"the turbine spins"*, the spin appears
+**on the turbine box** — not in the middle of the frame. The tool works out which item the narration
+has reached, from the same reveal order the panel itself uses, and fires the effect there. A flow
+passes through the row the active box is on; a bloom, a burst and a heat wash all centre on it.
+
+That is most of the difference between an effect that explains something and one that is just
+decoration laid over the top.
+
+**Scenes now cross into each other.** Each scene is held on screen a third of a second past its
+narration, so the outgoing and incoming ones overlap: one fades and slides out as the next fades and
+slides in, moving the same direction through the join. It used to be a hard cut with a five-frame
+flicker in front of it.
+
 **Three other things now move on their own**, whatever you write:
 
 - **Arrows carry something.** A diagram arrow used to draw itself once and freeze. Now a pulse
@@ -603,6 +616,8 @@ a sentence that did not mean it is worse than one that never fires.
 - **Process steps are joined by live connectors** rather than a `→` that only changes colour.
 - **Every scene pushes in slowly** — about four percent over its length. Nobody consciously notices
   it; everybody feels the difference between a layout that was filmed and one that was screenshotted.
+- **Things that should never be still, are not.** A fish holds station by swimming, a flame flickers,
+  anything that turns keeps turning.
 
 ---
 

@@ -3,7 +3,7 @@ import { AbsoluteFill, Audio, Sequence, staticFile, useCurrentFrame, useVideoCon
 import { getTheme } from '../lib/theme';
 import type { VideoProps } from '../lib/types';
 import { SCENE_COMPONENTS } from './scenes';
-import { Backdrop, ProgressBar, SceneFade } from './ui';
+import { Backdrop, ProgressBar, SCENE_OVERLAP, SceneFade } from './ui';
 import { MotifLayer } from './Visual';
 import { AmbientLayer } from './AmbientLayer';
 import { Soundtrack } from './Soundtrack';
@@ -40,21 +40,24 @@ export const QuizVideo: React.FC<VideoProps> = ({ content, scenes, design }) => 
 
       {design.showMotif ? <MotifLayer theme={theme} symbols={content.motifSymbols || []} /> : null}
 
-      {scenes.map((scene) => {
+      {scenes.map((scene, sceneIndex) => {
         const Component = SCENE_COMPONENTS[scene.kind] || SCENE_COMPONENTS.explain;
         const stepIndex = scene.kind === 'explain' ? explainScenes.indexOf(scene) : 0;
         return (
           <Sequence
             key={scene.id}
             from={scene.startFrame}
-            durationInFrames={scene.durationInFrames}
+            // Held open past its narration so it can cross-fade with the next
+            // scene. The audio inside is unaffected: it plays its file and
+            // stops, whatever the Sequence does.
+            durationInFrames={scene.durationInFrames + SCENE_OVERLAP}
             name={scene.kind + ' - ' + scene.narration.slice(0, 28)}
           >
             {design.showStock && scene.stockSrc ? (
               <StockLayer theme={theme} src={scene.stockSrc} opacity={design.stockOpacity} />
             ) : null}
 
-            <SceneFade theme={theme}>
+            <SceneFade theme={theme} hold={scene.durationInFrames} index={sceneIndex}>
               <Component
                 theme={theme}
                 scene={scene}

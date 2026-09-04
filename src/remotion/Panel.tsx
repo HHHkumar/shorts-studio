@@ -4,7 +4,7 @@ import { alignLabels, revealedCount } from '../lib/options-timing';
 import type { Theme } from '../lib/theme';
 import { hexToRgba } from '../lib/theme';
 import type { PanelEdge, PanelNode, PanelStep, ScenePanel, WordTiming } from '../lib/types';
-import { autoFontSize, useEnter, useMetrics } from './ui';
+import { autoFontSize, useEnter, useMetrics, useSceneSeconds } from './ui';
 import { MotionPanel } from './Motion';
 
 // ---------------------------------------------------------------------------
@@ -43,8 +43,8 @@ interface Reveal {
 
 function useReveal(labels: string[], words: WordTiming[], offset: number): Reveal {
   const frame = useCurrentFrame();
-  const { fps, durationInFrames } = useVideoConfig();
-  const seconds = durationInFrames / fps;
+  const { fps } = useVideoConfig();
+  const seconds = useSceneSeconds();
   const starts = alignLabels(words, labels, seconds);
   const count = labels.length ? revealedCount(starts, frame / fps - offset) : 0;
   return { count, frame, fps };
