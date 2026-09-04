@@ -8,6 +8,7 @@ import { ReadAlong } from '../ReadAlong';
 import { autoFontSize, Pill, Stage, useEnter, useMetrics } from '../ui';
 import { Visual } from '../Visual';
 import { PANEL_COMPONENTS, type PanelName } from '../Panel';
+import { EffectLayer, useNarrationEffects, useSlowPush } from '../Effects';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
 
@@ -415,22 +416,57 @@ const CaptionBand: React.FC<{ scene: Scene; theme: Theme }> = ({ scene, theme })
  * Builds a scene component around one panel primitive. Every explainer scene is
  * the same shape - a panel filling the stage, the narration underneath - so the
  * only thing that varies is which layout gets drawn.
+ *
+ * Two things are added here rather than inside the panels, because they belong
+ * to every layout equally and putting them in eight places would guarantee they
+ * drifted apart:
+ *
+ *   The narration effects. Each panel animates once on entry and then holds
+ *   still, which on a twenty second scene is one second of movement and
+ *   nineteen of a screenshot. The verbs in the narration drive the rest: when
+ *   the voice says "flows", something flows, at that moment.
+ *
+ *   The slow push. Four percent over the length of a scene, which nobody
+ *   consciously notices and everybody feels. It is the difference between a
+ *   layout that was filmed and one that was screenshotted.
  */
 function explainerScene(name: PanelName): React.FC<SceneProps> {
   const Panel = PANEL_COMPONENTS[name];
-  const Component: React.FC<SceneProps> = ({ theme, scene, showVisuals, showText }) => (
-    <Stage theme={theme}>
-      {showVisuals && scene.panel ? (
-        <Panel
-          theme={theme}
-          panel={scene.panel}
-          words={scene.words}
-          offset={scene.captionOffset}
-        />
-      ) : null}
-      {showText ? <CaptionBand scene={scene} theme={theme} /> : null}
-    </Stage>
-  );
+  const Component: React.FC<SceneProps> = ({ theme, scene, showVisuals, showText }) => {
+    const { effects, time, shove } = useNarrationEffects(scene.words, scene.captionOffset);
+    // The id is 's' plus the script position, which is all the push needs: a
+    // number that alternates between neighbouring scenes.
+    const push = useSlowPush(Number(String(scene.id).replace(/[^0-9]/g, '')) || 0);
+
+    return (
+      <Stage theme={theme}>
+        {/* Under the panel, never over it. */}
+        <EffectLayer theme={theme} effects={effects} time={time} />
+
+        {showVisuals && scene.panel ? (
+          <div
+            style={{
+              width: '100%',
+              // The shove is what makes an impact readable; without moving the
+              // content, a collision is only visible in the background.
+              transform: 'translate(' + shove.x + 'px, ' + shove.y + 'px)',
+            }}
+          >
+            <div style={push}>
+              <Panel
+                theme={theme}
+                panel={scene.panel}
+                words={scene.words}
+                offset={scene.captionOffset}
+              />
+            </div>
+          </div>
+        ) : null}
+
+        {showText ? <CaptionBand scene={scene} theme={theme} /> : null}
+      </Stage>
+    );
+  };
   Component.displayName = 'Scene_' + name;
   return Component;
 }

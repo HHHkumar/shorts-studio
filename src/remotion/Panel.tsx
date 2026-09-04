@@ -331,7 +331,7 @@ export const DiagramPanel: React.FC<PanelProps> = ({ theme, panel, words, offset
         </defs>
 
         {visibleEdges.map(({ edge, a, b }, i) => (
-          <Edge key={i} edge={edge} theme={theme} a={a} b={b} boxW={boxW} boxH={boxH} grow={arrowGrow} />
+          <Edge key={i} edge={edge} theme={theme} a={a} b={b} boxW={boxW} boxH={boxH} grow={arrowGrow} frame={r.frame} fps={r.fps} />
         ))}
 
         {placed.map((n, i) => (
@@ -456,22 +456,51 @@ const Edge: React.FC<{
   boxW: number;
   boxH: number;
   grow: number;
-}> = ({ edge, theme, a, b, boxW, boxH, grow }) => {
+  /** Read once by the parent: no hooks inside a map loop. */
+  frame: number;
+  fps: number;
+}> = ({ edge, theme, a, b, boxW, boxH, grow, frame, fps }) => {
   if (grow <= 0.01) return null;
   const [sx, sy] = edgePoint(a, b, boxW, boxH);
   const [ex, ey] = edgePoint(b, a, boxW, boxH);
+  const tipX = sx + (ex - sx) * grow;
+  const tipY = sy + (ey - sy) * grow;
+
+  // Once the arrow has finished drawing itself it used to just sit there for
+  // the rest of the scene. An arrow means "this goes to that", and a thing
+  // going somewhere is exactly what a still line fails to show - so something
+  // travels down it, continuously, for as long as the diagram is up.
+  const done = grow > 0.98;
+  const cycle = (frame / fps) * 0.55;
+  const pulses = [0, 0.34, 0.67].map((phase) => (cycle + phase) % 1);
 
   return (
-    <line
-      x1={sx}
-      y1={sy}
-      x2={sx + (ex - sx) * grow}
-      y2={sy + (ey - sy) * grow}
-      stroke={theme.accent}
-      strokeWidth={4}
-      strokeDasharray={edge.dashed ? '10 10' : undefined}
-      markerEnd={grow > 0.98 ? 'url(#pnl-arrow)' : undefined}
-    />
+    <>
+      <line
+        x1={sx}
+        y1={sy}
+        x2={tipX}
+        y2={tipY}
+        stroke={theme.accent}
+        strokeWidth={4}
+        strokeDasharray={edge.dashed ? '10 10' : undefined}
+        markerEnd={done ? 'url(#pnl-arrow)' : undefined}
+      />
+      {done
+        ? pulses.map((along, i) => (
+          <circle
+            key={i}
+            cx={sx + (ex - sx) * along}
+            cy={sy + (ey - sy) * along}
+            r={7}
+            fill={theme.accent}
+            // Fade in and out at the ends, so a dot never appears from nothing
+            // on top of a box or vanishes mid-line.
+            opacity={0.85 * Math.sin(along * Math.PI)}
+          />
+        ))
+        : null}
+    </>
   );
 };
 
@@ -562,6 +591,63 @@ function wrapLabel(text: string, per: number): string[] {
 // Process - steps in sequence with a travelling highlight
 // ---------------------------------------------------------------------------
 
+/**
+ * The gap between two steps.
+ *
+ * It used to be an arrow character that changed colour once the narration had
+ * gone past it - which is to say, a still image of a process. A process is the
+ * one thing a still image cannot show, so something moves through the gap
+ * instead, and keeps moving for as long as the step is on screen.
+ */
+const Connector: React.FC<{
+  theme: Theme;
+  row: boolean;
+  passed: boolean;
+  frame: number;
+  fps: number;
+  seed: number;
+}> = ({ theme, row, passed, frame, fps, seed }) => {
+  const length = row ? 40 : 22;
+  const colour = passed ? theme.accent : theme.border;
+  // Staggered per gap, so the whole chain does not pulse in lockstep.
+  const cycle = ((frame / fps) * 0.7 + seed * 0.3) % 1;
+
+  return (
+    <div
+      style={{
+        flex: '0 0 ' + length + 'px',
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: colour,
+        fontSize: 32,
+        fontWeight: 800,
+        lineHeight: 1,
+      }}
+    >
+      {row ? '→' : '↓'}
+      {passed ? (
+        <div
+          style={{
+            position: 'absolute',
+            left: row ? cycle * length : '50%',
+            top: row ? '50%' : cycle * length,
+            width: 7,
+            height: 7,
+            marginLeft: row ? 0 : -3.5,
+            marginTop: row ? -3.5 : 0,
+            borderRadius: 999,
+            background: theme.accent,
+            opacity: 0.9 * Math.sin(cycle * Math.PI),
+            boxShadow: '0 0 10px ' + theme.accent,
+          }}
+        />
+      ) : null}
+    </div>
+  );
+};
+
 export const ProcessPanel: React.FC<PanelProps> = ({ theme, panel, words, offset }) => {
   const m = useMetrics();
   const steps = (panel.steps || []).slice(0, 6);
@@ -593,20 +679,14 @@ export const ProcessPanel: React.FC<PanelProps> = ({ theme, panel, words, offset
             landscape={m.landscape}
           />
           {i < steps.length - 1 ? (
-            <div
-              style={{
-                flex: row ? '0 0 40px' : '0 0 22px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: i < active ? theme.accent : theme.border,
-                fontSize: 32,
-                fontWeight: 800,
-                lineHeight: 1,
-              }}
-            >
-              {row ? '→' : '↓'}
-            </div>
+            <Connector
+              theme={theme}
+              row={row}
+              passed={i < active}
+              frame={r.frame}
+              fps={r.fps}
+              seed={i}
+            />
           ) : null}
         </React.Fragment>
       ))}

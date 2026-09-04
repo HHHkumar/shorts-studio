@@ -7,6 +7,7 @@ import {
 } from '../lib/api';
 import type { QuizContent, ScenePanel, SceneKind, ScriptLine } from '../lib/types';
 import { missingLabels } from '../lib/options-timing';
+import { motionWordsIn } from '../lib/motion-lexicon';
 import { scriptSeconds } from '../lib/blank-script';
 import { ErrorNote, Note, Select, Spinner } from './controls';
 
@@ -56,6 +57,50 @@ function panelLabels(panel: ScenePanel | undefined): string[] {
  * break by rewriting narration: a label the voice no longer says can only be
  * revealed on a guess, so it is called out here rather than discovered later.
  */
+/**
+ * Which words in this scene will make something move.
+ *
+ * Worth showing because it is the one part of the animation a writer controls
+ * without knowing anything about the renderer: change "the steam goes into the
+ * turbine" to "the steam FLOWS into the turbine" and the scene gains a flow.
+ * Without this row nobody would ever discover that.
+ */
+const MotionSummary: React.FC<{ line: ScriptLine }> = ({ line }) => {
+  const found = motionWordsIn(line.narration);
+  if (!found.length) return null;
+
+  // The renderer spaces them out and caps them, so listing every match would
+  // promise more than the video delivers. Four is that cap.
+  const shown = found.slice(0, 4);
+
+  return (
+    <div className="field">
+      <label>✨ Moves on these words</label>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+        {shown.map((f, i) => (
+          <span
+            key={i}
+            title={'Fires the "' + f.kind + '" effect as this word is said.'}
+            style={{
+              padding: '5px 11px',
+              borderRadius: 999,
+              fontSize: 13.5,
+              border: '1px solid var(--line)',
+              color: 'var(--dim)',
+            }}
+          >
+            {f.word} <span style={{ opacity: 0.6 }}>→ {f.kind}</span>
+          </span>
+        ))}
+      </div>
+      <div className="hint">
+        Animation comes from the narration itself. Naming the movement — flows, spins, heats,
+        escapes — is what puts it on screen, so write the verb you mean.
+      </div>
+    </div>
+  );
+};
+
 const PanelSummary: React.FC<{ line: ScriptLine }> = ({ line }) => {
   const labels = panelLabels(line.panel);
   if (!labels.length) return null;
@@ -491,6 +536,9 @@ export const StepScript: React.FC<{
               />
               <div className="hint">Write it exactly as it should sound. No symbols like ^ or *.</div>
             </div>
+            {/* Every explainer scene animates from its own narration, layout or
+                not, so this sits outside the panel branch. */}
+            {explainer ? <MotionSummary line={line} /> : null}
             {PANEL_KINDS.has(line.kind) ? (
               <PanelSummary line={line} />
             ) : (

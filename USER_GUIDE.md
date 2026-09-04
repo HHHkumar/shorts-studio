@@ -17,6 +17,7 @@ your work safe with Git, and how to run the same tool on a second computer.
    - [The upload kit](#the-upload-kit)
    - [Using Claude instead of Gemini](#using-claude-instead-of-gemini)
    - [Writing the script yourself](#writing-the-script-yourself)
+   - [Animation comes from your verbs](#animation-comes-from-your-verbs)
    - [Scenes that move](#scenes-that-move)
    - [Moving backdrops](#moving-backdrops)
    - [A note on units](#a-note-on-units)
@@ -533,6 +534,52 @@ length you asked for.
 
 ---
 
+### Animation comes from your verbs
+
+Every explainer scene used to animate once as it appeared and then hold perfectly still. On a
+twenty-second scene that is about one second of movement and nineteen of a screenshot — which is
+what makes a video feel flat even when every frame is correct.
+
+Now the narration drives it. **The words you write are the animation.** When the voice says *flows*,
+something flows, at that moment. Say *spins* and something turns. Say *escapes* and it bursts
+outward. Nothing is authored, nothing is scheduled — it is read off the script.
+
+| Say | You get |
+|---|---|
+| flows, pours, travels, carries, circulates | particles crossing the frame |
+| rises, climbs, grows, increases, expands | an upward drift |
+| falls, drops, sinks, decreases, collapses | a downward drift |
+| spins, rotates, turns, orbits, turbine | a slow turning ring |
+| heats, burns, boils, combustion | a warm wash and rising haze |
+| cools, freezes, condenses | a cold wash |
+| collides, blocks, strikes, barrier, bounces | a shove and a flash |
+| vibrates, oscillates, alternates, resonates | standing waves |
+| voltage, current, charge, circuit, spark | electrical flecks |
+| escapes, releases, bursts, erupts | particles thrown outward |
+| glows, shines, brightens, radiates | a bloom |
+| rain, droplets, liquid, leaks, floods | falling droplets |
+
+Step 3 shows an **✨ Moves on these words** row under each scene, so you can see what a scene will do
+before you record anything. That row is also the control: change *"the steam goes into the turbine"*
+to *"the steam **flows** into the turbine"* and the scene gains a flow. **Write the verb you mean.**
+
+**Restraint is built in.** At most four per scene, never two within about two seconds, always behind
+the text, and always low contrast. An effect is meant to be felt, not watched — the moment your eye
+goes to the particles instead of the diagram, it has failed. Words that are common English but
+rarely a real movement (*light*, *up*, *down*) are deliberately left out, because an effect firing on
+a sentence that did not mean it is worse than one that never fires.
+
+**Three other things now move on their own**, whatever you write:
+
+- **Arrows carry something.** A diagram arrow used to draw itself once and freeze. Now a pulse
+  travels down it for as long as the diagram is up — an arrow means *this goes to that*, and a still
+  line is the one thing that cannot show it.
+- **Process steps are joined by live connectors** rather than a `→` that only changes colour.
+- **Every scene pushes in slowly** — about four percent over its length. Nobody consciously notices
+  it; everybody feels the difference between a layout that was filmed and one that was screenshotted.
+
+---
+
 ### Scenes that move
 
 Most explainer layouts show a **structure** and light parts of it up as the voice reaches them. One
@@ -829,6 +876,8 @@ To stretch ElevenLabs credits: shorter targets, and the **Flash** voice model.
 | *"The output file is locked"* | A video player still has the last render open. | Close it and render again. |
 | A spoken line sounds clipped | Trailing silence trimmed too aggressively. | Step 5 → turn off **Trim trailing silence**. |
 | A diagram shows wrong numbers | Gemini invented them. | Fix that scene in step 3, or turn off **Draw the diagrams**. |
+| A scene feels flat and still | The narration names no movement. | Step 3 → check the **✨ Moves on these words** row. Use the real verb: *flows*, not *goes*. |
+| An effect fires where it makes no sense | A word matched that you did not mean physically. | Reword that phrase; the row shows which word did it. |
 | A moving scene is out of step with the voice | A cue is missing from that scene's narration. | The window says which words. Put them back, or regenerate. |
 | A moving scene has a blank circle in it | No icon matched that word. | Step 3 → reword it to a plainer noun, e.g. "fish" not "salmonid". |
 | No moving scenes ever appear | The subject may not have a moment that moves — or the model skipped it. | Step 2 → **Extra instructions** → *act out the mechanism with a moving scene*. |
