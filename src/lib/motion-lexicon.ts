@@ -63,8 +63,11 @@ const VOCABULARY: Record<EffectKind, string[]> = {
     'block', 'barrier', 'obstacl', 'bounce', 'rebound'],
   wobble: ['vibrat', 'oscillat', 'alternat', 'resonat', 'wobbl', 'shake', 'shook',
     'tremor', 'flutter', 'pulsat'],
+  // `current` earns its place here despite also being an ordinary adjective:
+  // this tool is used most for electrical exam prep, where it means the thing
+  // flowing in a wire far more often than it means "present".
   spark: ['spark', 'electric', 'voltag', 'charg', 'lightning', 'discharg', 'arc',
-    'circuit', 'amp', 'watt'],
+    'circuit', 'amp', 'watt', 'current'],
   burst: ['explod', 'burst', 'erupt', 'blast', 'escap', 'eject', 'release',
     'shatter', 'rupture'],
   glow: ['glow', 'shine', 'shone', 'bright', 'illuminat', 'radiat', 'beam',
@@ -113,12 +116,22 @@ export function effectForWord(word: string): EffectKind | null {
   const w = normalise(word);
   // Short words are almost all common English and match stems by accident.
   if (w.length < 3) return null;
+
+  // The LONGEST matching stem wins, not the first one found. Stems overlap:
+  // "droplets" starts with "drop", so scanning in declaration order gave it a
+  // generic downward drift instead of the droplets it names. Whichever stem
+  // explains more of the word is the one that meant it.
+  let best: EffectKind | null = null;
+  let bestLength = 0;
   for (const kind of Object.keys(VOCABULARY) as EffectKind[]) {
     for (const stem of VOCABULARY[kind]) {
-      if (w.startsWith(stem)) return kind;
+      if (stem.length > bestLength && w.startsWith(stem)) {
+        best = kind;
+        bestLength = stem.length;
+      }
     }
   }
-  return null;
+  return best;
 }
 
 /**

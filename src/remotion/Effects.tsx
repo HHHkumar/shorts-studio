@@ -107,11 +107,17 @@ const Drift: React.FC<Live & { direction: 1 | -1 }> = ({ t, e, theme, width, hei
   </>
 );
 
-/** A slowly turning ring: turbines, wheels, orbits. */
+/**
+ * Something turning: turbines, wheels, orbits.
+ *
+ * Arcs rather than a spoked wheel, blurred, and quiet. The first version drew
+ * crisp radial lines across half the frame, which on a layout with cards in the
+ * middle of it read as a diagram laid over the text rather than as a hint
+ * behind it - and the cards being semi-transparent made it worse, not better.
+ * Every other effect here is soft; this one had no business being the exception.
+ */
 const Spin: React.FC<Live> = ({ t, e, theme, width, height, ax, ay }) => {
-  // Smaller now that it lands on the thing it means, rather than needing to be
-  // big enough to read as a deliberate background element.
-  const size = Math.min(width, height) * 0.42;
+  const size = Math.min(width, height) * 0.38;
   return (
     <div
       style={{
@@ -120,23 +126,33 @@ const Spin: React.FC<Live> = ({ t, e, theme, width, height, ax, ay }) => {
         top: ay - size / 2,
         width: size,
         height: size,
-        opacity: 0.3 * e,
-        transform: 'rotate(' + t * 220 + 'deg)',
+        opacity: 0.22 * e,
+        transform: 'rotate(' + t * 200 + 'deg)',
+        filter: 'blur(2.5px)',
       }}
     >
-      <svg width={size} height={size} viewBox="0 0 100 100">
-        {Array.from({ length: 8 }, (_, i) => (
-          <line
-            key={i}
-            x1="50" y1="50"
-            x2={50 + 46 * Math.cos((i / 8) * Math.PI * 2)}
-            y2={50 + 46 * Math.sin((i / 8) * Math.PI * 2)}
-            stroke={theme.accent}
-            strokeWidth="1.6"
-            strokeLinecap="round"
-          />
-        ))}
-        <circle cx="50" cy="50" r="46" fill="none" stroke={theme.accent} strokeWidth="1" />
+      <svg width={size} height={size} viewBox="0 0 100 100" fill="none">
+        {[
+          { r: 46, from: 20, len: 90 },
+          { r: 46, from: 200, len: 90 },
+          { r: 33, from: 120, len: 70 },
+          { r: 33, from: 300, len: 70 },
+        ].map((arc, i) => {
+          const a0 = (arc.from * Math.PI) / 180;
+          const a1 = ((arc.from + arc.len) * Math.PI) / 180;
+          const big = arc.len > 180 ? 1 : 0;
+          return (
+            <path
+              key={i}
+              d={'M ' + (50 + arc.r * Math.cos(a0)) + ' ' + (50 + arc.r * Math.sin(a0))
+                + ' A ' + arc.r + ' ' + arc.r + ' 0 ' + big + ' 1 '
+                + (50 + arc.r * Math.cos(a1)) + ' ' + (50 + arc.r * Math.sin(a1))}
+              stroke={theme.accent}
+              strokeWidth={3}
+              strokeLinecap="round"
+            />
+          );
+        })}
       </svg>
     </div>
   );
@@ -286,7 +302,9 @@ const Wobble: React.FC<Live> = ({ t, e, theme, width, height }) => (
   <svg
     width={width}
     height={height}
-    style={{ position: 'absolute', left: 0, top: 0, opacity: 0.35 * e }}
+    // Blurred for the same reason the arcs are: a crisp line across the frame
+    // competes with the text instead of sitting under it.
+    style={{ position: 'absolute', left: 0, top: 0, opacity: 0.26 * e, filter: 'blur(2px)' }}
   >
     {[0, 1, 2].map((row) => {
       const y = height * (0.3 + row * 0.2);

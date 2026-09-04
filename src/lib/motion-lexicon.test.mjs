@@ -6,6 +6,7 @@
 // most of what follows is about words that must NOT fire.
 
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { detectEffects, effectForWord, envelope, motionWordsIn } from './motion-lexicon.ts';
 
 let passed = 0;
@@ -152,6 +153,57 @@ test('the editor sees the same words the renderer will act on', () => {
 
 test('a calm sentence reports nothing to the editor either', () => {
   assert.deepEqual(motionWordsIn('Why do people believe this?'), []);
+});
+
+console.log('\nthe manual and the vocabulary agree');
+
+/** The "Say / You get" table out of the user guide, as rows of trigger words. */
+function guideTable() {
+  const guide = readFileSync(new URL('../../USER_GUIDE.md', import.meta.url), 'utf8');
+  const from = guide.indexOf('| Say | You get |');
+  assert.ok(from > 0, 'the effects table has gone from the guide');
+  // Stop at the first blank line: the guide has other tables after it, and
+  // running past this one is how the first version of this check produced
+  // fifty false alarms.
+  const end = guide.indexOf('\n\n', from);
+  return guide.slice(from, end).split('\n').slice(2)
+    .filter((line) => line.startsWith('|'))
+    .map((line) => ({
+      words: line.split('|')[1].split(',').map((w) => w.trim()).filter(Boolean),
+      effect: line.split('|')[2].trim(),
+    }));
+}
+
+test('every word the manual promises actually fires something', () => {
+  // Doc drift here is a promise to the reader that the tool quietly breaks:
+  // they write the word, nothing happens, and nothing tells them why. It has
+  // already happened twice - "turns" and "current" were both listed and
+  // neither did anything.
+  const dead = [];
+  for (const row of guideTable()) {
+    for (const word of row.words) if (!effectForWord(word)) dead.push(word);
+  }
+  assert.deepEqual(dead, [], 'the manual lists words that do nothing: ' + dead.join(', '));
+});
+
+test('the words on each row all fire the SAME effect', () => {
+  // A row promises one outcome for every word on it. If they diverge, the
+  // manual is describing something the tool does not do.
+  for (const row of guideTable()) {
+    const kinds = [...new Set(row.words.map(effectForWord))];
+    assert.equal(kinds.length, 1,
+      'row "' + row.effect + '" mixes ' + kinds.join(' and ') + ': ' + row.words.join(', '));
+  }
+});
+
+test('every effect the tool has is described somewhere in that table', () => {
+  const rows = guideTable();
+  const described = new Set(rows.map((r) => effectForWord(r.words[0])));
+  const src = readFileSync(new URL('./motion-lexicon.ts', import.meta.url), 'utf8');
+  const declared = src.slice(src.indexOf('export type EffectKind'));
+  const kinds = [...declared.slice(0, declared.indexOf(';')).matchAll(/'([a-z]+)'/g)].map((m) => m[1]);
+  const undocumented = kinds.filter((k) => !described.has(k));
+  assert.deepEqual(undocumented, [], 'not in the manual: ' + undocumented.join(', '));
 });
 
 console.log('\n' + passed + ' checks passed\n');

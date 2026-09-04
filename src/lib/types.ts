@@ -390,5 +390,19 @@ export const PORTRAIT = { width: 1080, height: 1920 };
 /** Landscape is 16:9, for longer explainers on YouTube proper. */
 export const LANDSCAPE = { width: 1920, height: 1080 };
 
+/** A thumbnail is a different shape from the video: 16:9 is YouTube's cover
+ *  image, 9:16 is what a Short or a Reel shows. Here beside the video
+ *  dimensions rather than in the component, because it is data, and a checker
+ *  that cannot load a React file still needs to know it. */
+export type ThumbnailShape = 'landscape' | 'portrait';
+
+export const THUMB_SIZES: Record<ThumbnailShape, { width: number; height: number }> = {
+  landscape: { width: 1280, height: 720 },
+  portrait: { width: 1080, height: 1920 },
+};
+
+export const thumbSizeFor = (shape: ThumbnailShape) =>
+  THUMB_SIZES[shape] || THUMB_SIZES.landscape;
+
 export const dimensionsFor = (orientation: Orientation) =>
   orientation === 'landscape' ? LANDSCAPE : PORTRAIT;

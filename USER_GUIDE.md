@@ -575,7 +575,7 @@ outward. Nothing is authored, nothing is scheduled — it is read off the script
 | flows, pours, travels, carries, circulates | particles crossing the frame |
 | rises, climbs, grows, increases, expands | an upward drift |
 | falls, drops, sinks, decreases, collapses | a downward drift |
-| spins, rotates, turns, orbits, turbine | a slow turning ring |
+| spins, rotates, revolves, orbits, turbine | soft arcs turning behind it |
 | heats, burns, boils, combustion | a warm wash and rising haze |
 | cools, freezes, condenses | a cold wash |
 | collides, blocks, strikes, barrier, bounces | a shove and a flash |
@@ -957,21 +957,35 @@ To stretch ElevenLabs credits: shorter targets, and the **Flash** voice model.
 If something feels broken and you want to know whether it is the tool or the model, run:
 
 ```bash
+npm test
+```
+
+The fastest one. It checks the rules — the cleaners, the timings, the chapter arithmetic, the
+animation pacing — without drawing anything. A few seconds, no API key, no network.
+
+```bash
 npm run simulate
 ```
 
-It feeds a complete storyboard — deliberately including a few of the mistakes a model really makes —
-through every stage the real thing uses: the cleaner, the motion check, the icon fetch, the timeline
-and the renderer. It needs no API key and costs nothing. Every line should say `ok`.
-
-Add `-- --render` to also encode a real video from it, which takes a few minutes and proves the whole
-chain end to end:
+Feeds a complete storyboard — deliberately including a few of the mistakes a model really makes —
+through every stage the real thing uses: the cleaner, the motion check, the icon fetch, the timeline,
+the upload kit and the renderer. Add `-- --render` to also encode a real video from it, which takes a
+few minutes and proves the whole chain end to end.
 
 ```bash
-npm run simulate -- --render
+npm run smoke
 ```
 
-`npm test` is the faster, narrower version — it checks the rules without drawing anything.
+The widest one, and the one to run after any change to how videos are put together. It renders
+**both kinds of video in both shapes** — quiz and explainer, 9:16 and 16:9 — using an explainer that
+deliberately contains every layout, plus all eight thumbnails. It then checks that no frame came out
+blank, which is the failure that hides: a scene that renders successfully and draws nothing looks
+exactly like a scene that is fine, until you watch it.
+
+It leaves the frames in `stills\smoke\` so you can look at them yourself. That is worth doing — the
+checks catch a blank frame, they cannot tell you a layout is ugly.
+
+Every line of all three should say `ok`.
 
 ---
 
@@ -983,6 +997,9 @@ Inside `C:\Projects\shorts-studio`:
   automatically, and nothing here goes to GitHub.
 - `public\generated\` — voiceover clips and downloaded photos. Cleared automatically after a day.
 - `public\audio\` — the music beds and effects, regenerated on first boot.
+- `.cache\` — the icon drawings, kept so the same noun is never fetched twice. Safe to delete;
+  it refills itself.
+- `stills\` — frames written by the checks in section 9. Scratch, safe to delete.
 - `.git\` — your snapshots. Do not touch it; that is Git's business.
 - Your keys and settings — in your browser, not in any file.
 

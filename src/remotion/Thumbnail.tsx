@@ -1,7 +1,8 @@
 import React from 'react';
 import { AbsoluteFill, useVideoConfig } from 'remotion';
 import { getTheme, hexToRgba } from '../lib/theme';
-import type { DesignSettings, QuizContent } from '../lib/types';
+import type { DesignSettings, QuizContent, ThumbnailShape } from '../lib/types';
+export { THUMB_SIZES, thumbSizeFor, type ThumbnailShape } from '../lib/types';
 import { AmbientLayer } from './AmbientLayer';
 import { Backdrop } from './ui';
 
@@ -26,7 +27,6 @@ import { Backdrop } from './ui';
 // ---------------------------------------------------------------------------
 
 export type ThumbnailLayout = 'question' | 'statement' | 'split' | 'number';
-export type ThumbnailShape = 'landscape' | 'portrait';
 
 export type ThumbnailProps = {
   content: QuizContent;
@@ -46,15 +46,6 @@ export type ThumbnailProps = {
 };
 
 export const THUMBNAIL_ID = 'Thumbnail';
-
-/** 16:9 is YouTube's cover image; 9:16 is what a Short or a Reel shows. */
-export const THUMB_SIZES: Record<ThumbnailShape, { width: number; height: number }> = {
-  landscape: { width: 1280, height: 720 },
-  portrait: { width: 1080, height: 1920 },
-};
-
-export const thumbSizeFor = (shape: ThumbnailShape) =>
-  THUMB_SIZES[shape] || THUMB_SIZES.landscape;
 
 /**
  * The largest size this text can take without needing to be shrunk to fit.

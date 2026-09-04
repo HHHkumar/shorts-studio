@@ -1,4 +1,10 @@
 import p5 from 'p5';
+
+// p5 checks every sketch against its own list of reserved names and warns on a
+// clash. The app exports a constant called PORTRAIT, which is one, so every
+// single render printed the same harmless paragraph about it. Turning the
+// friendly errors off silences that and skips the check, which is not free.
+(p5 as unknown as { disableFriendlyErrors: boolean }).disableFriendlyErrors = true;
 import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import { continueRender, delayRender, useCurrentFrame, useVideoConfig } from 'remotion';
 
