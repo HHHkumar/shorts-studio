@@ -23,6 +23,8 @@ export interface SceneProps {
   showVisuals: boolean;
   /** Read-along text is the whole point; this only exists to turn it off. */
   showText: boolean;
+  /** 0 to 1: how much the narration-driven animation may do. */
+  motion: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -434,7 +436,7 @@ const CaptionBand: React.FC<{ scene: Scene; theme: Theme }> = ({ scene, theme })
  */
 function explainerScene(name: PanelName): React.FC<SceneProps> {
   const Panel = PANEL_COMPONENTS[name];
-  const Component: React.FC<SceneProps> = ({ theme, scene, showVisuals, showText }) => {
+  const Component: React.FC<SceneProps> = ({ theme, scene, showVisuals, showText, motion }) => {
     const { effects, time, shove, seconds, landscape } = useNarrationEffects(
       scene.words, scene.captionOffset,
     );
@@ -451,7 +453,7 @@ function explainerScene(name: PanelName): React.FC<SceneProps> {
     return (
       <Stage theme={theme}>
         {/* Under the panel, never over it. */}
-        <EffectLayer theme={theme} effects={effects} time={time} anchor={anchor} />
+        <EffectLayer theme={theme} effects={effects} time={time} anchor={anchor} strength={motion} />
 
         {showVisuals && scene.panel ? (
           <div
@@ -459,7 +461,9 @@ function explainerScene(name: PanelName): React.FC<SceneProps> {
               width: '100%',
               // The shove is what makes an impact readable; without moving the
               // content, a collision is only visible in the background.
-              transform: 'translate(' + shove.x + 'px, ' + shove.y + 'px)',
+              // Scaled too, so turning the animation down calms the shove with
+              // it rather than leaving one loud thing in a quiet scene.
+              transform: 'translate(' + shove.x * motion + 'px, ' + shove.y * motion + 'px)',
             }}
           >
             <div style={push}>

@@ -367,17 +367,19 @@ export const EffectLayer: React.FC<{
   time: number;
   /** Where the narration is pointing, 0-1 across the frame. */
   anchor: Anchor;
-}> = ({ theme, effects, time, anchor }) => {
+  /** 0 to 1. Below 1 the whole layer is quieter; at 0 it is not drawn at all. */
+  strength: number;
+}> = ({ theme, effects, time, anchor, strength }) => {
   const { width, height } = useVideoConfig();
 
   const live = effects
     .map((effect) => ({ effect, t: effectProgress(effect, time) }))
     .filter((x): x is { effect: TimedEffect; t: number } => x.t !== null);
 
-  if (!live.length) return null;
+  if (!live.length || strength <= 0) return null;
 
   return (
-    <AbsoluteFill style={{ pointerEvents: 'none', overflow: 'hidden' }}>
+    <AbsoluteFill style={{ pointerEvents: 'none', overflow: 'hidden', opacity: strength }}>
       {live.map(({ effect, t }, i) => {
         const Renderer = RENDERERS[effect.kind];
         if (!Renderer) return null;

@@ -683,6 +683,24 @@ usually clears them; so does rewriting that scene's narration to contain the mis
 model writes three good cues and one it never says, the three still land exactly where they should
 and only the fourth is guessed at.
 
+**Things travel at a speed, not for a time.** A moving actor used to take the same 1.15 seconds
+whether it crossed a tenth of the frame or three quarters of it, so long journeys were flung and
+short ones stalled. Distance now sets the duration. Verbs that cover more ground than the straight
+line — a bounce goes in and back twice, a climb zig-zags up in steps — get proportionally longer.
+
+**Two beats never run at once.** When the narration puts two cues close together, the first beat
+stops where it got to and the second carries on from there. They used to both keep going and add
+their movements together, which is the lurch that looked like the animation glitching.
+
+**Nothing is drawn over the words.** Actors are kept inside a band that clears the scene title above
+and the caption band below, whatever coordinates the storyboard writes — including a beat that names
+an explicit destination.
+
+If a video still feels busier than it should, step 5 has a **Narration effects → How strong** slider.
+Turn it down to calm everything the script triggers; at 0 the layouts hold still. It does not touch
+the moving scenes themselves — those are content, not decoration, and are turned off with
+**Draw the diagrams**.
+
 > **Ask for it by asking for an event.** Motion is for something *happening* — being blocked, finding
 > a way through, escaping, being carried. For a list, a comparison or a structure, the other layouts
 > are better, and the storyboard is told to use them instead. Expect one or two motion scenes in a
@@ -917,6 +935,7 @@ To stretch ElevenLabs credits: shorter targets, and the **Flash** voice model.
 | *"The output file is locked"* | A video player still has the last render open. | Close it and render again. |
 | A spoken line sounds clipped | Trailing silence trimmed too aggressively. | Step 5 → turn off **Trim trailing silence**. |
 | A diagram shows wrong numbers | Gemini invented them. | Fix that scene in step 3, or turn off **Draw the diagrams**. |
+| A video feels too busy | Too much is moving for the subject. | Step 5 → **Narration effects → How strong**. Turn it down; 0 holds everything still. |
 | A scene feels flat and still | The narration names no movement. | Step 3 → check the **✨ Moves on these words** row. Use the real verb: *flows*, not *goes*. |
 | An effect fires where it makes no sense | A word matched that you did not mean physically. | Reword that phrase; the row shows which word did it. |
 | A moving scene is out of step with the voice | A cue is missing from that scene's narration. | The window says which words. Put them back, or regenerate. |

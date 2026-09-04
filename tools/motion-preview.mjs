@@ -161,7 +161,7 @@ console.log('composition ' + composition.width + 'x' + composition.height
   + ', ' + composition.durationInFrames + ' frames');
 
 // Every half second, which is fine enough to see a bounce.
-for (let f = 0; f < SECONDS * FPS; f += 15) {
+for (let f = 0; f < SECONDS * FPS; f += 6) {
   const file = path.join(OUT, SCENARIO + (PORTRAIT ? '-p' : '') + '-' + String(f).padStart(3, '0') + '.png');
   await renderStill({ composition, serveUrl, output: file, frame: f, inputProps: props, overwrite: true });
   process.stdout.write('.');

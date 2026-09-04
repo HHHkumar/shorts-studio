@@ -340,6 +340,19 @@ export interface DesignSettings {
   ambient: string;
   /** 0-1. Capped low in the renderer so it can never fight the captions. */
   ambientIntensity: number;
+  /**
+   * How much the narration-driven animation is allowed to do.
+   *
+   * A dial rather than a switch, because the storyboard writes the animation
+   * and the storyboard is sometimes wrong. When a scene's movement is not
+   * earning its place, turning it down is faster than rewriting the script and
+   * costs nothing to try.
+   *
+   *   1    everything, as designed
+   *   0.5  half strength - present, never noticed
+   *   0    the layouts hold still, as they did before
+   */
+  motionStrength: number;
   /** Draw the chosen stock photos behind each scene. */
   showStock: boolean;
   /** 0-1. How strongly the backdrop photo shows through. */

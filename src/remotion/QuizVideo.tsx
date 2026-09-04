@@ -66,6 +66,9 @@ export const QuizVideo: React.FC<VideoProps> = ({ content, scenes, design }) => 
                 stepTotal={explainScenes.length}
                 showVisuals={design.showVisuals}
                 showText={design.showCaptions}
+                // Older saved videos have no setting, and full is what they
+                // were made with.
+                motion={design.motionStrength ?? 1}
               />
             </SceneFade>
 

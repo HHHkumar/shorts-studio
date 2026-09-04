@@ -221,6 +221,26 @@ export const StepStyle: React.FC<{
         />
       </div>
 
+      <div className="section-title">Narration effects</div>
+      <p className="lede" style={{ marginTop: 0 }}>
+        The movement the script triggers: something flows when the voice says <em>flows</em>,
+        something turns when it says <em>spins</em>.
+      </p>
+      <Slider
+        label="How strong"
+        value={design.motionStrength ?? 1}
+        min={0}
+        max={1}
+        step={0.1}
+        onChange={(v) => set('motionStrength', v)}
+        suffix=""
+        hint={
+          'Turn it down when a video feels busier than it should. At 0 the layouts hold still. '
+          + 'This is the effects and the impact shake, not the moving scenes themselves — '
+          + 'those are content, and are turned off with "Draw the diagrams".'
+        }
+      />
+
       <div className="section-title">Backdrop photos</div>
       {content ? (
         <StockPicker

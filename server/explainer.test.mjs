@@ -324,7 +324,9 @@ test('the verb list matches the one the renderer implements', () => {
   const declared = [...block.slice(0, block.indexOf(';')).matchAll(/'([a-z]+)'/g)].map((m) => m[1]);
   assert.deepEqual(declared.slice().sort(), MOTION_ACTIONS.slice().sort());
 
-  const renderer = readFileSync(new URL('../src/remotion/Motion.tsx', import.meta.url), 'utf8');
+  // The verbs are implemented in the pure physics module, not the component -
+  // the component only draws what that returns.
+  const renderer = readFileSync(new URL('../src/lib/motion-physics.ts', import.meta.url), 'utf8');
   for (const verb of MOTION_ACTIONS) {
     assert.ok(renderer.includes("case '" + verb + "'"), 'no case for ' + verb);
     assert.ok(renderer.includes(verb + ': '), 'no duration for ' + verb);

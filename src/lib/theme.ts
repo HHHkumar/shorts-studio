@@ -195,6 +195,7 @@ export const DEFAULT_DESIGN: DesignSettings = {
   showMotif: true,
   ambient: 'auto',
   ambientIntensity: 0.6,
+  motionStrength: 1,
   showStock: true,
   stockOpacity: 0.45,
   music: 'calm',
