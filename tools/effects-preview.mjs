@@ -13,6 +13,7 @@ import { fileURLToPath } from 'node:url';
 import { bundle } from '@remotion/bundler';
 import { ensureBrowser, renderStill, selectComposition } from '@remotion/renderer';
 import { normalizePanel } from '../server/explainer.mjs';
+import { attachIcons } from '../server/icons.mjs';
 import { DEFAULT_DESIGN } from '../src/lib/theme.ts';
 import { detectEffects } from '../src/lib/motion-lexicon.ts';
 
@@ -29,9 +30,9 @@ const SCENES = {
       + 'reaches a wire in your house.',
     panel: {
       steps: [
-        { label: 'Boiler', detail: 'Water becomes steam' },
-        { label: 'Turbine', detail: 'Steam turns the blades' },
-        { label: 'Generator', detail: 'Rotation becomes current' },
+        { label: 'Boiler', detail: 'Water becomes steam', icon: 'boiler' },
+        { label: 'Turbine', detail: 'Steam turns the blades', icon: 'wind turbine' },
+        { label: 'Generator', detail: 'Rotation becomes current', icon: 'lightning bolt' },
       ],
     },
   },
@@ -40,9 +41,9 @@ const SCENES = {
       + 'the generator turns that rotation into the current which travels out along the line.',
     panel: {
       nodes: [
-        { id: 'res', label: 'Reservoir', col: 0, row: 0 },
-        { id: 'tur', label: 'Turbine', col: 1, row: 0 },
-        { id: 'gen', label: 'Generator', col: 2, row: 0 },
+        { id: 'res', label: 'Reservoir', col: 0, row: 0, icon: 'water' },
+        { id: 'tur', label: 'Turbine', col: 1, row: 0, icon: 'wind turbine' },
+        { id: 'gen', label: 'Generator', col: 2, row: 0, icon: 'lightning bolt' },
       ],
       edges: [
         { from: 'res', to: 'tur', label: 'water' },
@@ -87,6 +88,11 @@ const content = {
   motifSymbols: ['⚡'],
   script: [{ kind: KIND, narration: chosen.narration, panel }],
 };
+
+// Real artwork, fetched the same way a live generation fetches it.
+const art = await attachIcons(content, { root: ROOT });
+console.log('artwork: ' + art.resolved + ' resolved'
+  + (art.missing.length ? ', missing ' + art.missing.join(', ') : ''));
 
 const props = {
   content,

@@ -521,4 +521,35 @@ test('scenes that are not motion are left alone', () => {
   assert.deepEqual(checkMotion(null), []);
 });
 
+console.log('\nartwork in the ordinary layouts');
+
+test('a diagram box keeps the noun the server will look up', () => {
+  const p = normalizePanel({
+    nodes: [{ id: 'b', label: 'Boiler', icon: 'boiler' }, { id: 't', label: 'Turbine', icon: 'wind turbine' }],
+    edges: [{ from: 'b', to: 't' }],
+  }, 'diagram');
+  assert.deepEqual(p.nodes.map((n) => n.icon), ['boiler', 'wind turbine']);
+});
+
+test('a process step keeps its noun too', () => {
+  const p = normalizePanel({
+    steps: [{ label: 'Boil it', icon: 'boiler' }, { label: 'Spin it', icon: 'turbine' }],
+  }, 'process');
+  assert.deepEqual(p.steps.map((s) => s.icon), ['boiler', 'turbine']);
+});
+
+test('a sentence offered as an icon is dropped, because it finds nothing', () => {
+  // "boiler" finds a picture; "the place where water becomes steam" does not,
+  // and would cost two network calls to discover that.
+  const long = 'the place in the plant where the water actually becomes steam';
+  const p = normalizePanel({ steps: [{ label: 'Boil', icon: long }] }, 'grid');
+  assert.ok(!p || !p.steps[0].icon || p.steps[0].icon.length <= 32);
+});
+
+test('a layout with no icons still works, since they are optional', () => {
+  const p = normalizePanel({ steps: [{ label: 'One' }, { label: 'Two' }] }, 'process');
+  assert.equal(p.steps.length, 2);
+  assert.equal(p.steps[0].icon, undefined);
+});
+
 console.log('\n' + passed + ' checks passed\n');

@@ -124,12 +124,38 @@ export interface SceneVisual {
   };
 }
 
+/**
+ * The artwork for an actor: an SVG path body and the box it was drawn in.
+ *
+ * Fetched by the server when the script is written, and carried inside the
+ * script from then on. Nothing is downloaded during a render - a frame has to
+ * be a pure function of its inputs, and one that waits on a network call is
+ * neither pure nor reliably fast.
+ */
+export interface ActorArt {
+  /** The inner markup of the source SVG. Uses currentColor, so it takes a theme colour. */
+  body: string;
+  width: number;
+  height: number;
+}
+
 /** One box in a labelled diagram. */
 export interface PanelNode {
   id: string;
   label: string;
   /** A single emoji or symbol drawn inside the box. */
   symbol?: string;
+  /**
+   * A plain English noun for the thing this box is, e.g. "boiler".
+   *
+   * Resolved to real artwork by the server, exactly as a motion actor is. Takes
+   * precedence over `symbol` when both are present: a drawn icon reads better
+   * at size than an emoji, and matches the theme's colours instead of bringing
+   * its own.
+   */
+  icon?: string;
+  art?: ActorArt;
+  iconName?: string;
   /** Grid position. Left to right, top to bottom. Both default to a flow layout. */
   col?: number;
   row?: number;
@@ -155,23 +181,12 @@ export interface PanelStep {
   detail?: string;
   /** A single emoji or symbol. */
   symbol?: string;
+  /** A plain English noun for this step, drawn as real artwork. See PanelNode. */
+  icon?: string;
+  art?: ActorArt;
+  iconName?: string;
   /** Timeline only: the year or stage marker. */
   when?: string;
-}
-
-/**
- * The artwork for an actor: an SVG path body and the box it was drawn in.
- *
- * Fetched by the server when the script is written, and carried inside the
- * script from then on. Nothing is downloaded during a render - a frame has to
- * be a pure function of its inputs, and one that waits on a network call is
- * neither pure nor reliably fast.
- */
-export interface ActorArt {
-  /** The inner markup of the source SVG. Uses currentColor, so it takes a theme colour. */
-  body: string;
-  width: number;
-  height: number;
 }
 
 /** One thing on the stage. Positions are 0-1 across the frame. */

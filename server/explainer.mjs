@@ -37,6 +37,10 @@ const STEP_SCHEMA = {
     label: { type: 'STRING', description: 'The short line on screen. 2-7 words.' },
     detail: { type: 'STRING', description: 'Optional second line, smaller. One short clause.' },
     symbol: { type: 'STRING', description: 'Optional single emoji or symbol.' },
+    icon: {
+      type: 'STRING',
+      description: 'A plain English noun for this thing, e.g. "boiler". Drawn as real artwork.',
+    },
     when: { type: 'STRING', description: 'Timeline only: the year or stage, e.g. "1831".' },
   },
   required: ['label'],
@@ -86,6 +90,10 @@ const RESPONSE_SCHEMA = {
                     id: { type: 'STRING', description: 'Short, unique, referenced by edges.' },
                     label: { type: 'STRING' },
                     symbol: { type: 'STRING' },
+                    icon: {
+                      type: 'STRING',
+                      description: 'A plain English noun for what this box is, e.g. "boiler".',
+                    },
                     col: { type: 'INTEGER' },
                     row: { type: 'INTEGER' },
                   },
@@ -275,6 +283,14 @@ const SYSTEM = [
   'one. Put it in the middle, where the mechanism is being explained, not at the start or the end.',
   'Two at most, and none at all is better than forcing one onto a subject that does not move.',
   '',
+  'PICTURES. Every diagram box and every step may carry an `icon`: a PLAIN ENGLISH NOUN for what',
+  'the thing is - "boiler", "turbine", "fish", "factory", "battery". One or two words, singular.',
+  'The tool looks it up in a library of 200,000 drawings and renders it in the theme colours, so',
+  'this is how a layout stops being a row of empty boxes. Give one to every box and every step',
+  'where a real object is being named. Leave it out for an abstract idea - there is no drawing of',
+  '"efficiency" worth having, and a wrong picture is worse than none.',
+  'Never write an icon set name, never a phrase, never an emoji in this field.',
+  '',
   'LABELS. Two to five words. They are drawn inside boxes, so a label longer than about twenty',
   'characters will not fit. Symbols are one emoji, and only where one genuinely helps.',
   '',
@@ -398,12 +414,18 @@ function normalizeSteps(raw, max) {
   return (Array.isArray(raw) ? raw : [])
     .map((r) => {
       const o = r && typeof r === 'object' ? r : {};
-      return {
+      const step = {
         label: clean(o.label, 60),
         detail: clean(o.detail, 90),
         symbol: symbol(o.symbol),
         when: clean(o.when, 18),
       };
+      // The noun the server looks up. Kept only when it is short enough to be
+      // a thing rather than a sentence - "boiler" finds a picture, "the place
+      // where water becomes steam" finds nothing.
+      const icon = clean(o.icon, 32);
+      if (icon) step.icon = icon;
+      return step;
     })
     .filter((s) => s.label)
     .slice(0, max);
@@ -465,6 +487,8 @@ export function normalizePanel(raw, kind) {
         if (!id || !label || seen.has(id)) return null;
         seen.add(id);
         const node = { id, label, symbol: symbol(r.symbol) };
+        const icon = clean(r.icon, 32);
+        if (icon) node.icon = icon;
         if (Number.isFinite(Number(r.col))) node.col = Math.max(0, Math.min(5, Math.round(Number(r.col))));
         if (Number.isFinite(Number(r.row))) node.row = Math.max(0, Math.min(5, Math.round(Number(r.row))));
         return node;

@@ -17,6 +17,7 @@ your work safe with Git, and how to run the same tool on a second computer.
    - [The upload kit](#the-upload-kit)
    - [Using Claude instead of Gemini](#using-claude-instead-of-gemini)
    - [Writing the script yourself](#writing-the-script-yourself)
+   - [Real artwork in every layout](#real-artwork-in-every-layout)
    - [Animation comes from your verbs](#animation-comes-from-your-verbs)
    - [Scenes that move](#scenes-that-move)
    - [Moving backdrops](#moving-backdrops)
@@ -534,6 +535,31 @@ length you asked for.
 
 ---
 
+### Real artwork in every layout
+
+A diagram box used to hold a label and, at best, one emoji. Now every box, every process step and
+every grid cell can carry a **drawing of the thing it names** — pulled from the same open library of
+about 200,000 icons the moving scenes use.
+
+The storyboard writes a plain English noun — `boiler`, `turbine`, `fish`, `battery` — and the tool
+finds it. The drawing arrives in **your theme's colours**, so it never looks pasted in from
+somewhere else, and it brightens as the narration reaches it.
+
+This is why a layout stops looking like a row of empty rectangles, and it costs nothing: the
+drawings are fetched once when the script is written and travel inside it from then on.
+
+The storyboard is told to name a picture wherever a **real object** is on screen, and to leave it out
+for an abstract idea — there is no useful drawing of *efficiency*, and a wrong picture is worse than
+none. Where nothing matches, the layout falls back to the emoji or to plain text, so a missing icon
+costs you one shape rather than the scene.
+
+**Nothing is ever completely still.** Things that hold themselves up in a fluid — a fish, a bird, a
+balloon — keep swimming on the spot. Flames flicker. Anything that turns keeps turning. It is small
+enough that you will not consciously see it and large enough that its absence is what makes a frozen
+sticker look like a frozen sticker.
+
+---
+
 ### Animation comes from your verbs
 
 Every explainer scene used to animate once as it appeared and then hold perfectly still. On a
@@ -879,6 +905,7 @@ To stretch ElevenLabs credits: shorter targets, and the **Flash** voice model.
 | A scene feels flat and still | The narration names no movement. | Step 3 → check the **✨ Moves on these words** row. Use the real verb: *flows*, not *goes*. |
 | An effect fires where it makes no sense | A word matched that you did not mean physically. | Reword that phrase; the row shows which word did it. |
 | A moving scene is out of step with the voice | A cue is missing from that scene's narration. | The window says which words. Put them back, or regenerate. |
+| A box has no picture in it | No icon matched that noun, or the storyboard named an abstract idea. | Normal for abstractions. Otherwise use a plainer noun. |
 | A moving scene has a blank circle in it | No icon matched that word. | Step 3 → reword it to a plainer noun, e.g. "fish" not "salmonid". |
 | No moving scenes ever appear | The subject may not have a moment that moves — or the model skipped it. | Step 2 → **Extra instructions** → *act out the mechanism with a moving scene*. |
 | The script is far shorter than asked | Gemini underwrote it. | Step 3 warns you. Regenerate, or switch to a stronger model. |

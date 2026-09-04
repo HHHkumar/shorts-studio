@@ -83,6 +83,43 @@ function climbCurve(t: number, steps: number): { along: number; lift: number } {
 }
 
 /**
+ * The small movement a thing makes when nothing is happening to it.
+ *
+ * Without this an actor between beats is a frozen sticker, and a frozen sticker
+ * is what makes a scene look cheap however good the choreography around it is.
+ * Real animation never has a truly static element - a fish holds station by
+ * swimming, a flame never stops moving, a wheel keeps turning.
+ *
+ * Chosen from the noun, because the noun is what we have. Everything falls back
+ * to a slow breath, which is right for a box or a building and wrong for
+ * nothing.
+ */
+function idleFor(noun: string, time: number, seed: number) {
+  const n = String(noun || '').toLowerCase();
+  const phase = time * 1.2 + seed * 1.7;
+
+  // Things that hold themselves up in a fluid never stop moving.
+  if (/fish|bird|butterfl|bee|plane|kite|balloon|cloud|leaf|boat|swim|fly/.test(n)) {
+    return { dx: Math.sin(phase * 0.8) * 0.004, dy: Math.sin(phase) * 0.012, rot: Math.sin(phase * 0.9) * 3, scale: 1 };
+  }
+  // Fire flickers rather than drifts.
+  if (/fire|flame|burn|candle|torch|spark|explos/.test(n)) {
+    return { dx: 0, dy: 0, rot: Math.sin(phase * 3.1) * 2.5, scale: 1 + Math.sin(phase * 4.3) * 0.05 };
+  }
+  // Anything that turns, turns.
+  if (/wheel|turbine|fan|gear|rotor|propeller|windmill|motor/.test(n)) {
+    return { dx: 0, dy: 0, rot: time * 24, scale: 1 };
+  }
+  // Water and anything falling has a gentle vertical life.
+  if (/water|wave|rain|drop|liquid|river|sea|ocean/.test(n)) {
+    return { dx: 0, dy: Math.sin(phase * 1.3) * 0.008, rot: 0, scale: 1 };
+  }
+  // A slow breath. Below the threshold anyone notices, above the threshold of
+  // looking dead.
+  return { dx: 0, dy: Math.sin(phase * 0.6) * 0.003, rot: 0, scale: 1 + Math.sin(phase * 0.5) * 0.012 };
+}
+
+/**
  * Where every actor is at this moment.
  *
  * One pass per actor over the beats aimed at it. A beat that has not started
@@ -98,12 +135,14 @@ function stateAt(
   /** One figure's width and height as a fraction of the frame. */
   unit: { x: number; y: number },
 ): ActorState {
+  // Seeded off the id so two actors of the same kind do not breathe in unison.
+  const idle = idleFor(actor.icon, time, actor.id.length);
   const state: ActorState = {
-    x: actor.x,
-    y: actor.y,
+    x: actor.x + idle.dx,
+    y: actor.y + idle.dy,
     opacity: actor.hidden ? 0 : 1,
-    scale: 1,
-    rotate: 0,
+    scale: idle.scale,
+    rotate: idle.rot,
     facing: 1,
   };
 

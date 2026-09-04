@@ -216,12 +216,20 @@ export async function attachIcons(content, { root }) {
     ...(Array.isArray(content && content.script) ? content.script : []),
     ...(Array.isArray(content && content.scenes) ? content.scenes : []),
   ];
-  const actors = [];
+  // Anything in a panel that names a thing gets a picture of it, not just the
+  // actors of a motion scene. Diagram boxes, process steps, grid cells, recap
+  // points and timeline entries all used to be a single emoji or nothing at
+  // all, which is what made most of an explainer look bare.
+  const wanted = [];
   for (const line of lines) {
-    const list = line && line.panel && line.panel.actors;
-    if (Array.isArray(list)) actors.push(...list);
+    const panel = line && line.panel;
+    if (!panel) continue;
+    for (const list of [panel.actors, panel.nodes, panel.steps]) {
+      if (!Array.isArray(list)) continue;
+      for (const item of list) if (item && typeof item.icon === 'string') wanted.push(item);
+    }
   }
-  if (!actors.length) return { resolved: 0, missing: [], attribution: [] };
+  if (!wanted.length) return { resolved: 0, missing: [], attribution: [] };
 
   const cache = readCache(root);
   const before = Object.keys(cache).length;
@@ -230,18 +238,18 @@ export async function attachIcons(content, { root }) {
   const attribution = new Set();
   let resolved = 0;
 
-  for (const actor of actors) {
+  for (const item of wanted) {
     // Already drawn once. This is what makes it safe to call again before a
-    // render, to catch a motion scene somebody added by hand in the editor.
-    if (actor.art && actor.art.body) continue;
-    const icon = await resolveIcon(actor.icon, { root, cache });
+    // render, to catch a scene somebody added by hand in the editor.
+    if (item.art && item.art.body) continue;
+    const icon = await resolveIcon(item.icon, { root, cache });
     if (!icon) {
-      missing.push(actor.icon);
+      missing.push(item.icon);
       continue;
     }
     // The noun stays as the accessible name; art is what the renderer draws.
-    actor.art = { body: icon.body, width: icon.width, height: icon.height };
-    actor.iconName = icon.name;
+    item.art = { body: icon.body, width: icon.width, height: icon.height };
+    item.iconName = icon.name;
     if (icon.attribution) attribution.add(icon.name.split(':')[0]);
     resolved++;
   }

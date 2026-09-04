@@ -394,6 +394,65 @@ function fitLabel(label: string, boxW: number, boxH: number, hasSymbol: boolean)
   return { lines: wrapLabel(label, 14).slice(0, maxLines), size: 15 };
 }
 
+/**
+ * A thing's picture, in SVG, for the diagram boxes.
+ *
+ * Real artwork beats an emoji at this size for two reasons: an emoji brings its
+ * own colours and fights the theme, and at 60px a colour emoji is mush. The
+ * icon body uses currentColor, so it simply takes whatever colour it is given.
+ */
+const NodeArt: React.FC<{
+  node: PanelNode;
+  size: number;
+  y: number;
+  colour: string;
+}> = ({ node, size, y, colour }) => {
+  if (node.art && node.art.body) {
+    return (
+      <g transform={'translate(' + (-size / 2) + ',' + y + ')'} color={colour} fill={colour}>
+        <svg
+          width={size}
+          height={size}
+          viewBox={'0 0 ' + node.art.width + ' ' + node.art.height}
+          dangerouslySetInnerHTML={{ __html: node.art.body }}
+        />
+      </g>
+    );
+  }
+  // No artwork found for the noun, or the storyboard only gave an emoji.
+  if (node.symbol) {
+    return (
+      <text x={0} y={y + size * 0.86} textAnchor="middle" fontSize={size}>
+        {node.symbol}
+      </text>
+    );
+  }
+  return null;
+};
+
+/** The same thing outside SVG, for the panels laid out with flexbox. */
+export const StepArt: React.FC<{
+  step: { symbol?: string; art?: { body: string; width: number; height: number } };
+  size: number;
+  colour: string;
+}> = ({ step, size, colour }) => {
+  if (step.art && step.art.body) {
+    return (
+      <svg
+        width={size}
+        height={size}
+        viewBox={'0 0 ' + step.art.width + ' ' + step.art.height}
+        style={{ color: colour, display: 'block' }}
+        dangerouslySetInnerHTML={{ __html: step.art.body }}
+      />
+    );
+  }
+  if (step.symbol) {
+    return <div style={{ fontSize: size, lineHeight: 1 }}>{step.symbol}</div>;
+  }
+  return null;
+};
+
 const NodeBox: React.FC<{
   node: PanelNode;
   theme: Theme;
@@ -404,12 +463,13 @@ const NodeBox: React.FC<{
   isActive: boolean;
 }> = ({ node, theme, pos, boxW, boxH, entry, isActive }) => {
   const highlight = node.accent || isActive;
-  const { lines, size } = fitLabel(node.label || '', boxW, boxH, !!node.symbol);
+  const hasArt = !!((node.art && node.art.body) || node.symbol);
+  const { lines, size } = fitLabel(node.label || '', boxW, boxH, hasArt);
 
-  // Symbol and label are one block, centred together. Laying the text out from
+  // Picture and label are one block, centred together. Laying the text out from
   // the middle of the box instead pushed a two-line label out through the base.
-  const symH = node.symbol ? boxH * 0.3 : 0;
-  const gap = node.symbol ? boxH * 0.05 : 0;
+  const symH = hasArt ? boxH * 0.3 : 0;
+  const gap = hasArt ? boxH * 0.05 : 0;
   const textH = lines.length * size * 1.18;
   const top = -(symH + gap + textH) / 2;
 
@@ -425,11 +485,12 @@ const NodeBox: React.FC<{
         stroke={highlight ? theme.accent : theme.border}
         strokeWidth={theme.borderWidth + (highlight ? 1.5 : 0)}
       />
-      {node.symbol ? (
-        <text x={0} y={top + symH * 0.86} textAnchor="middle" fontSize={symH}>
-          {node.symbol}
-        </text>
-      ) : null}
+      <NodeArt
+        node={node}
+        size={symH}
+        y={top}
+        colour={highlight ? theme.accent : theme.text}
+      />
       {lines.map((line, i) => (
         <text
           key={i}
@@ -721,6 +782,11 @@ const StepBlock: React.FC<{
       transform: 'translateY(' + (1 - entry) * 18 + 'px) scale(' + (isActive ? 1.02 : 1) + ')',
     }}
   >
+    {/* Beside the number, never instead of it: in a process the ordering is
+        part of the meaning, so the badge keeps its digit. */}
+    {step.art && step.art.body ? (
+      <StepArt step={step} size={row ? 54 : 42} colour={isActive ? theme.accent : theme.text} />
+    ) : null}
     <div
       style={{
         flex: '0 0 auto',
@@ -737,7 +803,9 @@ const StepBlock: React.FC<{
         fontWeight: 800,
       }}
     >
-      {step.symbol || index + 1}
+      {step.art && step.art.body
+        ? <StepArt step={step} size={30} colour={theme.text} />
+        : (step.symbol || index + 1)}
     </div>
     <div style={{ minWidth: 0 }}>
       <div
@@ -1121,9 +1189,11 @@ export const GridPanel: React.FC<PanelProps> = ({ theme, panel, words, offset })
               boxShadow: isActive ? '0 0 40px ' + hexToRgba(theme.accent, 0.28) : theme.shadow,
             }}
           >
-            {step.symbol ? (
-              <div style={{ fontSize: m.landscape ? 70 : 56, lineHeight: 1 }}>{step.symbol}</div>
-            ) : null}
+            <StepArt
+              step={step}
+              size={m.landscape ? 70 : 56}
+              colour={isActive ? theme.accent : theme.text}
+            />
             <div
               style={{
                 fontFamily: theme.fontBody,
@@ -1205,7 +1275,9 @@ export const RecapPanel: React.FC<PanelProps> = ({ theme, panel, words, offset }
             }}
           >
             <div style={{ flex: '0 0 auto', fontSize: 36, color: theme.accent, lineHeight: 1 }}>
-              {step.symbol || '✓'}
+              {step.art && step.art.body
+                ? <StepArt step={step} size={38} colour={theme.accent} />
+                : (step.symbol || '✓')}
             </div>
             <div
               style={{
