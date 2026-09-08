@@ -29,6 +29,7 @@ your work safe with Git, and how to run the same tool on a second computer.
 7. [Running it on another computer](#7-running-it-on-another-computer)
 8. [What it costs](#8-what-it-costs)
 9. [When something goes wrong](#9-when-something-goes-wrong)
+   - [When a port stays stuck](#when-a-port-stays-stuck)
    - [Checking the build itself](#checking-the-build-itself)
 10. [Where things are saved](#10-where-things-are-saved)
 11. [Questions people ask](#11-questions-people-ask)
@@ -1031,7 +1032,9 @@ To stretch ElevenLabs credits: shorter targets, and the **Flash** voice model.
 | *"running scripts is disabled on this system"* | Windows blocks npm's launcher by default. | Use `npm.cmd`, or run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once. |
 | Red box: *"The helper server is not running"* | The helper really is not there — the page waited twenty seconds first. | Reopen PowerShell, `cd` to the folder, `npm start`, reload the page. |
 | *"Port 3030 is already taken"* | A second copy of the tool is still running. | Close the other PowerShell window. The message prints the command to force it if you cannot find it. |
-| *"Port 5173 is already in use"* | Same thing, for the web half. | As above — close the other window and start again. |
+| *"Port 5173 is already in use"* | Same thing, for the web half. | Close the other window and start again — but see the next row if that does not help. |
+| The port is still taken after you closed the window | Closing a window does not always kill what it started. `npm start` runs **two** child processes, and they can outlive the window and keep listening. | Find and stop them by number — see [When a port stays stuck](#when-a-port-stays-stuck) below. |
+| Both halves exit at once, `[APP]` then `[SERVER]` | Normal, and not two faults. The two halves run under `concurrently -k`, so when one fails it deliberately stops the other. | Read the **first** error only. The second exit is the consequence, not the cause. |
 | *"That Claude API key was rejected"* | Bad key, usually a stray space. | Re-copy it from console.anthropic.com. |
 | *"Your Anthropic account has no credit left"* | Claude has no free tier. | Top up, or switch **Who writes it** back to Gemini on step 2. |
 | *"Claude declined this topic"* | A safety classifier refused it. | Reword the topic, or use Gemini for that one. |
@@ -1067,6 +1070,35 @@ To stretch ElevenLabs credits: shorter targets, and the **Flash** voice model.
 | The kit has no thumbnail in it | It was packed before you made one. | Make the thumbnail, then press **Pack it again**. |
 | A change seems to have no effect | An old server is still running from before. | `Ctrl + C` in PowerShell, then `npm start` again. |
 | Everything is confusing | — | Step 7 → **Reset everything**, then start from step 1. |
+
+---
+
+### When a port stays stuck
+
+`npm start` is not one program. It starts **two** — the helper server on 3030 and the web app on
+5173 — and closing the window they were launched from does not always take them with it. They keep
+running, invisibly, still holding both ports. The next `npm start` then fails on 5173 before it has
+done anything, and because the two halves are deliberately tied together, the helper is stopped too.
+That is why you get two red exits for one problem.
+
+Find out what is actually holding the ports:
+
+```bash
+netstat -ano | findstr "5173 3030"
+```
+
+The last number on each line is the process ID. Stop each one:
+
+```bash
+taskkill /PID 21044 /F
+```
+
+Then `npm start` as normal. Nothing is lost by doing this — those processes hold no unsaved work.
+Your videos are in `out\`, your keys are in the browser, and everything else is on disk already.
+
+> If this happens every time you close the window, get into the habit of stopping the tool with
+> **`Ctrl + C`** in its own window rather than clicking the X. `Ctrl + C` shuts both halves down
+> properly; the X sometimes only closes the window around them.
 
 ---
 
