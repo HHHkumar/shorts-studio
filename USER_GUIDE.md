@@ -22,6 +22,7 @@ your work safe with Git, and how to run the same tool on a second computer.
    - [Scenes that move](#scenes-that-move)
    - [Moving backdrops](#moving-backdrops)
    - [Drawing your own backdrops](#drawing-your-own-backdrops)
+   - [Cuts, text and the finishing layer](#cuts-text-and-the-finishing-layer)
    - [Aptitude and reasoning videos](#aptitude-and-reasoning-videos)
    - [A note on units](#a-note-on-units)
 5. [Git — your undo button](#5-git--your-undo-button)
@@ -356,7 +357,12 @@ Everything here is instant, free, and never touches the voiceover.
   electrical and power work: a **circuit** (series or parallel), a **phasor diagram** and power
   triangle, an AC **waveform** (phase shift, rectified, PWM), a **block flow** that lights up
   stage by stage (boiler → turbine → condenser → pump), a **transformer** with turns ratio, and
-  a **pie** for a fuel mix or a loss breakdown.
+  a **pie** for a fuel mix or a loss breakdown — and eight for aptitude and reasoning: a **Venn**
+  diagram, a **clock face** with the angle between the hands, a **number line**, a **ratio bar**,
+  a **seating arrangement** round a table, a **family tree**, a **histogram** and a **logic grid**.
+- **Cuts and text** — how one scene becomes the next, and how the words arrive. See
+  [Cuts, text and the finishing layer](#cuts-text-and-the-finishing-layer).
+- **Finishing layer** — grain, a vignette, cinema bars. Same section.
 - **Drift topic symbols** — faint themed emoji behind everything.
 - **Moving backdrop** — one of thirty slow animations under the whole video. See
   [Moving backdrops](#moving-backdrops) below.
@@ -773,6 +779,68 @@ you were going to skip anyway.
 **Being honest about it.** Drawn backdrops are labelled *Generated with ElevenLabs* in your caption
 and in the publish kit's credits file. Leave that in. YouTube and the other platforms increasingly
 expect AI-made imagery to be declared, and the line is short enough that it costs you nothing.
+
+---
+
+### Cuts, text and the finishing layer
+
+Three settings on step 5 that apply to every scene. Because they run on all of them, a choice here
+is *felt* across a whole video rather than noticed once — which is exactly why the defaults are the
+quiet options.
+
+#### The transition — how one scene becomes the next
+
+Ten choices. **Auto** is the default and is usually the right answer: it varies the join by what the
+scene is doing, so the answer reveal gets the punchy zoom, the question gets a wipe, and the
+explanations get the quietest crossfade there is. A single transition used forty times becomes a tic
+by the fourth scene.
+
+| | What it does | When |
+|---|---|---|
+| **Auto** | Varies with the scene | Leave it here unless you want one look throughout |
+| **Crossfade** | Dissolve with a small drift | Never wrong, never noticed |
+| **Slide** | The new scene moves in over the old | Clean and modern; reads well on a phone |
+| **Push** | The old scene is shoved out by the new | More physical; good for step-by-step |
+| **Wipe** | A hard edge sweeps across | Graphic and confident; suits bold layouts |
+| **Zoom** | Punches in through the cut | Energetic; best on short, fast videos |
+| **Blur** | Defocus and refocus | Soft and expensive-looking; slows the pace |
+| **Dip** | Through the background colour | A real beat; use when two ideas are separate |
+| **Whip pan** | Fast sideways smear | High energy — not for twenty scenes |
+| **Glitch** | Digital break-up | Loud. One or two a video, not every cut |
+
+#### How the words appear
+
+The read-along model never changes: one line on screen, exactly what you are hearing, the spoken
+word lit. What you are choosing is the *manner of arrival* — and the real decision inside it is
+whether the viewer may read slightly ahead of the voice.
+
+- **Fade** *(default)* — the phrase appears and words light up as they are said. Unspoken words wait
+  faintly, so the eye can run a shade ahead. Calmest, and the easiest to follow.
+- **Pop** — each word snaps in as it is spoken. Punchy; suits hooks.
+- **Rise** — words lift into place. Smooth all-rounder.
+- **Typewriter** — nothing exists until it is said. Nothing to read ahead to, so it holds attention
+  harder. Use it when you want urgency, not comprehension.
+- **Focus** — unspoken words are blurred and sharpen as they are reached.
+- **Highlighter** — a bar sweeps behind the current word. The strongest choice for **method and
+  revision videos**: it reads as teaching rather than as motion graphics.
+- **Bounce** — springy overshoot per word. Best with the Flashy layout.
+
+#### The finishing layer
+
+A texture over the top of everything. Unlike the moving backdrop, it means nothing and is not chosen
+from your subject — it is there to make a frame look *shot* rather than assembled.
+
+**Vignette** (darkened edges), **film grain**, **scanlines** (CRT), **light leak** (a drifting warm
+bloom), **cinematic bars** (letterbox), **corner frame** (viewfinder brackets), **dust** (floating
+specks), **chromatic edges** (a lens fringe). Plus **None**, which is the default and what every
+video looked like before this existed.
+
+Each has its own ceiling, so **How strong** at maximum cannot make the captions hard to read — a
+vignette can afford far more than grain can. If you are unsure, vignette at half strength flatters
+almost everything and is impossible to notice.
+
+> One at a time. These stack with the moving backdrop, the drift symbols and the backdrop photo,
+> and a frame carrying all four is a frame with nothing to look at.
 
 ---
 

@@ -7,6 +7,58 @@
 // ---------------------------------------------------------------------------
 
 export const SKETCH_CATALOGUE = [
+  // --- aptitude and reasoning ------------------------------------------------
+  // Listed first because the aptitude sections reach for these constantly and
+  // a model picks better from the top of a list. They are not aptitude-only:
+  // a Venn is a Venn whether the subject is syllogism or cell biology.
+  {
+    name: 'venn',
+    describe: 'two or three overlapping circles, with the overlap darker',
+    when: 'syllogism, sets, shared properties, "both", classification',
+    uses: 'count (2 or 3 circles), items (one label per circle), labelA (what the overlap means)',
+  },
+  {
+    name: 'clock',
+    describe: 'a clock face with both hands, and optionally the angle between them shaded',
+    when: 'clock problems, angles between hands, time, anything on a dial',
+    uses: 'angle (the hour, 1-12), ratio (the minute, 0-59), mode ("angle" to shade the gap)',
+  },
+  {
+    name: 'number-line',
+    describe: 'a horizontal line with labelled points marked along it',
+    when: 'inequalities, ranges, where a value sits, ordering, temperature',
+    uses: 'items (2-6 points, each with a label and a value), labelA (left end), labelB (right end)',
+  },
+  {
+    name: 'ratio-bar',
+    describe: 'one bar split into proportional parts, each showing its percentage',
+    when: 'ratios, shares, percentage splits, "divided in the ratio"',
+    uses: 'items (2-5 parts, each with a label and a value; they need not add to 100)',
+  },
+  {
+    name: 'seating',
+    describe: 'people placed around a table or along a row',
+    when: 'seating arrangement, circular arrangement, who sits where',
+    uses: 'items (3-8 people, each with a label), mode ("circle" or "row"), labelA (a note underneath)',
+  },
+  {
+    name: 'tree',
+    describe: 'a root box with children branching below it',
+    when: 'family trees, blood relations, hierarchies, classification, org charts',
+    uses: 'items (3-7 nodes; the FIRST is the root, the rest hang below), labelA (what the links mean)',
+  },
+  {
+    name: 'histogram',
+    describe: 'bars over categories against a value axis, with the values written on',
+    when: 'data interpretation, distributions, comparing several categories',
+    uses: 'items (3-8 bars, each with a label and a value), labelA (what the values measure)',
+  },
+  {
+    name: 'grid-logic',
+    describe: 'a matrix of cells that can be ticked and crossed',
+    when: 'matching puzzles, elimination reasoning, two-variable logic problems',
+    uses: 'items (2-4 row labels), labelA and labelB (column headings), mode ("diagonal" to tick the diagonal)',
+  },
   {
     name: 'wave-interference',
     describe: 'two sources sending out ripples that add and cancel',

@@ -2,6 +2,7 @@ import React from 'react';
 import { AbsoluteFill, interpolate, random, spring, useCurrentFrame, useVideoConfig } from 'remotion';
 import type { Theme } from '../lib/theme';
 import { hexToRgba } from '../lib/theme';
+import { autoTransitionFor, isTransition, transitionStyle } from '../lib/transitions';
 
 /**
  * How the frame is laid out for the shape we are rendering into.
@@ -200,10 +201,13 @@ export const SceneFade: React.FC<{
   theme: Theme;
   hold: number;
   index: number;
+  /** Which join to use. 'auto' resolves from the scene kind. */
+  transition?: string;
+  /** Only read when the transition is 'auto'. */
+  kind?: string;
   children: React.ReactNode;
-}> = ({ theme, hold, index, children }) => {
+}> = ({ theme, hold, index, transition = 'crossfade', kind = '', children }) => {
   const frame = useCurrentFrame();
-  const dir = index % 2 === 0 ? 1 : -1;
 
   const arriving = interpolate(frame, [0, SCENE_OVERLAP], [0, 1], {
     extrapolateLeft: 'clamp',
@@ -214,18 +218,23 @@ export const SceneFade: React.FC<{
     extrapolateRight: 'clamp',
   });
 
-  // Comes in from one side and leaves towards the other, so the two scenes
-  // move the same way through the cut instead of passing each other.
-  const shift = (1 - arriving) * 46 * dir - (1 - leaving) * 46 * dir;
-  const scale = theme.bounce > 0.5
-    ? interpolate(arriving, [0, 1], [1.05, 1])
-    : interpolate(leaving, [0, 1], [1.03, 1]);
+  // The maths lives in src/lib/transitions.ts, framework-free, so every join
+  // can be checked at a hundred points without rendering a frame.
+  // A name saved by an older version, or simply mistyped, must not blank the
+  // scene - transitionStyle already falls back, but resolving here keeps
+  // 'auto' from ever reaching it.
+  const name = !isTransition(transition) || transition === 'auto'
+    ? autoTransitionFor(kind, index)
+    : transition;
+  const style = transitionStyle(name, { arriving, leaving, index, bounce: theme.bounce });
 
   return (
     <AbsoluteFill
       style={{
-        opacity: Math.min(arriving, leaving),
-        transform: 'translateX(' + shift + 'px) scale(' + scale + ')',
+        opacity: style.opacity,
+        transform: style.transform,
+        filter: style.filter,
+        clipPath: style.clipPath,
       }}
     >
       {children}

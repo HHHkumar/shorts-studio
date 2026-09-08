@@ -843,6 +843,491 @@ export const SKETCHES: Record<string, SketchDef> = {
       });
     },
   },
+  // ---------------------------------------------------------------------------
+  // Aptitude and reasoning.
+  //
+  // The sections added in the aptitude content mode had no diagrams at all,
+  // which meant a syllogism video could not draw a Venn diagram and a clock
+  // problem could not draw a clock - the two things those chapters are entirely
+  // about. These fill that gap, and most of them earn their place outside
+  // aptitude too: a Venn is a Venn whether it is sets or biology.
+  // ---------------------------------------------------------------------------
+
+  venn: {
+    shape: 'square',
+    label: 'Venn diagram',
+    describe: 'two or three overlapping circles, for syllogism, sets and shared properties',
+    uses: 'count (2 or 3 circles), items (one label per circle), labelA (what the overlap means)',
+    draw: ({ p, progress, width, height, params, items, colors }) => {
+      const n = Math.round(num(params.count, 2, 2, 3));
+      const cx = width / 2;
+      const cy = height * 0.46;
+      const r = Math.min(width, height) * (n === 3 ? 0.2 : 0.22);
+      const spread = r * 0.62;
+
+      // Grown rather than faded in: a set that arrives at full size has no
+      // sense of one thing being placed against another.
+      const grow = Math.min(1, progress * 2.2);
+
+      const centres = n === 2
+        ? [{ x: cx - spread, y: cy }, { x: cx + spread, y: cy }]
+        : [
+            { x: cx - spread, y: cy - spread * 0.5 },
+            { x: cx + spread, y: cy - spread * 0.5 },
+            { x: cx, y: cy + spread * 0.75 },
+          ];
+
+      p.push();
+      // Additive-ish: the overlap darkens because the fills stack, which is
+      // exactly the thing the diagram is trying to say.
+      centres.forEach((c, i) => {
+        p.noStroke();
+        p.fill(shade(p, i === 1 ? colors.good : colors.accent, 78));
+        p.circle(c.x, c.y, r * 2 * grow);
+        p.noFill();
+        p.stroke(i === 1 ? colors.good : colors.accent);
+        p.strokeWeight(3);
+        p.circle(c.x, c.y, r * 2 * grow);
+      });
+      p.pop();
+
+      // Labels sit outside their circle, never over the overlap, which is the
+      // one part of the picture that has to stay readable.
+      centres.forEach((c, i) => {
+        const text = items[i]?.label || '';
+        if (!text) return;
+        const outward = n === 2
+          ? { x: c.x + (i === 0 ? -r * 0.95 : r * 0.95), y: c.y - r - 26 }
+          : { x: c.x, y: i === 2 ? c.y + r + 30 : c.y - r - 26 };
+        label(p, text, outward.x, outward.y, colors, 26);
+      });
+
+      if (params.labelA && progress > 0.45) {
+        p.push();
+        p.noStroke();
+        p.fill(colors.text);
+        p.textAlign(p.CENTER, p.CENTER);
+        p.textSize(24);
+        p.text(String(params.labelA), cx, n === 3 ? cy + spread * 0.1 : cy);
+        p.pop();
+      }
+    },
+  },
+
+  clock: {
+    shape: 'square',
+    label: 'Clock face',
+    describe: 'a clock with both hands, and the angle between them marked',
+    uses: 'angle (the hour, 1-12), ratio (the minute, 0-59), mode ("angle" to shade the gap between the hands)',
+    draw: ({ p, progress, width, height, params, colors }) => {
+      const cx = width / 2;
+      const cy = height * 0.46;
+      const r = Math.min(width, height) * 0.27;
+
+      const hour = num(params.angle, 3, 0, 12);
+      const minute = num(params.ratio, 0, 0, 59);
+      // Sweep both hands into place rather than snapping them, so the viewer
+      // sees which way round the angle is measured.
+      const t = Math.min(1, progress * 1.6);
+      const minuteAngle = (minute / 60) * 360 * t - 90;
+      const hourAngle = (((hour % 12) + minute / 60) / 12) * 360 * t - 90;
+
+      p.push();
+      p.noFill();
+      p.stroke(colors.dim);
+      p.strokeWeight(4);
+      p.circle(cx, cy, r * 2);
+
+      // The twelve marks. The quarters are longer, which is what makes a circle
+      // read as a clock rather than as a dial.
+      for (let i = 0; i < 12; i++) {
+        const a = p.radians(i * 30 - 90);
+        const inner = r * (i % 3 === 0 ? 0.84 : 0.9);
+        p.stroke(i % 3 === 0 ? colors.text : colors.dim);
+        p.strokeWeight(i % 3 === 0 ? 5 : 3);
+        p.line(cx + Math.cos(a) * inner, cy + Math.sin(a) * inner,
+               cx + Math.cos(a) * r * 0.97, cy + Math.sin(a) * r * 0.97);
+      }
+      p.pop();
+
+      if (params.mode === 'angle' && progress > 0.35) {
+        p.push();
+        p.noStroke();
+        p.fill(shade(p, colors.accent, 60));
+        const from = p.radians(Math.min(hourAngle, minuteAngle));
+        const to = p.radians(Math.max(hourAngle, minuteAngle));
+        p.arc(cx, cy, r * 0.9, r * 0.9, from, to, p.PIE);
+        p.pop();
+      }
+
+      const hand = (angle: number, length: number, weight: number, colour: string) => {
+        const a = p.radians(angle);
+        p.push();
+        p.stroke(colour);
+        p.strokeWeight(weight);
+        p.strokeCap(p.ROUND);
+        p.line(cx, cy, cx + Math.cos(a) * length, cy + Math.sin(a) * length);
+        p.pop();
+      };
+      hand(hourAngle, r * 0.52, 11, colors.text);
+      hand(minuteAngle, r * 0.78, 7, colors.accent);
+
+      p.push();
+      p.noStroke();
+      p.fill(colors.accent);
+      p.circle(cx, cy, 16);
+      p.pop();
+    },
+  },
+
+  'number-line': {
+    shape: 'wide',
+    label: 'Number line',
+    describe: 'a line with marked points, for ranges, inequalities and where a value sits',
+    uses: 'items (2-6 points, each with a label and a value), labelA (left end), labelB (right end)',
+    draw: ({ p, progress, width, height, items, params, colors }) => {
+      const points = items
+        .filter((i) => Number.isFinite(Number(i.value)))
+        .slice(0, 6)
+        .map((i) => ({ label: i.label, value: Number(i.value) }));
+      if (!points.length) return;
+
+      const y = height * 0.5;
+      const left = width * 0.12;
+      const right = width * 0.88;
+
+      const lo = Math.min(...points.map((q) => q.value));
+      const hi = Math.max(...points.map((q) => q.value));
+      // A single point, or several equal ones, would divide by zero.
+      const span = hi - lo || 1;
+      const pad = span * 0.15;
+      const at = (v: number) => left + ((v - (lo - pad)) / (span + pad * 2)) * (right - left);
+
+      p.push();
+      p.stroke(colors.dim);
+      p.strokeWeight(4);
+      p.line(left, y, right * Math.min(1, progress * 1.5), y);
+      // Arrowheads, so it reads as continuing rather than as a bar chart axis.
+      p.line(right - 18, y - 10, right, y);
+      p.line(right - 18, y + 10, right, y);
+      p.pop();
+
+      label(p, String(params.labelA || ''), left, y + 44, colors, 24);
+      label(p, String(params.labelB || ''), right, y + 44, colors, 24);
+
+      points.forEach((q, i) => {
+        // Staggered so a run of points does not all pop at once.
+        const on = Math.min(1, Math.max(0, progress * 2.4 - i * 0.22));
+        if (on <= 0) return;
+        const x = at(q.value);
+        p.push();
+        p.noStroke();
+        p.fill(colors.accent);
+        p.circle(x, y, 20 * on);
+        p.fill(colors.text);
+        p.textAlign(p.CENTER, p.BOTTOM);
+        p.textSize(26);
+        p.text(q.label, x, y - 26);
+        p.fill(colors.dim);
+        p.textAlign(p.CENTER, p.TOP);
+        p.textSize(22);
+        p.text(String(q.value), x, y + 18);
+        p.pop();
+      });
+    },
+  },
+
+  'ratio-bar': {
+    shape: 'wide',
+    label: 'Ratio bar',
+    describe: 'one bar split into proportional parts, for ratios, shares and percentages',
+    uses: 'items (2-5 parts, each with a label and a value; they need not add to 100)',
+    draw: ({ p, progress, width, height, items, colors }) => {
+      const parts = items
+        .filter((i) => Number.isFinite(Number(i.value)) && Number(i.value) > 0)
+        .slice(0, 5)
+        .map((i) => ({ label: i.label, value: Number(i.value) }));
+      if (parts.length < 2) return;
+
+      const total = parts.reduce((n, q) => n + q.value, 0);
+      const left = width * 0.1;
+      const barW = width * 0.8;
+      const y = height * 0.4;
+      const h = Math.min(120, height * 0.2);
+
+      // Grows left to right as one bar, so the parts are read as shares of the
+      // same whole rather than as separate quantities.
+      const shown = barW * Math.min(1, progress * 1.4);
+      let x = left;
+
+      parts.forEach((q, i) => {
+        const w = (q.value / total) * barW;
+        const drawn = Math.max(0, Math.min(w, left + shown - x));
+        if (drawn > 0) {
+          p.push();
+          p.noStroke();
+          p.fill(shade(p, colors.accent, 245 - i * 44));
+          p.rect(x, y, drawn, h, i === 0 ? 10 : 0, i === parts.length - 1 ? 10 : 0,
+                 i === parts.length - 1 ? 10 : 0, i === 0 ? 10 : 0);
+          p.pop();
+
+          // The share is written inside the part when it is wide enough, and
+          // skipped when it is not - a number overflowing its own slice is
+          // worse than no number.
+          const pct = Math.round((q.value / total) * 100);
+          if (w > 74 && drawn > w * 0.85) {
+            p.push();
+            p.noStroke();
+            p.fill(colors.bg);
+            p.textAlign(p.CENTER, p.CENTER);
+            p.textSize(28);
+            p.text(pct + '%', x + w / 2, y + h / 2);
+            p.pop();
+          }
+          label(p, q.label, x + w / 2, y + h + 30, colors, 24);
+        }
+        x += w;
+      });
+    },
+  },
+
+  seating: {
+    shape: 'square',
+    label: 'Seating arrangement',
+    describe: 'people placed around a table, for circular and linear arrangement puzzles',
+    uses: 'items (3-8 people, each with a label), mode ("circle" or "row"), labelA (who faces which way)',
+    draw: ({ p, progress, width, height, items, params, colors }) => {
+      const people = items.slice(0, 8).filter((i) => i.label);
+      if (people.length < 2) return;
+
+      const row = params.mode === 'row';
+      const cx = width / 2;
+      const cy = height * 0.46;
+
+      if (row) {
+        const gap = Math.min(width * 0.8 / people.length, 140);
+        const startX = cx - (gap * (people.length - 1)) / 2;
+        people.forEach((who, i) => {
+          const on = Math.min(1, Math.max(0, progress * 2.2 - i * 0.16));
+          if (on <= 0) return;
+          seat(p, startX + i * gap, cy, 34 * on, who.label, colors, i === 0);
+        });
+      } else {
+        const r = Math.min(width, height) * 0.27;
+        people.forEach((who, i) => {
+          const on = Math.min(1, Math.max(0, progress * 2.2 - i * 0.14));
+          if (on <= 0) return;
+          // Starting at the top and going clockwise, which is the convention
+          // every one of these puzzles is written in.
+          const a = (i / people.length) * Math.PI * 2 - Math.PI / 2;
+          seat(p, cx + Math.cos(a) * r, cy + Math.sin(a) * r, 34 * on, who.label, colors, i === 0);
+        });
+        p.push();
+        p.noFill();
+        p.stroke(colors.dim);
+        p.strokeWeight(3);
+        dashed(p, true);
+        p.circle(cx, cy, r * 1.05);
+        dashed(p, false);
+        p.pop();
+      }
+
+      if (params.labelA) label(p, String(params.labelA), cx, height * 0.9, colors, 24);
+    },
+  },
+
+  tree: {
+    shape: 'wide',
+    label: 'Tree / hierarchy',
+    describe: 'a branching diagram, for family trees, blood relations and classifications',
+    uses: 'items (3-7 nodes; the first is the root, the rest hang below it), labelA (what the links mean)',
+    draw: ({ p, progress, width, height, items, params, colors }) => {
+      const nodes = items.slice(0, 7).filter((i) => i.label);
+      if (nodes.length < 2) return;
+
+      const root = nodes[0];
+      const children = nodes.slice(1);
+      const rootY = height * 0.24;
+      const childY = height * 0.6;
+      const gap = Math.min(width * 0.78 / Math.max(1, children.length), 200);
+      const startX = width / 2 - (gap * (children.length - 1)) / 2;
+
+      // Edges first so the boxes sit on top of them, never the other way round.
+      children.forEach((_, i) => {
+        const on = Math.min(1, Math.max(0, progress * 2.4 - 0.2 - i * 0.14));
+        if (on <= 0) return;
+        const x = startX + i * gap;
+        p.push();
+        p.stroke(colors.dim);
+        p.strokeWeight(3);
+        p.noFill();
+        // A shallow elbow rather than a straight diagonal: it reads as a
+        // relationship, and it stays legible when two children are close.
+        const midY = rootY + (childY - rootY) * 0.55;
+        p.beginShape();
+        p.vertex(width / 2, rootY + 34);
+        p.vertex(width / 2, midY);
+        p.vertex(x, midY);
+        p.vertex(x, rootY + (childY - rootY) * on);
+        p.endShape();
+        p.pop();
+      });
+
+      node(p, width / 2, rootY, root.label, colors, true, Math.min(1, progress * 3));
+      children.forEach((child, i) => {
+        const on = Math.min(1, Math.max(0, progress * 2.4 - 0.4 - i * 0.14));
+        if (on > 0) node(p, startX + i * gap, childY, child.label, colors, false, on);
+      });
+
+      if (params.labelA) label(p, String(params.labelA), width / 2, height * 0.9, colors, 24);
+    },
+  },
+
+  histogram: {
+    shape: 'wide',
+    label: 'Histogram',
+    describe: 'bars over categories with a value axis, for data interpretation and distributions',
+    uses: 'items (3-8 bars, each with a label and a value), labelA (what the values measure)',
+    draw: ({ p, progress, width, height, items, params, colors }) => {
+      const bars = items
+        .filter((i) => Number.isFinite(Number(i.value)))
+        .slice(0, 8)
+        .map((i) => ({ label: i.label, value: Math.max(0, Number(i.value)) }));
+      if (bars.length < 2) return;
+
+      const max = Math.max(...bars.map((b) => b.value)) || 1;
+      const baseY = height * 0.76;
+      const top = height * 0.2;
+      const left = width * 0.12;
+      const barsW = width * 0.76;
+      const slot = barsW / bars.length;
+      const w = slot * 0.62;
+
+      p.push();
+      p.stroke(colors.dim);
+      p.strokeWeight(3);
+      p.line(left, baseY, left + barsW, baseY);
+      p.line(left, baseY, left, top);
+      p.pop();
+
+      bars.forEach((b, i) => {
+        // Bars rise together but not in lockstep, which stops a row of eight
+        // reading as one moving block.
+        const on = Math.min(1, Math.max(0, progress * 2 - i * 0.08));
+        const h = (b.value / max) * (baseY - top) * on;
+        const x = left + i * slot + (slot - w) / 2;
+        p.push();
+        p.noStroke();
+        p.fill(shade(p, colors.accent, 210));
+        p.rect(x, baseY - h, w, h, 6, 6, 0, 0);
+        if (on > 0.9) {
+          p.fill(colors.text);
+          p.textAlign(p.CENTER, p.BOTTOM);
+          p.textSize(22);
+          p.text(String(b.value), x + w / 2, baseY - h - 8);
+        }
+        p.pop();
+        label(p, b.label, x + w / 2, baseY + 26, colors, 22);
+      });
+
+      if (params.labelA) label(p, String(params.labelA), width / 2, height * 0.93, colors, 24);
+    },
+  },
+
+  'grid-logic': {
+    shape: 'square',
+    label: 'Logic grid',
+    describe: 'a tick-and-cross matrix, for matching puzzles and elimination reasoning',
+    uses: 'items (2-4 row labels), labelA and labelB (two column headings), mode ("diagonal" to tick the diagonal)',
+    draw: ({ p, progress, width, height, items, params, colors }) => {
+      const rows = items.slice(0, 4).filter((i) => i.label);
+      if (rows.length < 2) return;
+
+      const cols = [params.labelA, params.labelB].filter(Boolean).map(String);
+      const nCols = Math.max(2, cols.length);
+      const cell = Math.min(width * 0.6 / nCols, height * 0.5 / rows.length, 130);
+      const gridW = cell * nCols;
+      const left = width * 0.5 - gridW / 2 + cell * 0.4;
+      const top = height * 0.34;
+
+      p.push();
+      p.textAlign(p.RIGHT, p.CENTER);
+      p.textSize(24);
+      p.fill(colors.text);
+      p.noStroke();
+      rows.forEach((r, i) => p.text(r.label, left - 14, top + i * cell + cell / 2));
+      p.textAlign(p.CENTER, p.BOTTOM);
+      p.fill(colors.dim);
+      cols.forEach((c, i) => p.text(c, left + i * cell + cell / 2, top - 12));
+      p.pop();
+
+      for (let r = 0; r < rows.length; r++) {
+        for (let c = 0; c < nCols; c++) {
+          const idx = r * nCols + c;
+          const on = Math.min(1, Math.max(0, progress * 2.6 - idx * 0.1));
+          if (on <= 0) continue;
+          const x = left + c * cell;
+          const y = top + r * cell;
+          p.push();
+          p.noFill();
+          p.stroke(colors.dim);
+          p.strokeWeight(2);
+          p.rect(x, y, cell, cell, 6);
+
+          if (params.mode === 'diagonal' && on > 0.6) {
+            const hit = r === c;
+            p.strokeWeight(5);
+            p.strokeCap(p.ROUND);
+            const m = cell * 0.28;
+            if (hit) {
+              p.stroke(colors.good);
+              p.line(x + cell / 2 - m, y + cell / 2, x + cell / 2 - m * 0.2, y + cell / 2 + m * 0.7);
+              p.line(x + cell / 2 - m * 0.2, y + cell / 2 + m * 0.7, x + cell / 2 + m, y + cell / 2 - m * 0.6);
+            } else {
+              p.stroke(colors.dim);
+              p.line(x + cell / 2 - m, y + cell / 2 - m, x + cell / 2 + m, y + cell / 2 + m);
+              p.line(x + cell / 2 + m, y + cell / 2 - m, x + cell / 2 - m, y + cell / 2 + m);
+            }
+          }
+          p.pop();
+        }
+      }
+    },
+  },
 };
+
+/** One person in a seating arrangement: a head, and a name under it. */
+function seat(
+  p: p5, x: number, y: number, r: number, name: string, colors: SketchColors, first: boolean,
+) {
+  p.push();
+  p.noStroke();
+  // Both branches must be a Color, not a string: p5's fill() has no overload
+  // for the union, so a ternary mixing the two does not type-check.
+  p.fill(shade(p, colors.accent, first ? 255 : 120));
+  p.circle(x, y, r * 2);
+  p.fill(colors.text);
+  p.textAlign(p.CENTER, p.CENTER);
+  p.textSize(22);
+  p.text(name.slice(0, 3), x, y + r + 22);
+  p.pop();
+}
+
+/** One labelled box in a tree. */
+function node(
+  p: p5, x: number, y: number, text: string, colors: SketchColors, root: boolean, on: number,
+) {
+  const w = Math.max(90, text.length * 15 + 28) * on;
+  const h = 56 * on;
+  p.push();
+  p.noStroke();
+  p.fill(shade(p, colors.accent, root ? 255 : 110));
+  p.rect(x - w / 2, y - h / 2, w, h, 10);
+  p.fill(root ? colors.bg : colors.text);
+  p.textAlign(p.CENTER, p.CENTER);
+  p.textSize(24 * Math.min(1, on));
+  if (on > 0.5) p.text(text, x, y);
+  p.pop();
+}
 
 export const SKETCH_NAMES = Object.keys(SKETCHES);

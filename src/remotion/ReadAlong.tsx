@@ -1,8 +1,9 @@
-import React, { useMemo } from 'react';
+import React, { createContext, useContext, useMemo } from 'react';
 import { interpolate, useCurrentFrame, useVideoConfig } from 'remotion';
 import type { Theme } from '../lib/theme';
 import { hexToRgba } from '../lib/theme';
 import type { WordTiming } from '../lib/types';
+import { wordStyle } from '../lib/text-reveal';
 
 /**
  * The spoken line, shown as the main text on screen, one phrase at a time,
@@ -14,6 +15,21 @@ import type { WordTiming } from '../lib/types';
  */
 
 const MAX_WORDS = 6;
+
+/** How long a word's entrance takes, in seconds. Shorter than the word. */
+const ENTRANCE = 0.16;
+
+/**
+ * The reveal style for the whole video.
+ *
+ * A context rather than a prop, which is a deliberate exception to this
+ * codebase's otherwise explicit prop-threading. ReadAlong is called from seven
+ * places across every scene component, and the value is identical in all of
+ * them for the entire render - it is a design setting, not a scene property.
+ * Threading it would mean adding the same field to every scene's signature and
+ * passing it through untouched, which is more code and more places to forget.
+ */
+export const RevealContext = createContext<string>('fade');
 
 export interface Phrase {
   words: WordTiming[];
@@ -71,7 +87,13 @@ export const ReadAlong: React.FC<{
   maxSize?: number;
   minSize?: number;
   color?: string;
-}> = ({ theme, words, offset = 0, fallbackText, maxSize = 96, minSize = 56, color }) => {
+  /** Overrides the video-wide RevealContext. Rarely needed. */
+  reveal?: string;
+}> = ({ theme, words, offset = 0, fallbackText, maxSize = 96, minSize = 56, color, reveal }) => {
+  // Unconditionally, before the `||`: short-circuiting past a hook changes the
+  // hook order between renders the moment a caller passes the prop.
+  const fromContext = useContext(RevealContext);
+  const chosen = reveal || fromContext;
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const time = frame / fps - offset;
@@ -140,15 +162,34 @@ export const ReadAlong: React.FC<{
         // Testing each word's own window independently lets two light up at
         // once whenever the windows overlap.
         const current = i === currentIndex;
+        // How far through this word's own entrance we are. Short on purpose:
+        // an entrance longer than the word takes to say is still running when
+        // the next word arrives, and the line never looks settled.
+        const enter = Math.min(1, Math.max(0, (time - w.start) / ENTRANCE));
+
+        const ws = wordStyle(chosen, { spoken, current, enter }, {
+          text: color || theme.text,
+          accent: theme.accent,
+          ghost: hexToRgba(color || theme.text, 1),
+        });
+
         return (
           <span
             key={i}
             style={{
               display: 'inline-block',
-              // Unspoken words stay faint so the viewer can read ahead a little.
-              color: current ? theme.accent : spoken ? (color || theme.text) : hexToRgba(color || theme.text, 0.32),
-              transform: current ? 'scale(1.06)' : 'scale(1)',
-              textShadow: current && theme.glow !== 'none' ? theme.glow : undefined,
+              opacity: ws.opacity,
+              color: ws.color,
+              transform: ws.transform,
+              filter: ws.filter,
+              textShadow: current && theme.glow !== 'none' && !ws.marker ? theme.glow : undefined,
+              // The highlighter sits behind the word rather than replacing its
+              // colour, so the text stays the text.
+              background: ws.marker ? hexToRgba(theme.accent, 0.42) : undefined,
+              borderRadius: ws.marker ? '0.12em' : undefined,
+              boxShadow: ws.marker
+                ? '0 0 0 0.1em ' + hexToRgba(theme.accent, 0.42)
+                : undefined,
             }}
           >
             {w.word}

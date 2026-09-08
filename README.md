@@ -102,6 +102,48 @@ working on screen — and steers the storyboard onto the `process`, `versus` and
 must have a style in `APTITUDE_STYLE` (server), and `src/lib/subtopics.test.mjs` requires every
 subject in all three lists to have sub-topic suggestions.
 
+## The visual toolkit
+
+Four families, each a flat catalogue with one entry per option, so adding a
+fifth of anything is a single object rather than a new branch in the renderer.
+
+| Family | Options | Where | Setting |
+|---|---|---|---|
+| Transitions | 9 + `auto` | `src/lib/transitions.ts` | `design.transition` |
+| Text reveals | 7 | `src/lib/text-reveal.ts` | `design.textReveal` |
+| Overlays | 8 + `none` | `src/remotion/Overlays.tsx` | `design.overlay`, `overlayIntensity` |
+| Sketches | 24 | `src/remotion/sketches.ts` | chosen per scene by the model |
+
+**Transitions and text reveals are pure functions**, deliberately. Both are
+maths over two numbers — how far a scene has arrived, how far it has left — and
+neither imports React or Remotion. That is what lets the tests sample every
+transition at forty points and assert the thing that actually matters: *a cut
+must never black the screen*. Both scenes are on screen through an overlap, so
+their opacities have to add to a lit frame; only `dip` is allowed to fall below
+that, because a beat between scenes is its entire purpose.
+
+`auto` picks the join from the scene kind rather than cycling: the reveal gets
+the zoom, questions get a wipe, explanations get the quietest crossfade there
+is. See `autoTransitionFor()`.
+
+**Overlays sit above every scene and outside every Sequence**, so grain and
+light leaks run continuously through the cuts instead of restarting on each one.
+Each has its own ceiling in `CEILING` — a vignette at 60% is atmospheric, grain
+at 60% is a broken television — chosen by asking "at maximum, can you still read
+the captions?". Nothing here uses `Math.random()`: Remotion renders frames out
+of order and across machines, so a speck that moved randomly would flicker.
+
+**The reveal reaches `ReadAlong` through a context**, which is the one deliberate
+exception to this codebase's explicit prop-threading. It is called from seven
+places across every scene component and the value is identical in all of them
+for the whole render.
+
+Eight of the sketches are aptitude-shaped — `venn`, `clock`, `number-line`,
+`ratio-bar`, `seating`, `tree`, `histogram`, `grid-logic` — because the aptitude
+content mode had no diagrams at all, and syllogism without a Venn diagram is the
+chapter minus the picture it is about. `server/sketch-catalogue.mjs` must stay in
+step with `SKETCHES`; running it directly checks that, and so does booting.
+
 ## Backdrops
 
 Step 5 offers two sources for the photo behind each scene, and they share one picker because the

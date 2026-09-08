@@ -5,6 +5,9 @@ import type { DesignSettings, LayoutName, MusicMood, QuizContent, ThemeMode } fr
 import { Check, ErrorNote, Note, Select, Slider, Spinner } from './controls';
 import { StockPicker } from './StockPicker';
 import { AMBIENT_GROUPS } from '../remotion/ambient';
+import { TRANSITIONS } from '../lib/transitions';
+import { TEXT_REVEALS } from '../lib/text-reveal';
+import { OVERLAYS } from '../remotion/Overlays';
 
 const ACCENTS = [
   { name: 'Layout default', value: '' },
@@ -194,6 +197,53 @@ export const StepStyle: React.FC<{
           hint="Cuts the dead air the voice leaves at the end of each line. Turn off if any line sounds clipped."
           checked={design.trimTrailingSilence}
           onChange={(v) => set('trimTrailingSilence', v)}
+        />
+      </div>
+
+      <div className="section-title">Cuts and text</div>
+      <p className="lede" style={{ marginTop: 0 }}>
+        How one scene becomes the next, and how the spoken words arrive on screen. Both run on every
+        scene, so a choice here is felt across the whole video rather than noticed once.
+      </p>
+      <div className="grid">
+        <Select
+          label="Transition between scenes"
+          value={design.transition || 'auto'}
+          options={TRANSITIONS.map((t) => ({ id: t.id, label: t.label }))}
+          onChange={(v) => set('transition', v)}
+          hint={TRANSITIONS.find((t) => t.id === (design.transition || 'auto'))?.blurb}
+        />
+        <Select
+          label="How the words appear"
+          value={design.textReveal || 'fade'}
+          options={TEXT_REVEALS.map((r) => ({ id: r.id, label: r.label }))}
+          onChange={(v) => set('textReveal', v)}
+          hint={TEXT_REVEALS.find((r) => r.id === (design.textReveal || 'fade'))?.blurb}
+        />
+      </div>
+
+      <div className="section-title">Finishing layer</div>
+      <p className="lede" style={{ marginTop: 0 }}>
+        A texture over the top of everything — grain, a vignette, cinema bars. It never means
+        anything; it is there to make a frame look shot rather than assembled.
+      </p>
+      <div className="grid">
+        <Select
+          label="Which one"
+          value={design.overlay || 'none'}
+          options={OVERLAYS.map((o) => ({ id: o.id, label: o.label }))}
+          onChange={(v) => set('overlay', v)}
+          hint={OVERLAYS.find((o) => o.id === (design.overlay || 'none'))?.blurb}
+        />
+        <Slider
+          label="How strong"
+          value={design.overlayIntensity ?? 0.5}
+          min={0}
+          max={1}
+          step={0.05}
+          onChange={(v) => set('overlayIntensity', v)}
+          suffix=""
+          hint="Each one has its own ceiling, so even at full it cannot make the captions hard to read."
         />
       </div>
 
