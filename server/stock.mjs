@@ -121,12 +121,15 @@ export async function searchStock({ pexelsKey, query, orientation, providers, pe
  * Fetch the chosen image onto disk so the render is reproducible and does not
  * depend on a remote host still being up. Same pattern as the voiceover clips.
  */
-export async function downloadStock({ url, id, jobId, publicDir }) {
+export async function downloadStock({ url, id, jobId, publicDir, folder = 'stock' }) {
   if (!/^https:\/\//i.test(String(url || ''))) {
     throw new Error('That image address does not look safe to download.');
   }
 
-  const dir = path.join(publicDir, 'generated', 'stock', jobId);
+  // Generated art lands in its own folder so a re-search cannot quietly
+  // overwrite an image somebody paid ElevenLabs credits for.
+  const safeFolder = String(folder).replace(/[^a-zA-Z0-9_-]+/g, '-').slice(0, 20) || 'stock';
+  const dir = path.join(publicDir, 'generated', safeFolder, jobId);
   fs.mkdirSync(dir, { recursive: true });
 
   let res = await fetch(url);
@@ -147,5 +150,5 @@ export async function downloadStock({ url, id, jobId, publicDir }) {
   const fileName = safeId + ext;
 
   fs.writeFileSync(path.join(dir, fileName), buffer);
-  return { src: 'generated/stock/' + jobId + '/' + fileName, bytes: buffer.length };
+  return { src: 'generated/' + safeFolder + '/' + jobId + '/' + fileName, bytes: buffer.length };
 }

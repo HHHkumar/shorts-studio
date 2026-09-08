@@ -11,13 +11,15 @@ const keys = [...sub.matchAll(/^  (?:'([^']+)'|([A-Za-z]+)): \[/gm)].map((m) => 
 
 const subjects = listOf('SUBJECTS');
 const electrical = listOf('ELECTRICAL_SUBJECTS');
-const all = [...subjects, ...electrical];
+const aptitude = listOf('APTITUDE_SUBJECTS');
+const all = [...subjects, ...electrical, ...aptitude];
 
 const missing = all.filter((s) => !keys.includes(s));
 const orphan = keys.filter((k) => !all.includes(k));
 
 console.log('general subjects   :', subjects.length);
 console.log('electrical areas   :', electrical.length);
+console.log('aptitude sections  :', aptitude.length);
 console.log('subtopic lists     :', keys.length);
 console.log('');
 console.log('subjects with NO suggestions :', missing.length ? missing.join(', ') : 'none');

@@ -333,12 +333,55 @@ export function storyboardBudget(targetSeconds) {
   return { target, totalWords, scenes, wordsPerScene };
 }
 
+/**
+ * An aptitude explainer is a different animal from a science one.
+ *
+ * The default brief above asks for pictures and analogies instead of equations,
+ * which is exactly right for "how does a transformer work" and exactly wrong
+ * for "how do I do alligation in twenty seconds". Here the working IS the
+ * picture, and the viewer has come to be able to do something by the end - not
+ * to appreciate something. So this replaces the framing rather than adding to
+ * it, and leans on the panels that already suit a method: `process` for the
+ * steps, `versus` for long-way-against-shortcut, `grid` for the traps.
+ */
+export function aptitudeBrief(o) {
+  return [
+    'THIS IS A METHOD LESSON for a competitive aptitude paper' + (o.exam ? ' (' + o.exam + ')' : '') + '.',
+    'The viewer wants to be able to solve this kind of question by the end, quickly, under time',
+    'pressure. Everything below serves that and nothing else.',
+    '',
+    'SHAPE THE VIDEO LIKE THIS.',
+    '1. Open on a question of this type and make it clear why the obvious approach is too slow,',
+    '   or why the intuitive answer is wrong. Do not explain yet - let it sting.',
+    '2. Name the method. One sentence the viewer could repeat.',
+    '3. Work one full example, one step per scene, in the order a candidate would really do it.',
+    '   Use a `process` panel for the steps so they build up on screen.',
+    '4. Show the shortcut against the long way on a `versus` panel, and say how many seconds it',
+    '   saves. Time saved is the whole product here.',
+    '5. Show the trap: the specific mistake this chapter is famous for, and what the wrong answer',
+    '   looks like when you make it. A `grid` panel suits this.',
+    '6. Work a second, slightly different example fast, so the viewer sees the pattern transfer.',
+    '7. Recap the method as numbered steps they can screenshot.',
+    '',
+    'RULES THAT DIFFER FROM AN ORDINARY EXPLAINER.',
+    '- Show the arithmetic. Numbers on screen are the point, not a failure of imagination.',
+    '- Keep every number clean enough to follow without pausing. If the working needs a calculator,',
+    '  choose different numbers.',
+    '- Say the method name aloud - "alligation", "the LCM method", "unit digit cyclicity" - so the',
+    '  viewer can recognise the shape of the question next time.',
+    '- Never say "as you can see it is obvious". If it were obvious they would not be watching.',
+    '- No analogies for their own sake. One is fine if it makes the method stick; a second is padding.',
+    '',
+  ];
+}
+
 function buildPrompt(o) {
   const b = storyboardBudget(o.targetSeconds);
   const lines = [];
 
   lines.push('Write the storyboard for an explainer video.');
   lines.push('');
+  if (o.contentType === 'aptitude') aptitudeBrief(o).forEach((l) => lines.push(l));
   lines.push('Topic: ' + (o.topic || 'choose a good one in ' + (o.subject || 'science')));
   if (o.subject) lines.push('Field: ' + o.subject);
   if (o.level) lines.push('Audience: ' + o.level + '. Pitch the vocabulary there.');

@@ -50,6 +50,8 @@ export const App: React.FC = () => {
   const [voiceModels, setVoiceModels] = useState<{ id: string; label: string }[]>([]);
   const [musicMoods, setMusicMoods] = useState<{ id: string; label: string }[]>([]);
   const [deepseekModels, setDeepseekModels] = useState<{ id: string; label: string }[]>([]);
+  const [imageModels, setImageModels] = useState<{ id: string; label: string }[]>([]);
+  const [imageStyles, setImageStyles] = useState<{ id: string; label: string }[]>([]);
   const [serverDown, setServerDown] = useState(false);
   const [waitingForServer, setWaitingForServer] = useState(true);
 
@@ -78,6 +80,8 @@ export const App: React.FC = () => {
           setVoiceModels(data.voiceModels || []);
           setMusicMoods(data.musicMoods || []);
           setDeepseekModels(data.deepseekModels || []);
+          setImageModels(data.imageModels || []);
+          setImageStyles(data.imageStyles || []);
           setServerDown(false);
           setWaitingForServer(false);
           return;
@@ -296,6 +300,10 @@ export const App: React.FC = () => {
               content={content}
               setContent={(fn) => setContent((prev) => (prev ? fn(prev) : prev))}
               pexelsKey={pexelsKey}
+              elevenKey={elevenKey}
+              form={form}
+              imageModels={imageModels}
+              imageStyles={imageStyles}
               onBack={() => go(3)}
               onNext={() => go(5)}
             />

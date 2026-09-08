@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
-import { api, type StockImage } from '../lib/api';
+import { api, type StockImage, type TopicForm } from '../lib/api';
 import type { QuizContent, ScriptLine } from '../lib/types';
-import { ErrorNote, Note, Slider, Spinner } from './controls';
+import { ErrorNote, Note, Select, Slider, Spinner } from './controls';
 
 /**
  * Choose a backdrop photo for each scene.
  *
+ * Two ways to get one, sharing a single picker because the video cannot tell
+ * them apart: a free photo from Pexels or NASA, or an image drawn on the spot by
+ * ElevenLabs with the same key that speaks the script.
+ *
  * Nothing is applied automatically. A stock library will happily return a beach
  * photo for "gravity", and dropping that behind a physics question would make
  * the video look worse, not better - so every image is one the creator picked.
+ * That rule matters more, not less, for the generated ones: those cost credits.
  */
 
 /** Scenes where a photo would collide with what is already on screen. */
@@ -22,16 +27,33 @@ export const StockPicker: React.FC<{
   content: QuizContent;
   setContent: (updater: (prev: QuizContent) => QuizContent) => void;
   pexelsKey: string;
+  elevenKey: string;
+  form: TopicForm;
+  imageModels: { id: string; label: string }[];
+  imageStyles: { id: string; label: string }[];
   orientation: string;
   showStock: boolean;
   stockOpacity: number;
   setStockOpacity: (v: number) => void;
-}> = ({ content, setContent, pexelsKey, orientation, showStock, stockOpacity, setStockOpacity }) => {
+}> = ({
+  content, setContent, pexelsKey, elevenKey, form, imageModels, imageStyles,
+  orientation, showStock, stockOpacity, setStockOpacity,
+}) => {
   const [candidates, setCandidates] = useState<SceneCandidates>({});
   const [searching, setSearching] = useState(false);
+  const [searched, setSearched] = useState(false);
   const [progress, setProgress] = useState({ done: 0, total: 0 });
   const [error, setError] = useState<string | null>(null);
   const [busyScene, setBusyScene] = useState<number | null>(null);
+  const [drawingScene, setDrawingScene] = useState<number | null>(null);
+  const [styleId, setStyleId] = useState('');
+  const [modelId, setModelId] = useState('');
+
+  // The catalogues arrive from /api/health a moment after mount, so the first
+  // entry is only knowable once they are here.
+  const style = styleId || (imageStyles[0]?.id ?? '');
+  const model = modelId || (imageModels[0]?.id ?? '');
+  const canGenerate = elevenKey.trim().length > 5 && imageModels.length > 0;
 
   // A stable folder name so re-picking overwrites instead of piling up.
   const jobId = 'job-' + Math.abs(hash(content.question)).toString(36);
@@ -66,15 +88,78 @@ export const StockPicker: React.FC<{
       setProgress({ done, total: eligible.length });
     }
 
-    setCandidates(found);
+    // Merge, so photos found now sit beside anything already drawn.
+    setCandidates((prev) => {
+      const next = { ...prev };
+      for (const [key, list] of Object.entries(found)) {
+        const drawn = (next[Number(key)] || []).filter((c) => c.provider === 'ai');
+        next[Number(key)] = [...drawn, ...list];
+      }
+      return next;
+    });
+    setSearched(true);
     setSearching(false);
+  };
+
+  /**
+   * Draw one backdrop for one scene.
+   *
+   * The result is added to that scene's candidates rather than applied, so it
+   * can be compared against the stock options - and so pressing Generate twice
+   * gives you two to choose between instead of silently discarding the first.
+   */
+  const generate = async (index: number, line: ScriptLine) => {
+    const query = (line.imageQuery || '').trim() || fallbackQuery(line, content);
+    if (!query) {
+      setError('Type what this scene should show in its box above, then press Draw again.');
+      return;
+    }
+
+    setDrawingScene(index);
+    setError(null);
+    try {
+      const made = await api.generateImage({
+        apiKey: elevenKey.trim(),
+        query,
+        subject: content.subject || form.subject,
+        topic: content.topic || form.topic,
+        styleId: style,
+        modelId: model,
+        orientation,
+        jobId,
+      });
+
+      const drawn: StockImage = {
+        id: made.id,
+        provider: 'ai',
+        // Already on disk: the browser reads it from public/, and the renderer
+        // is handed the same relative path a stock photo would have given.
+        thumb: '/' + made.src,
+        full: made.src,
+        credit: 'Generated with ElevenLabs',
+        sourceUrl: '',
+        width: 0,
+        height: 0,
+        saved: true,
+      };
+
+      setCandidates((prev) => ({ ...prev, [index]: [drawn, ...(prev[index] || [])] }));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setDrawingScene(null);
+    }
   };
 
   const choose = async (index: number, image: StockImage) => {
     setBusyScene(index);
     setError(null);
     try {
-      const { src } = await api.pickStock(image.full, image.id, jobId);
+      // A generated image was written to disk when it was made; only a remote
+      // one still has to be fetched.
+      const src = image.saved
+        ? image.full
+        : (await api.pickStock(image.full, image.id, jobId)).src;
       setContent((prev) => ({
         ...prev,
         script: prev.script.map((line, i) =>
@@ -123,6 +208,34 @@ export const StockPicker: React.FC<{
         Scenes you skip simply keep the plain background.
       </Note>
 
+      {canGenerate ? (
+        <>
+          <Note kind="warn" title="Drawing costs ElevenLabs credits">
+            <b>Draw</b> asks ElevenLabs for a new image, one scene at a time, in the exact shape you
+            are rendering — so nothing is cropped the way a landscape stock photo has to be. Each
+            press spends credits from the same balance as the voiceover, and the API needs a Pro plan
+            or above. Searching Pexels and NASA stays free.
+          </Note>
+
+          <div className="grid">
+            <Select
+              label="Look of the drawn images"
+              value={style}
+              options={imageStyles}
+              onChange={setStyleId}
+              hint="Applied to every scene you draw, so one video looks like one set."
+            />
+            <Select
+              label="Image model"
+              value={model}
+              options={imageModels}
+              onChange={setModelId}
+              hint="Flash models answer in seconds and cost least. Pro is slower and sharper."
+            />
+          </div>
+        </>
+      ) : null}
+
       <ErrorNote error={error} />
 
       <div className="actions">
@@ -168,7 +281,7 @@ export const StockPicker: React.FC<{
         </div>
       ) : null}
 
-      {Object.keys(candidates).length ? (
+      {Object.keys(candidates).length || canGenerate ? (
         <div className="stock-list">
           {eligible.map(({ line, index }) => {
             const options = candidates[index] || [];
@@ -182,6 +295,17 @@ export const StockPicker: React.FC<{
                     placeholder="search words for this scene"
                     onChange={(e) => setQuery(index, e.target.value)}
                   />
+                  {canGenerate ? (
+                    <button
+                      className="btn small"
+                      disabled={drawingScene !== null}
+                      title="Generate a backdrop for this scene with ElevenLabs"
+                      onClick={() => generate(index, line)}
+                    >
+                      {drawingScene === index ? <Spinner /> : '✏️'}{' '}
+                      {options.some((o) => o.provider === 'ai') ? 'Draw another' : 'Draw'}
+                    </button>
+                  ) : null}
                   {line.stockSrc ? (
                     <button className="link-btn" onClick={() => clear(index)}>
                       remove
@@ -194,7 +318,11 @@ export const StockPicker: React.FC<{
                     {options.map((image) => (
                       <button
                         key={image.id}
-                        className={'stock-thumb' + (line.stockId === image.id ? ' active' : '')}
+                        className={
+                          'stock-thumb'
+                          + (image.provider === 'ai' ? ' drawn' : '')
+                          + (line.stockId === image.id ? ' active' : '')
+                        }
                         title={image.credit}
                         disabled={busyScene === index}
                         onClick={() => choose(index, image)}
@@ -207,7 +335,9 @@ export const StockPicker: React.FC<{
                 ) : (
                   <div className="stock-empty">
                     {line.imageQuery
-                      ? 'Nothing found. Try different search words above, then search again.'
+                      ? searched
+                        ? 'Nothing found. Try different search words above, then search again.'
+                        : 'Search the free libraries, or draw one for this scene.'
                       : 'Gemini judged that no honest photo exists for this scene.'}
                   </div>
                 )}

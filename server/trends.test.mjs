@@ -70,5 +70,18 @@ ok('asks for google_search', JSON.stringify(sent.tools) === '[{"google_search":{
 ok('scopes to the domain', sent.contents[0].parts[0].text.includes('Power Generation'));
 ok('no schema alongside tools', !('responseSchema' in sent.generationConfig));
 
+// 8. aptitude asks a different question of the search.
+// "Trending" means something else here: nobody searches for a trending ratio
+// sum, but exam calendars, pattern changes and the current affairs the GA
+// section asks about all move constantly.
+await findTrending('k','m',{ contentType:'aptitude', subject:'Data Interpretation', exam:'SSC CGL / CHSL' });
+let prompt = sent.contents[0].parts[0].text;
+ok('aptitude scopes to exam preparation', /competitive exam aptitude/i.test(prompt));
+ok('aptitude names the section', prompt.includes('Data Interpretation'));
+ok('aptitude names the paper', prompt.includes('SSC CGL / CHSL'));
+ok('aptitude looks for pattern and syllabus changes', /pattern|syllabus/i.test(prompt));
+ok('aptitude does not ask about the grid', !/blackout|transmission projects/i.test(prompt));
+ok('aptitude does not fall through to the science brief', !/space missions/i.test(prompt));
+
 console.log(fails ? '\n' + fails + ' FAILURES' : '\nall trending checks passed');
 process.exit(fails ? 1 : 0);

@@ -1,7 +1,7 @@
 import type { DesignSettings, QuizContent, Scene, ScriptLine, VideoKind, VideoProps } from './types';
 import type { AudioResult } from './timeline';
 
-export type ContentType = 'general' | 'electrical';
+export type ContentType = 'general' | 'electrical' | 'aptitude';
 
 /** Which model writes the content. Everything else is unaffected by this. */
 export type Provider = 'gemini' | 'claude';
@@ -11,7 +11,11 @@ export interface TopicForm {
   videoKind?: VideoKind;
   /** Missing on forms saved before Claude was an option; treat as 'gemini'. */
   provider?: Provider;
-  /** 'general' = curiosity-led STEM. 'electrical' = exam prep for electricalmcqs.in. */
+  /**
+   * 'general' = curiosity-led STEM. 'electrical' = exam prep for
+   * electricalmcqs.in. 'aptitude' = the quant, reasoning, English and awareness
+   * sections that nearly every competitive paper carries.
+   */
   contentType: ContentType;
   subject: string;
   topic: string;
@@ -85,13 +89,19 @@ export interface SeoPack {
 
 export interface StockImage {
   id: string;
-  provider: 'pexels' | 'nasa';
+  provider: 'pexels' | 'nasa' | 'ai';
   thumb: string;
   full: string;
   credit: string;
   sourceUrl: string;
   width: number;
   height: number;
+  /**
+   * True for images already written to public/ by the server - which is every
+   * generated one, because the link ElevenLabs returns expires within the hour.
+   * Choosing one of these is a local move, not a second download.
+   */
+  saved?: boolean;
 }
 
 export interface TrendingItem {
@@ -154,6 +164,8 @@ export const api = {
       voiceModels: { id: string; label: string }[];
       musicMoods: { id: string; label: string }[];
       deepseekModels: { id: string; label: string }[];
+      imageModels: { id: string; label: string }[];
+      imageStyles: { id: string; label: string }[];
     }>;
   },
 
@@ -234,6 +246,27 @@ export const api = {
 
   pickStock(url: string, id: string, jobId: string) {
     return post<{ src: string; bytes: number }>('/api/stock/pick', { url, id, jobId });
+  },
+
+  /**
+   * Draw one backdrop with the ElevenLabs key. Slower than a stock search - the
+   * server waits out the whole generation - and it costs credits, so the UI
+   * only ever calls this for a scene the creator named.
+   */
+  generateImage(body: {
+    apiKey: string;
+    query: string;
+    subject: string;
+    topic: string;
+    styleId: string;
+    modelId: string;
+    orientation: string;
+    jobId: string;
+  }) {
+    return post<{ src: string; bytes: number; id: string; prompt: string }>(
+      '/api/image/generate',
+      body,
+    );
   },
 
   seo(
@@ -360,6 +393,70 @@ export const ELECTRICAL_SUBJECTS = [
   'Electrical Wiring & Safety',
   'Renewable & Non-conventional Energy',
   'Engineering Mathematics',
+];
+
+/**
+ * The aptitude paper, section by section.
+ *
+ * Nearly every competitive exam in India carries these alongside the technical
+ * paper - and for a lot of candidates they are the sections that actually
+ * decide the result, because everyone revises their own subject and nobody
+ * practises ratios. Grouped the way papers are actually printed: the numerical
+ * half, the reasoning half, then the sections that vary by exam.
+ */
+export const APTITUDE_SUBJECTS = [
+  // --- numerical ------------------------------------------------------------
+  'Number System',
+  'Simplification & Approximation',
+  'Percentage, Ratio & Proportion',
+  'Average, Mixture & Alligation',
+  'Profit, Loss & Discount',
+  'Simple & Compound Interest',
+  'Time, Speed & Distance',
+  'Time & Work',
+  'Algebra',
+  'Geometry & Mensuration',
+  'Trigonometry & Heights',
+  'Permutation, Combination & Probability',
+  'Data Interpretation',
+  'Data Sufficiency',
+  // --- reasoning ------------------------------------------------------------
+  'Series — Number & Alphabet',
+  'Coding-Decoding',
+  'Blood Relations, Direction & Ranking',
+  'Syllogism & Statement Reasoning',
+  'Puzzles & Seating Arrangement',
+  'Analogy & Classification',
+  'Non-verbal Reasoning',
+  'Analytical & Critical Reasoning',
+  'Clocks, Calendars & Cubes',
+  // --- the rest of the paper ------------------------------------------------
+  'English Language & Comprehension',
+  'General Awareness & Current Affairs',
+  'Static GK — History, Geography & Polity',
+  'General Science',
+  'Computer Awareness',
+];
+
+/**
+ * Which paper the aptitude question is pitched at.
+ *
+ * These differ far more than they look. An SSC quant question and a CAT quant
+ * question can be about the same chapter and still be nothing alike: one wants
+ * a clean formula in forty seconds, the other wants you to spot that the
+ * formula is a trap.
+ */
+export const APTITUDE_EXAMS = [
+  'SSC CGL / CHSL',
+  'Banking — IBPS / SBI PO & Clerk',
+  'RRB NTPC / Group D',
+  'CAT / XAT / MBA entrance',
+  'Campus placement (TCS / Infosys / Wipro / Accenture)',
+  'GATE General Aptitude',
+  'UPSC CSAT',
+  'Defence — NDA / CDS / AFCAT',
+  'State PSC prelims',
+  'Teaching — CTET / State TET',
 ];
 
 /** Exam families, each with its own question style and depth. */
