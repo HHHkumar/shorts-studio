@@ -1,6 +1,8 @@
 import type p5 from 'p5';
 import type { SketchArgs } from './P5Sketch';
 import { EXTRA_SKETCHES } from './sketches-extra';
+import { MORE_SKETCHES } from './sketches-more';
+import { GAP_SKETCHES } from './sketches-gaps';
 
 // ---------------------------------------------------------------------------
 // The curated sketch library.
@@ -1355,6 +1357,8 @@ function node(
  * Split across two files only for size - the model sees a single list of names
  * and neither it nor the renderer knows or cares which file an entry came from.
  */
-export const SKETCHES: Record<string, SketchDef> = { ...CORE_SKETCHES, ...EXTRA_SKETCHES };
+export const SKETCHES: Record<string, SketchDef> = {
+  ...CORE_SKETCHES, ...EXTRA_SKETCHES, ...MORE_SKETCHES, ...GAP_SKETCHES,
+};
 
 export const SKETCH_NAMES = Object.keys(SKETCHES);

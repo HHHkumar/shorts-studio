@@ -55,7 +55,7 @@ The preview and the render consume the identical `VideoProps` object, so what yo
 | `src/lib/theme.ts` | All colours, fonts and layout recipes — edit this to restyle |
 | `src/lib/timeline.ts` | Turns audio durations into a frame-exact timeline |
 | `src/remotion/` | The video itself (`QuizVideo.tsx`, `scenes/`, `ui.tsx`, `ReadAlong.tsx`, `Soundtrack.tsx`) |
-| `src/remotion/sketches.ts` | The p5 animation library (with `sketches-extra.ts`), each a pure function of the frame |
+| `src/remotion/sketches.ts` | The p5 animation library (with `sketches-extra/-more/-gaps.ts`), each a pure function of the frame |
 | `src/remotion/sketch-parts.ts` | The shared drawing primitives every sketch is built from |
 | `src/remotion/P5Sketch.tsx` | Runs p5 deterministically: `noLoop()` plus a manual redraw per frame |
 | `src/ui/` | The six wizard steps |
@@ -113,7 +113,7 @@ fifth of anything is a single object rather than a new branch in the renderer.
 | Transitions | 9 + `auto` | `src/lib/transitions.ts` | `design.transition` |
 | Text reveals | 7 | `src/lib/text-reveal.ts` | `design.textReveal` |
 | Overlays | 8 + `none` | `src/remotion/Overlays.tsx` | `design.overlay`, `overlayIntensity` |
-| Sketches | 101 | `src/remotion/sketches.ts` + `sketches-extra.ts` | chosen per scene by the model |
+| Sketches | 212 | `src/remotion/sketches*.ts` | chosen per scene by the model |
 
 **Transitions and text reveals are pure functions**, deliberately. Both are
 maths over two numbers — how far a scene has arrived, how far it has left — and
@@ -138,6 +138,19 @@ of order and across machines, so a speck that moved randomly would flicker.
 exception to this codebase's explicit prop-threading. It is called from seven
 places across every scene component and the value is identical in all of them
 for the whole render.
+
+**Coverage is measured, not guessed.** `tools/sketch-coverage.mjs` matches all 647 sub-topics in
+the app against the library and reports how many have no candidate diagram at all. That number, not
+the total, is what says whether the library is big enough:
+
+```bash
+node --import ./tools/ts-resolve.mjs tools/sketch-coverage.mjs        # the summary
+node --import ./tools/ts-resolve.mjs tools/sketch-coverage.mjs --gaps # the bare sub-topics
+```
+
+It went 62% → 100% as `sketches-more.ts` and `sketches-gaps.ts` were written straight off its
+`--gaps` output. The two sub-topics still bare are *Infinity and paradoxes* and *Nature's oddities*,
+which have no specific diagram worth drawing.
 
 **The catalogue the model sees is generated, not written.** `server/sketch-catalogue.mjs`
 is derived from the sketch definitions by `tools/sync-catalogue.mjs`; the header says so and

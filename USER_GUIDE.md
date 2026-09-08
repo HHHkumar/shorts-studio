@@ -357,7 +357,7 @@ Everything here is instant, free, and never touches the voiceover.
   electrical and power work: a **circuit** (series or parallel), a **phasor diagram** and power
   triangle, an AC **waveform** (phase shift, rectified, PWM), a **block flow** that lights up
   stage by stage (boiler → turbine → condenser → pump), a **transformer** with turns ratio, and
-  a **pie** for a fuel mix or a loss breakdown. There are now **over a hundred** of these, covering
+  a **pie** for a fuel mix or a loss breakdown. There are now **over two hundred** of these — enough that every sub-topic the tool offers has one that fits — covering
   mechanics (levers, pulleys, gears, springs, collisions, friction, torque), light and sound
   (reflection, lenses, prisms, the Doppler effect), heat and fluids, chemistry (molecules, pH,
   titration, electrolysis, reaction profiles), biology (cells, DNA, neurons, the heart,

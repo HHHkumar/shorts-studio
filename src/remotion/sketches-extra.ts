@@ -1137,7 +1137,7 @@ export const EXTRA_SKETCHES: Record<string, SketchDef> = {
   // Maths and geometry
   // =========================================================================
 
-  triangle: square('Triangle', 'a labelled triangle with its sides and angles',
+  triangle: square('Triangle', 'a labelled triangle with its sides and angles. Use for: geometry, triangles, angles, proofs',
     'angle (20-120, the marked angle), labelA/labelB (side labels)',
     ({ p, progress, width, height, params, colors }) => {
       const cx = width / 2;
