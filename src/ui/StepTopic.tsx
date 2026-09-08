@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { blankContent } from '../lib/blank-script';
 import {
   api,
+  APTITUDE_EXAMS,
+  APTITUDE_SUBJECTS,
   DIAGRAM_DENSITIES,
   DIFFICULTIES,
   ELECTRICAL_SUBJECTS,
@@ -73,9 +75,18 @@ export const StepTopic: React.FC<{
 
   const landscape = design.orientation === 'landscape';
 
-  // Suggestions follow the chosen subject, in either mode.
+  // Suggestions follow the chosen subject, in every mode.
   const subtopics = subtopicsFor(form.subject);
   const examMode = form.contentType === 'electrical';
+  const aptitudeMode = form.contentType === 'aptitude';
+  // Both exam modes want an exam picker where curiosity mode wants an audience.
+  const examPaper = examMode || aptitudeMode;
+
+  const subjectOptions = aptitudeMode
+    ? APTITUDE_SUBJECTS
+    : examMode
+      ? ELECTRICAL_SUBJECTS
+      : SUBJECTS;
 
   const explainerMode = form.videoKind === 'explainer';
 
@@ -101,11 +112,20 @@ export const StepTopic: React.FC<{
   };
 
   // Switching mode swaps the subject list, so the old subject would be orphaned.
+  // The exam travels with the mode for the same reason: "GATE EE" is not an
+  // option any aptitude paper offers, and vice versa.
   const setContentType = (type: ContentType) =>
     setForm((prev) => ({
       ...prev,
       contentType: type,
-      subject: type === 'electrical' ? ELECTRICAL_SUBJECTS[2] : SUBJECTS[0],
+      subject:
+        type === 'aptitude' ? APTITUDE_SUBJECTS[0]
+          : type === 'electrical' ? ELECTRICAL_SUBJECTS[2]
+            : SUBJECTS[0],
+      // Clearing it rather than guessing: the pickers below default sensibly,
+      // and a stale exam from the other mode would silently steer the prompt.
+      topic: '',
+      exam: type === 'aptitude' ? APTITUDE_EXAMS[0] : type === 'electrical' ? EXAMS[0] : '',
     }));
 
   /**
@@ -168,9 +188,9 @@ export const StepTopic: React.FC<{
       </div>
 
       <div className="section-title">What kind of video</div>
-      <div className="tiles" style={{ gridTemplateColumns: '1fr 1fr' }}>
+      <div className="tiles" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
         <button
-          className={'tile' + (!examMode ? ' active' : '')}
+          className={'tile' + (!examMode && !aptitudeMode ? ' active' : '')}
           onClick={() => setContentType('general')}
         >
           <div className="t">🔭 Curiosity STEM</div>
@@ -182,6 +202,15 @@ export const StepTopic: React.FC<{
         >
           <div className="t">⚡ Electrical exam prep</div>
           <div className="s">Questions in the style of a real paper, for candidates revising.</div>
+        </button>
+        <button
+          className={'tile' + (aptitudeMode ? ' active' : '')}
+          onClick={() => setContentType('aptitude')}
+        >
+          <div className="t">🧮 Aptitude &amp; reasoning</div>
+          <div className="s">
+            Quant, reasoning, English and awareness — the sections every competitive paper carries.
+          </div>
         </button>
       </div>
 
@@ -218,7 +247,7 @@ export const StepTopic: React.FC<{
         <Select
           label="Subject"
           value={form.subject}
-          options={examMode ? ELECTRICAL_SUBJECTS : SUBJECTS}
+          options={subjectOptions}
           onChange={set('subject')}
         />
         {/* A real dropdown, not a datalist: a datalist shows no arrow, and once
@@ -237,16 +266,30 @@ export const StepTopic: React.FC<{
           label="Or type your own topic"
           value={form.topic}
           onChange={set('topic')}
-          placeholder={examMode ? 'e.g. transformer efficiency, ACSR conductors' : 'e.g. black holes, titration, prime numbers'}
+          placeholder={
+            aptitudeMode
+              ? 'e.g. boats and streams, syllogism possibility cases'
+              : examMode
+                ? 'e.g. transformer efficiency, ACSR conductors'
+                : 'e.g. black holes, titration, prime numbers'
+          }
           hint="Whatever is in this box is what gets used. Clear it to let Gemini choose."
         />
-        {examMode ? (
+        {examPaper ? (
           <Select
             label="Exam"
-            value={form.exam || EXAMS[0]}
-            options={EXAMS}
+            value={
+              aptitudeMode
+                ? (APTITUDE_EXAMS.includes(form.exam || '') ? form.exam! : APTITUDE_EXAMS[0])
+                : (EXAMS.includes(form.exam || '') ? form.exam! : EXAMS[0])
+            }
+            options={aptitudeMode ? APTITUDE_EXAMS : EXAMS}
             onChange={set('exam')}
-            hint="Sets the depth and the style of question. GATE and ESE go deep; SSC, RRB and ITI stay quick."
+            hint={
+              aptitudeMode
+                ? 'Sets the speed and the trickiness. CAT questions hide an insight; SSC and RRB stay quick and clean.'
+                : 'Sets the depth and the style of question. GATE and ESE go deep; SSC, RRB and ITI stay quick.'
+            }
           />
         ) : (
           <Select label="Who is watching?" value={form.level} options={LEVELS} onChange={set('level')} />

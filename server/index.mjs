@@ -28,6 +28,7 @@ import { ensureAudioAssets, MUSIC_MOODS } from './audio-gen.mjs';
 import { validateContent, DEEPSEEK_MODELS } from './deepseek.mjs';
 import { findTrending } from './trends.mjs';
 import { searchStock, downloadStock } from './stock.mjs';
+import { buildPrompt, generateImage, IMAGE_MODELS, IMAGE_STYLES } from './images.mjs';
 import { generateSeo } from './seo.mjs';
 
 const PORT = Number(process.env.PORT || 3030);
@@ -68,6 +69,8 @@ app.get('/api/health', (_req, res) => {
     musicMoods: MUSIC_MOODS,
     claudeModels: CLAUDE_MODELS,
     deepseekModels: DEEPSEEK_MODELS,
+    imageModels: IMAGE_MODELS,
+    imageStyles: IMAGE_STYLES,
   });
 });
 
@@ -192,6 +195,41 @@ app.post('/api/stock/pick', ok(async (req, res) => {
   const safeJob = String(jobId || 'default').replace(/[^a-zA-Z0-9_-]+/g, '-').slice(0, 40) || 'default';
   const saved = await downloadStock({ url, id, jobId: safeJob, publicDir: paths.PUBLIC_DIR });
   res.json(saved);
+}));
+
+// --- drawn imagery, from the ElevenLabs key that already does the voice ------
+
+/**
+ * One scene, one image. Kept deliberately un-batched: unlike a stock search,
+ * every call here spends the creator's ElevenLabs credits, so nothing is
+ * generated that a person did not ask for by name.
+ *
+ * The signed link ElevenLabs hands back dies within the hour, so the file is on
+ * disk before this responds - by the time the creator picks it, it is already
+ * local and the render cannot depend on a remote host.
+ */
+app.post('/api/image/generate', ok(async (req, res) => {
+  const { apiKey, query, subject, topic, styleId, modelId, orientation, jobId } = req.body || {};
+  if (!apiKey) throw new Error('No ElevenLabs API key was sent. Add it on the Keys step.');
+
+  const prompt = buildPrompt({ query, subject, topic, styleId });
+  if (!prompt) throw new Error('Type what this scene should show, then press Generate again.');
+
+  const safeJob = String(jobId || 'default').replace(/[^a-zA-Z0-9_-]+/g, '-').slice(0, 40) || 'default';
+  const { url, id } = await generateImage({ apiKey, prompt, orientation, modelId });
+
+  // A fresh id per generation, so pressing Generate again sits beside the last
+  // attempt instead of overwriting it - you can only compare what still exists.
+  const fileId = 'ai-' + randomUUID().slice(0, 8);
+  const saved = await downloadStock({
+    url,
+    id: fileId,
+    jobId: safeJob,
+    publicDir: paths.PUBLIC_DIR,
+    folder: 'ai',
+  });
+
+  res.json({ ...saved, id: fileId, generationId: id, prompt });
 }));
 
 // --- what is worth making a video about right now ----------------------------
@@ -448,6 +486,10 @@ function cleanOldAudio() {
     // never the "stock" folder itself, which would take today's work with it.
     dropOldChildren(GENERATED_DIR, (e) => e.startsWith('vo-'));
     dropOldChildren(path.join(GENERATED_DIR, 'stock'), () => true);
+    // generated/ai is deliberately NOT swept. A stock photo is free and can be
+    // fetched again; a drawn one was paid for in ElevenLabs credits and cannot.
+    // Deleting it on a timer would quietly spend the creator's money twice, so
+    // that folder grows until somebody chooses to empty it.
   } catch {
     // never let cleanup stop the server from booting
   }

@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { api } from '../lib/api';
+import { api, type TopicForm } from '../lib/api';
 import { getTheme, LAYOUT_INFO } from '../lib/theme';
 import type { DesignSettings, LayoutName, MusicMood, QuizContent, ThemeMode } from '../lib/types';
 import { Check, ErrorNote, Note, Select, Slider, Spinner } from './controls';
@@ -23,9 +23,16 @@ export const StepStyle: React.FC<{
   content: QuizContent | null;
   setContent: (updater: (prev: QuizContent) => QuizContent) => void;
   pexelsKey: string;
+  elevenKey: string;
+  form: TopicForm;
+  imageModels: { id: string; label: string }[];
+  imageStyles: { id: string; label: string }[];
   onBack: () => void;
   onNext: () => void;
-}> = ({ design, setDesign, musicMoods, content, setContent, pexelsKey, onBack, onNext }) => {
+}> = ({
+  design, setDesign, musicMoods, content, setContent, pexelsKey, elevenKey, form,
+  imageModels, imageStyles, onBack, onNext,
+}) => {
   const set = <K extends keyof DesignSettings>(key: K, value: DesignSettings[K]) =>
     setDesign((prev) => ({ ...prev, [key]: value }));
 
@@ -247,6 +254,10 @@ export const StepStyle: React.FC<{
           content={content}
           setContent={setContent}
           pexelsKey={pexelsKey}
+          elevenKey={elevenKey}
+          form={form}
+          imageModels={imageModels}
+          imageStyles={imageStyles}
           orientation={design.orientation}
           showStock={design.showStock}
           stockOpacity={design.stockOpacity}

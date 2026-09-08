@@ -4,8 +4,8 @@
 //
 // These fill the "Specific topic" box in step 2. They are suggestions, not a
 // closed list: the box stays free text, so anything not here can still be typed.
-// Keyed by the subject name exactly as it appears in SUBJECTS and
-// ELECTRICAL_SUBJECTS in api.ts.
+// Keyed by the subject name exactly as it appears in SUBJECTS,
+// ELECTRICAL_SUBJECTS and APTITUDE_SUBJECTS in api.ts.
 // ---------------------------------------------------------------------------
 
 export const SUBTOPICS: Record<string, string[]> = {
@@ -240,6 +240,194 @@ export const SUBTOPICS: Record<string, string[]> = {
   'General Knowledge': [
     'Inventions that changed the world', 'Everyday science', 'Records and extremes',
     'Common misconceptions', 'How things work', 'Numbers and scale', 'Nature’s oddities',
+  ],
+
+  // --- aptitude: the numerical half ----------------------------------------
+  // Written as the chapter names candidates actually search for, because the
+  // sub-topic is what the video gets titled around.
+  'Number System': [
+    'Divisibility rules', 'HCF and LCM', 'Remainder theorem and cyclicity',
+    'Unit digit of a large power', 'Number of trailing zeroes', 'Factors and their count',
+    'Prime numbers and co-primes', 'Base systems and conversions', 'Surds and indices',
+    'Fractions, decimals and ordering',
+  ],
+  'Simplification & Approximation': [
+    'BODMAS order of operations', 'Approximation to the nearest option',
+    'Squares, cubes and roots up to 30', 'Multiplication shortcuts', 'Percentage to fraction table',
+    'Simplifying nested fractions', 'Estimating before calculating', 'Recurring decimals',
+    'When to approximate and when not to',
+  ],
+  'Percentage, Ratio & Proportion': [
+    'Percentage change and reverse percentage', 'Successive percentage change',
+    'Ratio into parts', 'Compound ratio and proportion', 'Direct and inverse variation',
+    'Partnership and profit sharing', 'Population growth problems', 'Percentage in exam marks',
+    'The fraction equivalents worth memorising', 'Income and expenditure problems',
+  ],
+  'Average, Mixture & Alligation': [
+    'Average of a series', 'Weighted average', 'Change in average when one item enters or leaves',
+    'The alligation rule', 'Mixtures of two liquids', 'Repeated replacement from a vessel',
+    'Average speed versus average of speeds', 'Average of consecutive numbers',
+    'Mixture and cost price problems',
+  ],
+  'Profit, Loss & Discount': [
+    'Cost price, selling price and marked price', 'Profit and loss percentage',
+    'Successive discounts', 'Discount and markup together', 'False weights and dishonest dealers',
+    'Break-even and equal profit-loss', 'Partnership profit division', 'Selling at the same price twice',
+    'Goods sold in lots',
+  ],
+  'Simple & Compound Interest': [
+    'Simple interest basics', 'Compound interest and the growth idea',
+    'Difference between SI and CI', 'Half-yearly and quarterly compounding',
+    'Instalments and EMI basics', 'Compound interest as successive percentage',
+    'Population and depreciation', 'Rate and time from a given difference',
+    'When money doubles or triples',
+  ],
+  'Time, Speed & Distance': [
+    'Basic speed conversions', 'Relative speed — same and opposite direction',
+    'Trains crossing poles, platforms and each other', 'Boats and streams',
+    'Average speed over two legs', 'Races and head starts', 'Circular tracks and meeting points',
+    'Escalator problems', 'Journeys with a change of speed',
+  ],
+  'Time & Work': [
+    'Unitary method and work per day', 'The LCM method for work',
+    'Efficiency and the inverse of time', 'Men, days and hours together',
+    'Pipes and cisterns', 'Leaks and outlet pipes', 'Alternate day working',
+    'Wages divided by work done', 'Work left after somebody leaves',
+  ],
+  Algebra: [
+    'Linear equations in one and two variables', 'Quadratic equations and their roots',
+    'Sum and product of roots', 'Algebraic identities worth knowing',
+    'Simplifying algebraic fractions', 'Inequalities and their sign changes',
+    'Arithmetic and geometric progressions', 'Functions and their graphs',
+    'Word problems into equations',
+  ],
+  'Geometry & Mensuration': [
+    'Triangles and their properties', 'Congruence and similarity', 'Pythagoras and triples',
+    'Circles, chords and tangents', 'Quadrilaterals and polygons', 'Coordinate geometry basics',
+    'Area and perimeter of plane figures', 'Surface area and volume of solids',
+    'Cylinders, cones and spheres', 'Prisms, pyramids and frustums',
+  ],
+  'Trigonometry & Heights': [
+    'Trigonometric ratios and the standard table', 'Identities and their proofs',
+    'Complementary angles', 'Maximum and minimum values',
+    'Heights and distances with one observer', 'Angles of elevation and depression',
+    'Two observers on the same line', 'Shadow length problems',
+    'Trigonometry inside geometry questions',
+  ],
+  'Permutation, Combination & Probability': [
+    'The fundamental counting principle', 'Permutations with and without repetition',
+    'Combinations and when order stops mattering', 'Circular arrangements',
+    'Arrangements with identical items', 'Probability of a single event',
+    'Independent and mutually exclusive events', 'Probability with cards, dice and balls',
+    'At least one and the complement trick',
+  ],
+  'Data Interpretation': [
+    'Reading a table quickly', 'Bar graphs and grouped bars', 'Line graphs and trends',
+    'Pie charts and central angles', 'Mixed and caselet DI', 'Percentage change across a graph',
+    'Ratio comparisons inside a chart', 'Missing data DI', 'Approximation to save time in DI',
+    'Choosing which question to skip',
+  ],
+  'Data Sufficiency': [
+    'The five standard answer options', 'Deciding without actually solving',
+    'One statement alone is enough', 'Both statements together',
+    'The trap of assuming extra information', 'Data sufficiency in geometry',
+    'Data sufficiency in number systems', 'Common careless errors',
+    'Two-statement versus three-statement formats',
+  ],
+
+  // --- aptitude: reasoning --------------------------------------------------
+  'Series — Number & Alphabet': [
+    'Difference and second-difference series', 'Multiplication and division series',
+    'Square and cube based series', 'Prime number series', 'Alternating and mixed series',
+    'Alphabet position series', 'Letter-number combined series', 'Wrong term in a series',
+    'Missing term in the middle',
+  ],
+  'Coding-Decoding': [
+    'Letter shifting codes', 'Number coded words', 'Substitution coding',
+    'Conditional coding rules', 'Symbol and mixed coding', 'Coding by word position',
+    'Decoding a message from examples', 'New pattern coding for banking exams',
+    'Finding the rule from two examples',
+  ],
+  'Blood Relations, Direction & Ranking': [
+    'Family tree from a statement', 'Coded blood relations',
+    'Generation and gender puzzles', 'Direction sense and turns',
+    'Shortest distance after a path', 'Shadow and sun direction problems',
+    'Ranking from both ends', 'Number of people in a row', 'Order of arrival puzzles',
+  ],
+  'Syllogism & Statement Reasoning': [
+    'All, some and no statements', 'Venn diagrams for syllogism',
+    'Possibility cases and when they hold', 'Either-or conclusions',
+    'Reverse syllogism', 'Statement and assumption', 'Statement and conclusion',
+    'Statement and course of action', 'Cause and effect questions',
+  ],
+  'Puzzles & Seating Arrangement': [
+    'Linear arrangement in one row', 'Two rows facing each other',
+    'Circular arrangement facing in and out', 'Square and rectangular tables',
+    'Floor and flat puzzles', 'Scheduling by day, month or year',
+    'Box and stack puzzles', 'Categorised puzzles with two variables',
+    'Where to start when nothing is fixed',
+  ],
+  'Analogy & Classification': [
+    'Word analogies and their relationship types', 'Number analogies',
+    'Letter analogies', 'Odd one out in words', 'Odd one out in numbers',
+    'Choosing the analogous pair', 'Meaning-based classification',
+    'Mixed analogy formats', 'Spotting the intended relationship first',
+  ],
+  'Non-verbal Reasoning': [
+    'Figure series and rotation', 'Mirror and water images', 'Paper folding and punching',
+    'Embedded and hidden figures', 'Figure completion', 'Cube and dice from a net',
+    'Counting figures in a diagram', 'Dot situation problems', 'Figure matrix puzzles',
+  ],
+  'Analytical & Critical Reasoning': [
+    'Identifying the conclusion of an argument', 'Strengthening and weakening an argument',
+    'Assumptions the argument depends on', 'Inference versus stated fact',
+    'Flaws in reasoning', 'Paradox and resolution questions',
+    'Evaluating evidence', 'Logical consistency of statements',
+    'Decision making and eligibility criteria',
+  ],
+  'Clocks, Calendars & Cubes': [
+    'Angle between the hands of a clock', 'Times when the hands overlap',
+    'Fast and slow clocks', 'Odd days and the day of the week',
+    'Leap years and the calendar rule', 'Repeating calendar years',
+    'Painted cube problems', 'Cutting a cube into smaller cubes',
+    'Dice faces and opposite numbers',
+  ],
+
+  // --- aptitude: the rest of the paper --------------------------------------
+  'English Language & Comprehension': [
+    'Reading comprehension strategy', 'Para jumbles and sentence order',
+    'Cloze test and fill in the blanks', 'Error spotting in a sentence',
+    'Sentence improvement', 'Synonyms and antonyms', 'Idioms and phrases',
+    'One word substitution', 'Active and passive voice', 'Direct and indirect speech',
+    'Subject-verb agreement', 'Commonly confused word pairs',
+  ],
+  'General Awareness & Current Affairs': [
+    'How to revise current affairs efficiently', 'Government schemes and their aims',
+    'Banking and financial awareness', 'Awards and honours', 'Sports events and winners',
+    'Books and their authors', 'Summits and international organisations',
+    'Appointments and who holds which post', 'Important days and themes',
+    'Budget and economic survey highlights',
+  ],
+  'Static GK — History, Geography & Polity': [
+    'The Indian Constitution and its parts', 'Fundamental rights and duties',
+    'Parliament and the legislative process', 'Ancient and medieval India',
+    'The freedom struggle and its milestones', 'Indian rivers and their tributaries',
+    'Mountain ranges, passes and plateaus', 'National parks and sanctuaries',
+    'States, capitals and dances', 'Monuments and who built them',
+  ],
+  'General Science': [
+    'Everyday physics in exam questions', 'Human body systems and their organs',
+    'Vitamins, deficiencies and diseases', 'Acids, bases and salts',
+    'Metals, non-metals and alloys', 'Plant and animal classification',
+    'Units, instruments and what they measure', 'Environment and pollution',
+    'Scientific discoveries and who made them',
+  ],
+  'Computer Awareness': [
+    'Computer generations and their hardware', 'Input, output and storage devices',
+    'Memory — RAM, ROM and cache', 'Operating systems and their functions',
+    'MS Office shortcuts worth knowing', 'Networking and topology basics',
+    'The internet, browsers and protocols', 'Databases and file organisation',
+    'Cyber security, viruses and safe practice', 'Number systems inside a computer',
   ],
 };
 

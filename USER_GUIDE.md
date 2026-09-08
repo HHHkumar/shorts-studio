@@ -21,6 +21,8 @@ your work safe with Git, and how to run the same tool on a second computer.
    - [Animation comes from your verbs](#animation-comes-from-your-verbs)
    - [Scenes that move](#scenes-that-move)
    - [Moving backdrops](#moving-backdrops)
+   - [Drawing your own backdrops](#drawing-your-own-backdrops)
+   - [Aptitude and reasoning videos](#aptitude-and-reasoning-videos)
    - [A note on units](#a-note-on-units)
 5. [Git — your undo button](#5-git--your-undo-button)
 6. [GitHub — your backup and your bridge](#6-github--your-backup-and-your-bridge)
@@ -46,7 +48,7 @@ Four services do the work, and they all run from one page in your browser:
 |---|---|---|
 | **Google Gemini** | Writes the question, the four options, the explanation and the exact words the narrator says — or, in explainer mode, the whole storyboard. Also writes your title, tags and description at the end. | Required |
 | **Anthropic Claude** | An alternative writer for the question or the storyboard. Pick which one on step 2. | Optional |
-| **ElevenLabs** | Turns that script into speech. | Required |
+| **ElevenLabs** | Turns that script into speech — and, on a Pro plan, can also draw the backdrop pictures. | Required |
 | **DeepSeek** | Solves the question independently and says whether it agrees with Gemini. | Optional |
 | **Pexels + NASA** | Free photos to sit behind the text. NASA needs no key. | Optional |
 
@@ -59,11 +61,15 @@ The video itself is drawn on your own computer by **Remotion**, which is why ren
   analogies and diagrams: a title card, an analogy, a labelled diagram, the steps, a comparison, a
   timeline, a scene where things actually move, and a recap. Aimed at 3 to 5 minutes in 16:9.
 
-### Two kinds of video
+### Three kinds of video
 
 - **Curiosity STEM** — counter-intuitive science and maths for a general audience.
 - **Electrical exam prep** — in the style of a real paper, aimed at a specific exam:
   GATE EE, ESE/IES, SSC JE, RRB JE, State AE/JE, PSU (UPPCL/DMRC/NTPC/BHEL), or ITI/Wireman.
+- **Aptitude & reasoning** — the quant, reasoning, English and awareness sections that nearly every
+  competitive paper carries, aimed at SSC, banking, RRB, CAT, campus placements, GATE GA, CSAT,
+  defence, state PSC or the teaching exams. See
+  [Aptitude and reasoning videos](#aptitude-and-reasoning-videos).
 
 ### Two shapes
 
@@ -223,8 +229,8 @@ Where you decide what the video is about.
 | Setting | What it does |
 |---|---|
 | **How it is told** | **Quiz** or **Explainer**. Choosing Explainer switches to 16:9 and at least three minutes, because that is what the format needs. |
-| **What kind of video** | **Curiosity STEM** for a general audience, or **Electrical exam prep** for candidates revising. |
-| **Exam** *(exam prep only)* | Sets the depth. GATE and ESE want derivation and analysis; SSC and RRB want standard formulas at speed; ITI wants practical wiring and safety with no calculus. |
+| **What kind of video** | **Curiosity STEM** for a general audience, **Electrical exam prep** for candidates revising, or **Aptitude & reasoning** for the quant, reasoning, English and awareness sections. |
+| **Exam** *(both exam modes)* | Sets the depth. GATE and ESE want derivation and analysis; SSC and RRB want standard formulas at speed; ITI wants practical wiring and safety with no calculus. In aptitude mode the list swaps to the aptitude papers, where CAT hides an insight and SSC stays quick and clean. |
 | **Format** | Portrait or landscape. **Pick this first** — it changes how much script is written and how the frame is laid out. |
 | **Subject** | The broad area. In exam mode this is the syllabus section. |
 | **Sub-topic** | A dropdown of suggestions for that subject — 38 for Power Generation, for example. Pick one to concentrate a run of videos on a single section, or leave it on *Any*. |
@@ -245,9 +251,10 @@ memory — then judges which of what it finds would actually make a good video. 
 each with why it is being talked about and the counter-intuitive angle to build around. Click one
 and it fills the topic box.
 
-It searches your domain: science and technology in curiosity mode, or grid, generation, storage and
-standards news in electrical mode. **Where this came from** lists the pages it actually read, so you
-can check a claim yourself.
+It searches your domain: science and technology in curiosity mode, grid, generation, storage and
+standards news in electrical mode, or exam calendars, paper-pattern changes and the current affairs
+a general awareness section actually asks about in aptitude mode. **Where this came from** lists the
+pages it actually read, so you can check a claim yourself.
 
 > **Trending is not the same as true.** A story spreading fast is exactly the kind that turns out to
 > be half right. Verify the answer in step 3, and run the DeepSeek check if you have a key.
@@ -355,6 +362,8 @@ Everything here is instant, free, and never touches the voiceover.
 - **Backdrop photos** — press **Find backdrop photos** and it searches Pexels and NASA per scene,
   using a search term Gemini wrote for that scene. **Nothing is applied for you**: a photo library
   will cheerfully return a beach for "gravity". Click the ones that fit, skip the rest.
+- **Drawn backdrops** — if your ElevenLabs plan allows it, each scene also gets a **Draw** button
+  that makes a picture instead of finding one. See [Drawing your own backdrops](#drawing-your-own-backdrops).
 - **Sound** — three built-in music beds (calm, tense, upbeat), or load your own file. The music
   **ducks automatically** under the narration. Effects: a countdown tick, an option whoosh, an answer
   chime, and a sweep between scenes.
@@ -728,6 +737,102 @@ the heaviest of them; set it to *None* if you want the fastest possible render.
 
 ---
 
+### Drawing your own backdrops
+
+The ElevenLabs key that speaks your script can also **draw** the picture behind it. On step 5 every
+scene gets a **Draw** button next to its search box, beside the free Pexels and NASA search.
+
+**Why bother, when photos are free?** Two reasons.
+
+The first is shape. Stock libraries are full of wide photos taken for wide screens. Your short is
+tall, so the app has to cut a tall slice out of the middle of a wide picture — and whatever was
+happening at the left and right edges is simply gone. A drawn picture is made 9:16 (or 16:9 if that
+is what you chose) from the start, so nothing is thrown away.
+
+The second is consistency. Twelve stock photos are twelve photographers, twelve lighting setups and
+twelve colour grades. Pick a **Look** — editorial photo, clean diagram, cinematic, or blueprint —
+and every scene you draw in that video comes back matching the others.
+
+**How to use it**
+
+1. Check the words in each scene's box. That is what gets drawn, so make it specific.
+2. Pick a **Look** and an **Image model**. Flash models answer in a few seconds and cost the least;
+   Pro is slower and sharper.
+3. Press **Draw** on a scene. The picture appears among that scene's options with a purple **AI**
+   tag and a dashed border.
+4. Click it to actually use it — same as a photo. Not clicking costs you nothing further.
+5. Not right? Press **Draw another**. The first one stays, so you can compare them side by side.
+
+**What it costs.** Every press spends ElevenLabs credits from the same balance as your voiceover,
+and drawing through the API needs a **Pro plan or above**. On the free or Starter plan the voice
+still works perfectly — only the Draw button will tell you the plan is not enough. There is
+deliberately no "draw every scene" button: it would be one click to spend a lot of credit on scenes
+you were going to skip anyway.
+
+**Being honest about it.** Drawn backdrops are labelled *Generated with ElevenLabs* in your caption
+and in the publish kit's credits file. Leave that in. YouTube and the other platforms increasingly
+expect AI-made imagery to be declared, and the line is short enough that it costs you nothing.
+
+---
+
+### Aptitude and reasoning videos
+
+Almost every competitive exam in India carries an aptitude paper alongside the technical one, and for
+a lot of candidates that is the paper which actually decides the result — everyone revises their own
+subject, and nobody practises ratios. **Aptitude & reasoning** on step 2 writes for those sections.
+
+**What it covers.** Twenty-eight sections, in the three blocks a paper is printed in:
+
+- **Numerical** — number system, simplification, percentage and ratio, averages and alligation,
+  profit and loss, interest, time-speed-distance, time and work, algebra, geometry and mensuration,
+  trigonometry, permutation and probability, data interpretation, data sufficiency.
+- **Reasoning** — series, coding-decoding, blood relations and directions, syllogism, puzzles and
+  seating arrangement, analogy and classification, non-verbal, analytical and critical reasoning,
+  clocks-calendars-cubes.
+- **The rest of the paper** — English and comprehension, current affairs, static GK, general science,
+  computer awareness.
+
+Each one comes with its own sub-topic list, so you can run a whole series on boats and streams, or on
+syllogism possibility cases, without typing a topic each time.
+
+**Pick the paper, not just the section.** The **Exam** dropdown matters more here than it looks. An
+SSC quant question and a CAT quant question can sit in the same chapter and be nothing alike: SSC
+wants one clean step in about forty-five seconds with numbers you can hold in your head, while CAT
+wants a question where the obvious approach is the slow one and there is an insight that collapses
+the work. Banking rewards approximation over calculation. Placement papers stick to one concept per
+question. Choosing the wrong one gives you a technically correct question aimed at nobody.
+
+**What the tool is told to do differently.** Aptitude questions are marked against a clock, so the
+question has to be solvable in the time that paper allows — and the wrong options are treated as part
+of the lesson, not padding. Each one has to be a mistake candidates genuinely make: the ratio
+inverted, the percentage taken on the wrong base, the units left unconverted, the off-by-one in a
+series, the answer to the question that was not asked. A distractor nobody would pick makes the
+question easier than the real paper and teaches nothing.
+
+The explanation is told to name the method out loud — "this is an alligation", "use the LCM method" —
+because the pattern is the takeaway, not this one answer. Where a shortcut exists it shows the
+textbook route first, then the shortcut, and says how much time it saves.
+
+#### Long-form method videos
+
+This is where aptitude pays off most. Switch **How it is told** to **Explainer** and the storyboard
+is built as a method lesson rather than a curiosity piece:
+
+1. Open on a question of this type and make it clear why the obvious approach is too slow.
+2. Name the method in one sentence.
+3. Work a full example, one step per scene, on a **steps** panel so the working builds up on screen.
+4. Put the shortcut against the long way on a **versus** panel, with the seconds saved.
+5. Show the trap this chapter is famous for on a **grid** panel.
+6. Work a second, slightly different example so the viewer sees the pattern transfer.
+7. Recap the method as numbered steps they can screenshot.
+
+An ordinary explainer is told to use pictures and analogies instead of equations. That instruction is
+deliberately reversed here: in a method video the arithmetic on screen *is* the picture, and a viewer
+who cannot see the working cannot copy it. Keep the numbers clean enough to follow without pausing —
+if the working needs a calculator, the question needs different numbers.
+
+---
+
 ### A note on units
 
 Voice models read **10 MW** as "ten mili wag". Any unit symbol with a number in front of it —
@@ -881,11 +986,18 @@ npm install
 npm start
 ```
 
-### Three things that do not travel, by design
+### Four things that do not travel, by design
 
 - **Your API keys.** They live in your browser, never in a file. Paste them into step 1 again.
 - **The rendering browser.** The first render on the new machine downloads it again (~150 MB, once).
 - **Your finished videos.** They are too big for a repo. They stay on the machine that made them.
+- **The Python packages for the guide PDF.** `npm install` fetches everything JavaScript, but the one
+  Python script in the project — the one that rebuilds this document as a PDF — has its own two
+  dependencies. You only need them if you edit the guide:
+
+  ```
+  pip install -r tools/requirements.txt
+  ```
 
 After that, both computers are equal. Pull before you start, push before you stop, and they stay in
 step.
@@ -901,6 +1013,7 @@ step.
 | **Claude** *(optional)* | Pay as you go, **no free tier** | Opus: about **9c** a quiz, **35c** a five-minute storyboard. Sonnet: about **4c** and **14c**. |
 | **DeepSeek** *(optional)* | Pay as you go, no free tier | A fraction of a cent per check. |
 | **Pexels / NASA** *(optional)* | Free | Nothing. |
+| **Drawn backdrops** *(optional)* | **None — needs an ElevenLabs Pro plan** | One press, one picture. Spends the same credits as the voice, so draw only the scenes that need it. |
 | **Rendering** | Unlimited | Your own computer. Costs electricity. |
 
 Changing the look, re-rendering, editing text and picking photos all cost **nothing**, and neither
@@ -927,6 +1040,11 @@ To stretch ElevenLabs credits: shorter targets, and the **Flash** voice model.
 | *"No reply after 240 seconds"* | The model stalled. | Try again, or switch to a Flash model. |
 | *"That … API key was rejected"* | Bad key, usually a stray space. | Re-copy it from the provider and paste again. |
 | *"Your ElevenLabs character quota is used up"* | Out of voice credits this month. | Wait for the reset, shorten the video, or upgrade. |
+| *"ElevenLabs image generation needs a Pro plan or above"* | Drawing backdrops is a paid-plan feature on the API. Your voiceover is unaffected. | Use **Find backdrop photos** instead, or upgrade the plan. |
+| *"ElevenLabs refused that prompt as unsafe"* | A moderation filter rejected the words for that scene. | Reword that scene's search box and press **Draw** again. |
+| *"ElevenLabs was still drawing after 120 seconds"* | The model queued rather than failed. | Press **Draw** again, or pick a **Flash** image model — they answer in seconds. |
+| The **Draw** button is missing on step 5 | No ElevenLabs key is set. | Paste one on step 1; the button and its two dropdowns appear by themselves. |
+| `public\generated\ai\` keeps growing | Drawn images are never deleted automatically, because they cost credits. | Delete the folder yourself when you have finished with those videos. |
 | *"Your DeepSeek account has no credit left"* | DeepSeek has no free tier. | Top up, or clear the key to turn the check off. |
 | *"Gemini rate limit hit"* | You generated too fast. | Wait a minute and try again. |
 | *"Your key cannot use that Gemini model"* | The model is not available to your key. | Reload the page — the dropdown rebuilds from your own key. |
@@ -995,7 +1113,10 @@ Inside `C:\Projects\shorts-studio`:
 
 - **`out\`** — your finished videos. **This is the folder you want.** Nothing here is ever deleted
   automatically, and nothing here goes to GitHub.
-- `public\generated\` — voiceover clips and downloaded photos. Cleared automatically after a day.
+- `public\generated\` — voiceover clips and backdrop images.
+  - `vo-…\` and `stock\` are **cleared automatically after a day**. Both are free to make again.
+  - `ai\` is **never cleared**, because those images cost ElevenLabs credits and deleting them on a
+    timer would spend your money twice. It grows until you empty it yourself.
 - `public\audio\` — the music beds and effects, regenerated on first boot.
 - `.cache\` — the icon drawings, kept so the same noun is never fetched twice. Safe to delete;
   it refills itself.
@@ -1019,9 +1140,10 @@ No. Gemini, ElevenLabs and the one-time renderer download all need the internet.
 you already generated works offline.
 
 **Is my data going anywhere?**
-Your topic settings go to Google, your script to ElevenLabs, and your question to DeepSeek if you
-enabled it. Nothing else leaves the computer — the helper server listens only on `127.0.0.1`, so
-nothing on your network can reach it.
+Your topic settings go to Google, your script to ElevenLabs, your question to DeepSeek if you enabled
+it, and — only if you press **Draw** — that scene's few words go to ElevenLabs as an image prompt.
+Nothing else leaves the computer — the helper server listens only on `127.0.0.1`, so nothing on your
+network can reach it.
 
 **Why is my project not in OneDrive any more?**
 OneDrive was syncing `node_modules` — tens of thousands of files — which is slow and can lock files
@@ -1044,5 +1166,8 @@ Look at the PowerShell window. The last few red lines usually say plainly what f
 - Run the DeepSeek check — a disagreement between two models is the cheapest bug report you will get.
 - Keep the read-along text on; most viewers are on mute.
 - Only pick backdrop photos that genuinely fit. An unrelated one makes it look worse, not better.
+- If you draw backdrops, keep one **Look** for the whole video. Mixed styles read as carelessness.
+- For an aptitude video, check the wrong options are real mistakes. If one is obviously silly, the
+  question is easier than the paper it is meant to prepare you for.
 - Thinking time of 3–5 seconds. Longer and people scroll away.
 - **Commit and push when you finish.** It takes ten seconds and it is the whole safety net.

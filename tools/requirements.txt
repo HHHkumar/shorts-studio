@@ -1,0 +1,15 @@
+# Python packages needed by `npm run guide:pdf` only.
+#
+# Nothing else in this project uses Python, which is exactly why these were easy
+# to miss: a fresh clone runs `npm install`, gets every JavaScript dependency,
+# and then fails on the guide with a bare ModuleNotFoundError that names only
+# whichever import happened to come first.
+#
+#     pip install -r tools/requirements.txt
+#
+# Floors rather than pins: both libraries have been stable across the versions
+# this script touches, and pinning a PDF toolchain that nothing ships would just
+# go stale in the background.
+
+markdown-it-py>=3.0    # walks USER_GUIDE.md as a token stream
+reportlab>=4.0         # typesets the tokens straight to PDF

@@ -51,7 +51,18 @@ function buildPrompt(o) {
   lines.push('Find 8 topics worth making a video about right now.');
   lines.push('');
 
-  if (electrical) {
+  if (o.contentType === 'aptitude') {
+    // "Trending" means something different here. Nobody searches for a trending
+    // ratio question - but exam calendars, pattern changes and the current
+    // affairs that the GA section actually asks about all move constantly.
+    lines.push('Domain: competitive exam aptitude preparation in India.');
+    if (o.subject) lines.push('Bias towards this section if anything current fits it: ' + o.subject + '.');
+    lines.push('Good sources of movement here: exam notifications and calendars, changes to a paper');
+    lines.push('pattern or syllabus, question types that trended in a recent shift, current affairs');
+    lines.push('likely to be asked in general awareness, and the topics candidates are asking about');
+    lines.push('in the run-up to a specific exam date.');
+    if (o.exam) lines.push('The audience is preparing for: ' + o.exam + '.');
+  } else if (electrical) {
     lines.push('Domain: electrical engineering, power systems and energy.');
     if (o.subject) lines.push('Bias towards this area if anything current fits it: ' + o.subject + '.');
     lines.push('Good sources of movement here: grid incidents and blackouts, new generation capacity,');

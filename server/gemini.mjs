@@ -282,7 +282,86 @@ function densityLine(o) {
   return '- Diagram density: ' + DIAGRAM_DENSITY[key];
 }
 
-function examLines(o) {
+/**
+ * What each aptitude paper actually rewards.
+ *
+ * These are further apart than the section names suggest. An SSC quant question
+ * and a CAT quant question can sit in the same chapter and still be nothing
+ * alike: one wants a clean formula applied in forty seconds, the other wants
+ * you to notice that the obvious formula is the trap.
+ */
+export const APTITUDE_STYLE = {
+  'SSC CGL / CHSL': 'One clean step, solvable in about 45 seconds. Numbers chosen to stay mental. '
+    + 'Standard chapter formulas, no exotic tricks. Tier-1 difficulty.',
+  'Banking — IBPS / SBI PO & Clerk': 'Speed above depth. Favour approximation, the percentage-to-'
+    + 'fraction table, and the kind of question where spotting the shortcut beats calculating. '
+    + 'Numbers may be ugly on purpose so that estimating wins.',
+  'RRB NTPC / Group D': 'Direct and formula-led, solvable in under a minute. Keep the arithmetic '
+    + 'light and the wording plain. No multi-concept questions.',
+  'CAT / XAT / MBA entrance': 'Multi-concept and genuinely hard. The obvious approach should be '
+    + 'slow or wrong; there must be an insight that collapses the work. Assume a strong candidate.',
+  'Campus placement (TCS / Infosys / Wipro / Accenture)': 'The classic placement set: number '
+    + 'system, time and work, permutations, and puzzle-flavoured questions. Moderate difficulty, '
+    + 'clean numbers, one concept per question.',
+  'GATE General Aptitude': 'Crisp and unambiguous, in the style of the GA section: verbal ability, '
+    + 'numerical computation, data interpretation and simple logic. Degree level, no trickery.',
+  'UPSC CSAT': 'Comprehension-led and reasoning-heavy rather than calculation-heavy. Qualifying '
+    + 'standard, but the wording must be precise and the reasoning airtight.',
+  'Defence — NDA / CDS / AFCAT': 'School-syllabus maths and reasoning, quickly solvable. '
+    + 'Trigonometry, mensuration and number system feature heavily. No calculus.',
+  'State PSC prelims': 'Moderate difficulty with a regional flavour where it fits naturally. '
+    + 'Standard formulas and straightforward reasoning.',
+  'Teaching — CTET / State TET': 'Pitched at classroom mathematics and reasoning, often asking '
+    + 'about the method a learner would use. Keep the numbers small and the language simple.',
+};
+
+/**
+ * The instructions that make an aptitude question useful rather than merely
+ * correct.
+ *
+ * An aptitude video that only reveals the answer is worthless - the viewer
+ * already knew they could not do it. The whole value is the method, so most of
+ * what follows is about forcing the working onto the screen and making the
+ * wrong options the mistakes candidates genuinely make.
+ */
+export function aptitudeLines(o) {
+  const exam = o.exam && APTITUDE_STYLE[o.exam] ? o.exam : 'SSC CGL / CHSL';
+
+  return [
+    '',
+    'THIS IS COMPETITIVE APTITUDE PRACTICE, not a curiosity short.',
+    '- Target paper: ' + exam,
+    '- Style required: ' + APTITUDE_STYLE[exam],
+    '- Section: ' + o.subject + '. Stay inside it.',
+    '',
+    'WHAT MAKES THESE QUESTIONS WORK.',
+    '- Aptitude is tested against a clock, so the question must be solvable in the time that paper',
+    '  allows. If your question needs long division on paper, it is the wrong question.',
+    '- Choose the numbers deliberately. The arithmetic should be clean enough to do mentally unless',
+    '  the whole point of the question is estimation.',
+    '- There must be exactly one defensible answer. No "closest to", no rounding ambiguity, and no',
+    '  question that depends on a convention the candidate cannot know.',
+    '',
+    'THE OPTIONS ARE THE LESSON.',
+    '- Every wrong option must be a mistake a real candidate makes, and you should know which one:',
+    '  the ratio inverted, the percentage taken on the wrong base, the units left unconverted, the',
+    '  off-by-one in a series, the answer to the question that was NOT asked.',
+    '- Never pad with a random number. A distractor nobody would pick teaches nothing and makes the',
+    '  question easier than the real paper.',
+    '',
+    'THE EXPLANATION MUST TEACH THE METHOD.',
+    '- Show the working one step per scene, in the order a candidate would actually do it.',
+    '- Name the approach out loud - "this is an alligation", "use the LCM method" - so the viewer',
+    '  can recognise the same shape next time. The pattern is the takeaway, not this one answer.',
+    '- If there is a faster route than the textbook one, show the textbook route first and then the',
+    '  shortcut, and say plainly how much time it saves.',
+    '- Say which trap the wrong options were set for. Naming the mistake is what stops it repeating.',
+    '- End on what to look for in the next question of this type.',
+  ];
+}
+
+export function examLines(o) {
+  if (o.contentType === 'aptitude') return aptitudeLines(o);
   if (o.contentType !== 'electrical') return [];
 
   const exam = o.exam && EXAM_STYLE[o.exam] ? o.exam : 'GATE EE';

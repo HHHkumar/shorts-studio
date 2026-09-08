@@ -170,6 +170,7 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; }
 .btn.big { padding: 17px 30px; font-size: 17px; width: 100%; }
 .btn.ghost { background: transparent; }
 .btn.danger { color: var(--bad); border-color: rgba(255,107,107,.35); }
+.btn.small { padding: 6px 11px; font-size: 12.5px; flex: 0 0 auto; }
 
 .actions { display: flex; gap: 12px; margin-top: 26px; flex-wrap: wrap; }
 .actions .spacer { flex: 1; }
@@ -388,6 +389,14 @@ ul.issues .sev-low .sev { background: rgba(108,140,255,.16); color: var(--accent
 }
 .stock-thumb .prov-pexels { background: rgba(5,160,120,.9); }
 .stock-thumb .prov-nasa { background: rgba(11,61,145,.92); }
+.stock-thumb .prov-ai { background: rgba(167,107,255,.92); }
+
+/* A drawn image is already the shape of the video, and that framing is the
+   whole reason for drawing it - so show all of it rather than centre-cropping
+   it into the same 4:3 well as the landscape photos beside it. */
+.stock-thumb.drawn img { object-fit: contain; background: var(--bg); }
+.stock-thumb.drawn { border-style: dashed; }
+.stock-thumb.drawn.active { border-style: solid; }
 
 .stock-empty { padding: 14px; font-size: 13.5px; color: var(--dim); }
 
