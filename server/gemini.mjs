@@ -904,8 +904,51 @@ export function normalizeContent(input, options) {
   // The countdown is a silent timer beat: never narrate over it.
   script = script.map((s) => (s.kind === 'countdown' ? { ...s, narration: '' } : s));
 
+  script = dropRepeatedSketches(script);
+
   content.script = script;
   return content;
+}
+
+/**
+ * Stop the same animation appearing over and over in one video.
+ *
+ * Asked for a diagram on every scene, a model reaches for whichever sketch it
+ * picked first and uses it again, because it fits well enough and it is already
+ * in mind. The result is a video where four scenes in a row show the same
+ * circuit, which reads as an illustration of nothing - it is on screen when the
+ * narration has moved on to something else entirely.
+ *
+ * The prompt asks for variety. This enforces it, because a prompt is a request
+ * and this is the last point where the shape of the video can still be fixed.
+ *
+ * The rule is deliberately narrow: a sketch may come back later in the video,
+ * which is legitimate when a second scene genuinely revisits the same picture.
+ * What it may not do is repeat immediately, or appear more than twice in total.
+ * A dropped diagram degrades to no diagram, never to a wrong one.
+ */
+export function dropRepeatedSketches(script) {
+  const seen = new Map();
+  let previous = '';
+
+  return script.map((line) => {
+    const name = line && line.visual && line.visual.kind === 'sketch' ? line.visual.sketch : '';
+    if (!name) {
+      previous = '';
+      return line;
+    }
+
+    const count = seen.get(name) || 0;
+    // Back to back is always wrong; a third outing is padding whatever the gap.
+    if (name === previous || count >= 2) {
+      previous = '';
+      return { ...line, visual: { kind: 'none' } };
+    }
+
+    seen.set(name, count + 1);
+    previous = name;
+    return line;
+  });
 }
 
 // ---------------------------------------------------------------------------

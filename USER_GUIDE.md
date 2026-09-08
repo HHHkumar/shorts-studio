@@ -357,9 +357,15 @@ Everything here is instant, free, and never touches the voiceover.
   electrical and power work: a **circuit** (series or parallel), a **phasor diagram** and power
   triangle, an AC **waveform** (phase shift, rectified, PWM), a **block flow** that lights up
   stage by stage (boiler → turbine → condenser → pump), a **transformer** with turns ratio, and
-  a **pie** for a fuel mix or a loss breakdown — and eight for aptitude and reasoning: a **Venn**
-  diagram, a **clock face** with the angle between the hands, a **number line**, a **ratio bar**,
-  a **seating arrangement** round a table, a **family tree**, a **histogram** and a **logic grid**.
+  a **pie** for a fuel mix or a loss breakdown. There are now **over a hundred** of these, covering
+  mechanics (levers, pulleys, gears, springs, collisions, friction, torque), light and sound
+  (reflection, lenses, prisms, the Doppler effect), heat and fluids, chemistry (molecules, pH,
+  titration, electrolysis, reaction profiles), biology (cells, DNA, neurons, the heart,
+  photosynthesis, food chains), maths and geometry, data charts, earth and space, and sixteen built
+  for aptitude and reasoning — a **Venn** diagram, a **clock face** with the angle between the hands,
+  a **number line**, a **ratio bar**, a **seating arrangement**, a **family tree**, a **histogram**,
+  a **logic grid**, **cube nets**, **dice**, **paper folding**, **mirror images** and more.
+  Gemini is told not to use the same one twice in a row, and the tool drops it if it does anyway.
 - **Cuts and text** — how one scene becomes the next, and how the words arrive. See
   [Cuts, text and the finishing layer](#cuts-text-and-the-finishing-layer).
 - **Finishing layer** — grain, a vignette, cinema bars. Same section.

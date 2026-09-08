@@ -55,14 +55,15 @@ The preview and the render consume the identical `VideoProps` object, so what yo
 | `src/lib/theme.ts` | All colours, fonts and layout recipes — edit this to restyle |
 | `src/lib/timeline.ts` | Turns audio durations into a frame-exact timeline |
 | `src/remotion/` | The video itself (`QuizVideo.tsx`, `scenes/`, `ui.tsx`, `ReadAlong.tsx`, `Soundtrack.tsx`) |
-| `src/remotion/sketches.ts` | The ten p5 animations, each a pure function of the frame |
+| `src/remotion/sketches.ts` | The p5 animation library (with `sketches-extra.ts`), each a pure function of the frame |
+| `src/remotion/sketch-parts.ts` | The shared drawing primitives every sketch is built from |
 | `src/remotion/P5Sketch.tsx` | Runs p5 deterministically: `noLoop()` plus a manual redraw per frame |
 | `src/ui/` | The six wizard steps |
 | `server/gemini.mjs` | Prompt, response schema, and repair of the model's output |
 | `server/deepseek.mjs` | Independent second opinion on the answer, and report repair |
 | `server/stock.mjs` | Pexels + NASA image search, and safe download to disk |
 | `server/trends.mjs` | Live web search via Gemini grounding, for trending topic ideas |
-| `server/sketch-catalogue.mjs` | What Gemini is told about the animation library |
+| `server/sketch-catalogue.mjs` | What Gemini is told about the animation library — **generated**, see `tools/sync-catalogue.mjs` |
 | `server/gemini.test.mjs` | Regression suite for the prompt and output repair (`npm test`) |
 | `server/tts.mjs` | ElevenLabs calls and word-timing extraction |
 | `server/images.mjs` | ElevenLabs image generation: prompt building, create-then-poll, credits |
@@ -78,8 +79,8 @@ must therefore be a pure function of `progress` and `time`. Verified: the same f
 three separate passes hashes identically.
 
 Gemini chooses a sketch by name from `server/sketch-catalogue.mjs` and supplies parameters; it never
-writes drawing code. The catalogue and the implementations in `src/remotion/sketches.ts` must stay in
-step — `verifyAgainstImplementations()` checks that.
+writes drawing code. That catalogue is generated from the implementations, so the two cannot drift —
+see **The visual toolkit** below.
 
 ## Content modes
 
@@ -112,7 +113,7 @@ fifth of anything is a single object rather than a new branch in the renderer.
 | Transitions | 9 + `auto` | `src/lib/transitions.ts` | `design.transition` |
 | Text reveals | 7 | `src/lib/text-reveal.ts` | `design.textReveal` |
 | Overlays | 8 + `none` | `src/remotion/Overlays.tsx` | `design.overlay`, `overlayIntensity` |
-| Sketches | 24 | `src/remotion/sketches.ts` | chosen per scene by the model |
+| Sketches | 101 | `src/remotion/sketches.ts` + `sketches-extra.ts` | chosen per scene by the model |
 
 **Transitions and text reveals are pure functions**, deliberately. Both are
 maths over two numbers — how far a scene has arrived, how far it has left — and
@@ -137,6 +138,24 @@ of order and across machines, so a speck that moved randomly would flicker.
 exception to this codebase's explicit prop-threading. It is called from seven
 places across every scene component and the value is identical in all of them
 for the whole render.
+
+**The catalogue the model sees is generated, not written.** `server/sketch-catalogue.mjs`
+is derived from the sketch definitions by `tools/sync-catalogue.mjs`; the header says so and
+`sketches.test.mjs` fails if it is stale. Two hand-written lists in two languages was a drift bug
+waiting to happen — a name in one and not the other is a sketch that can be requested and never
+drawn, or drawn and never requested, and both fail in silence. At a hundred entries that stopped
+being theoretical.
+
+**Every sketch is drawn against a fake p5 in the tests**, at three canvas shapes, three points
+through a scene, and four kinds of input including empty and hostile ones. The failure that matters
+is not "this diagram is ugly" — it is "this diagram put a shape at NaN and the scene came out blank
+in a render nobody watched before uploading". A p5 canvas swallows a NaN coordinate in silence: no
+error, no shape, no warning.
+
+**Repeats are dropped server-side.** Asked for a diagram on every scene, a model reaches for
+whichever sketch it picked first and reuses it. `dropRepeatedSketches()` in `server/gemini.mjs`
+blanks a sketch that repeats back to back, or appears a third time — a dropped diagram degrades to
+no diagram, never to a wrong one.
 
 Eight of the sketches are aptitude-shaped — `venn`, `clock`, `number-line`,
 `ratio-bar`, `seating`, `tree`, `histogram`, `grid-logic` — because the aptitude

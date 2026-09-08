@@ -71,5 +71,31 @@ ok('a formula too long for the card is dropped, never truncated',
 ok('an empty formula is dropped',
    vis('explain', { kind:'formula', formula: '   ' }).kind === 'none');
 
+// --- the same animation must not fill a whole video --------------------------
+// A model asked for a diagram on every scene reaches for whichever sketch it
+// picked first and reuses it, because it fits well enough and it is already in
+// mind. Four scenes of the same circuit reads as an illustration of nothing.
+const { dropRepeatedSketches } = await import('./gemini.mjs');
+
+const sk = (name) => ({ kind: 'explain', narration: 'n', visual: { kind: 'sketch', sketch: name } });
+const names = (out) => out.map((l) => (l.visual.kind === 'sketch' ? l.visual.sketch : '-')).join(',');
+
+ok('a sketch repeated back to back is dropped',
+   names(dropRepeatedSketches([sk('circuit'), sk('circuit')])) === 'circuit,-');
+ok('the third outing of a sketch is dropped whatever the gap',
+   names(dropRepeatedSketches([sk('pie'), sk('venn'), sk('pie'), sk('venn'), sk('pie')]))
+   === 'pie,venn,pie,venn,-');
+ok('but a sketch may legitimately come back once',
+   names(dropRepeatedSketches([sk('pie'), sk('venn'), sk('pie')])) === 'pie,venn,pie');
+ok('different sketches are all kept',
+   names(dropRepeatedSketches([sk('a'), sk('b'), sk('c')])) === 'a,b,c');
+ok('a dropped diagram degrades to none, never to a wrong one',
+   dropRepeatedSketches([sk('circuit'), sk('circuit')])[1].visual.kind === 'none');
+ok('scenes without a sketch are untouched',
+   dropRepeatedSketches([{ kind: 'hook', visual: { kind: 'formula', formula: 'x' } }])[0].visual.formula === 'x');
+ok('a gap resets the run so the next repeat is still caught',
+   names(dropRepeatedSketches([sk('a'), { kind: 'hook', visual: { kind: 'none' } }, sk('a')])) === 'a,-,a');
+ok('nonsense in does not throw', Array.isArray(dropRepeatedSketches([null, {}, sk('a')])));
+
 console.log(fails ? '\n' + fails + ' FAILURES' : '\nall visual checks passed');
 process.exit(fails ? 1 : 0);
