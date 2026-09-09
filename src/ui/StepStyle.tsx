@@ -30,11 +30,13 @@ export const StepStyle: React.FC<{
   form: TopicForm;
   imageModels: { id: string; label: string }[];
   imageStyles: { id: string; label: string }[];
+  googleImageModels: { id: string; label: string }[];
+  geminiKey: string;
   onBack: () => void;
   onNext: () => void;
 }> = ({
   design, setDesign, musicMoods, content, setContent, pexelsKey, elevenKey, form,
-  imageModels, imageStyles, onBack, onNext,
+  imageModels, imageStyles, googleImageModels, geminiKey, onBack, onNext,
 }) => {
   const set = <K extends keyof DesignSettings>(key: K, value: DesignSettings[K]) =>
     setDesign((prev) => ({ ...prev, [key]: value }));
@@ -308,6 +310,8 @@ export const StepStyle: React.FC<{
           form={form}
           imageModels={imageModels}
           imageStyles={imageStyles}
+          googleImageModels={googleImageModels}
+          geminiKey={geminiKey}
           orientation={design.orientation}
           showStock={design.showStock}
           stockOpacity={design.stockOpacity}

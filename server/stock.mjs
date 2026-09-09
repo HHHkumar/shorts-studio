@@ -152,3 +152,57 @@ export async function downloadStock({ url, id, jobId, publicDir, folder = 'stock
   fs.writeFileSync(path.join(dir, fileName), buffer);
   return { src: 'generated/' + safeFolder + '/' + jobId + '/' + fileName, bytes: buffer.length };
 }
+
+/**
+ * Write an image we were handed directly, rather than one we fetched.
+ *
+ * Google's image API returns base64 in the response body instead of a URL, so
+ * there is nothing to download - but everything downstream expects the same
+ * shape and the same place on disk as a stock photo, so this returns exactly
+ * what downloadStock does.
+ */
+export function saveImageBuffer({ buffer, mimeType, id, jobId, publicDir, folder = 'ai' }) {
+  if (!buffer || !buffer.length) throw new Error('That image came back empty.');
+  if (buffer.length > 20 * 1024 * 1024) throw new Error('That image is too large to use.');
+
+  const safeFolder = String(folder).replace(/[^a-zA-Z0-9_-]+/g, '-').slice(0, 20) || 'ai';
+  const safeJob = String(jobId || 'default').replace(/[^a-zA-Z0-9_-]+/g, '-').slice(0, 40) || 'default';
+  const dir = path.join(publicDir, 'generated', safeFolder, safeJob);
+  fs.mkdirSync(dir, { recursive: true });
+
+  const type = String(mimeType || '');
+  const ext = /png/i.test(type) ? '.png' : /webp/i.test(type) ? '.webp' : '.jpg';
+  const safeId = String(id || 'img').replace(/[^a-zA-Z0-9_-]+/g, '-').slice(0, 40) || 'img';
+  const fileName = safeId + ext;
+
+  fs.writeFileSync(path.join(dir, fileName), buffer);
+  return { src: 'generated/' + safeFolder + '/' + safeJob + '/' + fileName, bytes: buffer.length };
+}
+
+/**
+ * Read one already-generated image back, to send as a style reference.
+ *
+ * The path comes from the browser, so it is not trusted for a moment. Only the
+ * exact shape this app writes is accepted - generated/<folder>/<job>/<file>,
+ * no traversal, no absolute paths - and the resolved path is checked to be
+ * inside public/ before anything is read. Getting this wrong would turn a
+ * "match this style" box into a file-disclosure endpoint.
+ */
+export function readGeneratedImage({ src, publicDir }) {
+  const rel = String(src || '');
+  if (!/^generated\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_.-]+$/.test(rel)) return null;
+  if (rel.includes('..')) return null;
+
+  const full = path.resolve(publicDir, rel);
+  const root = path.resolve(publicDir) + path.sep;
+  if (!full.startsWith(root)) return null;
+  if (!fs.existsSync(full)) return null;
+
+  const buffer = fs.readFileSync(full);
+  // A reference far bigger than the image being drawn is wasted upload time.
+  if (!buffer.length || buffer.length > 12 * 1024 * 1024) return null;
+
+  const ext = path.extname(full).toLowerCase();
+  const mimeType = ext === '.png' ? 'image/png' : ext === '.webp' ? 'image/webp' : 'image/jpeg';
+  return { base64: buffer.toString('base64'), mimeType };
+}

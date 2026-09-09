@@ -27,8 +27,11 @@ import { jobs as renderJobs, renderThumbnail, startRender, paths } from './rende
 import { ensureAudioAssets, MUSIC_MOODS } from './audio-gen.mjs';
 import { validateContent, DEEPSEEK_MODELS } from './deepseek.mjs';
 import { findTrending } from './trends.mjs';
-import { searchStock, downloadStock } from './stock.mjs';
+import { searchStock, downloadStock, saveImageBuffer, readGeneratedImage } from './stock.mjs';
 import { buildPrompt, generateImage, IMAGE_MODELS, IMAGE_STYLES } from './images.mjs';
+import {
+  generateGoogleImage, GOOGLE_IMAGE_MODELS, DEFAULT_GOOGLE_IMAGE_MODEL,
+} from './google-images.mjs';
 import { generateSeo } from './seo.mjs';
 
 const PORT = Number(process.env.PORT || 3030);
@@ -71,6 +74,7 @@ app.get('/api/health', (_req, res) => {
     deepseekModels: DEEPSEEK_MODELS,
     imageModels: IMAGE_MODELS,
     imageStyles: IMAGE_STYLES,
+    googleImageModels: GOOGLE_IMAGE_MODELS,
   });
 });
 
@@ -209,18 +213,57 @@ app.post('/api/stock/pick', ok(async (req, res) => {
  * local and the render cannot depend on a remote host.
  */
 app.post('/api/image/generate', ok(async (req, res) => {
-  const { apiKey, query, subject, topic, styleId, modelId, orientation, jobId } = req.body || {};
-  if (!apiKey) throw new Error('No ElevenLabs API key was sent. Add it on the Keys step.');
+  const {
+    apiKey, query, subject, topic, styleId, modelId, orientation, jobId,
+    provider, referenceSrc,
+  } = req.body || {};
+
+  const google = String(provider || 'google') === 'google';
+  if (!apiKey) {
+    throw new Error('No ' + (google ? 'Gemini' : 'ElevenLabs')
+      + ' API key was sent. Add it on the Keys step.');
+  }
 
   const prompt = buildPrompt({ query, subject, topic, styleId });
   if (!prompt) throw new Error('Type what this scene should show, then press Generate again.');
 
   const safeJob = String(jobId || 'default').replace(/[^a-zA-Z0-9_-]+/g, '-').slice(0, 40) || 'default';
-  const { url, id } = await generateImage({ apiKey, prompt, orientation, modelId });
-
-  // A fresh id per generation, so pressing Generate again sits beside the last
+  // A fresh id per generation, so pressing Draw again sits beside the last
   // attempt instead of overwriting it - you can only compare what still exists.
   const fileId = 'ai-' + randomUUID().slice(0, 8);
+
+  if (google) {
+    // The first image drawn for this video becomes the style reference for
+    // every one after it. That is the whole difference between a set and a
+    // scrapbook, and it costs nothing extra.
+    const reference = referenceSrc
+      ? readGeneratedImage({ src: referenceSrc, publicDir: paths.PUBLIC_DIR })
+      : null;
+
+    const { base64, mimeType } = await generateGoogleImage({
+      apiKey,
+      prompt,
+      orientation,
+      modelId: modelId || DEFAULT_GOOGLE_IMAGE_MODEL,
+      reference,
+    });
+
+    const saved = saveImageBuffer({
+      buffer: Buffer.from(base64, 'base64'),
+      mimeType,
+      id: fileId,
+      jobId: safeJob,
+      publicDir: paths.PUBLIC_DIR,
+      folder: 'ai',
+    });
+
+    console.log('[image] drew ' + saved.src + ' (' + Math.round(saved.bytes / 1024) + ' KB'
+      + (reference ? ', matched to a reference' : '') + ')');
+    res.json({ ...saved, id: fileId, prompt, matched: Boolean(reference) });
+    return;
+  }
+
+  const { url, id } = await generateImage({ apiKey, prompt, orientation, modelId });
   const saved = await downloadStock({
     url,
     id: fileId,
@@ -229,7 +272,7 @@ app.post('/api/image/generate', ok(async (req, res) => {
     folder: 'ai',
   });
 
-  res.json({ ...saved, id: fileId, generationId: id, prompt });
+  res.json({ ...saved, id: fileId, generationId: id, prompt, matched: false });
 }));
 
 // --- what is worth making a video about right now ----------------------------

@@ -28,7 +28,7 @@ browser (Vite + React)                    helper server (Node, 127.0.0.1:3030)
 ├─ step 4  voice                    ──►   POST /api/voiceover     ──►  ElevenLabs
 │                                          writes public/generated/<job>/s<n>.mp3
 ├─ step 5  theme + layout            ──►   POST /api/stock/*       ──►  Pexels + NASA (optional)
-│                                    ──►   POST /api/image/generate ─►  ElevenLabs image models (optional)
+│                                    ──►   POST /api/image/generate ─►  Google or ElevenLabs image models (optional)
 ├─ step 6  render                   ──►   POST /api/render        ──►  Remotion → out/*.mp4
 └─ live <Player> preview the whole time, rendering the same component as the export
 ```
@@ -67,6 +67,7 @@ The preview and the render consume the identical `VideoProps` object, so what yo
 | `server/gemini.test.mjs` | Regression suite for the prompt and output repair (`npm test`) |
 | `server/tts.mjs` | ElevenLabs calls and word-timing extraction |
 | `server/images.mjs` | ElevenLabs image generation: prompt building, create-then-poll, credits |
+| `server/google-images.mjs` | Google image generation through the Gemini key, with style references |
 | `src/lib/subtopics.ts` | Sub-topic suggestions per subject, across all three content modes |
 | `server/render.mjs` | Remotion bundle + render, with progress reporting |
 
@@ -183,6 +184,18 @@ renderer cannot tell them apart — both end up in the same `stockSrc` field on 
 
 **Free stock.** Pexels (needs a free key) and NASA (needs none). Costs nothing, but both libraries
 are overwhelmingly landscape, so a 9:16 short centre-crops every photo and throws away the edges.
+
+**Drawn by Google.** The default, and the one to use. `server/google-images.mjs` posts to
+`/v1beta/interactions` with the *Gemini* key — one call, base64 back, no job id and no signed URL
+racing an expiry. It also takes a **reference image** in the same request, which is how every scene
+after the first is matched to the first: one set rather than twelve unrelated pictures.
+
+> Image generation is on **no** Gemini free tier, for any model. The key needs billing enabled;
+> writing scripts stays free either way. Roughly 3p an image on Flash Lite, so about 25p a video.
+
+Two things here were found against the live API and would not have shown up against a mock: this
+endpoint wraps its errors in an **array** (`[{"error":…}]`) where the rest of the Gemini API returns
+a bare object, and the useful half of a Google error is in `error.details`, not `error.message`.
 
 **Drawn by ElevenLabs.** The same key that speaks the script can draw a backdrop, in the aspect
 ratio you are actually rendering, in one consistent style across every scene of a video. Press

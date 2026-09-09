@@ -52,6 +52,7 @@ export const App: React.FC = () => {
   const [deepseekModels, setDeepseekModels] = useState<{ id: string; label: string }[]>([]);
   const [imageModels, setImageModels] = useState<{ id: string; label: string }[]>([]);
   const [imageStyles, setImageStyles] = useState<{ id: string; label: string }[]>([]);
+  const [googleImageModels, setGoogleImageModels] = useState<{ id: string; label: string }[]>([]);
   const [serverDown, setServerDown] = useState(false);
   const [waitingForServer, setWaitingForServer] = useState(true);
 
@@ -82,6 +83,7 @@ export const App: React.FC = () => {
           setDeepseekModels(data.deepseekModels || []);
           setImageModels(data.imageModels || []);
           setImageStyles(data.imageStyles || []);
+          setGoogleImageModels(data.googleImageModels || []);
           setServerDown(false);
           setWaitingForServer(false);
           return;
@@ -304,6 +306,8 @@ export const App: React.FC = () => {
               form={form}
               imageModels={imageModels}
               imageStyles={imageStyles}
+              googleImageModels={googleImageModels}
+              geminiKey={geminiKey}
               onBack={() => go(3)}
               onNext={() => go(5)}
             />
