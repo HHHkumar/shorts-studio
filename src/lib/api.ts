@@ -267,6 +267,8 @@ export const api = {
     provider: 'google' | 'elevenlabs';
     /** An image already drawn for this video, to match its look. */
     referenceSrc?: string;
+    /** The creator's own words for this scene. Overrides the search words. */
+    imagePrompt?: string;
   }) {
     return post<{ src: string; bytes: number; id: string; prompt: string; matched: boolean }>(
       '/api/image/generate',

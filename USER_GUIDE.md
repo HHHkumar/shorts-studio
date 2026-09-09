@@ -784,6 +784,21 @@ and every scene you draw in that video comes back matching the others.
 - **ElevenLabs** — uses your ElevenLabs key, and needs a **Pro plan**. The free and Starter tiers
   cannot draw at all.
 
+**Write what to draw.** Each scene has a **prompt** link next to its Draw button. The search words
+above it were written for a *photo library* — two or three nouns — and an image model given two nouns
+draws two nouns. The prompt box is where you describe the picture instead.
+
+- **draft one from the narration** turns what the scene actually says into a starting point. It drops
+  the words that only work out loud — *"so"*, *"you"*, *"we"* — because an image cannot show the
+  listener. On a hook or an outro it uses your topic instead: *"Most people get this wrong"* describes
+  the viewer, not a picture.
+- **Last sent** shows the exact prompt that went to the model, so a redraw is a correction rather
+  than another guess.
+- Leave it empty and the search words are used, exactly as before.
+
+Whatever you write, the **Look** and the composition rule are still added on the end — so an edited
+prompt keeps the style match and keeps the middle of the frame clear for your captions.
+
 **Keep every scene in the same style.** On Google only, and on by default. The first image you draw
 becomes the reference for every one after it, so a video looks like one set instead of twelve
 unrelated pictures. It costs nothing extra.

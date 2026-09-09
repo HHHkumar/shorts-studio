@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { api, type StockImage, type TopicForm } from '../lib/api';
 import type { QuizContent, ScriptLine } from '../lib/types';
+import { draftImagePrompt } from '../lib/image-prompt';
 import { Check, ErrorNote, Note, Select, Slider, Spinner } from './controls';
 
 /**
@@ -52,6 +53,8 @@ export const StockPicker: React.FC<{
   const [error, setError] = useState<string | null>(null);
   const [busyScene, setBusyScene] = useState<number | null>(null);
   const [drawingScene, setDrawingScene] = useState<number | null>(null);
+  const [usedPrompt, setUsedPrompt] = useState<Record<number, string>>({});
+  const [openPrompt, setOpenPrompt] = useState<number | null>(null);
   const [styleId, setStyleId] = useState('');
   const [modelId, setModelId] = useState('');
   const [provider, setProvider] = useState<'google' | 'elevenlabs'>('google');
@@ -168,7 +171,12 @@ export const StockPicker: React.FC<{
         jobId,
         provider,
         referenceSrc: reference || undefined,
+        imagePrompt: (line.imagePrompt || '').trim() || undefined,
       });
+
+      // Keep what was actually sent, so it can be shown and refined rather
+      // than guessed at.
+      setUsedPrompt((prev) => ({ ...prev, [index]: made.prompt }));
 
       const drawn: StockImage = {
         id: made.id,
@@ -222,6 +230,13 @@ export const StockPicker: React.FC<{
       script: prev.script.map((line, i) =>
         i === index ? { ...line, stockSrc: '', stockCredit: '', stockId: '' } : line,
       ),
+    }));
+  };
+
+  const setPrompt = (index: number, value: string) => {
+    setContent((prev) => ({
+      ...prev,
+      script: prev.script.map((line, i) => (i === index ? { ...line, imagePrompt: value } : line)),
     }));
   };
 
@@ -407,12 +422,54 @@ export const StockPicker: React.FC<{
                       {options.some((o) => o.provider === 'ai') ? 'Draw another' : 'Draw'}
                     </button>
                   ) : null}
+                  {canGenerate ? (
+                    <button
+                      className="link-btn"
+                      title="Write exactly what this scene should show"
+                      onClick={() => setOpenPrompt(openPrompt === index ? null : index)}
+                    >
+                      {openPrompt === index ? 'hide prompt' : line.imagePrompt ? 'prompt ✎' : 'prompt'}
+                    </button>
+                  ) : null}
                   {line.stockSrc ? (
                     <button className="link-btn" onClick={() => clear(index)}>
                       remove
                     </button>
                   ) : null}
                 </div>
+
+                {canGenerate && openPrompt === index ? (
+                  <div className="stock-prompt">
+                    <label>What to draw for this scene</label>
+                    <textarea
+                      rows={3}
+                      value={line.imagePrompt || ''}
+                      placeholder={
+                        'Left empty, the search words above are used — which are written for a '
+                        + 'photo search and make a thin prompt. Describe the picture instead.'
+                      }
+                      onChange={(e) => setPrompt(index, e.target.value)}
+                    />
+                    <div className="stock-prompt-row">
+                      <button
+                        className="link-btn"
+                        onClick={() => setPrompt(index, draftImagePrompt(line, content))}
+                      >
+                        draft one from the narration
+                      </button>
+                      {line.imagePrompt ? (
+                        <button className="link-btn" onClick={() => setPrompt(index, '')}>
+                          clear
+                        </button>
+                      ) : null}
+                    </div>
+                    {usedPrompt[index] ? (
+                      <div className="stock-prompt-used">
+                        <b>Last sent:</b> {usedPrompt[index]}
+                      </div>
+                    ) : null}
+                  </div>
+                ) : null}
 
                 {options.length ? (
                   <div className="stock-grid">

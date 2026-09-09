@@ -94,19 +94,27 @@ const DEFAULT_STYLE = IMAGE_STYLES[0];
  * it the context a photographer would have been briefed with, and the style
  * suffix is what keeps scene four looking like it belongs beside scene three.
  */
-export function buildPrompt({ query, subject = '', topic = '', styleId = '' } = {}) {
-  const term = String(query || '').trim();
+export function buildPrompt({ query, custom = '', subject = '', topic = '', styleId = '' } = {}) {
+  const written = String(custom || '').trim();
+  const term = written || String(query || '').trim();
   if (!term) return '';
 
   const style = IMAGE_STYLES.find((s) => s.id === styleId) || DEFAULT_STYLE;
 
   // Subject and topic are context, not the subject of the picture, so they are
-  // only mentioned when they add something the query does not already say.
-  const context = [subject, topic]
+  // only mentioned when they add something the query does not already say - and
+  // never when the creator has written the subject out themselves, because at
+  // that point they have said what they want and guessing over the top of it is
+  // how a described scene turns back into a stock-photo search.
+  const context = written ? '' : [subject, topic]
     .map((s) => String(s || '').trim())
     .filter((s) => s && !term.toLowerCase().includes(s.toLowerCase()))
     .join(', ');
 
+  // The style and the composition line are appended whatever the subject is.
+  // They are what make a run of scenes look like one set and keep the middle of
+  // the frame clear for the caption, so an edited prompt keeps both guarantees
+  // rather than trading them away for control of the wording.
   return [
     term,
     context ? '(in the context of ' + context + ')' : '',
@@ -118,6 +126,7 @@ export function buildPrompt({ query, subject = '', topic = '', styleId = '' } = 
     .filter(Boolean)
     .join(' ');
 }
+
 
 /** The frame we are actually rendering, in the shape the API names it. */
 export function aspectFor(orientation) {

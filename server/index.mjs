@@ -215,7 +215,7 @@ app.post('/api/stock/pick', ok(async (req, res) => {
 app.post('/api/image/generate', ok(async (req, res) => {
   const {
     apiKey, query, subject, topic, styleId, modelId, orientation, jobId,
-    provider, referenceSrc,
+    provider, referenceSrc, imagePrompt,
   } = req.body || {};
 
   const google = String(provider || 'google') === 'google';
@@ -224,8 +224,10 @@ app.post('/api/image/generate', ok(async (req, res) => {
       + ' API key was sent. Add it on the Keys step.');
   }
 
-  const prompt = buildPrompt({ query, subject, topic, styleId });
-  if (!prompt) throw new Error('Type what this scene should show, then press Generate again.');
+  // A prompt the creator wrote wins over the one built from search words -
+  // the style and composition lines are still appended either way.
+  const prompt = buildPrompt({ query, custom: imagePrompt, subject, topic, styleId });
+  if (!prompt) throw new Error('Type what this scene should show, then press Draw again.');
 
   const safeJob = String(jobId || 'default').replace(/[^a-zA-Z0-9_-]+/g, '-').slice(0, 40) || 'default';
   // A fresh id per generation, so pressing Draw again sits beside the last

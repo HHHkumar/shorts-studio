@@ -190,6 +190,12 @@ are overwhelmingly landscape, so a 9:16 short centre-crops every photo and throw
 racing an expiry. It also takes a **reference image** in the same request, which is how every scene
 after the first is matched to the first: one set rather than twelve unrelated pictures.
 
+The prompt is the creator's, not the app's. `imageQuery` is written for a stock *search* and makes a
+thin image prompt, so each scene can carry its own `imagePrompt`; `draftImagePrompt()` in
+`src/lib/image-prompt.ts` seeds one from the narration, and rhetorical beats (hook, outro, options)
+fall back to the topic because their words describe the viewer rather than a picture. The style and
+composition lines are appended whatever the subject is, so an edit cannot cost the style match.
+
 > Image generation is on **no** Gemini free tier, for any model. The key needs billing enabled;
 > writing scripts stays free either way. Roughly 3p an image on Flash Lite, so about 25p a video.
 

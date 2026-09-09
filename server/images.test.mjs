@@ -150,5 +150,27 @@ ok('every model has a label', IMAGE_MODELS.every((m) => m.id && m.label));
 ok('every style has a label and a prompt', IMAGE_STYLES.every((s) => s.id && s.label && s.prompt));
 
 globalThis.fetch = realFetch;
+// --- a prompt the creator wrote ----------------------------------------------
+// imageQuery is written for a stock SEARCH - two or three nouns - and handing
+// that to an image model gets a literal, flat reading of two words. So the
+// scene can carry a described prompt instead, and it wins.
+
+const written = buildPrompt({
+  query: 'copper wire', custom: 'a coil glowing as current builds',
+  subject: 'Physics', topic: 'Induction', styleId: 'editorial',
+});
+ok('a written prompt replaces the search words',
+   written.startsWith('a coil glowing as current builds'), written.slice(0, 60));
+ok('and the style is still appended', /photographic editorial backdrop/.test(written));
+ok('and the composition rule survives an edit', /centre of the frame/i.test(written));
+ok('the subject is not guessed over a written prompt',
+   !/in the context of/.test(written), written.slice(0, 90));
+ok('search words are still used when nothing was written',
+   buildPrompt({ query: 'copper wire', subject: 'Physics', styleId: 'editorial' })
+     .startsWith('copper wire'));
+ok('an empty written prompt falls back rather than drawing nothing',
+   buildPrompt({ query: 'copper wire', custom: '   ', styleId: 'editorial' }).startsWith('copper wire'));
+ok('no words at all still yields nothing', buildPrompt({ query: '', custom: '' }) === '');
+
 console.log(fails ? '\n' + fails + ' FAILURES' : '\nall image checks passed');
 process.exit(fails ? 1 : 0);

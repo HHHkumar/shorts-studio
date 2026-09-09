@@ -297,6 +297,12 @@ export interface ScriptLine {
   /** 2-4 concrete words for finding a backdrop photo, written by Gemini. */
   imageQuery?: string;
   /** Chosen backdrop, relative to public/. Empty until the creator picks one. */
+  /**
+   * What to draw for this scene, in the creator's own words. Empty means
+   * build one from imageQuery, which is written for a stock SEARCH and makes
+   * a thin image prompt.
+   */
+  imagePrompt?: string;
   stockSrc?: string;
   /** Who took it, shown in the copyable caption. */
   stockCredit?: string;
