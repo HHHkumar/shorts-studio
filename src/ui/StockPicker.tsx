@@ -66,7 +66,14 @@ export const StockPicker: React.FC<{
   const style = styleId || (imageStyles[0]?.id ?? '');
   const model = models.some((m) => m.id === modelId) ? modelId : (models[0]?.id ?? '');
   const drawKey = (google ? geminiKey : elevenKey).trim();
-  const canGenerate = drawKey.length > 5 && models.length > 0;
+  // Deliberately NOT gated on the model list. That list is a static catalogue
+  // that happens to arrive from /api/health, and gating on it meant a helper
+  // server running older code hid the entire feature with no explanation - the
+  // tiles were there, and nothing else was. The server picks a sensible default
+  // when no model is named, so a missing list costs a dropdown, not the button.
+  const hasKey = drawKey.length > 5;
+  const canGenerate = hasKey;
+  const staleServer = hasKey && models.length === 0;
 
   /**
    * The first image drawn for this video, used to keep the rest in step.
@@ -263,6 +270,24 @@ export const StockPicker: React.FC<{
         </button>
       </div>
 
+      {!hasKey ? (
+        <Note kind="info" title={'Add your ' + (google ? 'Gemini' : 'ElevenLabs') + ' key to draw'}>
+          Drawing uses your <b>{google ? 'Gemini' : 'ElevenLabs'}</b> key, and there is not one saved
+          yet. Paste it on <b>step 1</b> and the Draw buttons appear here by themselves.{' '}
+          {google
+            ? 'It is the same key that writes your script — writing stays free, drawing needs billing enabled on it.'
+            : 'Drawing needs a Pro plan on that account; the free and Starter tiers cannot.'}
+        </Note>
+      ) : null}
+
+      {staleServer ? (
+        <Note kind="warn" title="Restart the helper to choose a model">
+          Your helper server is running an older version of the tool, so it did not send the list of
+          image models. Drawing still works — the server picks a sensible default — but the model
+          dropdown is hidden until you stop it with <b>Ctrl + C</b> and run <b>npm start</b> again.
+        </Note>
+      ) : null}
+
       {canGenerate ? (
         <>
           <Note kind="warn" title={google ? 'Drawing costs a few pence a picture' : 'Drawing costs ElevenLabs credits'}>
@@ -297,6 +322,7 @@ export const StockPicker: React.FC<{
               onChange={setStyleId}
               hint="Applied to every scene you draw, so one video looks like one set."
             />
+            {models.length ? (
             <Select
               label="Image model"
               value={model}
@@ -306,6 +332,7 @@ export const StockPicker: React.FC<{
                 ? 'Flash Lite is the cheapest and plenty for a backdrop. Flash matches a reference best.'
                 : 'Flash models answer in seconds and cost least. Pro is slower and sharper.'}
             />
+            ) : null}
           </div>
         </>
       ) : null}
