@@ -98,7 +98,13 @@ const Sketch: React.FC<{
   if (!def) return null;
 
   const full = Math.round(width - m.padX * 2);
-  const tall = m.landscape ? 320 : 430;
+  // These were half this size, which was the right call when every sketch was
+  // silently drawn twice - two 430px boxes and a caption already overflowed the
+  // stage. With one canvas per diagram there is room to use it, and a diagram
+  // the viewer has to squint at on a phone may as well not be there. A square
+  // sketch is the one to watch: it is boxed to this height, so it grows in both
+  // directions at once.
+  const tall = m.landscape ? 460 : 700;
   // Round diagrams get a square box so they are not lost in a wide, short band.
   const canvasWidth = def.shape === 'square' ? Math.min(full, tall) : full;
 
