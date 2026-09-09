@@ -105,29 +105,129 @@ export async function generateGoogleImage({
 
   if (!res.ok) throw new Error(explainError(res.status, raw));
 
-  const payload = parseJson(raw);
-  const out = payload.interaction && payload.interaction.output_image;
-  const base64 = (out && out.data) || firstImageInSteps(payload);
-  if (!base64) throw new Error('Gemini answered but sent no image back. Try again.');
+  const found = extractImage(parseJson(raw));
+  if (!found) {
+    // Say what DID come back. Google's own docs show the request and not the
+    // response, and `interaction.output_image` is an SDK convenience property
+    // that need not exist in the REST body at all - so when this fails the
+    // shape is the only thing worth knowing, and printing it turns the next
+    // one of these into a one-line fix.
+    console.log('[image] no image in the reply. Shape was: ' + skeleton(raw));
+    throw new Error(
+      'Gemini answered but sent no image back. The reply had this shape: ' + skeleton(raw)
+      + ' — if that looks like an answer rather than a picture, the model may have refused the '
+      + 'prompt; try different words for that scene.',
+    );
+  }
+  return found;
+}
 
-  return { base64, mimeType: (out && out.mime_type) || 'image/jpeg' };
+/**
+ * Find the image bytes wherever they are.
+ *
+ * Deliberately not one hard-coded path. This endpoint already surprised us once
+ * by wrapping its errors in an array where the rest of the Gemini API returns a
+ * bare object, the documented response field is an SDK convenience rather than
+ * the wire format, and Google has shipped three different image APIs. So the
+ * known shapes are tried in order and then the whole tree is searched, because
+ * a picture that arrives in an unexpected field is still a picture.
+ */
+export function extractImage(parsed) {
+  const root = Array.isArray(parsed) ? (parsed[0] || {}) : (parsed || {});
+
+  // 1. The documented convenience field.
+  const out = root.interaction && root.interaction.output_image;
+  if (out && out.data) return { base64: out.data, mimeType: out.mime_type || 'image/jpeg' };
+
+  // 2. The steps the convenience field is derived from.
+  for (const step of (root.interaction && root.interaction.steps) || []) {
+    for (const part of step.content || []) {
+      if (part && part.type === 'image' && part.data) {
+        return { base64: part.data, mimeType: part.mime_type || 'image/jpeg' };
+      }
+    }
+  }
+
+  // 3. generateContent, which is how every other Gemini image model answers.
+  for (const cand of root.candidates || []) {
+    for (const part of (cand.content && cand.content.parts) || []) {
+      const inline = part && (part.inlineData || part.inline_data);
+      if (inline && inline.data) {
+        return { base64: inline.data, mimeType: inline.mimeType || inline.mime_type || 'image/jpeg' };
+      }
+    }
+  }
+
+  // 4. Imagen's :predict shape.
+  for (const p of root.predictions || []) {
+    if (p && p.bytesBase64Encoded) {
+      return { base64: p.bytesBase64Encoded, mimeType: p.mimeType || 'image/png' };
+    }
+  }
+
+  // 5. Anything that looks like image bytes, anywhere.
+  return deepFindImage(root);
+}
+
+/** Long base64 under a key that names image data. Depth-limited, cycle-safe. */
+function deepFindImage(node, depth = 0, seen = new Set()) {
+  if (!node || typeof node !== 'object' || depth > 8 || seen.has(node)) return null;
+  seen.add(node);
+
+  const KEYS = ['data', 'bytesbase64encoded', 'b64_json', 'imagebytes', 'image_bytes', 'bytes'];
+  for (const [key, value] of Object.entries(node)) {
+    if (typeof value === 'string'
+      && value.length > 512
+      && KEYS.includes(key.toLowerCase())
+      && /^[A-Za-z0-9+/=\s]+$/.test(value.slice(0, 120))) {
+      const mime = node.mime_type || node.mimeType || '';
+      return { base64: value.replace(/\s+/g, ''), mimeType: /^image\//.test(mime) ? mime : 'image/jpeg' };
+    }
+  }
+  for (const value of Object.values(node)) {
+    if (Array.isArray(value)) {
+      for (const v of value) {
+        const hit = deepFindImage(v, depth + 1, seen);
+        if (hit) return hit;
+      }
+    } else if (value && typeof value === 'object') {
+      const hit = deepFindImage(value, depth + 1, seen);
+      if (hit) return hit;
+    }
+  }
+  return null;
+}
+
+/**
+ * The structure of a reply, with the values thrown away.
+ *
+ * Never the values: a body that failed to yield an image may still contain one,
+ * and dumping megabytes of base64 into a terminal helps nobody.
+ */
+export function skeleton(raw, limit = 220) {
+  let parsed;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return 'not JSON (' + String(raw).slice(0, 80) + ')';
+  }
+  const walk = (node, depth = 0) => {
+    if (depth > 4) return '…';
+    if (Array.isArray(node)) return node.length ? '[' + walk(node[0], depth + 1) + ']' : '[]';
+    if (node && typeof node === 'object') {
+      return '{' + Object.keys(node).slice(0, 8)
+        .map((k) => k + ':' + walk(node[k], depth + 1)).join(', ') + '}';
+    }
+    if (typeof node === 'string') return node.length > 60 ? 'string(' + node.length + ')' : JSON.stringify(node);
+    return typeof node;
+  };
+  return walk(parsed).slice(0, limit);
 }
 
 /** Asked alongside a reference image. Kept short: a long brief fights the picture. */
 const MATCH_LINE =
   'Match the visual style, palette and lighting of the reference image exactly. '
   + 'Same treatment, different subject.';
-
-/** The convenience field is not guaranteed; the steps always carry it. */
-function firstImageInSteps(payload) {
-  const steps = (payload.interaction && payload.interaction.steps) || [];
-  for (const step of steps) {
-    for (const part of step.content || []) {
-      if (part && part.type === 'image' && part.data) return part.data;
-    }
-  }
-  return '';
-}
 
 function parseJson(raw) {
   try {

@@ -1,5 +1,6 @@
 import {
-  DEFAULT_GOOGLE_IMAGE_MODEL, GOOGLE_IMAGE_MODELS, aspectFor, explainError, generateGoogleImage,
+  DEFAULT_GOOGLE_IMAGE_MODEL, GOOGLE_IMAGE_MODELS, aspectFor, explainError, extractImage,
+  generateGoogleImage, skeleton,
 } from './google-images.mjs';
 import { readGeneratedImage, saveImageBuffer } from './stock.mjs';
 import fs from 'node:fs';
@@ -122,6 +123,64 @@ out = await generateGoogleImage({ apiKey: 'k', prompt: 'x', reference: { base64:
 ok('a rejected reference is dropped and the image still drawn', out.base64 === PIXEL);
 ok('the retry carries no reference', calls[1].input.length === 1);
 
+// --- finding the image whatever shape it arrives in ---------------------------
+// Reported as "Gemini answered but sent no image back": a 200 whose body did
+// not match the one path we looked in. Google's docs show the request and not
+// the response, `interaction.output_image` is an SDK convenience that need not
+// exist on the wire, and this endpoint already wraps its ERRORS in an array -
+// so the success body very likely is too. Every plausible shape is now tried.
+const B64 = 'A'.repeat(600);
+const shapes = {
+  'documented convenience field': { interaction: { output_image: { data: B64, mime_type: 'image/png' } } },
+  'array-wrapped, like its errors': [{ interaction: { output_image: { data: B64 } } }],
+  'steps rather than output_image': { interaction: { steps: [{ content: [{ type: 'image', data: B64 }] }] } },
+  'array-wrapped steps': [{ interaction: { steps: [{ content: [{ type: 'image', data: B64 }] }] } }],
+  'generateContent inlineData': { candidates: [{ content: { parts: [{ inlineData: { data: B64, mimeType: 'image/png' } }] } }] },
+  'generateContent snake_case': { candidates: [{ content: { parts: [{ inline_data: { data: B64 } }] } }] },
+  'imagen predict': { predictions: [{ bytesBase64Encoded: B64 }] },
+  'somewhere unexpected': { result: { payload: { nested: { image_bytes: B64, mime_type: 'image/webp' } } } },
+};
+for (const [name, body] of Object.entries(shapes)) {
+  const got = extractImage(body);
+  ok('finds the image in: ' + name, got !== null && got.base64 === B64, JSON.stringify(got && got.mimeType));
+}
+ok('a documented mime type is kept',
+   extractImage(shapes['documented convenience field']).mimeType === 'image/png');
+ok('an unexpected mime type is kept too',
+   extractImage(shapes['somewhere unexpected']).mimeType === 'image/webp');
+
+// It must NOT invent an image out of ordinary text.
+const noImage = [
+  { interaction: { steps: [{ content: [{ type: 'text', text: 'I cannot draw that.' }] }] } },
+  { candidates: [{ content: { parts: [{ text: 'x'.repeat(900) }] } }] },
+  { interaction: {} },
+  {},
+  [],
+];
+const invented = noImage.filter((b) => extractImage(b) !== null);
+ok('a reply with no image yields null, not a false positive', invented.length === 0,
+   JSON.stringify(invented[0] || '').slice(0, 90));
+ok('a short base64-ish value is not mistaken for a picture',
+   extractImage({ data: 'AAAA' }) === null);
+ok('a cycle does not hang the search', (() => {
+  const a = { nested: {} };
+  a.nested.back = a;
+  try { extractImage(a); return true; } catch { return false; }
+})());
+
+// When it genuinely is not there, the message has to say what DID arrive.
+const refusal = JSON.stringify({ interaction: { steps: [{ content: [{ type: 'text', text: 'no' }] }] } });
+ok('the skeleton names the keys', /interaction/.test(skeleton(refusal)), skeleton(refusal));
+ok('the skeleton keeps no values',
+   !/A{50}/.test(skeleton(JSON.stringify({ interaction: { output_image: { data: B64 } } }))));
+ok('the skeleton survives a non-JSON body', /not JSON/.test(skeleton('<html>500</html>')));
+
+mock(200, { interaction: { steps: [{ content: [{ type: 'text', text: 'refused' }] }] } });
+let noImgErr = '';
+try { await generateGoogleImage({ apiKey: 'k', prompt: 'x' }); } catch (e) { noImgErr = e.message; }
+ok('the no-image error reports the shape it got', /shape/i.test(noImgErr) && /interaction/.test(noImgErr),
+   noImgErr.slice(0, 110));
+
 // --- falling back through the response shape ----------------------------------
 mock(200, { interaction: { steps: [{ type: 'model_output', content: [{ type: 'image', data: PIXEL }] }] } });
 out = await generateGoogleImage({ apiKey: 'k', prompt: 'x' });
@@ -130,7 +189,7 @@ ok('the image is found in steps when output_image is absent', out.base64 === PIX
 mock(200, { interaction: { steps: [] } });
 let threw = '';
 try { await generateGoogleImage({ apiKey: 'k', prompt: 'x' }); } catch (e) { threw = e.message; }
-ok('an answer with no image at all is an error', /no image/i.test(threw), threw);
+ok('an answer with no image at all is an error', /no image back/i.test(threw), threw.slice(0, 80));
 
 // --- guards before the network ------------------------------------------------
 globalThis.fetch = async () => { throw new Error('should not have been called'); };
