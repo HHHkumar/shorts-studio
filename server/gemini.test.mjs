@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import { parseJsonLoosely, normalizeContent, rejectedThinking, scriptBudget, thinkingFor } from './gemini.mjs';
 const base = { subject:'S', topic:'T', difficulty:'D', intro:'' };
 let fails = 0;
@@ -81,10 +82,12 @@ ok('a bare array is not mistaken for the object', parseJsonLoosely('[1,2,3]') ==
 // MAX_TOKENS having written no JSON at all: the reasoning and the answer share
 // one budget, so the answer never got any.
 
-ok('a 3.x model gets the level knob',
-   JSON.stringify(thinkingFor('gemini-3.7-flash')) === '{"thinkingLevel":"low"}',
+// These two asserted the bug: they required thinkingLevel at the TOP of the
+// config, which is where it was being put and where the API does not accept it.
+ok('a 3.x model gets the level knob, nested where the API wants it',
+   JSON.stringify(thinkingFor('gemini-3.7-flash')) === '{"thinkingConfig":{"thinkingLevel":"low"}}',
    JSON.stringify(thinkingFor('gemini-3.7-flash')));
-ok('a 3 pro model gets it too', !!thinkingFor('gemini-3-pro').thinkingLevel);
+ok('a 3 pro model gets it too', !!thinkingFor('gemini-3-pro').thinkingConfig.thinkingLevel);
 ok('a 2.5 model gets a budget instead',
    thinkingFor('gemini-2.5-flash').thinkingConfig.thinkingBudget === 8192);
 ok('2.5 pro gets a budget', !!thinkingFor('gemini-2.5-pro').thinkingConfig);
@@ -104,6 +107,63 @@ ok('a bad key is NOT mistaken for a thinking problem',
    !rejectedThinking('API key not valid. Please pass a valid API key.'));
 ok('a quota error is NOT mistaken for one',
    !rejectedThinking('Resource has been exhausted (e.g. check quota).'));
+
+// --- the request Gemini actually accepts -------------------------------------
+// All three of these came from one bug report: every generation failing with
+// "Request contains an invalid argument" and nothing saying which argument.
+const { matchSketch, fieldViolations } = await import('./gemini.mjs');
+
+// 1. Both thinking knobs live INSIDE thinkingConfig. Spreading `thinkingLevel`
+//    straight into generationConfig makes it an unknown field, so every Gemini
+//    3 request was rejected on its first attempt and only ever worked because
+//    the caller strips the setting and retries.
+ok('gemini 3 nests thinkingLevel under thinkingConfig',
+   JSON.stringify(thinkingFor('gemini-3.8-flash')) === '{"thinkingConfig":{"thinkingLevel":"low"}}',
+   JSON.stringify(thinkingFor('gemini-3.8-flash')));
+ok('gemini 2.5 still gets a budget',
+   JSON.stringify(thinkingFor('gemini-2.5-flash')) === '{"thinkingConfig":{"thinkingBudget":8192}}');
+ok('an older model gets no thinking field at all', thinkingFor('gemini-1.5-flash') === null);
+ok('every thinking config is a single generationConfig key',
+   ['gemini-3.8-flash','gemini-2.5-pro'].every((mm) => {
+     const t = thinkingFor(mm);
+     return Object.keys(t).length === 1 && Object.keys(t)[0] === 'thinkingConfig';
+   }));
+
+// 2. The schema must not carry a 200-value enum. It did, which is what pushed
+//    the response schema past what the API accepts.
+const geminiSrc = fs.readFileSync(new URL('./gemini.mjs', import.meta.url), 'utf8');
+ok('the sketch field is not an enum in the response schema',
+   !/sketch:\s*\{\s*type:\s*'STRING',\s*enum:/.test(geminiSrc));
+
+// 3. Losing the enum means normalizeVisual is the only guard left, so it has to
+//    forgive the spellings a model really produces and still refuse inventions.
+ok('a real sketch name passes', matchSketch('number-line') === 'number-line');
+ok('a spaced spelling is matched', matchSketch('Number Line') === 'number-line');
+ok('an underscored spelling is matched', matchSketch('number_line') === 'number-line');
+ok('a run-together spelling is matched', matchSketch('numberline') === 'number-line');
+ok('an invented name is refused', matchSketch('teleporter') === '');
+ok('junk is refused', matchSketch(null) === '' && matchSketch('') === '');
+
+let vis = normalizeContent({ question:'q', options:['a','b','c','d'], correctIndex:0,
+  script:[{ kind:'explain', narration:'n', visual:{ kind:'sketch', sketch:'Number Line' } }] }, base);
+ok('a loosely spelled sketch survives normalisation',
+   vis.script.find((l)=>l.kind==='explain').visual.sketch === 'number-line');
+vis = normalizeContent({ question:'q', options:['a','b','c','d'], correctIndex:0,
+  script:[{ kind:'explain', narration:'n', visual:{ kind:'sketch', sketch:'teleporter' } }] }, base);
+ok('an invented sketch degrades to no diagram',
+   vis.script.find((l)=>l.kind==='explain').visual.kind === 'none');
+
+// 4. The reason this took so long to find: Google puts "invalid argument" in
+//    the message and the field that failed in error.details, which was dropped.
+const badReq = JSON.stringify({ error:{ code:400, message:'Request contains an invalid argument.',
+  details:[{ '@type':'type.googleapis.com/google.rpc.BadRequest',
+             fieldViolations:[{ field:'generation_config.response_schema', description:'Too many enum values' }] }] } });
+ok('the failing field is recovered from error.details',
+   /response_schema/.test(fieldViolations(badReq)) && /Too many enum/.test(fieldViolations(badReq)),
+   fieldViolations(badReq));
+ok('a body with no details yields nothing rather than throwing',
+   fieldViolations('{"error":{"message":"x"}}') === '');
+ok('unparseable body yields nothing rather than throwing', fieldViolations('<html>') === '');
 
 console.log(fails ? '\n' + fails + ' FAILURES' : '\nall checks passed');
 process.exit(fails ? 1 : 0);

@@ -46,7 +46,17 @@ const RESPONSE_SCHEMA = {
               kind: { type: 'STRING', enum: ['none', 'formula', 'bars', 'compare', 'icon', 'sketch'] },
               formula: { type: 'STRING' },
               caption: { type: 'STRING' },
-              sketch: { type: 'STRING', enum: SKETCH_NAMES },
+              // Deliberately NOT an enum, though every valid name is listed in
+              // the prompt. It was one, and at sixteen names that was free; at
+              // two hundred the response schema grew past what the API accepts
+              // and every request came back "Request contains an invalid
+              // argument" with no clue which field was at fault.
+              //
+              // Nothing is lost by dropping it: normalizeVisual() already
+              // refuses a name that is not in SKETCH_NAMES and degrades that
+              // scene to no diagram, which is exactly what an enum violation
+              // would have produced anyway.
+              sketch: { type: 'STRING' },
               params: {
                 type: 'OBJECT',
                 properties: {
@@ -556,7 +566,11 @@ export async function generateContent(apiKey, model, options) {
  */
 export function thinkingFor(model) {
   const version = parseFloat((String(model).match(/gemini-(\d+(?:\.\d+)?)/i) || [])[1] || '0');
-  if (version >= 3) return { thinkingLevel: 'low' };
+  // Both knobs live INSIDE thinkingConfig. This used to spread `thinkingLevel`
+  // straight into generationConfig, where it is an unknown field - so every
+  // Gemini 3 request was rejected on its first attempt and only worked at all
+  // because the caller strips the setting and tries again.
+  if (version >= 3) return { thinkingConfig: { thinkingLevel: 'low' } };
   if (version >= 2.5) return { thinkingConfig: { thinkingBudget: 8192 } };
   return null;
 }
@@ -612,6 +626,11 @@ export async function callGemini(apiKey, model, { system, prompt, schema, temper
   const seconds = Math.round((Date.now() - started) / 1000);
   if (!res.ok) {
     console.log('[gemini] ' + (label || 'call') + ' failed after ' + seconds + 's (' + res.status + ')');
+    // The field that failed, printed where somebody debugging will see it.
+    // Google buries this in error.details and puts "Request contains an invalid
+    // argument" in the message, which on its own tells you nothing at all.
+    const why = fieldViolations(raw);
+    if (why) console.log('[gemini] ' + (label || 'call') + ' rejected: ' + why);
     throw new Error(explainGeminiError(res.status, raw));
   }
   console.log('[gemini] ' + (label || 'call') + ' answered in ' + seconds + 's');
@@ -734,6 +753,33 @@ export function parseJsonLoosely(text) {
   return null;
 }
 
+/**
+ * Pull the part of a Google error that actually says what is wrong.
+ *
+ * `error.message` on a 400 is the useless "Request contains an invalid
+ * argument." The field that failed is in `error.details`, as a BadRequest with
+ * fieldViolations - and throwing that away is what turned a one-line fix into
+ * an afternoon. Anything found here is appended to the message.
+ */
+export function fieldViolations(raw) {
+  let j;
+  try {
+    j = JSON.parse(raw);
+  } catch {
+    return '';
+  }
+  const details = (j && j.error && j.error.details) || [];
+  const out = [];
+  for (const d of details) {
+    for (const v of d.fieldViolations || []) {
+      const where = v.field ? v.field + ': ' : '';
+      out.push(where + (v.description || ''));
+    }
+    if (!d.fieldViolations && d.reason) out.push(String(d.reason));
+  }
+  return out.join('; ').slice(0, 400);
+}
+
 function explainGeminiError(status, raw) {
   let detail = '';
   try {
@@ -742,6 +788,8 @@ function explainGeminiError(status, raw) {
   } catch {
     detail = raw.slice(0, 300);
   }
+  const why = fieldViolations(raw);
+  if (why) detail = detail ? detail + ' (' + why + ')' : why;
   if (status === 400 && /API key not valid/i.test(detail)) {
     return 'That Gemini API key was rejected. Check for stray spaces and paste it again.';
   }
@@ -957,6 +1005,26 @@ export function dropRepeatedSketches(script) {
 
 const VISUAL_KINDS = ['none', 'formula', 'bars', 'compare', 'icon', 'sketch'];
 
+/** Every sketch name, keyed by a loosened form of itself. Built once. */
+const SKETCH_BY_LOOSE = new Map(
+  SKETCH_NAMES.map((n) => [n.toLowerCase().replace(/[^a-z0-9]/g, ''), n]),
+);
+
+/**
+ * The name the model asked for, if it is real.
+ *
+ * Exact first. Failing that, a loosened compare that forgives the differences a
+ * model actually produces - "Number Line", "number_line", "numberline" - none of
+ * which are inventions, just a different spelling of a name we do have. A real
+ * invention still returns '' and the scene degrades to no diagram.
+ */
+export function matchSketch(raw) {
+  const name = clean(raw);
+  if (!name) return '';
+  if (SKETCH_NAMES.includes(name)) return name;
+  return SKETCH_BY_LOOSE.get(name.toLowerCase().replace(/[^a-z0-9]/g, '')) || '';
+}
+
 /**
  * Scenes that never carry a diagram. Everything before the reveal, because a
  * picture there gives the answer away; plus the answer scene itself, whose
@@ -1028,9 +1096,11 @@ function normalizeVisual(raw, sceneKind) {
 
   if (kind === 'sketch') {
     // An invented sketch name would silently draw nothing, so it is rejected
-    // here, where falling back to no diagram at all is still tidy.
-    const name = clean(raw.sketch);
-    if (!SKETCH_NAMES.includes(name)) return { kind: 'none' };
+    // here, where falling back to no diagram at all is still tidy. This is the
+    // ONLY thing standing between a made-up name and a blank scene now that the
+    // schema no longer carries an enum - see the comment on the `sketch` field.
+    const name = matchSketch(raw.sketch);
+    if (!name) return { kind: 'none' };
     // Sketches share the items array: block-flow uses it for stage labels,
     // pie for slices, circuit for component values.
     return {
