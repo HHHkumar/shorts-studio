@@ -356,6 +356,56 @@ function record(name, params, w = 900, h = 460, progress = 1) {
      Math.max(...tall, 0) < 520, String(Math.round(Math.max(...tall, 0))));
 }
 
+// --- a printed number must be the number that was asked for -------------------
+// Three separate bug reports have now had the same shape: a parameter clamped
+// to whatever happened to be drawable, and then PRINTED. The caption said 12
+// where the narration said 18, said cos 0.34 where the narration said zero.
+// A wrong number on screen is worse than no diagram, because it is the one
+// thing a viewer will copy down.
+//
+// The rule: where a value is displayed, the drawing degrades and the number
+// does not.
+{
+  const shown = (name, params) => record(name, params, 900, 460).said;
+
+  // fraction-bar: the case from the report, and some worse ones.
+  for (const [num_, den] of [[5, 18], [3, 7], [7, 16], [1, 20], [9, 24], [7, 100]]) {
+    const said = shown('fraction-bar', { ratio: num_, count: den });
+    ok('fraction-bar says ' + num_ + ' / ' + den + ' when asked for it',
+       said.includes(num_ + ' / ' + den), said.slice(0, 40));
+  }
+  ok('a huge denominator draws a proportional bar rather than lying',
+     /too many parts/.test(shown('fraction-bar', { ratio: 7, count: 100 })));
+  ok('a small denominator still draws real parts',
+     !/too many parts/.test(shown('fraction-bar', { ratio: 5, count: 18 })));
+
+  // gears: 1:10 is an ordinary reduction and was captioned 1:4.
+  for (const r of [2, 5, 8, 12]) {
+    ok('gears says 1 : ' + r + ' when asked for it',
+       shown('gears', { ratio: r }).includes('1 : ' + r), shown('gears', { ratio: r }).slice(0, 30));
+  }
+
+  // letter-shift: ROT13 was out of range and captioned +6.
+  for (const k of [3, 13, 25]) {
+    ok('letter-shift says +' + k + ' when asked for it',
+       shown('letter-shift', { count: k, labelA: 'CODE' }).includes('+' + k + ' each letter'));
+  }
+
+  // binary-number: the value was clamped to fit eight bits, then printed.
+  for (const v of [42, 200, 1000, 65535]) {
+    ok('binary-number prints ' + v + ' when asked for it',
+       shown('binary-number', { ratio: v }).includes('= ' + v),
+       shown('binary-number', { ratio: v }).slice(-20));
+  }
+
+  // power-factor, from the previous report - kept here so the class is covered
+  // in one place rather than three.
+  ok('power-factor prints the cosine it was actually given',
+     shown('power-factor', { angle: 90 }).includes('cos φ = 0.00'));
+  ok('and does not silently pick a different angle',
+     shown('power-factor', { angle: 60 }).includes('cos φ = 0.50'));
+}
+
 // --- the size of the library --------------------------------------------------
 console.log('');
 console.log('  sketches: ' + SKETCH_NAMES.length);

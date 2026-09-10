@@ -137,11 +137,14 @@ export const EXTRA_SKETCHES: Record<string, SketchDef> = {
     }),
 
   gears: wide('Gears', 'two meshed gears turning in opposite directions',
-    'ratio (1-4, size of the second gear), speed (1-5)',
+    'ratio (1-12, size of the second gear - the caption prints it), speed (1-5)',
     ({ p, time, width, height, params, colors }) => {
-      const ratio = num(params.ratio, 2, 1, 4);
+      // Printed as "1 : N", so the range has to cover the ratios people quote.
+      // Capped at 4, a 1:10 reduction drew - and captioned - 1:4.
+      const ratio = num(params.ratio, 2, 1, 12);
       const speed = num(params.speed, 2, 1, 5);
-      const r1 = Math.min(width, height) * 0.19;
+      // The big gear must still fit: shrink the small one as the ratio grows.
+      const r1 = Math.min(width, height) * 0.19 * Math.min(1, 3 / Math.max(3, ratio));
       const r2 = r1 * ratio;
       const cy = height * 0.5;
       const cx1 = width * 0.5 - r2 * 0.7;
@@ -1310,27 +1313,59 @@ export const EXTRA_SKETCHES: Record<string, SketchDef> = {
       caption(p, 'Out', width * 0.91, cy - 62, colors, 20);
     }),
 
-  'fraction-bar': wide('Fraction bar', 'a bar split into equal parts with some shaded',
-    'count (2-12 parts), ratio (how many are shaded)',
+  'fraction-bar': wide('Fraction bar',
+    'a bar split into equal parts with some shaded. Use for: fractions, proportions, shares, "five eighteenths"',
+    'count (the denominator, 2 upwards), ratio (the numerator - how many parts are shaded)',
     ({ p, progress, width, height, params, colors }) => {
-      const n = Math.round(num(params.count, 4, 2, 12));
-      const filled = Math.round(num(params.ratio, Math.ceil(n / 2), 0, n));
+      // The denominator is NOT clamped to what happens to be drawable.
+      //
+      // It was capped at 12, and the cap was silent: a scene narrating "five
+      // over eighteen" asked for eighteen parts, got twelve, and the caption
+      // underneath read "5 / 12". The picture contradicted the voice, and the
+      // wrong number was the one thing on screen a viewer would copy down.
+      //
+      // A caption must never disagree with what was asked. So the fraction is
+      // kept exactly, and it is the SEGMENTATION that degrades: past the point
+      // where individual parts are too thin to read, the bar becomes a single
+      // proportional one. The number is right either way.
+      const denom = Math.max(2, Math.round(num(params.count, 4, 2, 10000)));
+      const filled = Math.round(num(params.ratio, Math.ceil(denom / 2), 0, denom));
+
       const left = width * 0.1;
       const w = width * 0.8;
       const y = height * 0.42;
       const h = Math.min(110, height * 0.24);
-      const cell = w / safe(n);
-      for (let i = 0; i < n; i++) {
-        const on = stagger(progress, i, 0.06, 2.4);
+
+      // Below about 18px a part is a line, not a part.
+      const segmented = w / safe(denom) >= 18;
+
+      if (segmented) {
+        const cell = w / safe(denom);
+        for (let i = 0; i < denom; i++) {
+          const on = stagger(progress, i, 0.06 * (12 / Math.max(12, denom)), 2.4);
+          p.push();
+          p.stroke(colors.text);
+          p.strokeWeight(denom > 20 ? 2 : 3);
+          const shaded = i < filled && on > 0.5;
+          p.fill(tint(p, shaded ? colors.accent : colors.bg, shaded ? 200 : 255));
+          p.rect(left + i * cell, y, cell, h);
+          p.pop();
+        }
+      } else {
+        const on = Math.min(1, progress * 1.6);
         p.push();
+        p.noStroke();
+        p.fill(tint(p, colors.accent, 200));
+        p.rect(left, y, w * (filled / safe(denom)) * on, h);
+        p.noFill();
         p.stroke(colors.text);
         p.strokeWeight(3);
-        const shaded = i < filled && on > 0.5;
-        p.fill(tint(p, shaded ? colors.accent : colors.bg, shaded ? 200 : 255));
-        p.rect(left + i * cell, y, cell, h);
+        p.rect(left, y, w, h);
         p.pop();
+        caption(p, 'too many parts to draw one by one', width / 2, y + h + 96, colors, 18);
       }
-      title(p, filled + ' / ' + n, width / 2, y + h + 54, colors, 34);
+
+      title(p, filled + ' / ' + denom, width / 2, y + h + 54, colors, 34);
     }),
 
   angles: square('Angles', 'angles around a point or on a line',

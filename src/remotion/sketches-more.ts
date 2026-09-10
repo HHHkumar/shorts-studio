@@ -783,10 +783,14 @@ export const MORE_SKETCHES: Record<string, SketchDef> = {
 
   'binary-number': wide('Binary',
     'a number written as bits with their place values. Use for: binary, number systems, bits and bytes',
-    'count (4-8 bits), ratio (the value to show)',
+    'count (4-16 bits; widened automatically if the value needs more), ratio (the value, 0-65535)',
     ({ p, progress, width, height, params, colors }) => {
-      const bits = Math.round(num(params.count, 8, 4, 8));
-      const value = Math.round(num(params.ratio, 42, 0, Math.pow(2, bits) - 1));
+      // The VALUE is what the caption prints, so it decides how many bits are
+      // shown - not the other way round. Clamping the value to fit a fixed
+      // eight bits printed a number nobody asked for.
+      const value = Math.round(num(params.ratio, 42, 0, 65535));
+      const needed = Math.max(1, Math.ceil(Math.log2(value + 1)));
+      const bits = Math.min(16, Math.max(Math.round(num(params.count, 8, 4, 16)), needed));
       const s = Math.min(width * 0.82 / safe(bits), height * 0.3);
       const ox = width / 2 - (s * bits) / 2;
       const cy = height * 0.44;
@@ -1382,9 +1386,10 @@ export const MORE_SKETCHES: Record<string, SketchDef> = {
 
   'letter-shift': wide('Letter shift',
     'letters moved along the alphabet by a fixed step. Use for: coding-decoding, ciphers, letter series',
-    'count (1-6, the shift), labelA (the word)',
+    'count (1-25, the shift - the caption prints it), labelA (the word)',
     ({ p, progress, width, height, params, colors }) => {
-      const shift = Math.round(num(params.count, 2, 1, 6));
+      // Printed as "+N each letter", so a shift of 13 must stay 13.
+      const shift = Math.round(num(params.count, 2, 1, 25));
       const word = (clean(params.labelA, 6) || 'CODE').toUpperCase();
       const xs = spread(word.length, width * 0.2, width * 0.8);
       word.split('').forEach((ch, i) => {
