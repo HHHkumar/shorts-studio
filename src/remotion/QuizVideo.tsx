@@ -8,6 +8,8 @@ import { MotifLayer } from './Visual';
 import { AmbientLayer } from './AmbientLayer';
 import { Soundtrack } from './Soundtrack';
 import { StockLayer } from './StockLayer';
+import { OverlayLayer } from './Overlays';
+import { RevealContext } from './ReadAlong';
 
 /**
  * The whole video. Every scene is a <Sequence> that starts at the exact frame
@@ -22,6 +24,7 @@ export const QuizVideo: React.FC<VideoProps> = ({ content, scenes, design }) => 
   const explainScenes = scenes.filter((s) => s.kind === 'explain');
 
   return (
+    <RevealContext.Provider value={design.textReveal || 'fade'}>
     <AbsoluteFill style={{ backgroundColor: theme.bg }}>
       <Backdrop theme={theme} />
 
@@ -57,7 +60,13 @@ export const QuizVideo: React.FC<VideoProps> = ({ content, scenes, design }) => 
               <StockLayer theme={theme} src={scene.stockSrc} opacity={design.stockOpacity} />
             ) : null}
 
-            <SceneFade theme={theme} hold={scene.durationInFrames} index={sceneIndex}>
+            <SceneFade
+              theme={theme}
+              hold={scene.durationInFrames}
+              index={sceneIndex}
+              transition={design.transition || 'auto'}
+              kind={scene.kind}
+            >
               <Component
                 theme={theme}
                 scene={scene}
@@ -80,10 +89,19 @@ export const QuizVideo: React.FC<VideoProps> = ({ content, scenes, design }) => 
 
       <Soundtrack scenes={scenes} design={design} content={content} />
 
+      {/* Above every scene and outside every Sequence, so grain and light
+          leaks run continuously through the cuts instead of restarting. */}
+      <OverlayLayer
+        theme={theme}
+        name={design.overlay || 'none'}
+        intensity={design.overlayIntensity ?? 0.5}
+      />
+
       {design.showProgressBar ? (
         <ProgressBar theme={theme} progress={frame / Math.max(1, durationInFrames)} />
       ) : null}
     </AbsoluteFill>
+    </RevealContext.Provider>
   );
 };
 

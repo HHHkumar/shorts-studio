@@ -5,6 +5,9 @@ import type { DesignSettings, LayoutName, MusicMood, QuizContent, ThemeMode } fr
 import { Check, ErrorNote, Note, Select, Slider, Spinner } from './controls';
 import { StockPicker } from './StockPicker';
 import { AMBIENT_GROUPS } from '../remotion/ambient';
+import { TRANSITIONS } from '../lib/transitions';
+import { TEXT_REVEALS } from '../lib/text-reveal';
+import { OVERLAYS } from '../remotion/Overlays';
 
 const ACCENTS = [
   { name: 'Layout default', value: '' },
@@ -27,11 +30,13 @@ export const StepStyle: React.FC<{
   form: TopicForm;
   imageModels: { id: string; label: string }[];
   imageStyles: { id: string; label: string }[];
+  googleImageModels: { id: string; label: string }[];
+  geminiKey: string;
   onBack: () => void;
   onNext: () => void;
 }> = ({
   design, setDesign, musicMoods, content, setContent, pexelsKey, elevenKey, form,
-  imageModels, imageStyles, onBack, onNext,
+  imageModels, imageStyles, googleImageModels, geminiKey, onBack, onNext,
 }) => {
   const set = <K extends keyof DesignSettings>(key: K, value: DesignSettings[K]) =>
     setDesign((prev) => ({ ...prev, [key]: value }));
@@ -197,6 +202,53 @@ export const StepStyle: React.FC<{
         />
       </div>
 
+      <div className="section-title">Cuts and text</div>
+      <p className="lede" style={{ marginTop: 0 }}>
+        How one scene becomes the next, and how the spoken words arrive on screen. Both run on every
+        scene, so a choice here is felt across the whole video rather than noticed once.
+      </p>
+      <div className="grid">
+        <Select
+          label="Transition between scenes"
+          value={design.transition || 'auto'}
+          options={TRANSITIONS.map((t) => ({ id: t.id, label: t.label }))}
+          onChange={(v) => set('transition', v)}
+          hint={TRANSITIONS.find((t) => t.id === (design.transition || 'auto'))?.blurb}
+        />
+        <Select
+          label="How the words appear"
+          value={design.textReveal || 'fade'}
+          options={TEXT_REVEALS.map((r) => ({ id: r.id, label: r.label }))}
+          onChange={(v) => set('textReveal', v)}
+          hint={TEXT_REVEALS.find((r) => r.id === (design.textReveal || 'fade'))?.blurb}
+        />
+      </div>
+
+      <div className="section-title">Finishing layer</div>
+      <p className="lede" style={{ marginTop: 0 }}>
+        A texture over the top of everything — grain, a vignette, cinema bars. It never means
+        anything; it is there to make a frame look shot rather than assembled.
+      </p>
+      <div className="grid">
+        <Select
+          label="Which one"
+          value={design.overlay || 'none'}
+          options={OVERLAYS.map((o) => ({ id: o.id, label: o.label }))}
+          onChange={(v) => set('overlay', v)}
+          hint={OVERLAYS.find((o) => o.id === (design.overlay || 'none'))?.blurb}
+        />
+        <Slider
+          label="How strong"
+          value={design.overlayIntensity ?? 0.5}
+          min={0}
+          max={1}
+          step={0.05}
+          onChange={(v) => set('overlayIntensity', v)}
+          suffix=""
+          hint="Each one has its own ceiling, so even at full it cannot make the captions hard to read."
+        />
+      </div>
+
       <div className="section-title">Moving backdrop</div>
       <p className="lede" style={{ marginTop: 0 }}>
         A slow animation under everything, so a scene reads as produced rather than as text on a
@@ -258,6 +310,8 @@ export const StepStyle: React.FC<{
           form={form}
           imageModels={imageModels}
           imageStyles={imageStyles}
+          googleImageModels={googleImageModels}
+          geminiKey={geminiKey}
           orientation={design.orientation}
           showStock={design.showStock}
           stockOpacity={design.stockOpacity}

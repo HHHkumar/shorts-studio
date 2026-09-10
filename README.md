@@ -28,7 +28,7 @@ browser (Vite + React)                    helper server (Node, 127.0.0.1:3030)
 ├─ step 4  voice                    ──►   POST /api/voiceover     ──►  ElevenLabs
 │                                          writes public/generated/<job>/s<n>.mp3
 ├─ step 5  theme + layout            ──►   POST /api/stock/*       ──►  Pexels + NASA (optional)
-│                                    ──►   POST /api/image/generate ─►  ElevenLabs image models (optional)
+│                                    ──►   POST /api/image/generate ─►  Google or ElevenLabs image models (optional)
 ├─ step 6  render                   ──►   POST /api/render        ──►  Remotion → out/*.mp4
 └─ live <Player> preview the whole time, rendering the same component as the export
 ```
@@ -55,17 +55,19 @@ The preview and the render consume the identical `VideoProps` object, so what yo
 | `src/lib/theme.ts` | All colours, fonts and layout recipes — edit this to restyle |
 | `src/lib/timeline.ts` | Turns audio durations into a frame-exact timeline |
 | `src/remotion/` | The video itself (`QuizVideo.tsx`, `scenes/`, `ui.tsx`, `ReadAlong.tsx`, `Soundtrack.tsx`) |
-| `src/remotion/sketches.ts` | The ten p5 animations, each a pure function of the frame |
+| `src/remotion/sketches.ts` | The p5 animation library (with `sketches-extra/-more/-gaps.ts`), each a pure function of the frame |
+| `src/remotion/sketch-parts.ts` | The shared drawing primitives every sketch is built from |
 | `src/remotion/P5Sketch.tsx` | Runs p5 deterministically: `noLoop()` plus a manual redraw per frame |
 | `src/ui/` | The six wizard steps |
 | `server/gemini.mjs` | Prompt, response schema, and repair of the model's output |
 | `server/deepseek.mjs` | Independent second opinion on the answer, and report repair |
 | `server/stock.mjs` | Pexels + NASA image search, and safe download to disk |
 | `server/trends.mjs` | Live web search via Gemini grounding, for trending topic ideas |
-| `server/sketch-catalogue.mjs` | What Gemini is told about the animation library |
+| `server/sketch-catalogue.mjs` | What Gemini is told about the animation library — **generated**, see `tools/sync-catalogue.mjs` |
 | `server/gemini.test.mjs` | Regression suite for the prompt and output repair (`npm test`) |
 | `server/tts.mjs` | ElevenLabs calls and word-timing extraction |
 | `server/images.mjs` | ElevenLabs image generation: prompt building, create-then-poll, credits |
+| `server/google-images.mjs` | Google image generation through the Gemini key, with style references |
 | `src/lib/subtopics.ts` | Sub-topic suggestions per subject, across all three content modes |
 | `server/render.mjs` | Remotion bundle + render, with progress reporting |
 
@@ -78,8 +80,8 @@ must therefore be a pure function of `progress` and `time`. Verified: the same f
 three separate passes hashes identically.
 
 Gemini chooses a sketch by name from `server/sketch-catalogue.mjs` and supplies parameters; it never
-writes drawing code. The catalogue and the implementations in `src/remotion/sketches.ts` must stay in
-step — `verifyAgainstImplementations()` checks that.
+writes drawing code. That catalogue is generated from the implementations, so the two cannot drift —
+see **The visual toolkit** below.
 
 ## Content modes
 
@@ -102,6 +104,79 @@ working on screen — and steers the storyboard onto the `process`, `versus` and
 must have a style in `APTITUDE_STYLE` (server), and `src/lib/subtopics.test.mjs` requires every
 subject in all three lists to have sub-topic suggestions.
 
+## The visual toolkit
+
+Four families, each a flat catalogue with one entry per option, so adding a
+fifth of anything is a single object rather than a new branch in the renderer.
+
+| Family | Options | Where | Setting |
+|---|---|---|---|
+| Transitions | 9 + `auto` | `src/lib/transitions.ts` | `design.transition` |
+| Text reveals | 7 | `src/lib/text-reveal.ts` | `design.textReveal` |
+| Overlays | 8 + `none` | `src/remotion/Overlays.tsx` | `design.overlay`, `overlayIntensity` |
+| Sketches | 212 | `src/remotion/sketches*.ts` | chosen per scene by the model |
+
+**Transitions and text reveals are pure functions**, deliberately. Both are
+maths over two numbers — how far a scene has arrived, how far it has left — and
+neither imports React or Remotion. That is what lets the tests sample every
+transition at forty points and assert the thing that actually matters: *a cut
+must never black the screen*. Both scenes are on screen through an overlap, so
+their opacities have to add to a lit frame; only `dip` is allowed to fall below
+that, because a beat between scenes is its entire purpose.
+
+`auto` picks the join from the scene kind rather than cycling: the reveal gets
+the zoom, questions get a wipe, explanations get the quietest crossfade there
+is. See `autoTransitionFor()`.
+
+**Overlays sit above every scene and outside every Sequence**, so grain and
+light leaks run continuously through the cuts instead of restarting on each one.
+Each has its own ceiling in `CEILING` — a vignette at 60% is atmospheric, grain
+at 60% is a broken television — chosen by asking "at maximum, can you still read
+the captions?". Nothing here uses `Math.random()`: Remotion renders frames out
+of order and across machines, so a speck that moved randomly would flicker.
+
+**The reveal reaches `ReadAlong` through a context**, which is the one deliberate
+exception to this codebase's explicit prop-threading. It is called from seven
+places across every scene component and the value is identical in all of them
+for the whole render.
+
+**Coverage is measured, not guessed.** `tools/sketch-coverage.mjs` matches all 647 sub-topics in
+the app against the library and reports how many have no candidate diagram at all. That number, not
+the total, is what says whether the library is big enough:
+
+```bash
+node --import ./tools/ts-resolve.mjs tools/sketch-coverage.mjs        # the summary
+node --import ./tools/ts-resolve.mjs tools/sketch-coverage.mjs --gaps # the bare sub-topics
+```
+
+It went 62% → 100% as `sketches-more.ts` and `sketches-gaps.ts` were written straight off its
+`--gaps` output. The two sub-topics still bare are *Infinity and paradoxes* and *Nature's oddities*,
+which have no specific diagram worth drawing.
+
+**The catalogue the model sees is generated, not written.** `server/sketch-catalogue.mjs`
+is derived from the sketch definitions by `tools/sync-catalogue.mjs`; the header says so and
+`sketches.test.mjs` fails if it is stale. Two hand-written lists in two languages was a drift bug
+waiting to happen — a name in one and not the other is a sketch that can be requested and never
+drawn, or drawn and never requested, and both fail in silence. At a hundred entries that stopped
+being theoretical.
+
+**Every sketch is drawn against a fake p5 in the tests**, at three canvas shapes, three points
+through a scene, and four kinds of input including empty and hostile ones. The failure that matters
+is not "this diagram is ugly" — it is "this diagram put a shape at NaN and the scene came out blank
+in a render nobody watched before uploading". A p5 canvas swallows a NaN coordinate in silence: no
+error, no shape, no warning.
+
+**Repeats are dropped server-side.** Asked for a diagram on every scene, a model reaches for
+whichever sketch it picked first and reuses it. `dropRepeatedSketches()` in `server/gemini.mjs`
+blanks a sketch that repeats back to back, or appears a third time — a dropped diagram degrades to
+no diagram, never to a wrong one.
+
+Eight of the sketches are aptitude-shaped — `venn`, `clock`, `number-line`,
+`ratio-bar`, `seating`, `tree`, `histogram`, `grid-logic` — because the aptitude
+content mode had no diagrams at all, and syllogism without a Venn diagram is the
+chapter minus the picture it is about. `server/sketch-catalogue.mjs` must stay in
+step with `SKETCHES`; running it directly checks that, and so does booting.
+
 ## Backdrops
 
 Step 5 offers two sources for the photo behind each scene, and they share one picker because the
@@ -109,6 +184,24 @@ renderer cannot tell them apart — both end up in the same `stockSrc` field on 
 
 **Free stock.** Pexels (needs a free key) and NASA (needs none). Costs nothing, but both libraries
 are overwhelmingly landscape, so a 9:16 short centre-crops every photo and throws away the edges.
+
+**Drawn by Google.** The default, and the one to use. `server/google-images.mjs` posts to
+`/v1beta/interactions` with the *Gemini* key — one call, base64 back, no job id and no signed URL
+racing an expiry. It also takes a **reference image** in the same request, which is how every scene
+after the first is matched to the first: one set rather than twelve unrelated pictures.
+
+The prompt is the creator's, not the app's. `imageQuery` is written for a stock *search* and makes a
+thin image prompt, so each scene can carry its own `imagePrompt`; `draftImagePrompt()` in
+`src/lib/image-prompt.ts` seeds one from the narration, and rhetorical beats (hook, outro, options)
+fall back to the topic because their words describe the viewer rather than a picture. The style and
+composition lines are appended whatever the subject is, so an edit cannot cost the style match.
+
+> Image generation is on **no** Gemini free tier, for any model. The key needs billing enabled;
+> writing scripts stays free either way. Roughly 3p an image on Flash Lite, so about 25p a video.
+
+Two things here were found against the live API and would not have shown up against a mock: this
+endpoint wraps its errors in an **array** (`[{"error":…}]`) where the rest of the Gemini API returns
+a bare object, and the useful half of a Google error is in `error.details`, not `error.message`.
 
 **Drawn by ElevenLabs.** The same key that speaks the script can draw a backdrop, in the aspect
 ratio you are actually rendering, in one consistent style across every scene of a video. Press

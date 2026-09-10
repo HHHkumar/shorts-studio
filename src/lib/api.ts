@@ -166,6 +166,7 @@ export const api = {
       deepseekModels: { id: string; label: string }[];
       imageModels: { id: string; label: string }[];
       imageStyles: { id: string; label: string }[];
+      googleImageModels: { id: string; label: string }[];
     }>;
   },
 
@@ -262,8 +263,14 @@ export const api = {
     modelId: string;
     orientation: string;
     jobId: string;
+    /** 'google' uses the Gemini key; 'elevenlabs' the ElevenLabs one. */
+    provider: 'google' | 'elevenlabs';
+    /** An image already drawn for this video, to match its look. */
+    referenceSrc?: string;
+    /** The creator's own words for this scene. Overrides the search words. */
+    imagePrompt?: string;
   }) {
-    return post<{ src: string; bytes: number; id: string; prompt: string }>(
+    return post<{ src: string; bytes: number; id: string; prompt: string; matched: boolean }>(
       '/api/image/generate',
       body,
     );

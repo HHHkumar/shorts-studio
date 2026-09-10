@@ -22,6 +22,7 @@ your work safe with Git, and how to run the same tool on a second computer.
    - [Scenes that move](#scenes-that-move)
    - [Moving backdrops](#moving-backdrops)
    - [Drawing your own backdrops](#drawing-your-own-backdrops)
+   - [Cuts, text and the finishing layer](#cuts-text-and-the-finishing-layer)
    - [Aptitude and reasoning videos](#aptitude-and-reasoning-videos)
    - [A note on units](#a-note-on-units)
 5. [Git — your undo button](#5-git--your-undo-button)
@@ -47,9 +48,9 @@ Four services do the work, and they all run from one page in your browser:
 
 | | What it does | Needed? |
 |---|---|---|
-| **Google Gemini** | Writes the question, the four options, the explanation and the exact words the narrator says — or, in explainer mode, the whole storyboard. Also writes your title, tags and description at the end. | Required |
+| **Google Gemini** | Writes the question, the four options, the explanation and the exact words the narrator says — or, in explainer mode, the whole storyboard. Also writes your title, tags and description at the end, and **draws the backdrop pictures** if you enable billing. | Required |
 | **Anthropic Claude** | An alternative writer for the question or the storyboard. Pick which one on step 2. | Optional |
-| **ElevenLabs** | Turns that script into speech — and, on a Pro plan, can also draw the backdrop pictures. | Required |
+| **ElevenLabs** | Turns that script into speech. Can also draw backdrops, but only on a Pro plan. | Required |
 | **DeepSeek** | Solves the question independently and says whether it agrees with Gemini. | Optional |
 | **Pexels + NASA** | Free photos to sit behind the text. NASA needs no key. | Optional |
 
@@ -356,7 +357,18 @@ Everything here is instant, free, and never touches the voiceover.
   electrical and power work: a **circuit** (series or parallel), a **phasor diagram** and power
   triangle, an AC **waveform** (phase shift, rectified, PWM), a **block flow** that lights up
   stage by stage (boiler → turbine → condenser → pump), a **transformer** with turns ratio, and
-  a **pie** for a fuel mix or a loss breakdown.
+  a **pie** for a fuel mix or a loss breakdown. There are now **over two hundred** of these — enough that every sub-topic the tool offers has one that fits — covering
+  mechanics (levers, pulleys, gears, springs, collisions, friction, torque), light and sound
+  (reflection, lenses, prisms, the Doppler effect), heat and fluids, chemistry (molecules, pH,
+  titration, electrolysis, reaction profiles), biology (cells, DNA, neurons, the heart,
+  photosynthesis, food chains), maths and geometry, data charts, earth and space, and sixteen built
+  for aptitude and reasoning — a **Venn** diagram, a **clock face** with the angle between the hands,
+  a **number line**, a **ratio bar**, a **seating arrangement**, a **family tree**, a **histogram**,
+  a **logic grid**, **cube nets**, **dice**, **paper folding**, **mirror images** and more.
+  Gemini is told not to use the same one twice in a row, and the tool drops it if it does anyway.
+- **Cuts and text** — how one scene becomes the next, and how the words arrive. See
+  [Cuts, text and the finishing layer](#cuts-text-and-the-finishing-layer).
+- **Finishing layer** — grain, a vignette, cinema bars. Same section.
 - **Drift topic symbols** — faint themed emoji behind everything.
 - **Moving backdrop** — one of thirty slow animations under the whole video. See
   [Moving backdrops](#moving-backdrops) below.
@@ -764,8 +776,35 @@ and every scene you draw in that video comes back matching the others.
 4. Click it to actually use it — same as a photo. Not clicking costs you nothing further.
 5. Not right? Press **Draw another**. The first one stays, so you can compare them side by side.
 
-**What it costs.** Every press spends ElevenLabs credits from the same balance as your voiceover,
-and drawing through the API needs a **Pro plan or above**. On the free or Starter plan the voice
+**Which service draws it.** There are two, and you pick with the tiles above the Draw buttons.
+
+- **Google** *(recommended)* — uses your **Gemini** key. Needs **billing enabled** on that key's
+  project; there is no free tier for image generation on any Google model. About **3p an image**, so
+  roughly 25p for a whole video. Writing the script stays free either way.
+- **ElevenLabs** — uses your ElevenLabs key, and needs a **Pro plan**. The free and Starter tiers
+  cannot draw at all.
+
+**Write what to draw.** Each scene has a **prompt** link next to its Draw button. The search words
+above it were written for a *photo library* — two or three nouns — and an image model given two nouns
+draws two nouns. The prompt box is where you describe the picture instead.
+
+- **draft one from the narration** turns what the scene actually says into a starting point. It drops
+  the words that only work out loud — *"so"*, *"you"*, *"we"* — because an image cannot show the
+  listener. On a hook or an outro it uses your topic instead: *"Most people get this wrong"* describes
+  the viewer, not a picture.
+- **Last sent** shows the exact prompt that went to the model, so a redraw is a correction rather
+  than another guess.
+- Leave it empty and the search words are used, exactly as before.
+
+Whatever you write, the **Look** and the composition rule are still added on the end — so an edited
+prompt keeps the style match and keeps the middle of the frame clear for your captions.
+
+**Keep every scene in the same style.** On Google only, and on by default. The first image you draw
+becomes the reference for every one after it, so a video looks like one set instead of twelve
+unrelated pictures. It costs nothing extra.
+
+**What it costs.** On ElevenLabs, every press spends credits from the same balance as your
+voiceover, and drawing through the API needs a **Pro plan or above**. On the free or Starter plan the voice
 still works perfectly — only the Draw button will tell you the plan is not enough. There is
 deliberately no "draw every scene" button: it would be one click to spend a lot of credit on scenes
 you were going to skip anyway.
@@ -773,6 +812,68 @@ you were going to skip anyway.
 **Being honest about it.** Drawn backdrops are labelled *Generated with ElevenLabs* in your caption
 and in the publish kit's credits file. Leave that in. YouTube and the other platforms increasingly
 expect AI-made imagery to be declared, and the line is short enough that it costs you nothing.
+
+---
+
+### Cuts, text and the finishing layer
+
+Three settings on step 5 that apply to every scene. Because they run on all of them, a choice here
+is *felt* across a whole video rather than noticed once — which is exactly why the defaults are the
+quiet options.
+
+#### The transition — how one scene becomes the next
+
+Ten choices. **Auto** is the default and is usually the right answer: it varies the join by what the
+scene is doing, so the answer reveal gets the punchy zoom, the question gets a wipe, and the
+explanations get the quietest crossfade there is. A single transition used forty times becomes a tic
+by the fourth scene.
+
+| | What it does | When |
+|---|---|---|
+| **Auto** | Varies with the scene | Leave it here unless you want one look throughout |
+| **Crossfade** | Dissolve with a small drift | Never wrong, never noticed |
+| **Slide** | The new scene moves in over the old | Clean and modern; reads well on a phone |
+| **Push** | The old scene is shoved out by the new | More physical; good for step-by-step |
+| **Wipe** | A hard edge sweeps across | Graphic and confident; suits bold layouts |
+| **Zoom** | Punches in through the cut | Energetic; best on short, fast videos |
+| **Blur** | Defocus and refocus | Soft and expensive-looking; slows the pace |
+| **Dip** | Through the background colour | A real beat; use when two ideas are separate |
+| **Whip pan** | Fast sideways smear | High energy — not for twenty scenes |
+| **Glitch** | Digital break-up | Loud. One or two a video, not every cut |
+
+#### How the words appear
+
+The read-along model never changes: one line on screen, exactly what you are hearing, the spoken
+word lit. What you are choosing is the *manner of arrival* — and the real decision inside it is
+whether the viewer may read slightly ahead of the voice.
+
+- **Fade** *(default)* — the phrase appears and words light up as they are said. Unspoken words wait
+  faintly, so the eye can run a shade ahead. Calmest, and the easiest to follow.
+- **Pop** — each word snaps in as it is spoken. Punchy; suits hooks.
+- **Rise** — words lift into place. Smooth all-rounder.
+- **Typewriter** — nothing exists until it is said. Nothing to read ahead to, so it holds attention
+  harder. Use it when you want urgency, not comprehension.
+- **Focus** — unspoken words are blurred and sharpen as they are reached.
+- **Highlighter** — a bar sweeps behind the current word. The strongest choice for **method and
+  revision videos**: it reads as teaching rather than as motion graphics.
+- **Bounce** — springy overshoot per word. Best with the Flashy layout.
+
+#### The finishing layer
+
+A texture over the top of everything. Unlike the moving backdrop, it means nothing and is not chosen
+from your subject — it is there to make a frame look *shot* rather than assembled.
+
+**Vignette** (darkened edges), **film grain**, **scanlines** (CRT), **light leak** (a drifting warm
+bloom), **cinematic bars** (letterbox), **corner frame** (viewfinder brackets), **dust** (floating
+specks), **chromatic edges** (a lens fringe). Plus **None**, which is the default and what every
+video looked like before this existed.
+
+Each has its own ceiling, so **How strong** at maximum cannot make the captions hard to read — a
+vignette can afford far more than grain can. If you are unsure, vignette at half strength flatters
+almost everything and is impossible to notice.
+
+> One at a time. These stack with the moving backdrop, the drift symbols and the backdrop photo,
+> and a frame carrying all four is a frame with nothing to look at.
 
 ---
 

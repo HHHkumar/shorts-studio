@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { api, type StockImage, type TopicForm } from '../lib/api';
 import type { QuizContent, ScriptLine } from '../lib/types';
-import { ErrorNote, Note, Select, Slider, Spinner } from './controls';
+import { draftImagePrompt } from '../lib/image-prompt';
+import { Check, ErrorNote, Note, Select, Slider, Spinner } from './controls';
 
 /**
  * Choose a backdrop photo for each scene.
@@ -15,6 +16,9 @@ import { ErrorNote, Note, Select, Slider, Spinner } from './controls';
  * the video look worse, not better - so every image is one the creator picked.
  * That rule matters more, not less, for the generated ones: those cost credits.
  */
+
+/** What a drawn image is credited as, in the caption and the publish kit. */
+const AI_CREDIT = 'Generated with AI';
 
 /** Scenes where a photo would collide with what is already on screen. */
 const SKIP_KINDS = new Set(['options', 'countdown']);
@@ -31,12 +35,15 @@ export const StockPicker: React.FC<{
   form: TopicForm;
   imageModels: { id: string; label: string }[];
   imageStyles: { id: string; label: string }[];
+  googleImageModels: { id: string; label: string }[];
+  geminiKey: string;
   orientation: string;
   showStock: boolean;
   stockOpacity: number;
   setStockOpacity: (v: number) => void;
 }> = ({
   content, setContent, pexelsKey, elevenKey, form, imageModels, imageStyles,
+  googleImageModels, geminiKey,
   orientation, showStock, stockOpacity, setStockOpacity,
 }) => {
   const [candidates, setCandidates] = useState<SceneCandidates>({});
@@ -46,14 +53,49 @@ export const StockPicker: React.FC<{
   const [error, setError] = useState<string | null>(null);
   const [busyScene, setBusyScene] = useState<number | null>(null);
   const [drawingScene, setDrawingScene] = useState<number | null>(null);
+  const [usedPrompt, setUsedPrompt] = useState<Record<number, string>>({});
+  const [openPrompt, setOpenPrompt] = useState<number | null>(null);
   const [styleId, setStyleId] = useState('');
   const [modelId, setModelId] = useState('');
+  const [provider, setProvider] = useState<'google' | 'elevenlabs'>('google');
+  const [matchStyle, setMatchStyle] = useState(true);
+
+  const google = provider === 'google';
+  const models = google ? googleImageModels : imageModels;
 
   // The catalogues arrive from /api/health a moment after mount, so the first
-  // entry is only knowable once they are here.
+  // entry is only knowable once they are here. The model is per provider, so a
+  // name from the other one must not leak across.
   const style = styleId || (imageStyles[0]?.id ?? '');
-  const model = modelId || (imageModels[0]?.id ?? '');
-  const canGenerate = elevenKey.trim().length > 5 && imageModels.length > 0;
+  const model = models.some((m) => m.id === modelId) ? modelId : (models[0]?.id ?? '');
+  const drawKey = (google ? geminiKey : elevenKey).trim();
+  // Deliberately NOT gated on the model list. That list is a static catalogue
+  // that happens to arrive from /api/health, and gating on it meant a helper
+  // server running older code hid the entire feature with no explanation - the
+  // tiles were there, and nothing else was. The server picks a sensible default
+  // when no model is named, so a missing list costs a dropdown, not the button.
+  const hasKey = drawKey.length > 5;
+  const canGenerate = hasKey;
+  const staleServer = hasKey && models.length === 0;
+
+  /**
+   * The first image drawn for this video, used to keep the rest in step.
+   *
+   * Only Google can do this - it takes a reference image in the same request -
+   * and only the first one is used, deliberately: chaining each scene off the
+   * one before it lets the look drift a little further every time.
+   */
+  const reference = React.useMemo(() => {
+    if (!google || !matchStyle) return '';
+    for (const line of content.script) {
+      if (line.stockSrc && line.stockCredit === AI_CREDIT) return line.stockSrc;
+    }
+    for (const list of Object.values(candidates) as StockImage[][]) {
+      const drawn = list.find((c) => c.provider === 'ai');
+      if (drawn) return drawn.full;
+    }
+    return '';
+  }, [google, matchStyle, content.script, candidates]);
 
   // A stable folder name so re-picking overwrites instead of piling up.
   const jobId = 'job-' + Math.abs(hash(content.question)).toString(36);
@@ -119,7 +161,7 @@ export const StockPicker: React.FC<{
     setError(null);
     try {
       const made = await api.generateImage({
-        apiKey: elevenKey.trim(),
+        apiKey: drawKey,
         query,
         subject: content.subject || form.subject,
         topic: content.topic || form.topic,
@@ -127,7 +169,14 @@ export const StockPicker: React.FC<{
         modelId: model,
         orientation,
         jobId,
+        provider,
+        referenceSrc: reference || undefined,
+        imagePrompt: (line.imagePrompt || '').trim() || undefined,
       });
+
+      // Keep what was actually sent, so it can be shown and refined rather
+      // than guessed at.
+      setUsedPrompt((prev) => ({ ...prev, [index]: made.prompt }));
 
       const drawn: StockImage = {
         id: made.id,
@@ -136,7 +185,7 @@ export const StockPicker: React.FC<{
         // is handed the same relative path a stock photo would have given.
         thumb: '/' + made.src,
         full: made.src,
-        credit: 'Generated with ElevenLabs',
+        credit: AI_CREDIT,
         sourceUrl: '',
         width: 0,
         height: 0,
@@ -184,6 +233,13 @@ export const StockPicker: React.FC<{
     }));
   };
 
+  const setPrompt = (index: number, value: string) => {
+    setContent((prev) => ({
+      ...prev,
+      script: prev.script.map((line, i) => (i === index ? { ...line, imagePrompt: value } : line)),
+    }));
+  };
+
   const setQuery = (index: number, value: string) => {
     setContent((prev) => ({
       ...prev,
@@ -208,14 +264,70 @@ export const StockPicker: React.FC<{
         Scenes you skip simply keep the plain background.
       </Note>
 
+      <div className="tiles" style={{ gridTemplateColumns: '1fr 1fr', marginTop: 4 }}>
+        <button
+          className={'tile' + (google ? ' active' : '')}
+          onClick={() => setProvider('google')}
+        >
+          <div className="t">◆ Google</div>
+          <div className="s">
+            Uses your Gemini key. Needs billing on, not a subscription — about 3p an image.
+          </div>
+        </button>
+        <button
+          className={'tile' + (!google ? ' active' : '')}
+          onClick={() => setProvider('elevenlabs')}
+        >
+          <div className="t">✳ ElevenLabs</div>
+          <div className="s">
+            Uses your ElevenLabs key. Needs a <b>Pro plan</b> — the free and Starter tiers cannot.
+          </div>
+        </button>
+      </div>
+
+      {!hasKey ? (
+        <Note kind="info" title={'Add your ' + (google ? 'Gemini' : 'ElevenLabs') + ' key to draw'}>
+          Drawing uses your <b>{google ? 'Gemini' : 'ElevenLabs'}</b> key, and there is not one saved
+          yet. Paste it on <b>step 1</b> and the Draw buttons appear here by themselves.{' '}
+          {google
+            ? 'It is the same key that writes your script — writing stays free, drawing needs billing enabled on it.'
+            : 'Drawing needs a Pro plan on that account; the free and Starter tiers cannot.'}
+        </Note>
+      ) : null}
+
+      {staleServer ? (
+        <Note kind="warn" title="Restart the helper to choose a model">
+          Your helper server is running an older version of the tool, so it did not send the list of
+          image models. Drawing still works — the server picks a sensible default — but the model
+          dropdown is hidden until you stop it with <b>Ctrl + C</b> and run <b>npm start</b> again.
+        </Note>
+      ) : null}
+
       {canGenerate ? (
         <>
-          <Note kind="warn" title="Drawing costs ElevenLabs credits">
-            <b>Draw</b> asks ElevenLabs for a new image, one scene at a time, in the exact shape you
-            are rendering — so nothing is cropped the way a landscape stock photo has to be. Each
-            press spends credits from the same balance as the voiceover, and the API needs a Pro plan
-            or above. Searching Pexels and NASA stays free.
+          <Note kind="warn" title={google ? 'Drawing costs a few pence a picture' : 'Drawing costs ElevenLabs credits'}>
+            <b>Draw</b> asks for a new image, one scene at a time, in the exact shape you are
+            rendering — so nothing is cropped the way a landscape stock photo has to be.{' '}
+            {google
+              ? 'Image generation is not on any Gemini free tier, so the key needs billing enabled; '
+                + 'writing the script stays free either way.'
+              : 'Each press spends credits from the same balance as the voiceover, and the API needs '
+                + 'a Pro plan or above.'}{' '}
+            Searching Pexels and NASA stays free.
           </Note>
+
+          {google ? (
+            <Check
+              label="Keep every scene in the same style"
+              hint={
+                'The first image you draw becomes the reference for the rest, so one video looks '
+                + 'like one set instead of twelve unrelated pictures. Costs nothing extra.'
+                + (reference ? ' Matching to the first drawn image.' : ' Draw one to start it off.')
+              }
+              checked={matchStyle}
+              onChange={setMatchStyle}
+            />
+          ) : null}
 
           <div className="grid">
             <Select
@@ -225,13 +337,17 @@ export const StockPicker: React.FC<{
               onChange={setStyleId}
               hint="Applied to every scene you draw, so one video looks like one set."
             />
+            {models.length ? (
             <Select
               label="Image model"
               value={model}
-              options={imageModels}
+              options={models}
               onChange={setModelId}
-              hint="Flash models answer in seconds and cost least. Pro is slower and sharper."
+              hint={google
+                ? 'Flash Lite is the cheapest and plenty for a backdrop. Flash matches a reference best.'
+                : 'Flash models answer in seconds and cost least. Pro is slower and sharper.'}
             />
+            ) : null}
           </div>
         </>
       ) : null}
@@ -306,12 +422,54 @@ export const StockPicker: React.FC<{
                       {options.some((o) => o.provider === 'ai') ? 'Draw another' : 'Draw'}
                     </button>
                   ) : null}
+                  {canGenerate ? (
+                    <button
+                      className="link-btn"
+                      title="Write exactly what this scene should show"
+                      onClick={() => setOpenPrompt(openPrompt === index ? null : index)}
+                    >
+                      {openPrompt === index ? 'hide prompt' : line.imagePrompt ? 'prompt ✎' : 'prompt'}
+                    </button>
+                  ) : null}
                   {line.stockSrc ? (
                     <button className="link-btn" onClick={() => clear(index)}>
                       remove
                     </button>
                   ) : null}
                 </div>
+
+                {canGenerate && openPrompt === index ? (
+                  <div className="stock-prompt">
+                    <label>What to draw for this scene</label>
+                    <textarea
+                      rows={3}
+                      value={line.imagePrompt || ''}
+                      placeholder={
+                        'Left empty, the search words above are used — which are written for a '
+                        + 'photo search and make a thin prompt. Describe the picture instead.'
+                      }
+                      onChange={(e) => setPrompt(index, e.target.value)}
+                    />
+                    <div className="stock-prompt-row">
+                      <button
+                        className="link-btn"
+                        onClick={() => setPrompt(index, draftImagePrompt(line, content))}
+                      >
+                        draft one from the narration
+                      </button>
+                      {line.imagePrompt ? (
+                        <button className="link-btn" onClick={() => setPrompt(index, '')}>
+                          clear
+                        </button>
+                      ) : null}
+                    </div>
+                    {usedPrompt[index] ? (
+                      <div className="stock-prompt-used">
+                        <b>Last sent:</b> {usedPrompt[index]}
+                      </div>
+                    ) : null}
+                  </div>
+                ) : null}
 
                 {options.length ? (
                   <div className="stock-grid">

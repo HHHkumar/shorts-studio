@@ -58,14 +58,40 @@ export const P5Sketch: React.FC<{
   useEffect(() => {
     const handle = delayRender('Creating p5 sketch');
 
+    // p5 does NOT run setup synchronously. An instance created by an effect run
+    // that React has since discarded - a StrictMode double-invoke, a fast prop
+    // change - still reaches its setup afterwards and appends its canvas, long
+    // after the cleanup swept the container. The result was one canvas per
+    // discarded run: every diagram and every moving backdrop drawn TWICE, one
+    // above the other, with the caption stranded in between.
+    //
+    // remove() cannot prevent it, because at cleanup time the instance has no
+    // canvas yet for remove() to take away. So the instance has to be told, and
+    // it has to check on the way in.
+    let cancelled = false;
+    let mine: p5 | null = null;
+
     const sketch = (p: p5) => {
       p.setup = () => {
+        if (cancelled) {
+          p.remove();
+          return;
+        }
         p.createCanvas(width, height);
         p.pixelDensity(1);
         // Determinism: without a fixed seed, p.random() would differ each pass.
         p.randomSeed(1);
         p.noiseSeed(1);
         p.noLoop();
+
+        // Belt and braces. The flag above catches the runs React tells us
+        // about; this holds the invariant - one container, one canvas - however
+        // an extra one got here. The newest is always the live one.
+        const node = container.current;
+        if (node) {
+          const canvases = node.querySelectorAll('canvas');
+          for (let i = 0; i < canvases.length - 1; i++) canvases[i].remove();
+        }
       };
 
       p.draw = () => {
@@ -94,12 +120,16 @@ export const P5Sketch: React.FC<{
       };
     };
 
-    instance.current = new p5(sketch, container.current as HTMLElement);
+    mine = new p5(sketch, container.current as HTMLElement);
+    instance.current = mine;
     continueRender(handle);
 
     return () => {
-      instance.current?.remove();
-      instance.current = null;
+      cancelled = true;
+      mine?.remove();
+      // Only if it is still ours: a later run may already have replaced it, and
+      // nulling that would leave the live sketch with nothing to redraw.
+      if (instance.current === mine) instance.current = null;
       // p5.remove() does not reliably take its canvas with it, and the leftover
       // sat FIRST in the container - so after switching sketch the stale canvas
       // was the one on screen and the new one was laid out below it, off the

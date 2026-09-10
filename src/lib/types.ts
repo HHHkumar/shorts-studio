@@ -297,6 +297,12 @@ export interface ScriptLine {
   /** 2-4 concrete words for finding a backdrop photo, written by Gemini. */
   imageQuery?: string;
   /** Chosen backdrop, relative to public/. Empty until the creator picks one. */
+  /**
+   * What to draw for this scene, in the creator's own words. Empty means
+   * build one from imageQuery, which is written for a stock SEARCH and makes
+   * a thin image prompt.
+   */
+  imagePrompt?: string;
   stockSrc?: string;
   /** Who took it, shown in the copyable caption. */
   stockCredit?: string;
@@ -353,6 +359,20 @@ export interface DesignSettings {
    *   0    the layouts hold still, as they did before
    */
   motionStrength: number;
+  /**
+   * How one scene becomes the next. A name from src/lib/transitions.ts, or
+   * 'auto' to vary it by scene kind.
+   */
+  transition: string;
+  /** How the spoken words arrive on screen. See src/lib/text-reveal.ts. */
+  textReveal: string;
+  /**
+   * The finishing layer over the top of everything - grain, vignette, bars.
+   * Never means anything; it exists to make a frame look shot. 'none' to skip.
+   */
+  overlay: string;
+  /** 0-1, capped per overlay in the renderer so captions stay readable. */
+  overlayIntensity: number;
   /** Draw the chosen stock photos behind each scene. */
   showStock: boolean;
   /** 0-1. How strongly the backdrop photo shows through. */
