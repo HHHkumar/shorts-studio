@@ -252,6 +252,110 @@ ok('the generated catalogue is up to date',
   ok('it drops one branch per component', rects.length === 3, 'rects=' + rects.length);
 }
 
+// --- the two electrical diagrams that were reported as wrong -------------------
+// Both came from a real video where the picture contradicted the narration, so
+// the physics is asserted rather than eyeballed.
+
+/** Run a sketch and keep every line and every string it drew. */
+function record(name, params, w = 900, h = 460, progress = 1) {
+  const lines = [];
+  const texts = [];
+  const { p } = mockP5(w, h);
+  const rec = {
+    ...p,
+    line: (...a) => lines.push(a),
+    vertex: (...a) => lines.push(a),
+    text: (t, x, y) => texts.push({ t: String(t), x, y }),
+  };
+  SKETCHES[name].draw({
+    p: rec, frame: 45, time: 0, progress, width: w, height: h,
+    params, items: [], colors: COLORS,
+  });
+  return { lines, texts, said: texts.map((q) => q.t).join(' | ') };
+}
+
+{
+  // waveform, phase mode. A POSITIVE angle means the second wave LAGS - it
+  // happens later, so it peaks further RIGHT. This was inverted: `angle: 90`
+  // for "current lags voltage" drew the current LEADING, which is a capacitor,
+  // not the inductor the scene was about.
+  const w = 900;
+  const peakOf = (pts) => pts.reduce((best, q) => (q[1] < best[1] ? q : best), pts[0])[0];
+  const trace = (params) => {
+    const { lines } = record('waveform', params, w, 460);
+    // Two curves are plotted as vertex runs; split them by the jump back to x=0.
+    const runs = [];
+    let cur = [];
+    for (const pt of lines) {
+      if (pt.length === 2 && cur.length && pt[0] < cur[cur.length - 1][0]) { runs.push(cur); cur = []; }
+      if (pt.length === 2) cur.push(pt);
+    }
+    if (cur.length) runs.push(cur);
+    return runs.filter((r) => r.length > 50);
+  };
+
+  const runs = trace({ mode: 'phase', angle: 90, frequency: 2 });
+  ok('the phase waveform draws two curves', runs.length === 2, 'runs=' + runs.length);
+  if (runs.length === 2) {
+    const first = peakOf(runs[0]);
+    const second = peakOf(runs[1]);
+    // One period spans width/frequency; a 90 degree lag is a quarter of that.
+    const quarter = (w / 2) / 4;
+    const delta = second - first;
+    ok('a positive angle draws the second wave LATER, not earlier',
+       delta > 0, 'shift=' + Math.round(delta) + 'px (negative means it leads)');
+    ok('and by about the right amount for ninety degrees',
+       Math.abs(delta - quarter) < quarter * 0.4, 'got ' + Math.round(delta) + ', wanted ~' + Math.round(quarter));
+  }
+
+  const said = record('waveform', { mode: 'phase', angle: 90, frequency: 2 }).said;
+  const parts = said.split(' | ').map((q) => q.trim());
+  ok('the two curves are labelled at all',
+     parts.includes('V') && parts.includes('I'), said.slice(0, 70));
+  ok('and it says which one lags', /lags/i.test(said), said.slice(0, 90));
+  ok('a negative angle says leads instead',
+     /leads/i.test(record('waveform', { mode: 'phase', angle: -90, frequency: 2 }).said));
+  ok('custom labels are honoured',
+     /Vs/.test(record('waveform', { mode: 'phase', angle: 45, labelA: 'Vs', labelB: 'Is' }).said));
+}
+
+{
+  // power-factor. Two faults: the angle was clamped to 70 so the ninety-degree
+  // case could not be drawn, and the BASE was held constant so kVA grew without
+  // limit - at 90 the apex left the canvas.
+  const horiz = (lines) => lines.filter((l) => l.length === 4 && Math.abs(l[1] - l[3]) < 1);
+  const vert = (lines) => lines.filter((l) => l.length === 4 && Math.abs(l[0] - l[2]) < 1);
+  const lenOf = (l) => Math.hypot(l[2] - l[0], l[3] - l[1]);
+
+  const at = (deg) => record('power-factor', { angle: deg }, 520, 520);
+
+  const a90 = at(90);
+  ok('ninety degrees is no longer clamped', /cos φ = 0\.00/.test(a90.said), a90.said.slice(0, 60));
+  ok('and it says there is no real power', /no real power/i.test(a90.said));
+  ok('at ninety the kW leg is gone', horiz(a90.lines).length === 0,
+     'found ' + horiz(a90.lines).length + ' horizontal legs');
+  ok('and kW is labelled as zero rather than left blank', /kW = 0/.test(a90.said));
+
+  const a0 = at(0);
+  ok('at zero the power factor is unity', /cos φ = 1\.00/.test(a0.said), a0.said.slice(0, 40));
+
+  // The hypotenuse is what stays fixed. Held the old way, the height grew with
+  // tan and ran off the canvas.
+  const hyp = (r) => {
+    const all = r.lines.filter((l) => l.length === 4);
+    return Math.max(...all.map(lenOf));
+  };
+  const spread = [0, 30, 45, 60, 80, 90].map((d) => hyp(at(d)));
+  const lo = Math.min(...spread);
+  const hi = Math.max(...spread);
+  ok('the apparent power stays the same size at every angle',
+     hi - lo < hi * 0.06, spread.map(Math.round).join(', '));
+
+  const tall = vert(at(89).lines).map(lenOf);
+  ok('nothing runs off the canvas at a steep angle',
+     Math.max(...tall, 0) < 520, String(Math.round(Math.max(...tall, 0))));
+}
+
 // --- the size of the library --------------------------------------------------
 console.log('');
 console.log('  sketches: ' + SKETCH_NAMES.length);

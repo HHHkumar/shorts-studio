@@ -77,6 +77,10 @@ function shade(p: p5, hex: string, alpha: number) {
   return c;
 }
 
+/** Model text, made safe to draw. Mirrors the helper in sketch-parts.ts. */
+const clean = (v: unknown, max = 22): string =>
+  String(v ?? '').replace(/\s+/g, ' ').trim().slice(0, max);
+
 const num = (v: unknown, fallback: number, lo: number, hi: number): number => {
   const n = Number(v);
   if (!Number.isFinite(n)) return fallback;
@@ -686,7 +690,7 @@ const CORE_SKETCHES: Record<string, SketchDef> = {
     shape: 'wide',
     label: 'Waveform',
     describe: 'an AC waveform: two signals out of phase, or a rectified or switched output. Use for: AC theory, phase shift, rectifiers, inverters and PWM',
-    uses: 'mode ("phase", "half-wave", "full-wave", "pwm"), angle (phase shift in degrees), frequency (1-4)',
+    uses: 'mode ("phase", "half-wave", "full-wave", "pwm"), angle (phase shift in degrees; POSITIVE means the second wave LAGS, so 90 is a pure inductor and -90 a pure capacitor), frequency (1-4), labelA (first wave, e.g. V), labelB (second wave, e.g. I)',
     draw: ({ p, time, width, height, params, colors }) => {
       const mode = String(params.mode || 'phase');
       const k = num(params.frequency, 2, 1, 4);
@@ -720,8 +724,42 @@ const CORE_SKETCHES: Record<string, SketchDef> = {
         plot((x) => raw(x) * 0.5, colors.dim, 3);
         plot((x) => (raw(x) > 0 ? 0.85 : -0.85), colors.accent, 6);
       } else {
+        // A POSITIVE angle means the second wave LAGS, matching the convention
+        // the phasor sketch already uses. That means it happens LATER, so it is
+        // drawn shifted to the right - and adding a phase inside sin() moves a
+        // wave earlier, not later, so the shift is subtracted.
+        //
+        // It was added, which drew a lagging current as a LEADING one. That is
+        // not a cosmetic error: a current leading its voltage by ninety degrees
+        // is a capacitor, and the narration was talking about an inductor.
         plot((x) => raw(x), colors.text, 5);
-        plot((x) => raw(x, shift), colors.accent, 6);
+        plot((x) => raw(x, -shift), colors.accent, 6);
+
+        // Unlabelled, this diagram cannot be read at all - which of the two
+        // curves lags is its entire content, and two anonymous sine waves say
+        // nothing. The legend is the diagram.
+        const a = clean(params.labelA, 10) || 'V';
+        const b = clean(params.labelB, 10) || 'I';
+        const key = (x: number, colour: string, text: string) => {
+          p.push();
+          p.stroke(colour);
+          p.strokeWeight(6);
+          p.line(x, height * 0.12, x + 34, height * 0.12);
+          p.noStroke();
+          p.fill(colors.text);
+          p.textAlign(p.LEFT, p.CENTER);
+          p.textSize(24);
+          p.text(text, x + 44, height * 0.12);
+          p.pop();
+        };
+        key(width * 0.06, colors.text, a);
+        key(width * 0.06 + 130, colors.accent, b);
+
+        const deg = Math.round((shift * 180) / Math.PI);
+        if (deg !== 0) {
+          label(p, b + (deg > 0 ? ' lags ' : ' leads ') + a + ' by ' + Math.abs(deg) + '°',
+                width / 2, height * 0.93, colors, 24);
+        }
       }
     },
   },

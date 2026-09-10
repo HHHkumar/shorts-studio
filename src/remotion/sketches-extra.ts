@@ -1555,29 +1555,53 @@ export const EXTRA_SKETCHES: Record<string, SketchDef> = {
       caption(p, 'Earth', cx, height * 0.82, colors);
     }),
 
-  'power-factor': square('Power factor', 'real, reactive and apparent power as a triangle',
-    'angle (0-70, the phase angle)',
+  'power-factor': square('Power factor',
+    'real, reactive and apparent power as a triangle. Use for: power factor, phase angle, kW against kVA, purely reactive loads',
+    'angle (0-90, the phase angle; 90 is a purely reactive load, where real power is zero)',
     ({ p, progress, width, height, params, colors }) => {
-      const deg = num(params.angle, 36, 0, 70);
+      // Ninety is allowed, and it is the case that matters most: a pure
+      // inductor or capacitor draws NO real power. It used to be clamped to 70,
+      // so a scene narrating "cos phi evaluates to zero" was drawn with a
+      // visible kW leg and the caption "cos φ = 0.34" - the diagram flatly
+      // contradicting the voice over it.
+      const deg = num(params.angle, 36, 0, 90);
       const rad = (deg * Math.PI) / 180;
-      const ox = width * 0.24;
-      const oy = height * 0.72;
-      const base = Math.min(width, height) * 0.5;
       const on = Math.min(1, progress * 1.6);
-      const hx = ox + base * on;
-      const hy = oy - base * Math.tan(rad) * on;
+
+      // The HYPOTENUSE is what stays fixed, not the base.
+      //
+      // Holding the base fixed and taking kVAr = base·tan(φ) means the apparent
+      // power grows without limit as the angle rises: at 70° the triangle was
+      // nearly three times as tall as it was wide, and at 90° tan is infinite
+      // and it leaves the canvas entirely. A power triangle is a fixed kVA
+      // resolved into two components, so kW = kVA·cos φ and kVAr = kVA·sin φ.
+      const kva = Math.min(width, height) * 0.52;
+      const kw = kva * Math.cos(rad) * on;
+      const kvar = kva * Math.sin(rad) * on;
+
+      const ox = width * 0.5 - (kva * Math.cos(rad)) / 2;
+      const oy = height * 0.72;
+      const hx = ox + kw;
+      const hy = oy - kvar;
+
       p.push();
       p.stroke(colors.accent);
       p.strokeWeight(5);
       p.noFill();
-      p.line(ox, oy, hx, oy);
+      if (kw > 1) p.line(ox, oy, hx, oy);
       p.line(hx, oy, hx, hy);
       p.line(ox, oy, hx, hy);
       p.pop();
-      caption(p, 'kW', (ox + hx) / 2, oy + 30, colors, 22);
-      caption(p, 'kVAr', hx + 44, (oy + hy) / 2, colors, 22);
-      caption(p, 'kVA', (ox + hx) / 2 - 20, (oy + hy) / 2 - 24, colors, 22);
-      caption(p, 'cos φ = ' + Math.cos(rad).toFixed(2), width / 2, height * 0.92, colors, 24);
+
+      // At ninety the triangle collapses to a single vertical line, which is
+      // exactly right and is the whole lesson - so it is said out loud rather
+      // than left as an empty gap where the kW label used to be.
+      const none = deg >= 89.5;
+      caption(p, none ? 'kW = 0' : 'kW', none ? ox - 46 : (ox + hx) / 2, oy + 30, colors, 22);
+      caption(p, 'kVAr', hx + 46, (oy + hy) / 2, colors, 22);
+      caption(p, 'kVA', (ox + hx) / 2 - 24, (oy + hy) / 2 - 26, colors, 22);
+      caption(p, 'cos φ = ' + Math.cos(rad).toFixed(2) + (none ? ' — no real power' : ''),
+              width / 2, height * 0.92, colors, 24);
     }),
 
   // =========================================================================
