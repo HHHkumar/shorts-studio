@@ -6,7 +6,7 @@
 // ---------------------------------------------------------------------------
 
 export type ThemeMode = 'dark' | 'light';
-export type LayoutName = 'simple' | 'elegant' | 'nerdy' | 'flashy';
+export type LayoutName = 'simple' | 'elegant' | 'nerdy' | 'flashy' | 'organic';
 export type MusicMood = 'none' | 'calm' | 'tense' | 'upbeat' | 'custom';
 export type Orientation = 'portrait' | 'landscape';
 
