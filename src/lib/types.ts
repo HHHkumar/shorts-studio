@@ -6,7 +6,11 @@
 // ---------------------------------------------------------------------------
 
 export type ThemeMode = 'dark' | 'light';
-export type LayoutName = 'simple' | 'elegant' | 'nerdy' | 'flashy' | 'organic';
+import type { DesignLookSlug } from './design-looks';
+
+export type BuiltInLayout = 'simple' | 'elegant' | 'nerdy' | 'flashy';
+/** The built-in layouts plus every look imported from Claude Design (design-kits/). */
+export type LayoutName = BuiltInLayout | DesignLookSlug;
 export type MusicMood = 'none' | 'calm' | 'tense' | 'upbeat' | 'custom';
 export type Orientation = 'portrait' | 'landscape';
 

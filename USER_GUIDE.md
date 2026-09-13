@@ -23,6 +23,7 @@ your work safe with Git, and how to run the same tool on a second computer.
    - [Moving backdrops](#moving-backdrops)
    - [Drawing your own backdrops](#drawing-your-own-backdrops)
    - [Cuts, text and the finishing layer](#cuts-text-and-the-finishing-layer)
+   - [Looks from Claude Design](#looks-from-claude-design)
    - [Aptitude and reasoning videos](#aptitude-and-reasoning-videos)
    - [A note on units](#a-note-on-units)
 5. [Git — your undo button](#5-git--your-undo-button)
@@ -343,8 +344,12 @@ Open **Show the sync report** to see the numbers per scene. If a line ever sound
 
 Everything here is instant, free, and never touches the voiceover.
 
-- **Dark or light**, and four layouts: **Simple** (clean), **Elegant** (serif, documentary),
-  **Nerdy** (terminal green on graph paper), **Flashy** (loud, best in a feed).
+- **Dark or light**, and the layouts: **Simple** (clean), **Elegant** (serif, documentary),
+  **Nerdy** (terminal green on graph paper), **Flashy** (loud, best in a feed), plus one for every
+  design system you have brought in from Claude Design — **Organic** so far. See
+  [Looks from Claude Design](#looks-from-claude-design).
+- **Where the text sits** — *Match the look*, *Centred* or *Flush left*. Only blocks of text move;
+  labels stay under the thing they name.
 - **Highlight colour**, **thinking time** (3–5s), **breathing room**.
 - **Show the spoken words** — the read-along text. Leave it on; most people watch on mute.
 - **Draw the diagrams** — on the explanation and outro scenes, and a **setup diagram on the question
@@ -874,6 +879,47 @@ almost everything and is impossible to notice.
 
 > One at a time. These stack with the moving backdrop, the drift symbols and the backdrop photo,
 > and a frame carrying all four is a frame with nothing to look at.
+
+---
+
+### Looks from Claude Design
+
+A design system you make at claude.ai/design can become a layout here. Its colours, fonts, corner
+radius and alignment come across exactly as published; motion, timing and narration stay with
+Shorts Studio.
+
+**What carries over.** The ground, card, text and accent colours are the system's own tokens. The
+dim text, borders and alternate surfaces come off its neutral ramp, so they have the same visual
+weight they have in Claude Design. Its layout style sets where text sits: Organic says *flush left*,
+so Organic scenes are flush left unless you change **Where the text sits**.
+
+**The mode it was not designed for is worked out, not guessed.** Organic was designed on a light
+ground. Its dark mode uses the system's own ink as the ground and moves the accent to the step
+Claude Design recommends for dark grounds. Every look is checked in both modes for readable contrast
+before it is allowed in.
+
+**Right and wrong stay green and red.** A system's second accent is used for the correct answer only
+when it is actually green. A brand with a red accent never marks the right answer in red.
+
+**Fonts.** The system's webfonts (Caprasimo and Figtree, for Organic) are named first, but they are
+not installed yet. Until they are, the text falls back to the closest installed face, so a render
+looks plain rather than broken.
+
+#### Adding another look
+
+Create or open the design system at claude.ai/design, then ask Claude Code to *pull the design
+system called …*. It saves the system into `design-kits/<name>/` and runs:
+
+```
+node tools/import-design.mjs
+```
+
+That rebuilds `src/lib/design-looks.ts`, and the new layout appears on step 5. A kit cannot take the
+name of a built-in layout, and one that fails the contrast checks stops the tests rather than
+quietly shipping unreadable text.
+
+> The first time this is done on a computer, Claude Code needs design access once: run `claude` in
+> a terminal and type `/design-login`.
 
 ---
 

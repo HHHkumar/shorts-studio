@@ -1,5 +1,6 @@
 import { resolveAlign, type Align } from './align';
-import type { DesignSettings, LayoutName, ThemeMode } from './types';
+import { DESIGN_LOOKS, type DesignFont, type DesignLook } from './design-looks';
+import type { BuiltInLayout, DesignSettings, LayoutName, ThemeMode } from './types';
 
 export interface Theme {
   layout: LayoutName;
@@ -48,30 +49,30 @@ const FONTS = {
   heavy: "'Arial Black', 'Segoe UI Black', Impact, " + INDIC + ", sans-serif",
 };
 
-// The Organic layout is the one exception to the no-downloads rule above, and
-// only half an exception: Caprasimo and Figtree are named first but every
-// stack still degrades to installed faces, so a render without them is plain
+// Looks ported from Claude Design name their webfont first and fall back to
+// one of the stacks above, so a render without the font installed is plain
 // rather than broken. Self-host the woff2 files into public/fonts to get the
 // real thing - loading them from Google at render time would let some frames
 // screenshot before the font arrives, which is exactly the flicker the
 // system-font rule was written to avoid.
-const ORGANIC_DISPLAY = "'Caprasimo', 'Segoe UI Black', Georgia, " + INDIC + ", serif";
-const ORGANIC_BODY = "'Figtree', 'Segoe UI', Roboto, " + INDIC + ", sans-serif";
+function stackFor(font: DesignFont): string {
+  const family = font.family.replace(/['"\\]/g, '').trim();
+  return family ? "'" + family + "', " + FONTS[font.fallback] : FONTS[font.fallback];
+}
 
 type Recipe = Omit<Theme, 'layout' | 'mode' | 'align'>;
 
-// What each layout was designed for. Separate from the recipes because it does
-// not change between dark and light, and a creator can override it.
-const LAYOUT_ALIGN: Record<LayoutName, Align> = {
+// What each built-in layout was designed for. Separate from the recipes because
+// it does not change between dark and light, and a creator can override it.
+// Claude Design looks carry their own, from the kit's layoutStyle.
+const BUILT_IN_ALIGN: Record<BuiltInLayout, Align> = {
   simple: 'center',
   elegant: 'center',
   nerdy: 'center',
   flashy: 'center',
-  // Organic's readme: "Left-aligned, asymmetric layouts. Flush-left headings."
-  organic: 'left',
 };
 
-const RECIPES: Record<LayoutName, Record<ThemeMode, Recipe>> = {
+const RECIPES: Record<BuiltInLayout, Record<ThemeMode, Recipe>> = {
   // --- SIMPLE: clean, high contrast, nothing to distract -------------------
   simple: {
     dark: {
@@ -176,41 +177,6 @@ const RECIPES: Record<LayoutName, Record<ThemeMode, Recipe>> = {
       shadow: '0 18px 50px rgba(255,47,135,0.28)', glow: '0 0 30px rgba(255,122,0,0.35)',
     },
   },
-
-  // --- ORGANIC: the Claude Design system, warm and over-rounded ------------
-  // Ported from the "Organic" design project: cream-and-sand ground, terracotta
-  // accent, sage as a genuine second voice. Colours are the published tokens,
-  // not approximations - bg/surface/text/accent come straight from theme.json
-  // and the dim and border steps are lifted off the neutral ramp, so a step
-  // here carries the same visual weight as the same step there.
-  organic: {
-    // Organic ships no dark variant, so this one is derived rather than
-    // quoted: the ground is the system's own darkest neutral, and the accent
-    // follows the readme's rule for dark grounds - accent-400, not the base,
-    // which would sit too close to the ground to read.
-    dark: {
-      bg: '#201e1d', bgAlt: '#2e2b25', surface: '#3a352d', surfaceAlt: '#474238',
-      border: '#645c50', borderWidth: 2,
-      text: '#f9f4ed', textDim: '#c0b6a5',
-      accent: '#f6a06b', accentSoft: 'rgba(246,160,107,0.18)',
-      correct: '#aebf92', wrong: '#e05c4a',
-      fontDisplay: ORGANIC_DISPLAY, fontBody: ORGANIC_BODY,
-      radius: 28, displayWeight: 400, displayTransform: 'none', displayTracking: -1,
-      displayItalic: false, decor: 'plain', bounce: 0.45,
-      shadow: '0 14px 36px rgba(0,0,0,0.45)', glow: '0 0 40px rgba(246,160,107,0.32)',
-    },
-    light: {
-      bg: '#f5ead8', bgAlt: '#eee7db', surface: '#ebddc5', surfaceAlt: '#f9f4ed',
-      border: '#dcd3c4', borderWidth: 2,
-      text: '#201e1d', textDim: '#645c50',
-      accent: '#c67139', accentSoft: 'rgba(198,113,57,0.16)',
-      correct: '#728157', wrong: '#a8422a',
-      fontDisplay: ORGANIC_DISPLAY, fontBody: ORGANIC_BODY,
-      radius: 28, displayWeight: 400, displayTransform: 'none', displayTracking: -1,
-      displayItalic: false, decor: 'plain', bounce: 0.45,
-      shadow: '0 12px 32px rgba(46,43,37,0.22)', glow: '0 0 40px rgba(198,113,57,0.28)',
-    },
-  },
 };
 
 export const LAYOUT_INFO: { name: LayoutName; label: string; blurb: string }[] = [
@@ -218,8 +184,31 @@ export const LAYOUT_INFO: { name: LayoutName; label: string; blurb: string }[] =
   { name: 'elegant', label: 'Elegant', blurb: 'Serif type, calm pacing. Feels like a documentary.' },
   { name: 'nerdy', label: 'Nerdy', blurb: 'Terminal green on graph paper. Great for code and maths.' },
   { name: 'flashy', label: 'Flashy', blurb: 'Loud colours, big bounce. Built for the scroll feed.' },
-  { name: 'organic', label: 'Organic', blurb: 'Warm cream and terracotta, over-rounded. From your Claude Design system.' },
+  ...DESIGN_LOOKS.map((look) => ({ name: look.slug, label: look.label, blurb: look.blurb })),
 ];
+
+const lookFor = (layout: string): DesignLook | undefined =>
+  DESIGN_LOOKS.find((look) => look.slug === layout);
+
+/**
+ * The recipe for a layout, with a Claude Design look's fonts turned into real
+ * stacks. A layout nobody knows - a look whose kit was since removed, saved in
+ * someone's settings - draws as Simple rather than crashing the preview.
+ */
+function recipeFor(layout: string, mode: ThemeMode): { recipe: Recipe; align: Align; name: LayoutName } {
+  const look = lookFor(layout);
+  if (look) {
+    const r = look[mode] || look.light;
+    return {
+      recipe: { ...r, fontDisplay: stackFor(r.fontDisplay), fontBody: stackFor(r.fontBody) },
+      align: look.align,
+      name: look.slug,
+    };
+  }
+  const built = (layout in RECIPES ? layout : 'simple') as BuiltInLayout;
+  const modes = RECIPES[built];
+  return { recipe: modes[mode] || modes.dark, align: BUILT_IN_ALIGN[built], name: built };
+}
 
 export function hexToRgba(hex: string, alpha: number): string {
   const clean = hex.replace('#', '');
@@ -230,16 +219,16 @@ export function hexToRgba(hex: string, alpha: number): string {
 }
 
 export function getTheme(design: DesignSettings): Theme {
-  const recipe = RECIPES[design.layout][design.mode];
+  const { recipe, align, name } = recipeFor(design.layout, design.mode);
   const custom = design.accent && design.accent.trim();
   const accent = custom ? design.accent.trim() : recipe.accent;
   return {
     ...recipe,
     accent,
     accentSoft: custom ? hexToRgba(accent, 0.16) : recipe.accentSoft,
-    layout: design.layout,
+    layout: name,
     mode: design.mode,
-    align: resolveAlign(design.align, LAYOUT_ALIGN[design.layout]),
+    align: resolveAlign(design.align, align),
   };
 }
 
