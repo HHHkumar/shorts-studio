@@ -1,3 +1,4 @@
+import { resolveAlign, type Align } from './align';
 import type { DesignSettings, LayoutName, ThemeMode } from './types';
 
 export interface Theme {
@@ -28,6 +29,8 @@ export interface Theme {
   bounce: number;
   shadow: string;
   glow: string;
+  /** Where blocks of text sit. See src/lib/align.ts for what does not follow it. */
+  align: Align;
 }
 
 // Font stacks only - nothing is downloaded, so the headless-Chrome render
@@ -55,7 +58,18 @@ const FONTS = {
 const ORGANIC_DISPLAY = "'Caprasimo', 'Segoe UI Black', Georgia, " + INDIC + ", serif";
 const ORGANIC_BODY = "'Figtree', 'Segoe UI', Roboto, " + INDIC + ", sans-serif";
 
-type Recipe = Omit<Theme, 'layout' | 'mode'>;
+type Recipe = Omit<Theme, 'layout' | 'mode' | 'align'>;
+
+// What each layout was designed for. Separate from the recipes because it does
+// not change between dark and light, and a creator can override it.
+const LAYOUT_ALIGN: Record<LayoutName, Align> = {
+  simple: 'center',
+  elegant: 'center',
+  nerdy: 'center',
+  flashy: 'center',
+  // Organic's readme: "Left-aligned, asymmetric layouts. Flush-left headings."
+  organic: 'left',
+};
 
 const RECIPES: Record<LayoutName, Record<ThemeMode, Recipe>> = {
   // --- SIMPLE: clean, high contrast, nothing to distract -------------------
@@ -225,6 +239,7 @@ export function getTheme(design: DesignSettings): Theme {
     accentSoft: custom ? hexToRgba(accent, 0.16) : recipe.accentSoft,
     layout: design.layout,
     mode: design.mode,
+    align: resolveAlign(design.align, LAYOUT_ALIGN[design.layout]),
   };
 }
 
@@ -246,6 +261,7 @@ export const DEFAULT_DESIGN: DesignSettings = {
   textReveal: 'fade',
   overlay: 'none',
   overlayIntensity: 0.5,
+  align: 'auto',
   showStock: true,
   stockOpacity: 0.45,
   music: 'calm',

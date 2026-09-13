@@ -3,6 +3,7 @@ import { interpolate, useCurrentFrame, useVideoConfig } from 'remotion';
 import { activeOption, alignOptions } from '../../lib/options-timing';
 import type { Theme } from '../../lib/theme';
 import { hexToRgba } from '../../lib/theme';
+import { flexAlignFor } from '../../lib/align';
 import type { QuizContent, Scene } from '../../lib/types';
 import { ReadAlong } from '../ReadAlong';
 import { autoFontSize, Pill, Stage, useEnter, useMetrics, useSceneSeconds } from '../ui';
@@ -401,7 +402,7 @@ const CaptionBand: React.FC<{ scene: Scene; theme: Theme }> = ({ scene, theme })
         right: m.padX,
         bottom: Math.round(m.padBottom * 0.42),
         display: 'flex',
-        justifyContent: 'center',
+        justifyContent: flexAlignFor(theme.align),
       }}
     >
       <ReadAlong

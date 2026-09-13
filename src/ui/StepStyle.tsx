@@ -8,6 +8,7 @@ import { AMBIENT_GROUPS } from '../remotion/ambient';
 import { TRANSITIONS } from '../lib/transitions';
 import { TEXT_REVEALS } from '../lib/text-reveal';
 import { OVERLAYS } from '../remotion/Overlays';
+import { ALIGN_OPTIONS } from '../lib/align';
 
 const ACCENTS = [
   { name: 'Layout default', value: '' },
@@ -221,6 +222,13 @@ export const StepStyle: React.FC<{
           options={TEXT_REVEALS.map((r) => ({ id: r.id, label: r.label }))}
           onChange={(v) => set('textReveal', v)}
           hint={TEXT_REVEALS.find((r) => r.id === (design.textReveal || 'fade'))?.blurb}
+        />
+        <Select
+          label="Where the text sits"
+          value={design.align || 'auto'}
+          options={ALIGN_OPTIONS.map((o) => ({ id: o.id, label: o.label }))}
+          onChange={(v) => set('align', v)}
+          hint={ALIGN_OPTIONS.find((o) => o.id === (design.align || 'auto'))?.blurb}
         />
       </div>
 

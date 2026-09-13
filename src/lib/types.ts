@@ -373,6 +373,11 @@ export interface DesignSettings {
   overlay: string;
   /** 0-1, capped per overlay in the renderer so captions stay readable. */
   overlayIntensity: number;
+  /**
+   * Where text sits: 'auto' (what the layout was designed for), 'center' or
+   * 'left'. Optional because settings saved before it existed lack it.
+   */
+  align?: string;
   /** Draw the chosen stock photos behind each scene. */
   showStock: boolean;
   /** 0-1. How strongly the backdrop photo shows through. */

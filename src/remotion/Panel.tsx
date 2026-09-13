@@ -3,6 +3,7 @@ import { interpolate, useCurrentFrame, useVideoConfig } from 'remotion';
 import { alignLabels, revealedCount } from '../lib/options-timing';
 import type { Theme } from '../lib/theme';
 import { hexToRgba } from '../lib/theme';
+import { textAlignFor } from '../lib/align';
 import type { PanelEdge, PanelNode, PanelStep, ScenePanel, WordTiming } from '../lib/types';
 import { autoFontSize, useEnter, useMetrics, useSceneSeconds } from './ui';
 import { MotionPanel } from './Motion';
@@ -77,7 +78,7 @@ export const TitlePanel: React.FC<PanelProps> = ({ theme, panel }) => {
   const title = panel.title || '';
 
   return (
-    <div style={{ width: '100%', textAlign: 'center' }}>
+    <div style={{ width: '100%', textAlign: textAlignFor(theme.align) }}>
       <div
         style={{
           fontFamily: theme.fontDisplay,
@@ -95,10 +96,11 @@ export const TitlePanel: React.FC<PanelProps> = ({ theme, panel }) => {
         {title}
       </div>
 
-      {/* A rule that draws itself outwards from the centre. */}
+      {/* A rule that draws itself out from under the first letter: outwards
+          from the centre when centred, rightwards from the edge when not. */}
       <div
         style={{
-          margin: '30px auto 0',
+          margin: theme.align === 'left' ? '30px 0 0' : '30px auto 0',
           height: 5,
           width: 240 * under,
           borderRadius: 999,
@@ -1248,7 +1250,7 @@ export const RecapPanel: React.FC<PanelProps> = ({ theme, panel, words, offset }
             letterSpacing: theme.displayTracking,
             color: theme.accent,
             opacity: head,
-            textAlign: 'center',
+            textAlign: textAlignFor(theme.align),
             marginBottom: 6,
           }}
         >
