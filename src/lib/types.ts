@@ -7,6 +7,7 @@
 
 export type ThemeMode = 'dark' | 'light';
 import type { DesignLookSlug } from './design-looks';
+import type { Figure, FigureCheck } from './figures/index.ts';
 
 export type BuiltInLayout = 'simple' | 'elegant' | 'nerdy' | 'flashy';
 /** The built-in layouts plus every look imported from Claude Design (design-kits/). */
@@ -83,6 +84,14 @@ export interface QuizContent {
   explanation: string[];
   /** A surprising related fact, used to boost the curiosity payoff. */
   funFact: string;
+  /**
+   * The figure of the question itself - its circuit, its junction - with every
+   * value on it computed. Only present when that computation agrees with the
+   * correct option. See src/lib/figures.
+   */
+  figure?: Figure;
+  /** What happened when the figure was checked against the answer. */
+  figureCheck?: FigureCheck;
   /** Call to action for the last scene. */
   outro: string;
   hashtags: string[];
@@ -93,7 +102,7 @@ export interface QuizContent {
 }
 
 /** The kinds of picture a scene can carry alongside its text. */
-export type VisualKind = 'none' | 'formula' | 'bars' | 'compare' | 'icon' | 'sketch';
+export type VisualKind = 'none' | 'formula' | 'bars' | 'compare' | 'icon' | 'sketch' | 'figure';
 
 export interface VisualItem {
   label: string;
@@ -114,6 +123,14 @@ export interface SceneVisual {
   items?: VisualItem[];
   /** sketch: which animation from the curated library to run. */
   sketch?: string;
+  /**
+   * figure: draw the question's own figure (QuizContent.figure). Set by the
+   * server, never by the model: false on the question scene, so the unknown
+   * stays a "?", and true from the explanation on.
+   */
+  reveal?: boolean;
+  /** figure: the id of a part or branch this scene is talking about. */
+  highlight?: string;
   /** sketch: the knobs that animation reads. See src/remotion/sketches.ts. */
   params?: {
     mode?: string;

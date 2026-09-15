@@ -220,7 +220,7 @@ export const QuestionScene: React.FC<SceneProps> = ({ theme, scene, content, sho
         />
       ) : null}
       {/* Setup only - the server strips anything that could reveal the answer. */}
-      {showVisuals ? <Visual theme={theme} visual={scene.visual} /> : null}
+      {showVisuals ? <Visual theme={theme} visual={scene.visual} figure={content.figure} /> : null}
     </Stage>
   );
 };
@@ -330,6 +330,7 @@ export const AnswerScene: React.FC<SceneProps> = ({ theme, scene, content, showT
 export const ExplainScene: React.FC<SceneProps> = ({
   theme,
   scene,
+  content,
   stepIndex,
   stepTotal,
   showVisuals,
@@ -350,7 +351,7 @@ export const ExplainScene: React.FC<SceneProps> = ({
             minSize={Math.round(m.headlineMin * 0.82)}
           />
         ) : null}
-        {showVisuals ? <Visual theme={theme} visual={scene.visual} /> : null}
+        {showVisuals ? <Visual theme={theme} visual={scene.visual} figure={content.figure} /> : null}
       </div>
     </Stage>
   );
@@ -372,7 +373,7 @@ export const OutroScene: React.FC<SceneProps> = ({ theme, scene, content, showVi
             minSize={Math.round(m.headlineMin * 0.9)}
           />
         ) : null}
-        {showVisuals ? <Visual theme={theme} visual={scene.visual} /> : null}
+        {showVisuals ? <Visual theme={theme} visual={scene.visual} figure={content.figure} /> : null}
       </div>
     </Stage>
   );

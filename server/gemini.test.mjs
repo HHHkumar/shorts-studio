@@ -165,5 +165,63 @@ ok('a body with no details yields nothing rather than throwing',
    fieldViolations('{"error":{"message":"x"}}') === '');
 ok('unparseable body yields nothing rather than throwing', fieldViolations('<html>') === '');
 
+// --- the question's own figure --------------------------------------------------------
+// The KCL video asked about a junction with 2 A and 4 A in and 1 A out, and
+// illustrated it with a formula card and three resistors in parallel. These are
+// the rules that stop that happening again.
+const junction = (unknownValue) => ({
+  type: 'junction',
+  branches: [
+    { label: 'I1', value: 2, unit: 'A', direction: 'in' },
+    { label: 'I2', value: 4, unit: 'A', direction: 'in' },
+    { label: 'I3', value: 1, unit: 'A', direction: 'out' },
+    { label: 'I4', value: unknownValue, unit: 'A', direction: 'out', unknown: true },
+  ],
+});
+const kclQuestion = (figure, correctIndex = 2, extraScript = []) => normalizeContent({
+  question: 'What current leaves through the fourth branch?',
+  options: ['Seven amperes', 'One ampere', 'Five amperes', 'Three amperes'], correctIndex,
+  figure,
+  script: [
+    { kind: 'question', narration: 'Two currents enter...', visual: { kind: 'formula', formula: 'ΣI = 0' } },
+    { kind: 'explain', narration: 'Add what enters.', visual: { kind: 'figure', highlight: 'I1' } },
+    ...extraScript,
+  ],
+}, base);
+
+let fig = kclQuestion(junction(5));
+ok('a figure that agrees with the correct option is kept', fig.figure && fig.figure.type === 'junction');
+ok('and its check says so', fig.figureCheck && fig.figureCheck.status === 'match' && fig.figureCheck.computed === '5 A',
+   JSON.stringify(fig.figureCheck));
+const qScene = fig.script.find((s) => s.kind === 'question');
+ok('the question scene shows the figure, not the formula card it asked for', qScene.visual.kind === 'figure');
+ok('with the answer still hidden', qScene.visual.reveal === false);
+const eScene = fig.script.find((s) => s.kind === 'explain' && s.visual.kind === 'figure');
+ok('an explain scene shows it with the answer revealed', eScene && eScene.visual.reveal === true);
+ok('and keeps its highlight', eScene && eScene.visual.highlight === 'I1');
+
+fig = kclQuestion(junction(5), 0);
+ok('a figure that disagrees with the correct option is NOT drawn', !fig.figure);
+ok('the mismatch is reported with both numbers',
+   fig.figureCheck && fig.figureCheck.status === 'mismatch' && fig.figureCheck.computed === '5 A' && fig.figureCheck.option === 'Seven amperes',
+   JSON.stringify(fig.figureCheck));
+ok('and no scene is left pointing at a figure that is gone',
+   fig.script.every((s) => s.visual.kind !== 'figure'));
+
+fig = kclQuestion(junction(7));
+ok('a junction where charge is not conserved is refused', !fig.figure && fig.figureCheck && fig.figureCheck.status === 'invalid');
+ok('with the reason spelled out', /balance/.test((fig.figureCheck.problems || []).join()), JSON.stringify(fig.figureCheck));
+
+fig = kclQuestion({ type: 'none' });
+ok('no figure: nothing drawn and nothing reported', !fig.figure && !fig.figureCheck);
+ok('and a figure visual degrades to none', fig.script.every((s) => s.visual.kind !== 'figure'));
+
+fig = kclQuestion({ type: 'circuit', nodes: [{ id: 'A', col: 0, row: 0 }, { id: 'B', col: 1, row: 1 }],
+  elements: [{ id: 'R1', kind: 'resistor', from: 'A', to: 'B', value: 1, unit: 'Ω' }] });
+ok('a diagonal circuit is refused rather than drawn wrong', !fig.figure && /diagonal/.test((fig.figureCheck.problems || []).join()));
+
+fig = kclQuestion(junction(5), 2, [{ kind: 'hook', narration: 'hi', visual: { kind: 'figure' } }]);
+ok('a figure is never shown before the question', fig.script.find((s) => s.kind === 'hook').visual.kind === 'none');
+
 console.log(fails ? '\n' + fails + ' FAILURES' : '\nall checks passed');
 process.exit(fails ? 1 : 0);

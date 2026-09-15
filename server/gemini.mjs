@@ -7,12 +7,83 @@
 import { SKETCH_NAMES, sketchPromptLines } from './sketch-catalogue.mjs';
 import { fetchRetrying } from './retry.mjs';
 import { callClaude } from './claude.mjs';
+// Loaded straight from the app's TypeScript: Node strips the types itself, and
+// sharing the one module means the server checks a figure with exactly the
+// arithmetic the renderer will draw it with.
+import { checkFigure, normalizeFigure } from '../src/lib/figures/index.ts';
 
 const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models';
 
 // Kinds Gemini is allowed to emit. 'intro' is deliberately absent: that scene is
 // the creator's own greeting and is inserted verbatim, never written by a model.
 const SCENE_KINDS = ['hook', 'question', 'options', 'countdown', 'answer', 'explain', 'outro'];
+
+/**
+ * The question's own figure - its circuit or its junction - written as data.
+ * See src/lib/figures: every value on it is computed from this, and the figure
+ * is only drawn when that computation agrees with the correct option.
+ */
+const FIGURE_SCHEMA = {
+  type: 'OBJECT',
+  properties: {
+    type: { type: 'STRING', enum: ['none', 'junction', 'circuit'] },
+    frequency: { type: 'NUMBER' },
+    branches: {
+      type: 'ARRAY',
+      items: {
+        type: 'OBJECT',
+        properties: {
+          label: { type: 'STRING' },
+          value: { type: 'NUMBER' },
+          unit: { type: 'STRING' },
+          direction: { type: 'STRING', enum: ['in', 'out'] },
+          unknown: { type: 'BOOLEAN' },
+        },
+        required: ['label', 'value', 'direction'],
+        propertyOrdering: ['label', 'value', 'unit', 'direction', 'unknown'],
+      },
+    },
+    nodes: {
+      type: 'ARRAY',
+      items: {
+        type: 'OBJECT',
+        properties: { id: { type: 'STRING' }, col: { type: 'INTEGER' }, row: { type: 'INTEGER' } },
+        required: ['id', 'col', 'row'],
+        propertyOrdering: ['id', 'col', 'row'],
+      },
+    },
+    elements: {
+      type: 'ARRAY',
+      items: {
+        type: 'OBJECT',
+        properties: {
+          id: { type: 'STRING' },
+          kind: { type: 'STRING', enum: ['resistor', 'lamp', 'inductor', 'capacitor', 'voltage', 'current', 'wire'] },
+          from: { type: 'STRING' },
+          to: { type: 'STRING' },
+          value: { type: 'NUMBER' },
+          unit: { type: 'STRING' },
+          label: { type: 'STRING' },
+          unknown: { type: 'BOOLEAN' },
+        },
+        required: ['id', 'kind', 'from', 'to'],
+        propertyOrdering: ['id', 'kind', 'from', 'to', 'value', 'unit', 'label', 'unknown'],
+      },
+    },
+    ask: {
+      type: 'OBJECT',
+      properties: {
+        quantity: { type: 'STRING', enum: ['current', 'voltage', 'power', 'resistance', 'impedance'] },
+        element: { type: 'STRING' },
+        from: { type: 'STRING' },
+        to: { type: 'STRING' },
+      },
+      propertyOrdering: ['quantity', 'element', 'from', 'to'],
+    },
+  },
+  required: ['type'],
+  propertyOrdering: ['type', 'frequency', 'branches', 'nodes', 'elements', 'ask'],
+};
 
 // Structured output: Gemini is forced to return exactly this shape, so we never
 // have to fish JSON out of prose.
@@ -32,6 +103,7 @@ const RESPONSE_SCHEMA = {
     outro: { type: 'STRING' },
     hashtags: { type: 'ARRAY', items: { type: 'STRING' } },
     motifSymbols: { type: 'ARRAY', items: { type: 'STRING' } },
+    figure: FIGURE_SCHEMA,
     script: {
       type: 'ARRAY',
       items: {
@@ -43,7 +115,8 @@ const RESPONSE_SCHEMA = {
           visual: {
             type: 'OBJECT',
             properties: {
-              kind: { type: 'STRING', enum: ['none', 'formula', 'bars', 'compare', 'icon', 'sketch'] },
+              kind: { type: 'STRING', enum: ['none', 'formula', 'bars', 'compare', 'icon', 'sketch', 'figure'] },
+              highlight: { type: 'STRING' },
               formula: { type: 'STRING' },
               caption: { type: 'STRING' },
               // Deliberately NOT an enum, though every valid name is listed in
@@ -89,7 +162,7 @@ const RESPONSE_SCHEMA = {
               },
             },
             required: ['kind'],
-            propertyOrdering: ['kind', 'formula', 'caption', 'items', 'sketch', 'params'],
+            propertyOrdering: ['kind', 'highlight', 'formula', 'caption', 'items', 'sketch', 'params'],
           },
         },
         required: ['kind', 'narration'],
@@ -103,7 +176,7 @@ const RESPONSE_SCHEMA = {
   ],
   propertyOrdering: [
     'subject', 'topic', 'difficulty', 'hook', 'question', 'options', 'correctIndex',
-    'answerLine', 'explanation', 'funFact', 'outro', 'hashtags', 'motifSymbols', 'script',
+    'answerLine', 'explanation', 'funFact', 'outro', 'hashtags', 'motifSymbols', 'figure', 'script',
   ],
 };
 
@@ -138,13 +211,16 @@ const SYSTEM = [
   'The four options must all be plausible. Exactly one is correct. correctIndex is 0-based.',
   'Do not put "A)", "B)" or bullet characters inside the option strings.',
   '',
-  'DIAGRAMS. Use them generously. A wall of text is a weak video; showing the thing is what makes',
-  'an explainer worth watching. Reach for one whenever there is something to show.',
+  'DIAGRAMS. A diagram must show the actual thing the scene is about. A picture that is merely',
+  'related to the topic - three resistors in parallel for a question about one junction, a bar',
+  'magnet for a question about an inductor - teaches the viewer something false and is worse than',
+  'no picture. When nothing available shows the real situation, use "none". Never decorate.',
   '',
   'Where they are allowed:',
   '- explain and outro scenes: any kind.',
   '- question scene: a SETUP diagram only - the circuit, the apparatus, the geometry being asked',
-  '  about. It must not hint at which option is correct. Use "sketch" or "formula" here, never',
+  '  about. It must not hint at which option is correct. Use "figure" whenever the question has one,',
+  '  otherwise "sketch" or "formula", never',
   '  bars, compare or icon, and never a graph or pie, because a plotted curve usually IS the answer.',
   '- hook, options, countdown and answer: always "none".',
   '- formula : one short equation in plain unicode, e.g. "F = m × a" or "v² = u² + 2as".',
@@ -156,9 +232,43 @@ const SYSTEM = [
   '- compare : exactly 2 things side by side. Each item needs a short label and one emoji as',
   '            "symbol". Best for before/after, or here/there.',
   '- icon    : one emoji as "symbol" plus a 1-3 word label.',
-  '- sketch  : a real animation from the library below.',
+  '- figure  : the question\'s own circuit or junction, drawn from "figure" (see THE FIGURE below).',
+  '            Set "highlight" to a part id or branch label when the scene is about that part.',
+  '- sketch  : a real animation from the library below - only when it shows THIS situation.',
   '- none    : no diagram for this scene.',
   'Say nothing in a diagram that gives away the answer before the answer scene.',
+  '',
+  'THE FIGURE. When the question is about a specific circuit, or currents meeting at a junction,',
+  'write that circuit down in "figure" so the video draws THAT circuit with its real values - not',
+  'a generic one. Every number on it is computed from what you write and checked against your',
+  'correct option; a figure that does not check out is thrown away. For any other question, set',
+  'figure.type to "none".',
+  '- junction: for Kirchhoff current-law questions. 3 to 6 branches, each with a label (I1, I2...),',
+  '  its value in amperes (or unit "mA"), and direction "in" or "out" of the node. Mark the branch',
+  '  being asked for "unknown": true and STILL give its true value. What goes in must equal what',
+  '  comes out.',
+  '- circuit: nodes sit on a grid, col 0 to 4 and row 0 to 3. Every part runs straight along a row',
+  '  or down a column between two nodes. kinds: resistor, lamp, inductor, capacitor, voltage (a',
+  '  source), current (a source), wire. Give value with unit: "Ω", "kΩ", "V", "A", "mH", "µF". For a',
+  '  source, "from" is the negative terminal and "to" the positive. frequency is 0 for DC, or the',
+  '  supply frequency in Hz, with AC values as RMS. Parts must not cross, overlap, or run through a',
+  '  node they do not connect to - two parts in parallel each get their own column, joined by wires.',
+  '  ask: what the question asks for. {"quantity": "current" | "voltage" | "power", "element": id},',
+  '  or {"quantity": "voltage" | "resistance" | "impedance", "from": node, "to": node}. Mark a part',
+  '  "unknown": true only when its own value is the answer, and still give that value.',
+  '  Example, 10 V feeding 2 Ω then 6 Ω and 3 Ω in parallel, asking the current in the 3 Ω:',
+  '  {"type":"circuit","frequency":0,',
+  '   "nodes":[{"id":"A","col":0,"row":0},{"id":"B","col":2,"row":0},{"id":"C","col":4,"row":0},',
+  '            {"id":"D","col":4,"row":2},{"id":"E","col":2,"row":2},{"id":"F","col":0,"row":2}],',
+  '   "elements":[{"id":"V1","kind":"voltage","from":"F","to":"A","value":10,"unit":"V"},',
+  '     {"id":"R1","kind":"resistor","from":"A","to":"B","value":2,"unit":"Ω"},',
+  '     {"id":"R2","kind":"resistor","from":"B","to":"E","value":6,"unit":"Ω"},',
+  '     {"id":"W1","kind":"wire","from":"B","to":"C"},',
+  '     {"id":"R3","kind":"resistor","from":"C","to":"D","value":3,"unit":"Ω"},',
+  '     {"id":"W2","kind":"wire","from":"D","to":"E"},{"id":"W3","kind":"wire","from":"E","to":"F"}],',
+  '   "ask":{"quantity":"current","element":"R3"}}',
+  '- Show it with visual kind "figure" on the question scene - the asked value appears as "?" -',
+  '  and on the explain scenes that work through it.',
   '',
   ...sketchPromptLines(),
   '',
@@ -244,7 +354,8 @@ function budgetLines(budget) {
     lines.push('  e. The common misconception, named and corrected.');
     lines.push('  f. Where it shows up in the real world, and why it matters.');
     lines.push('Each scene still says ONE thing. Depth comes from the sequence, not from cramming.');
-    lines.push('Use the diagram field often here - a formula, a bar chart or a sketch every few scenes.');
+    lines.push('Use the diagram field often here - a formula, a bar chart or a sketch every few scenes -');
+    lines.push('but only where it shows the real thing being said. A merely related picture is worse than none.');
   }
 
   return lines;
@@ -283,8 +394,8 @@ const DIAGRAM_DENSITY = {
   sparse: 'Use a diagram only where it genuinely earns its place - roughly one explain scene in three.',
   balanced: 'Put a diagram on most explain scenes, and on the question scene when there is a setup worth showing.',
   rich: 'Put a diagram on EVERY explain scene, and a setup diagram on the question scene. '
-    + 'Vary the kind - do not use the same one twice in a row. If nothing fits a scene, prefer a '
-    + 'sketch over leaving it bare.',
+    + 'Vary the kind - do not use the same one twice in a row. If nothing shows the real situation '
+    + 'of a scene, leave it bare: a merely related picture is worse than none.',
 };
 
 function densityLine(o) {
@@ -870,12 +981,25 @@ export function normalizeContent(input, options) {
     script: [],
   };
 
+  // The question's own figure. Kept only when its arithmetic agrees with the
+  // correct option: a mismatch means the figure or the answer is wrong, and
+  // either way a video must not draw one number and say another. What was
+  // wrong is kept in figureCheck, so the creator hears about it.
+  const { figure, errors: figureErrors } = normalizeFigure(c.figure);
+  if (figure) {
+    const check = checkFigure(figure, opts[correctIndex]);
+    content.figureCheck = check;
+    if (check.status !== 'mismatch') content.figure = figure;
+  } else if (figureErrors.length) {
+    content.figureCheck = { status: 'invalid', problems: figureErrors.slice(0, 4) };
+  }
+
   let script = (Array.isArray(c.script) ? c.script : [])
     .map((s) => ({
       kind: SCENE_KINDS.includes(s && s.kind) ? s.kind : 'explain',
       narration: clean(s && s.narration),
       imageQuery: clean(s && s.imageQuery).slice(0, 60),
-      visual: normalizeVisual(s && s.visual, SCENE_KINDS.includes(s && s.kind) ? s.kind : 'explain'),
+      visual: normalizeVisual(s && s.visual, SCENE_KINDS.includes(s && s.kind) ? s.kind : 'explain', content.figure),
     }))
     .filter((s) => s.narration || s.kind === 'countdown');
 
@@ -954,6 +1078,16 @@ export function normalizeContent(input, options) {
 
   script = dropRepeatedSketches(script);
 
+  // A question about a particular circuit is unreadable without that circuit
+  // on screen. The KCL video asked about a junction and showed a formula card
+  // instead; when there is a figure, the question scene always carries it.
+  if (content.figure) {
+    const question = script.find((s) => s.kind === 'question');
+    if (question && (!question.visual || question.visual.kind !== 'figure')) {
+      question.visual = { kind: 'figure', caption: '', reveal: false };
+    }
+  }
+
   content.script = script;
   return content;
 }
@@ -1003,7 +1137,7 @@ export function dropRepeatedSketches(script) {
 // Diagram validation
 // ---------------------------------------------------------------------------
 
-const VISUAL_KINDS = ['none', 'formula', 'bars', 'compare', 'icon', 'sketch'];
+const VISUAL_KINDS = ['none', 'formula', 'bars', 'compare', 'icon', 'sketch', 'figure'];
 
 /** Every sketch name, keyed by a loosened form of itself. Built once. */
 const SKETCH_BY_LOOSE = new Map(
@@ -1065,7 +1199,7 @@ function normalizeParams(raw) {
  * numbers, or a "compare" with one side missing, would draw a broken scene.
  * Anything that does not fully check out degrades to no diagram at all.
  */
-function normalizeVisual(raw, sceneKind) {
+function normalizeVisual(raw, sceneKind, figure) {
   if (!raw || typeof raw !== 'object') return { kind: 'none' };
   // A diagram before the answer gives the game away: an icon captioned
   // "Venus mystery" on the opening screen tells the viewer the answer is Venus
@@ -1076,6 +1210,18 @@ function normalizeVisual(raw, sceneKind) {
   if (kind === 'none') return { kind: 'none' };
 
   const setupOnly = sceneKind === 'question';
+  if (kind === 'figure') {
+    // Only the question's own figure can be shown, and only if it survived
+    // its check. The unknown stays a "?" on the question scene.
+    if (!figure) return { kind: 'none' };
+    const highlight = clean(raw.highlight).replace(/[^A-Za-z0-9_]/g, '').slice(0, 8);
+    return {
+      kind,
+      caption: setupOnly ? '' : clean(raw.caption).slice(0, 60),
+      reveal: !setupOnly,
+      ...(highlight ? { highlight } : {}),
+    };
+  }
   if (setupOnly) {
     if (kind === 'sketch') {
       if (!SETUP_SAFE_SKETCHES.has(clean(raw.sketch))) return { kind: 'none' };

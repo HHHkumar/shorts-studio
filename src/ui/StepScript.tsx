@@ -6,6 +6,7 @@ import {
   type ValidationReport,
 } from '../lib/api';
 import type { QuizContent, ScenePanel, SceneKind, ScriptLine } from '../lib/types';
+import type { FigureCheck } from '../lib/figures/index.ts';
 import { missingLabels } from '../lib/options-timing';
 import { motionWordsIn } from '../lib/motion-lexicon';
 import { scriptSeconds } from '../lib/blank-script';
@@ -148,6 +149,54 @@ const VERDICT_STYLE: Record<string, { kind: 'good' | 'warn' | 'error'; icon: str
   pass: { kind: 'good', icon: '✅', title: 'DeepSeek agrees' },
   warn: { kind: 'warn', icon: '⚠️', title: 'DeepSeek has reservations' },
   fail: { kind: 'error', icon: '❌', title: 'DeepSeek disagrees' },
+};
+
+/**
+ * What happened to the question's figure.
+ *
+ * The figure's numbers are worked out, not written, so when they disagree with
+ * the marked answer one of the two is wrong - and the figure was left out of
+ * the video rather than draw one number and say another. That is worth telling
+ * the creator plainly, because it is also a free second check on the answer.
+ */
+const FigureCard: React.FC<{ check?: FigureCheck; hasFigure: boolean }> = ({ check, hasFigure }) => {
+  if (!check) return null;
+  if (check.status === 'match' && hasFigure) {
+    return (
+      <Note kind="good" title="✅  The diagram agrees with the answer">
+        The circuit was worked out independently and gives <b style={{ display: 'inline' }}>{check.computed}</b>,
+        which matches the marked answer. It is drawn on the question and the explanation.
+      </Note>
+    );
+  }
+  if (check.status === 'mismatch') {
+    return (
+      <Note kind="error" title="❌  The diagram does not agree with the answer">
+        Working the circuit out gives <b style={{ display: 'inline' }}>{check.computed}</b>, but the marked
+        answer is <b style={{ display: 'inline' }}>{check.option}</b>. Either the answer or the circuit in the
+        question is wrong, so the diagram has been left out rather than show a different number from
+        the one the voice says. Check the question before making the voiceover.
+      </Note>
+    );
+  }
+  if (check.status === 'invalid') {
+    return (
+      <Note kind="warn" title="⚠️  The diagram was not drawn">
+        Gemini described the circuit in a way that cannot be drawn honestly, so the question has no
+        diagram:
+        <ul className="issues" style={{ marginTop: 6 }}>
+          {(check.problems || []).map((p, i) => <li key={i}>{p}</li>)}
+        </ul>
+        Generating again usually fixes it.
+      </Note>
+    );
+  }
+  return hasFigure ? (
+    <Note kind="info" title="The diagram is drawn but not checked">
+      The marked answer has no number in it to compare with the circuit, so the diagram is shown
+      exactly as described. Look it over.
+    </Note>
+  ) : null;
 };
 
 const ReportCard: React.FC<{ report: ValidationReport; onApply: () => void }> = ({ report, onApply }) => {
@@ -377,6 +426,7 @@ export const StepScript: React.FC<{
       </p>
 
       {mine ? null : <div className="section-title">Second opinion</div>}
+      {mine || explainer ? null : <FigureCard check={content.figureCheck} hasFigure={!!content.figure} />}
       {mine ? null : explainer ? (
         <Note kind="info" title="Not available on explainers yet">
           The DeepSeek check works by solving the question independently and comparing answers. An
