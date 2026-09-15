@@ -220,6 +220,19 @@ fig = kclQuestion({ type: 'circuit', nodes: [{ id: 'A', col: 0, row: 0 }, { id: 
   elements: [{ id: 'R1', kind: 'resistor', from: 'A', to: 'B', value: 1, unit: 'Ω' }] });
 ok('a diagonal circuit is refused rather than drawn wrong', !fig.figure && /diagonal/.test((fig.figureCheck.problems || []).join()));
 
+fig = kclQuestion(JSON.stringify(junction(5)));
+ok('a figure written as JSON text - how the model sends it - is read the same', fig.figure && fig.figureCheck.status === 'match');
+fig = kclQuestion('none');
+ok('the string "none" means no figure', !fig.figure && !fig.figureCheck);
+fig = kclQuestion('{"type": "junction", "branches": [');
+ok('broken JSON is refused and reported, not thrown', !fig.figure && fig.figureCheck.status === 'invalid');
+
+const { figurePromptLines } = await import('../src/lib/figures/index.ts');
+const electrical = figurePromptLines('Basic Electrical Engineering', 'Kirchhoff’s laws').join('\n');
+ok('an electrical video is taught the circuit and junction figures', /"circuit"/.test(electrical) && /"junction"/.test(electrical));
+const gk = figurePromptLines('Static GK — History, Geography & Polity', 'Indian rivers').join('\n');
+ok('a GK video is told there are no figures, not shown circuit formats', !/"circuit"/.test(gk) && /none/.test(gk));
+
 fig = kclQuestion(junction(5), 2, [{ kind: 'hook', narration: 'hi', visual: { kind: 'figure' } }]);
 ok('a figure is never shown before the question', fig.script.find((s) => s.kind === 'hook').visual.kind === 'none');
 

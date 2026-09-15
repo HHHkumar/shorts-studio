@@ -107,3 +107,21 @@ export function layoutJunction(j: Junction, width: number, height: number) {
   const outs = j.branches.filter((b) => b.direction === 'out');
   return { cx, cy, length, branches: [...place(ins, 180), ...place(outs, 0)] };
 }
+
+import type { FigureFamily } from './family.ts';
+
+export const JUNCTION_FAMILY: FigureFamily<Junction> = {
+  type: 'junction',
+  label: 'currents meeting at one node, for Kirchhoff current-law questions.',
+  fits: /electrical|network|circuit|kirchhoff|kcl|junction|nodal|measurement|electronics/i,
+  normalize: (raw) => { const r = normalizeJunction(raw); return { figure: r.junction, errors: r.errors }; },
+  answer: (j) => {
+    const a = answerJunction(j);
+    return a ? { kind: 'number', value: a.value, unit: 'A' } : null;
+  },
+  docs: [
+    '{"type":"junction","branches":[{"label":"I1","value":2,"unit":"A","direction":"in"},...]}',
+    '3 to 6 branches. value in amperes (or unit "mA"), direction "in" or "out" of the node. Mark the',
+    'branch being asked for "unknown": true and STILL give its true value. In must equal out.',
+  ],
+};

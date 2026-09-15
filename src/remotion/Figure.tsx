@@ -1,7 +1,7 @@
 import React from 'react';
 import { useCurrentFrame, useVideoConfig } from 'remotion';
 import type { Theme } from '../lib/theme';
-import { answerFigure, formatQuantity, type Figure } from '../lib/figures/index.ts';
+import { answerFigure, formatAnswer, formatQuantity, type Figure } from '../lib/figures/index.ts';
 import {
   ASK_UNIT, elementText, layoutCircuit, type Circuit, type CircuitElement, type PlacedElement,
 } from '../lib/figures/circuit.ts';
@@ -117,7 +117,7 @@ const JunctionArt: React.FC<ArtProps & { junction: Junction }> = ({ theme, junct
         opacity={at(junction.branches.length + 1)}
       >
         {reveal && unknown && answer
-          ? sum + '   →   ' + unknown.label + ' = ' + formatQuantity(answer.value, 'A')
+          ? sum + '   →   ' + unknown.label + ' = ' + formatAnswer(answer)
           : 'In = Out:   ' + sum}
       </text>
     </g>
@@ -140,7 +140,7 @@ function askText(c: Circuit, reveal: boolean): string {
   const lead = element ? QUANTITY_WORD[quantity] : (quantity[0].toUpperCase() + quantity.slice(1) + ' between');
   if (!reveal) return lead + ' ' + target + ' = ?';
   const answer = answerFigure(c);
-  return lead + ' ' + target + ' = ' + (answer ? formatQuantity(answer.value, ASK_UNIT[quantity]) : '?');
+  return lead + ' ' + target + ' = ' + (answer ? formatAnswer(answer) : '?');
 }
 
 const CircuitArt: React.FC<ArtProps & { circuit: Circuit; highlight?: string }> = ({

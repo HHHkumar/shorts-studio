@@ -581,3 +581,35 @@ export function layoutCircuit(c: Circuit, width: number, height: number, font = 
     }),
   };
 }
+
+import type { FigureFamily } from './family.ts';
+
+export const CIRCUIT_FAMILY: FigureFamily<Circuit> = {
+  type: 'circuit',
+  label: 'a circuit of sources, resistors, lamps, inductors and capacitors, solved by nodal analysis.',
+  fits: /electrical|network|circuit|ohm|kirchhoff|thevenin|norton|superposition|resonance|impedance|measurement|bridge|electronics|power factor|power systems|machines|utili[sz]ation|wiring/i,
+  normalize: (raw) => { const r = normalizeCircuit(raw); return { figure: r.circuit, errors: r.errors }; },
+  answer: (c) => {
+    const a = answerCircuit(c);
+    return a ? { kind: 'number', value: a.value, unit: a.unit } : null;
+  },
+  docs: [
+    'Nodes sit on a grid, col 0 to 4 and row 0 to 3. Every part runs straight along a row or down a',
+    'column between two nodes. kinds: resistor, lamp, inductor, capacitor, voltage (a source), current',
+    '(a source), wire. value with unit: "Ω", "kΩ", "V", "A", "mH", "µF". For a source "from" is the',
+    'negative terminal and "to" the positive. frequency: 0 for DC, else Hz, with AC values as RMS.',
+    'Parts must not cross, overlap, or run through a node they do not join - two parts in parallel',
+    'each get their own column, joined by wires.',
+    'ask: {"quantity":"current"|"voltage"|"power","element":id} or',
+    '{"quantity":"voltage"|"resistance"|"impedance","from":node,"to":node}. Mark a part "unknown": true',
+    'only when its own value is the answer, and still give that value.',
+    'Example, 10 V feeding 2 Ω then 6 Ω and 3 Ω in parallel, asking the current in the 3 Ω:',
+    '{"type":"circuit","frequency":0,"nodes":[{"id":"A","col":0,"row":0},{"id":"B","col":2,"row":0},',
+    '{"id":"C","col":4,"row":0},{"id":"D","col":4,"row":2},{"id":"E","col":2,"row":2},{"id":"F","col":0,"row":2}],',
+    '"elements":[{"id":"V1","kind":"voltage","from":"F","to":"A","value":10,"unit":"V"},',
+    '{"id":"R1","kind":"resistor","from":"A","to":"B","value":2,"unit":"Ω"},',
+    '{"id":"R2","kind":"resistor","from":"B","to":"E","value":6,"unit":"Ω"},{"id":"W1","kind":"wire","from":"B","to":"C"},',
+    '{"id":"R3","kind":"resistor","from":"C","to":"D","value":3,"unit":"Ω"},{"id":"W2","kind":"wire","from":"D","to":"E"},',
+    '{"id":"W3","kind":"wire","from":"E","to":"F"}],"ask":{"quantity":"current","element":"R3"}}',
+  ],
+};

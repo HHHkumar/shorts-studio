@@ -10,80 +10,13 @@ import { callClaude } from './claude.mjs';
 // Loaded straight from the app's TypeScript: Node strips the types itself, and
 // sharing the one module means the server checks a figure with exactly the
 // arithmetic the renderer will draw it with.
-import { checkFigure, normalizeFigure } from '../src/lib/figures/index.ts';
+import { checkFigure, figurePromptLines, normalizeFigure } from '../src/lib/figures/index.ts';
 
 const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models';
 
 // Kinds Gemini is allowed to emit. 'intro' is deliberately absent: that scene is
 // the creator's own greeting and is inserted verbatim, never written by a model.
 const SCENE_KINDS = ['hook', 'question', 'options', 'countdown', 'answer', 'explain', 'outro'];
-
-/**
- * The question's own figure - its circuit or its junction - written as data.
- * See src/lib/figures: every value on it is computed from this, and the figure
- * is only drawn when that computation agrees with the correct option.
- */
-const FIGURE_SCHEMA = {
-  type: 'OBJECT',
-  properties: {
-    type: { type: 'STRING', enum: ['none', 'junction', 'circuit'] },
-    frequency: { type: 'NUMBER' },
-    branches: {
-      type: 'ARRAY',
-      items: {
-        type: 'OBJECT',
-        properties: {
-          label: { type: 'STRING' },
-          value: { type: 'NUMBER' },
-          unit: { type: 'STRING' },
-          direction: { type: 'STRING', enum: ['in', 'out'] },
-          unknown: { type: 'BOOLEAN' },
-        },
-        required: ['label', 'value', 'direction'],
-        propertyOrdering: ['label', 'value', 'unit', 'direction', 'unknown'],
-      },
-    },
-    nodes: {
-      type: 'ARRAY',
-      items: {
-        type: 'OBJECT',
-        properties: { id: { type: 'STRING' }, col: { type: 'INTEGER' }, row: { type: 'INTEGER' } },
-        required: ['id', 'col', 'row'],
-        propertyOrdering: ['id', 'col', 'row'],
-      },
-    },
-    elements: {
-      type: 'ARRAY',
-      items: {
-        type: 'OBJECT',
-        properties: {
-          id: { type: 'STRING' },
-          kind: { type: 'STRING', enum: ['resistor', 'lamp', 'inductor', 'capacitor', 'voltage', 'current', 'wire'] },
-          from: { type: 'STRING' },
-          to: { type: 'STRING' },
-          value: { type: 'NUMBER' },
-          unit: { type: 'STRING' },
-          label: { type: 'STRING' },
-          unknown: { type: 'BOOLEAN' },
-        },
-        required: ['id', 'kind', 'from', 'to'],
-        propertyOrdering: ['id', 'kind', 'from', 'to', 'value', 'unit', 'label', 'unknown'],
-      },
-    },
-    ask: {
-      type: 'OBJECT',
-      properties: {
-        quantity: { type: 'STRING', enum: ['current', 'voltage', 'power', 'resistance', 'impedance'] },
-        element: { type: 'STRING' },
-        from: { type: 'STRING' },
-        to: { type: 'STRING' },
-      },
-      propertyOrdering: ['quantity', 'element', 'from', 'to'],
-    },
-  },
-  required: ['type'],
-  propertyOrdering: ['type', 'frequency', 'branches', 'nodes', 'elements', 'ask'],
-};
 
 // Structured output: Gemini is forced to return exactly this shape, so we never
 // have to fish JSON out of prose.
@@ -103,7 +36,10 @@ const RESPONSE_SCHEMA = {
     outro: { type: 'STRING' },
     hashtags: { type: 'ARRAY', items: { type: 'STRING' } },
     motifSymbols: { type: 'ARRAY', items: { type: 'STRING' } },
-    figure: FIGURE_SCHEMA,
+    // JSON text, not an object schema: there is a family for every kind of
+    // figure, and a schema that grew with each one would eventually be too big
+    // for the API to accept. src/lib/figures validates it instead, completely.
+    figure: { type: 'STRING' },
     script: {
       type: 'ARRAY',
       items: {
@@ -232,44 +168,13 @@ const SYSTEM = [
   '- compare : exactly 2 things side by side. Each item needs a short label and one emoji as',
   '            "symbol". Best for before/after, or here/there.',
   '- icon    : one emoji as "symbol" plus a 1-3 word label.',
-  '- figure  : the question\'s own circuit or junction, drawn from "figure" (see THE FIGURE below).',
+  '- figure  : the question\'s own figure, drawn from "figure" (see THE FIGURE in the request).',
   '            Set "highlight" to a part id or branch label when the scene is about that part.',
   '- sketch  : a real animation from the library below - only when it shows THIS situation.',
   '- none    : no diagram for this scene.',
   'Say nothing in a diagram that gives away the answer before the answer scene.',
   '',
-  'THE FIGURE. When the question is about a specific circuit, or currents meeting at a junction,',
-  'write that circuit down in "figure" so the video draws THAT circuit with its real values - not',
-  'a generic one. Every number on it is computed from what you write and checked against your',
-  'correct option; a figure that does not check out is thrown away. For any other question, set',
-  'figure.type to "none".',
-  '- junction: for Kirchhoff current-law questions. 3 to 6 branches, each with a label (I1, I2...),',
-  '  its value in amperes (or unit "mA"), and direction "in" or "out" of the node. Mark the branch',
-  '  being asked for "unknown": true and STILL give its true value. What goes in must equal what',
-  '  comes out.',
-  '- circuit: nodes sit on a grid, col 0 to 4 and row 0 to 3. Every part runs straight along a row',
-  '  or down a column between two nodes. kinds: resistor, lamp, inductor, capacitor, voltage (a',
-  '  source), current (a source), wire. Give value with unit: "Ω", "kΩ", "V", "A", "mH", "µF". For a',
-  '  source, "from" is the negative terminal and "to" the positive. frequency is 0 for DC, or the',
-  '  supply frequency in Hz, with AC values as RMS. Parts must not cross, overlap, or run through a',
-  '  node they do not connect to - two parts in parallel each get their own column, joined by wires.',
-  '  ask: what the question asks for. {"quantity": "current" | "voltage" | "power", "element": id},',
-  '  or {"quantity": "voltage" | "resistance" | "impedance", "from": node, "to": node}. Mark a part',
-  '  "unknown": true only when its own value is the answer, and still give that value.',
-  '  Example, 10 V feeding 2 Ω then 6 Ω and 3 Ω in parallel, asking the current in the 3 Ω:',
-  '  {"type":"circuit","frequency":0,',
-  '   "nodes":[{"id":"A","col":0,"row":0},{"id":"B","col":2,"row":0},{"id":"C","col":4,"row":0},',
-  '            {"id":"D","col":4,"row":2},{"id":"E","col":2,"row":2},{"id":"F","col":0,"row":2}],',
-  '   "elements":[{"id":"V1","kind":"voltage","from":"F","to":"A","value":10,"unit":"V"},',
-  '     {"id":"R1","kind":"resistor","from":"A","to":"B","value":2,"unit":"Ω"},',
-  '     {"id":"R2","kind":"resistor","from":"B","to":"E","value":6,"unit":"Ω"},',
-  '     {"id":"W1","kind":"wire","from":"B","to":"C"},',
-  '     {"id":"R3","kind":"resistor","from":"C","to":"D","value":3,"unit":"Ω"},',
-  '     {"id":"W2","kind":"wire","from":"D","to":"E"},{"id":"W3","kind":"wire","from":"E","to":"F"}],',
-  '   "ask":{"quantity":"current","element":"R3"}}',
-  '- Show it with visual kind "figure" on the question scene - the asked value appears as "?" -',
-  '  and on the explain scenes that work through it.',
-  '',
+
   ...sketchPromptLines(),
   '',
   'motifSymbols: 3 to 6 single emoji or symbols evoking the topic, e.g. ["🪐","🌙","⭐","g"].',
@@ -549,6 +454,8 @@ function buildPrompt(o) {
 
   lines.push(densityLine(o));
   examLines(o).forEach((l) => lines.push(l));
+  lines.push('');
+  figurePromptLines(o.subject, o.topic).forEach((l) => lines.push(l));
   budgetLines(budget).forEach((l) => lines.push(l));
 
   lines.push('');
