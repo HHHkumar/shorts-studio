@@ -33,6 +33,7 @@ import {
   generateGoogleImage, GOOGLE_IMAGE_MODELS, DEFAULT_GOOGLE_IMAGE_MODEL,
 } from './google-images.mjs';
 import { generateSeo } from './seo.mjs';
+import { buildArtPrompt, generateThumbnailBrief } from './thumbnail-brief.mjs';
 
 const PORT = Number(process.env.PORT || 3030);
 const GENERATED_DIR = path.join(paths.PUBLIC_DIR, 'generated');
@@ -382,12 +383,16 @@ app.post('/api/publish-kit', ok(async (req, res) => {
 // --- the thumbnail ----------------------------------------------------------
 
 app.post('/api/thumbnail', ok(async (req, res) => {
-  const { content, design, title, kicker, badge, figure, symbol, layout, shape } = req.body || {};
+  const { content, design, title, kicker, badge, figure, symbol, layout, shape, art } = req.body || {};
   if (!content) throw new Error('Generate a video before making a thumbnail for it.');
+
+  // The art path comes from the browser. Only an image this app drew, inside
+  // public/generated, is passed to the renderer - anything else is ignored.
+  const safeArt = art && readGeneratedImage({ src: art, publicDir: paths.PUBLIC_DIR }) ? String(art) : '';
 
   const started = Date.now();
   console.log('[thumbnail] rendering the ' + (layout || 'statement') + ' layout, '
-    + (shape === 'portrait' ? '9:16' : '16:9') + '...');
+    + (shape === 'portrait' ? '9:16' : '16:9') + (safeArt ? ', over Gemini art' : '') + '...');
   const out = await renderThumbnail({
     content,
     design,
@@ -398,10 +403,48 @@ app.post('/api/thumbnail', ok(async (req, res) => {
     symbol: symbol || '',
     layout: layout || 'statement',
     shape: shape === 'portrait' ? 'portrait' : 'landscape',
+    art: safeArt,
   });
   console.log('[thumbnail] done in ' + Math.round((Date.now() - started) / 1000) + 's - '
     + Math.round(out.bytes / 1024) + ' KB');
   res.json(out);
+}));
+
+/** Gemini reads the title and description and designs the thumbnail: words, layout, picture. */
+app.post('/api/thumbnail/brief', ok(async (req, res) => {
+  const { apiKey, model, content, title, description, shape } = req.body || {};
+  if (!content) throw new Error('Generate a video before making a thumbnail for it.');
+  const brief = await generateThumbnailBrief({
+    apiKey, model: model || 'gemini-2.5-flash', content, title, description,
+    shape: shape === 'portrait' ? 'portrait' : 'landscape',
+  });
+  console.log('[thumbnail] Gemini brief: "' + brief.title + '" (' + brief.layout + ')');
+  res.json({ brief });
+}));
+
+/** Gemini's image model paints the picture behind the words - with no words in it. */
+app.post('/api/thumbnail/art', ok(async (req, res) => {
+  const { apiKey, modelId, scene, shape, accent } = req.body || {};
+  if (!String(scene || '').trim()) throw new Error('Describe the picture first, or let Gemini design the thumbnail.');
+  const orientation = shape === 'portrait' ? 'portrait' : 'landscape';
+  const prompt = buildArtPrompt({ scene: String(scene).slice(0, 600), shape: orientation, accent });
+
+  const started = Date.now();
+  const { base64, mimeType } = await generateGoogleImage({
+    apiKey, prompt, orientation, modelId: modelId || DEFAULT_GOOGLE_IMAGE_MODEL,
+  });
+  // Under generated/thumbs, which the daily sweep leaves alone: the picture was paid for.
+  const saved = saveImageBuffer({
+    buffer: Buffer.from(base64, 'base64'),
+    mimeType,
+    id: 'art-' + randomUUID().slice(0, 8),
+    jobId: 'covers',
+    publicDir: paths.PUBLIC_DIR,
+    folder: 'thumbs',
+  });
+  console.log('[thumbnail] drew ' + saved.src + ' in ' + Math.round((Date.now() - started) / 1000) + 's ('
+    + Math.round(saved.bytes / 1024) + ' KB)');
+  res.json({ ...saved, prompt });
 }));
 
 // --- title, tags and description for the upload form ------------------------

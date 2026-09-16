@@ -342,6 +342,7 @@ export const App: React.FC = () => {
               orientation={design.orientation}
               design={design}
               videoProps={videoProps}
+              googleImageModels={googleImageModels}
               onBack={() => go(5)}
             />
           ) : null}

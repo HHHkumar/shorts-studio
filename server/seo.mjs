@@ -19,9 +19,30 @@ const RESPONSE_SCHEMA = {
     hashtags: { type: 'ARRAY', items: { type: 'STRING' } },
     thumbnailText: { type: 'STRING' },
     pinnedComment: { type: 'STRING' },
+    instagram: {
+      type: 'OBJECT',
+      properties: {
+        caption: { type: 'STRING' },
+        hashtags: { type: 'ARRAY', items: { type: 'STRING' } },
+        altText: { type: 'STRING' },
+      },
+      required: ['caption', 'hashtags', 'altText'],
+      propertyOrdering: ['caption', 'hashtags', 'altText'],
+    },
+    facebook: {
+      type: 'OBJECT',
+      properties: {
+        title: { type: 'STRING' },
+        caption: { type: 'STRING' },
+        hashtags: { type: 'ARRAY', items: { type: 'STRING' } },
+        keywords: { type: 'ARRAY', items: { type: 'STRING' } },
+      },
+      required: ['title', 'caption', 'hashtags', 'keywords'],
+      propertyOrdering: ['title', 'caption', 'hashtags', 'keywords'],
+    },
   },
-  required: ['titles', 'description', 'tags', 'hashtags', 'thumbnailText', 'pinnedComment'],
-  propertyOrdering: ['titles', 'description', 'tags', 'hashtags', 'thumbnailText', 'pinnedComment'],
+  required: ['titles', 'description', 'tags', 'hashtags', 'thumbnailText', 'pinnedComment', 'instagram', 'facebook'],
+  propertyOrdering: ['titles', 'description', 'tags', 'hashtags', 'thumbnailText', 'pinnedComment', 'instagram', 'facebook'],
 };
 
 const SYSTEM = [
@@ -54,6 +75,28 @@ const SYSTEM = [
   '',
   'thumbnailText: 2 to 4 words for the thumbnail. Big, punchy, readable at phone size.',
   'pinnedComment: one short comment inviting an answer or a follow-up, under 200 characters.',
+  '',
+  'The same video is also posted as an Instagram Reel and a Facebook Reel. Those are searched',
+  'differently from YouTube, so write for each rather than copying the YouTube text.',
+  '',
+  'instagram.caption: Instagram search reads the words of the caption, so the keywords a student',
+  '  would type (topic, concept, exam) must be in the sentences themselves.',
+  '- The first line is all that shows before "more": under 125 characters, a hook that names',
+  '  the topic. Asking the viewer to answer the question in the comments works well.',
+  '- Then 2 to 4 short lines on what the Reel covers, in plain words. One emoji per line at most.',
+  '- End with one call to action: save it for revision, or send it to a friend preparing for the exam.',
+  '- Do NOT put hashtags or the answer in the caption. Under 1000 characters.',
+  'instagram.hashtags: 3 to 5 - Instagram ignores any beyond five. Specific beats broad:',
+  '  one for the topic, one for the exam, one for the subject. No #Shorts, no #viral, no #fyp.',
+  'instagram.altText: one plain sentence describing what is on screen, with the topic keyword,',
+  '  under 120 characters. Instagram uses it for search as well as for screen readers.',
+  '',
+  'facebook.title: under 70 characters, plain and searchable, the topic first.',
+  'facebook.caption: Facebook shows very little before "See more", so 1 to 3 short sentences:',
+  '  a hook naming the topic, what the viewer learns, and a question inviting a comment.',
+  '  No hashtags and no answer inside it. Under 300 characters.',
+  'facebook.hashtags: 1 to 3, specific.',
+  'facebook.keywords: 5 to 10 lower-case search phrases for the video Tags field.',
   '',
   'Reply with the JSON object only.',
 ].join('\n');
@@ -92,13 +135,15 @@ function buildPrompt(content, options) {
 
   if (isShort) {
     lines.push('');
-    lines.push('This is a Short: keep the description tight, and put #Shorts in the hashtags.');
+    lines.push('This is a Short: keep the description tight, and put #Shorts in the YouTube hashtags only.');
   }
 
   lines.push('');
   lines.push('Return the JSON object only.');
   return lines.join('\n');
 }
+
+export { buildPrompt, normalizeSeo };
 
 export async function generateSeo(apiKey, model, content, options) {
   const body = {
@@ -191,8 +236,94 @@ function normalizeSeo(raw, content) {
     hashtags,
     thumbnailText: clean(r.thumbnailText, 40),
     pinnedComment: clean(r.pinnedComment, 200),
+    instagram: normalizeInstagram(r.instagram, hashtags),
+    facebook: normalizeFacebook(r.facebook, hashtags, tags),
     tagsLength: used,
     generatedAt: new Date().toISOString(),
+  };
+}
+
+/** Instagram's own limits. Five hashtags since December 2025 - any past five are ignored. */
+export const INSTAGRAM_CAPTION_LIMIT = 2200;
+export const INSTAGRAM_HASHTAG_LIMIT = 5;
+/** Roughly what shows before "more" in the feed. */
+export const INSTAGRAM_HOOK_LENGTH = 125;
+/** Facebook takes many more, but past three they read as spam and do nothing for search. */
+export const FACEBOOK_HASHTAG_LIMIT = 3;
+
+/** Tags that belong to one platform's own vocabulary, or to none, and help nobody find a Reel. */
+const FOREIGN_TAGS = /^(shorts|youtubeshorts|ytshorts|youtube|fyp|foryou|foryoupage|viral|trending)$/i;
+
+/** Hashtags without the #, unique regardless of case, capped. */
+function cleanHashtags(list, limit) {
+  const out = [];
+  for (const h of Array.isArray(list) ? list : []) {
+    const tag = clean(h, 40).replace(/^#+/, '').replace(/[^\p{L}\p{N}_]/gu, '');
+    if (!tag || FOREIGN_TAGS.test(tag)) continue;
+    if (out.some((t) => t.toLowerCase() === tag.toLowerCase())) continue;
+    out.push(tag);
+    if (out.length === limit) break;
+  }
+  return out;
+}
+
+/**
+ * Caption text with any hashtags the model slipped in taken back out - they
+ * are posted from their own list, and one in both places counts twice against
+ * Instagram's five.
+ */
+function captionBody(v, max) {
+  if (typeof v !== 'string') return '';
+  return v
+    .replace(/[*_`]/g, '')
+    .split('\n')
+    .map((line) => line.replace(/(^|\s)#[\p{L}\p{N}_]+/gu, '').replace(/[ \t]+/g, ' ').trim())
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+    .slice(0, Math.max(0, max));
+}
+
+/** The caption and its hashtags, as one block to paste. */
+export function joinPost(caption, hashtags) {
+  const tags = (hashtags || []).map((h) => '#' + h).join(' ');
+  return [caption, tags].filter(Boolean).join('\n\n');
+}
+
+export function normalizeInstagram(raw, fallbackHashtags = []) {
+  const r = raw && typeof raw === 'object' ? raw : {};
+  let hashtags = cleanHashtags(r.hashtags, INSTAGRAM_HASHTAG_LIMIT);
+  if (!hashtags.length) hashtags = cleanHashtags(fallbackHashtags, INSTAGRAM_HASHTAG_LIMIT);
+  // The whole post, hashtags included, has to fit Instagram's limit.
+  const room = INSTAGRAM_CAPTION_LIMIT - joinPost('', hashtags).length - 2;
+  const caption = captionBody(r.caption, room);
+  return {
+    caption,
+    hashtags,
+    altText: clean(r.altText, 250),
+    post: joinPost(caption, hashtags),
+    hookLength: (caption.split('\n')[0] || '').length,
+  };
+}
+
+export function normalizeFacebook(raw, fallbackHashtags = [], fallbackTags = []) {
+  const r = raw && typeof raw === 'object' ? raw : {};
+  let hashtags = cleanHashtags(r.hashtags, FACEBOOK_HASHTAG_LIMIT);
+  if (!hashtags.length) hashtags = cleanHashtags(fallbackHashtags, FACEBOOK_HASHTAG_LIMIT);
+  const source = Array.isArray(r.keywords) && r.keywords.length ? r.keywords : fallbackTags;
+  const keywords = [];
+  for (const k of Array.isArray(source) ? source : []) {
+    const word = clean(k, 60).toLowerCase().replace(/^#+/, '').replace(/,/g, '');
+    if (word && !keywords.includes(word)) keywords.push(word);
+    if (keywords.length === 10) break;
+  }
+  const caption = captionBody(r.caption, 1000);
+  return {
+    title: clean(r.title, 100),
+    caption,
+    hashtags,
+    keywords,
+    post: joinPost(caption, hashtags),
   };
 }
 

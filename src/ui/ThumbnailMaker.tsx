@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { api } from '../lib/api';
+import { useStoredState } from '../lib/store';
+import { getTheme } from '../lib/theme';
 import type { DesignSettings, QuizContent } from '../lib/types';
-import { ErrorNote, Note, Select, Spinner, TextInput } from './controls';
+import { Check, ErrorNote, Note, Select, Spinner, TextArea, TextInput } from './controls';
 
 // ---------------------------------------------------------------------------
 // The thumbnail.
@@ -35,7 +37,16 @@ export const ThumbnailMaker: React.FC<{
   suggested?: string;
   /** Told the filename whenever one is made, so the upload kit can include it. */
   onThumbnail?: (fileName: string) => void;
-}> = ({ content, design, suggested, onThumbnail }) => {
+  geminiKey?: string;
+  geminiModel?: string;
+  googleImageModels?: { id: string; label: string }[];
+  /** The title picked on this step, which the Gemini design is built from. */
+  chosenTitle?: string;
+  description?: string;
+}> = ({
+  content, design, suggested, onThumbnail,
+  geminiKey = '', geminiModel = 'gemini-2.5-flash', googleImageModels = [], chosenTitle = '', description = '',
+}) => {
   const [title, setTitle] = useState(suggested || content.hook || content.question || '');
   const [kicker, setKicker] = useState(content.subject || '');
   const [badge, setBadge] = useState('');
@@ -49,32 +60,153 @@ export const ThumbnailMaker: React.FC<{
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const words = title.replace(/\*/g, '').trim().split(/\s+/).filter(Boolean).length;
+  // Gemini's design: the picture behind the words, and whether to use it.
+  const [scene, setScene] = useState('');
+  const [art, setArt] = useState('');
+  const [useArt, setUseArt] = useState(true);
+  const [paint, setPaint] = useStoredState('thumbPaintArt', true);
+  const [imageModel, setImageModel] = useStoredState('thumbImageModel', '');
+  const [stage, setStage] = useState('');
+  const [notes, setNotes] = useState<string[]>([]);
 
-  const make = async () => {
+  const words = title.replace(/\*/g, '').trim().split(/\s+/).filter(Boolean).length;
+  const modelId = imageModel || googleImageModels[0]?.id || '';
+  const accent = getTheme(design).accent;
+
+  type Fields = { title: string; kicker: string; badge: string; figure: string; symbol: string; layout: string; art: string };
+  const current = (): Fields => ({ title, kicker, badge, figure, symbol, layout, art: useArt ? art : '' });
+
+  /** Render with these fields - passed in, because state set a moment ago has not landed yet. */
+  const render = async (fields: Fields) => {
+    const out = await api.thumbnail({ content, design, shape, ...fields });
+    // The filename changes every time, so the browser cannot show a stale one.
+    setUrl(out.url);
+    if (onThumbnail) onThumbnail(out.fileName);
+  };
+
+  const run = async (label: string, work: () => Promise<void>) => {
     setBusy(true);
     setError(null);
+    setStage(label);
     try {
-      const out = await api.thumbnail({
-        content, design, title, kicker, badge, figure, symbol, layout, shape,
-      });
-      // The filename changes every time, so the browser cannot show a stale one.
-      setUrl(out.url);
-      if (onThumbnail) onThumbnail(out.fileName);
+      await work();
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
       setBusy(false);
+      setStage('');
     }
   };
+
+  const make = () => run('Drawing it…', () => render(current()));
+
+  const paintArt = async (forScene: string) => {
+    setStage('Gemini is painting the picture - this takes 10 to 30 seconds…');
+    const out = await api.thumbnailArt({ apiKey: geminiKey.trim(), modelId, scene: forScene, shape, accent });
+    setArt(out.src);
+    setUseArt(true);
+    return out.src;
+  };
+
+  const design_ = () => run('Gemini is designing the thumbnail from the title and description…', async () => {
+    setNotes([]);
+    const { brief } = await api.thumbnailBrief({
+      apiKey: geminiKey.trim(),
+      model: geminiModel,
+      content,
+      title: chosenTitle || suggested || content.question,
+      description,
+      shape,
+    });
+    setTitle(brief.title);
+    setKicker(brief.kicker);
+    setBadge(brief.badge);
+    setFigure(brief.figure);
+    setSymbol(brief.symbol);
+    setLayout(brief.layout);
+    setScene(brief.scene);
+    setNotes(brief.notes);
+    const drawn = paint ? await paintArt(brief.scene) : (useArt ? art : '');
+    setStage('Setting the words over it…');
+    await render({ ...brief, art: drawn });
+  });
+
+  const repaint = () => run('Painting…', async () => {
+    const drawn = await paintArt(scene);
+    setStage('Setting the words over it…');
+    await render({ ...current(), art: drawn });
+  });
 
   return (
     <>
       <div className="section-title">Thumbnail</div>
       <p className="lede" style={{ marginTop: 0 }}>
         An image in the same colours as the video — 1280 × 720 for YouTube, or 1080 × 1920 for a
-        Short. Rendered on your machine, so it costs nothing and you can make as many as you like.
+        Short. The words are always rendered on your machine, free, as often as you like; only a
+        picture painted by Gemini costs anything, and you can repaint it or keep it while you change
+        the words.
       </p>
+
+      <div className="gemini-thumb">
+        <div className="gemini-thumb-head">
+          <b>✨ Design it with Gemini</b>
+          <span>
+            Gemini reads {chosenTitle ? 'the title you picked' : 'the question'}
+            {description ? ' and the description' : ''}, writes a short scroll-stopping headline,
+            picks the layout, and paints a picture for behind it. The words are set as real type on
+            top, so they are always spelled right - and a quiz cover never shows the answer.
+          </span>
+        </div>
+        <div className="grid">
+          <Select
+            label="Picture model"
+            value={modelId}
+            options={googleImageModels}
+            onChange={setImageModel}
+            disabled={!paint}
+            hint="Image generation needs billing on the Gemini key; the headline alone is free-tier."
+          />
+          <div className="field">
+            <label>&nbsp;</label>
+            <Check
+              label="Paint a background picture"
+              checked={paint}
+              onChange={setPaint}
+              hint="Off: Gemini writes the words and layout only, over the video's own backdrop."
+            />
+          </div>
+        </div>
+        <div className="actions" style={{ marginTop: 0 }}>
+          <button className="btn primary" onClick={design_} disabled={busy || !geminiKey.trim()}>
+            {busy && stage.startsWith('Gemini is designing') ? <Spinner /> : '✨'} Design with Gemini
+          </button>
+        </div>
+        {!geminiKey.trim() ? (
+          <Note kind="info">Add a Gemini key on the Keys step to let Gemini design the thumbnail.</Note>
+        ) : null}
+        {notes.map((n) => (
+          <Note key={n} kind="warn">{n}</Note>
+        ))}
+        {scene ? (
+          <>
+            <TextArea
+              label="The picture"
+              value={scene}
+              onChange={setScene}
+              rows={2}
+              hint="Edit the description and repaint, or keep the picture and just change the words below."
+            />
+            <div className="actions" style={{ marginTop: 0 }}>
+              <button className="btn" onClick={repaint} disabled={busy || !scene.trim() || !geminiKey.trim()}>
+                🎨 {art ? 'Repaint the picture' : 'Paint the picture'}
+              </button>
+              {art ? (
+                <Check label="Use the picture" checked={useArt} onChange={setUseArt} />
+              ) : null}
+            </div>
+          </>
+        ) : null}
+      </div>
 
       <div className="grid">
         <Select
@@ -155,8 +287,8 @@ export const ThumbnailMaker: React.FC<{
 
       {busy ? (
         <Note kind="info">
-          Drawing it. The first one in a session takes longer because the engine has to start up;
-          after that it is a couple of seconds.
+          {stage || 'Drawing it…'} The first thumbnail in a session takes longer because the engine
+          has to start up; after that it is a couple of seconds.
         </Note>
       ) : null}
 

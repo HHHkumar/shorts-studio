@@ -480,3 +480,19 @@ ul.issues .sev-low .sev { background: rgba(108,140,255,.16); color: var(--accent
   font-size: 12.5px; line-height: 1.5; color: var(--dim);
   background: var(--panel-2); border-radius: 7px;
 }
+
+/* ---------- publish: one tab per platform ---------- */
+
+.platform-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 18px; }
+.platform-note { font-size: 13.5px; color: var(--dim); line-height: 1.5; margin: -6px 0 16px; }
+
+/* ---------- thumbnail: the Gemini design panel ---------- */
+
+.gemini-thumb {
+  border: 1px solid var(--line); border-radius: 12px;
+  padding: 14px 16px 6px; margin: 4px 0 18px;
+  background: rgba(108,140,255,.05);
+}
+.gemini-thumb-head { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+.gemini-thumb-head b { font-size: 15px; }
+.gemini-thumb-head span { font-size: 13.5px; color: var(--dim); line-height: 1.5; }

@@ -15,8 +15,9 @@ interface KitResult {
 /**
  * The upload form, prepared.
  *
- * Everything here is written to be pasted straight into YouTube, so each field
- * is one click to copy and already inside YouTube's own limits.
+ * Everything here is written to be pasted straight into YouTube, Instagram or
+ * Facebook, so each field is one click to copy and already inside that
+ * platform's own limits.
  */
 
 const YT_TITLE_LIMIT = 100;
@@ -82,6 +83,89 @@ const CopyBox: React.FC<{
   );
 };
 
+const PLATFORMS = [
+  { id: 'youtube', label: '▶ YouTube' },
+  { id: 'instagram', label: '📸 Instagram' },
+  { id: 'facebook', label: '👍 Facebook' },
+] as const;
+
+const IG_CAPTION_LIMIT = 2200;
+const IG_HASHTAG_LIMIT = 5;
+const IG_HOOK_LENGTH = 125;
+
+/**
+ * Instagram and Facebook are searched by the words in the caption, not by a
+ * tags box, so these are written for each platform rather than copied from the
+ * YouTube description.
+ */
+const SocialFields: React.FC<{ platform: 'instagram' | 'facebook'; seo: SeoPack }> = ({ platform, seo }) => {
+  if (platform === 'instagram') {
+    const ig = seo.instagram;
+    if (!ig || !ig.caption) return <OlderMetadata name="Instagram" />;
+    const hookLong = ig.hookLength > IG_HOOK_LENGTH;
+    return (
+      <>
+        <p className="platform-note">
+          Posted as a Reel. Instagram search reads the caption itself, so the topic and exam are
+          written into the sentences. Hashtags are capped at five: Instagram ignores any past that,
+          and counts ones in a first comment too.
+        </p>
+        <CopyBox
+          label="Caption with hashtags"
+          value={ig.post}
+          rows={9}
+          limit={IG_CAPTION_LIMIT}
+          hint={
+            (hookLong
+              ? '⚠ The first line is ' + ig.hookLength + ' characters - only about ' + IG_HOOK_LENGTH
+                + ' show before "more". '
+              : 'The first line (' + ig.hookLength + ' characters) is the part people see before "more". ')
+            + 'Paste the whole block into the caption box.'
+          }
+        />
+        <div className="grid">
+          <CopyBox
+            label={'Hashtags (' + ig.hashtags.length + '/' + IG_HASHTAG_LIMIT + ')'}
+            value={ig.hashtags.map((h) => '#' + h).join(' ')}
+            hint="Already at the end of the caption above."
+          />
+          <CopyBox
+            label="Alt text"
+            value={ig.altText}
+            hint="Advanced settings → Accessibility → Write alt text. Helps search as well as screen readers."
+          />
+        </div>
+      </>
+    );
+  }
+
+  const fb = seo.facebook;
+  if (!fb || !fb.caption) return <OlderMetadata name="Facebook" />;
+  return (
+    <>
+      <p className="platform-note">
+        Facebook shows only a line or two before "See more", so the description is short and the
+        hashtags few. The title is for a video upload; a Reel has no title field.
+      </p>
+      <CopyBox label="Title" value={fb.title} limit={100} />
+      <CopyBox label="Description with hashtags" value={fb.post} rows={5} />
+      <CopyBox
+        label="Tags"
+        value={fb.keywords.join(', ')}
+        rows={2}
+        hint="For the video Tags field, where the upload form offers one."
+      />
+    </>
+  );
+};
+
+const OlderMetadata: React.FC<{ name: string }> = ({ name }) => (
+  <Note kind="warn" title={'No ' + name + ' text yet'}>
+    This metadata was written before {name} was added. Press <b>Write it again</b> above to get a
+    caption and hashtags written for {name}.
+  </Note>
+);
+
 export const StepPublish: React.FC<{
   content: QuizContent;
   form: TopicForm;
@@ -95,6 +179,8 @@ export const StepPublish: React.FC<{
   design: DesignSettings;
   /** The built timeline, which is where real chapter timestamps come from. */
   videoProps: VideoProps | null;
+  /** Gemini image models, for the thumbnail picture. */
+  googleImageModels: { id: string; label: string }[];
   onBack: () => void;
 }> = ({
   content,
@@ -108,11 +194,13 @@ export const StepPublish: React.FC<{
   orientation,
   design,
   videoProps,
+  googleImageModels,
   onBack,
 }) => {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [titleIndex, setTitleIndex] = useState(0);
+  const [platform, setPlatform] = useState<'youtube' | 'instagram' | 'facebook'>('youtube');
 
   const [thumbnailFile, setThumbnailFile] = useState('');
   const [kit, setKit] = useState<KitResult | null>(null);
@@ -169,9 +257,9 @@ export const StepPublish: React.FC<{
 
   return (
     <div className="panel">
-      <h2>Step 7 — Title, tags and description</h2>
+      <h2>Step 7 — Title, tags, description and thumbnail</h2>
       <p className="lede">
-        Everything the upload form asks for, written from the video you just made and ready to paste.
+        Everything the YouTube, Instagram and Facebook upload forms ask for, written from the video you just made and ready to paste.
       </p>
 
       <div className="grid">
@@ -200,10 +288,34 @@ export const StepPublish: React.FC<{
       ) : null}
 
       {busy ? (
-        <Note kind="info">Gemini is writing the title options, tags and description…</Note>
+        <Note kind="info">Gemini is writing the title options, tags and description for YouTube, Instagram and Facebook…</Note>
       ) : null}
 
       {fresh ? (
+        <div className="platform-tabs" role="tablist">
+          {PLATFORMS.map((p) => (
+            <button
+              key={p.id}
+              role="tab"
+              aria-selected={platform === p.id}
+              className={'step-chip' + (platform === p.id ? ' active' : '')}
+              onClick={() => setPlatform(p.id)}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+      ) : null}
+
+      {fresh && platform === 'instagram' ? (
+        <SocialFields platform="instagram" seo={fresh} />
+      ) : null}
+
+      {fresh && platform === 'facebook' ? (
+        <SocialFields platform="facebook" seo={fresh} />
+      ) : null}
+
+      {fresh && platform === 'youtube' ? (
         <>
           <div className="section-title">Title — pick one</div>
           <div className="title-options">
@@ -264,6 +376,11 @@ export const StepPublish: React.FC<{
         design={design}
         suggested={fresh?.thumbnailText}
         onThumbnail={setThumbnailFile}
+        geminiKey={geminiKey}
+        geminiModel={geminiModel}
+        googleImageModels={googleImageModels}
+        chosenTitle={fresh?.titles[titleIndex] || ''}
+        description={fresh?.description || ''}
       />
 
       <div className="section-title">The upload kit</div>

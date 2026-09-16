@@ -191,6 +191,12 @@ export function buildCredits(content, scenes) {
   return lines.join('\n');
 }
 
+/**
+ * The metadata step stores hashtags bare, the way the UI prefixes them. Without
+ * this the description ended in plain words that YouTube does not link.
+ */
+const asHashtag = (h) => '#' + String(h).replace(/^#+/, '');
+
 /** The description as it should actually be pasted: body, chapters, credits, tags. */
 export function buildDescription(seo, chapters, mustCreditLine) {
   const parts = [String((seo && seo.description) || '').trim()];
@@ -202,9 +208,68 @@ export function buildDescription(seo, chapters, mustCreditLine) {
   if (mustCreditLine) parts.push(mustCreditLine);
 
   const hashtags = (seo && seo.hashtags) || [];
-  if (hashtags.length) parts.push(hashtags.join(' '));
+  if (hashtags.length) parts.push(hashtags.map(asHashtag).join(' '));
 
   return parts.filter(Boolean).join('\n\n').slice(0, DESCRIPTION_LIMIT);
+}
+
+/**
+ * One paste-ready sheet for the Reel on Instagram or Facebook.
+ *
+ * A required icon credit goes into the caption itself: the licence asks for it
+ * wherever the video is shown, not only on YouTube. Returns '' when that
+ * platform's text was never written, so no empty file lands in the kit.
+ */
+export function buildSocialSheet(platform, social, creditLine) {
+  const s = social || {};
+  const caption = [s.caption || '', creditLine || ''].filter(Boolean).join('\n\n');
+  const tags = (s.hashtags || []).map((h) => '#' + h).join(' ');
+  const post = [caption, tags].filter(Boolean).join('\n\n');
+  if (!s.caption) return '';
+  const rule = '='.repeat(72);
+
+  if (platform === 'instagram') {
+    return [
+      'INSTAGRAM REEL',
+      '',
+      rule,
+      '1. CAPTION   (' + post.length + '/2200 - paste this whole block, hashtags included)',
+      rule,
+      post,
+      '',
+      rule,
+      '2. HASHTAGS   (' + (s.hashtags || []).length + '/5)',
+      rule,
+      'Already at the end of the caption. Instagram ignores any past five and counts',
+      'hashtags in comments too, so do not add more in a first comment.',
+      '',
+      rule,
+      '3. ALT TEXT   (Advanced settings > Accessibility > Write alt text)',
+      rule,
+      s.altText || '(none written)',
+      '',
+    ].join('\n');
+  }
+
+  return [
+    'FACEBOOK REEL OR VIDEO',
+    '',
+    rule,
+    '1. TITLE   (for a video upload; a Reel has no title field)',
+    rule,
+    s.title || '(none written)',
+    '',
+    rule,
+    '2. DESCRIPTION   (paste this whole block)',
+    rule,
+    post,
+    '',
+    rule,
+    '3. TAGS   (for the video Tags field, where the upload form offers one)',
+    rule,
+    (s.keywords || []).join(', ') || '(none written)',
+    '',
+  ].join('\n');
 }
 
 /** A filename that is safe on Windows and still recognisable a month later. */
@@ -286,6 +351,14 @@ export function buildUploadSheet({
     rule,
     credits,
     '',
+    rule,
+    '7. INSTAGRAM AND FACEBOOK',
+    rule,
+    pack.instagram && pack.instagram.caption
+      ? 'Written separately for each, because they are searched differently -\n'
+        + 'see instagram.txt and facebook.txt.'
+      : 'Not written: this metadata was made before they were added. Write it again on step 7.',
+    '',
   ].join('\n');
 }
 
@@ -314,7 +387,7 @@ export function buildPublishKit({ content, design, seo, title, scenes, fps, thum
 
   const description = buildDescription(pack, chapters, creditLine);
   const tagLine = (pack.tags || []).join(', ');
-  const hashLine = (pack.hashtags || []).join(' ');
+  const hashLine = (pack.hashtags || []).map(asHashtag).join(' ');
   const chapterText = chapters.length
     ? chapters.map((c) => stamp(c.seconds) + ' ' + c.title).join('\n')
     : 'This video is too short for chapters. YouTube needs at least three,\n'
@@ -338,6 +411,8 @@ export function buildPublishKit({ content, design, seo, title, scenes, fps, thum
     tags: pack.tags || [],
     hashtags: pack.hashtags || [],
     pinnedComment: pack.pinnedComment || '',
+    instagram: pack.instagram || null,
+    facebook: pack.facebook || null,
     // Floor, not round: `stamp` floors, and a script seeking to a `seconds`
     // that disagreed with the printed mark would land somewhere else.
     chapters: chapters.map((c) => ({
@@ -361,6 +436,10 @@ export function buildPublishKit({ content, design, seo, title, scenes, fps, thum
     { name: 'credits.txt', data: credits + '\n' },
     { name: 'metadata.json', data: JSON.stringify(metadata, null, 2) + '\n' },
   ];
+  const instagram = buildSocialSheet('instagram', pack.instagram, creditLine);
+  const facebook = buildSocialSheet('facebook', pack.facebook, creditLine);
+  if (instagram) files.push({ name: 'instagram.txt', data: instagram });
+  if (facebook) files.push({ name: 'facebook.txt', data: facebook });
   if (thumbnail) files.push({ name: 'thumbnail.png', data: thumbnail });
 
   return {

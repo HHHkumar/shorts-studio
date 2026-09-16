@@ -1,5 +1,5 @@
 import React from 'react';
-import { AbsoluteFill, useVideoConfig } from 'remotion';
+import { AbsoluteFill, Img, staticFile, useVideoConfig } from 'remotion';
 import { getTheme, hexToRgba } from '../lib/theme';
 import type { DesignSettings, QuizContent, ThumbnailShape } from '../lib/types';
 export { THUMB_SIZES, thumbSizeFor, type ThumbnailShape } from '../lib/types';
@@ -43,6 +43,12 @@ export type ThumbnailProps = {
   symbol: string;
   layout: ThumbnailLayout;
   shape: ThumbnailShape;
+  /**
+   * A picture painted by Gemini, under public/ (generated/thumbs/...). Drawn
+   * full-bleed behind the words, which then keep to the calm side the picture
+   * was composed to leave for them. Empty for the plain themed backdrop.
+   */
+  art?: string;
 };
 
 export const THUMBNAIL_ID = 'Thumbnail';
@@ -88,6 +94,7 @@ export const Thumbnail: React.FC<ThumbnailProps> = ({
   figure,
   symbol,
   layout,
+  art,
 }) => {
   // Taken from the composition rather than the props, so the two can never
   // disagree about what is being drawn.
@@ -119,7 +126,14 @@ export const Thumbnail: React.FC<ThumbnailProps> = ({
     <AbsoluteFill style={{ backgroundColor: theme.bg, overflow: 'hidden' }}>
       <Backdrop theme={theme} />
 
-      {design.ambient && design.ambient !== 'none' ? (
+      {art ? (
+        <Img
+          src={staticFile(art.replace(/^\/+/, ''))}
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+        />
+      ) : null}
+
+      {!art && design.ambient && design.ambient !== 'none' ? (
         <AmbientLayer
           theme={theme}
           content={content}
@@ -134,9 +148,16 @@ export const Thumbnail: React.FC<ThumbnailProps> = ({
           size where the title has to win outright. */}
       <AbsoluteFill
         style={{
-          background:
-            'linear-gradient(180deg, ' + hexToRgba(theme.bg, 0.55) + ' 0%, ' +
-            hexToRgba(theme.bg, 0.8) + ' 55%, ' + hexToRgba(theme.bg, 0.94) + ' 100%)',
+          // Over a painting the scrim darkens only the side the words sit on, so
+          // the picture stays vivid where it was asked to be.
+          background: art
+            ? portrait
+              ? 'linear-gradient(180deg, ' + hexToRgba(theme.bg, 0.9) + ' 0%, ' + hexToRgba(theme.bg, 0.72) + ' 40%, '
+                + hexToRgba(theme.bg, 0.12) + ' 68%, ' + hexToRgba(theme.bg, 0) + ' 100%)'
+              : 'linear-gradient(90deg, ' + hexToRgba(theme.bg, 0.92) + ' 0%, ' + hexToRgba(theme.bg, 0.76) + ' 40%, '
+                + hexToRgba(theme.bg, 0.18) + ' 70%, ' + hexToRgba(theme.bg, 0.04) + ' 100%)'
+            : 'linear-gradient(180deg, ' + hexToRgba(theme.bg, 0.55) + ' 0%, ' +
+              hexToRgba(theme.bg, 0.8) + ' 55%, ' + hexToRgba(theme.bg, 0.94) + ' 100%)',
         }}
       />
 
@@ -153,9 +174,12 @@ export const Thumbnail: React.FC<ThumbnailProps> = ({
       <AbsoluteFill
         style={{
           padding: px(portrait ? 74 : 62) + 'px ' + px(68) + 'px',
+          // With art the words keep to the calm side: the left of a wide frame,
+          // the top of a tall one.
+          ...(art ? (portrait ? { paddingTop: px(230) } : { paddingRight: px(500) }) : {}),
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center',
+          justifyContent: art && portrait ? 'flex-start' : 'center',
         }}
       >
         {badge ? (

@@ -81,10 +81,43 @@ export interface SeoPack {
   hashtags: string[];
   thumbnailText: string;
   pinnedComment: string;
+  /** Absent on metadata written before Instagram and Facebook were added. */
+  instagram?: {
+    caption: string;
+    /** At most five - Instagram ignores the rest. Stored without the #. */
+    hashtags: string[];
+    altText: string;
+    /** Caption, blank line, hashtags: the block to paste. */
+    post: string;
+    /** Length of the first line, which is all that shows before "more". */
+    hookLength: number;
+  };
+  facebook?: {
+    title: string;
+    caption: string;
+    hashtags: string[];
+    keywords: string[];
+    post: string;
+  };
   tagsLength: number;
   generatedAt: string;
   /** Which question this was written for - see contentFingerprint(). */
   fingerprint?: string;
+}
+
+/** A thumbnail as Gemini designed it. Checked on the server never to show the answer. */
+export interface ThumbnailBrief {
+  /** The headline, with the hook word in *asterisks*. */
+  title: string;
+  kicker: string;
+  badge: string;
+  layout: 'statement' | 'question' | 'number' | 'split';
+  figure: string;
+  symbol: string;
+  /** What the picture behind the words shows. */
+  scene: string;
+  /** Anything the server changed, e.g. a headline that gave the answer away. */
+  notes: string[];
 }
 
 export interface StockImage {
@@ -194,8 +227,27 @@ export const api = {
     symbol: string;
     layout: string;
     shape: string;
+    /** A picture from thumbnailArt(), drawn behind the words. */
+    art?: string;
   }) {
     return post<{ fileName: string; url: string; bytes: number }>('/api/thumbnail', body);
+  },
+
+  /** Gemini reads the title and description and designs the thumbnail. Text only - cheap. */
+  thumbnailBrief(body: {
+    apiKey: string;
+    model: string;
+    content: QuizContent;
+    title: string;
+    description: string;
+    shape: string;
+  }) {
+    return post<{ brief: ThumbnailBrief }>('/api/thumbnail/brief', body);
+  },
+
+  /** Gemini's image model paints the picture behind the words. Needs billing on the key. */
+  thumbnailArt(body: { apiKey: string; modelId: string; scene: string; shape: string; accent: string }) {
+    return post<{ src: string; bytes: number; prompt: string }>('/api/thumbnail/art', body);
   },
 
   /**
