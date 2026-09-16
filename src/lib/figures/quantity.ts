@@ -9,7 +9,7 @@
 // ---------------------------------------------------------------------------
 
 /** The base units a figure deals in. '' is a bare number. */
-export type UnitClass = 'A' | 'V' | 'Ω' | 'W' | 'H' | 'F' | 'Hz' | 'VA' | 'VAR' | '';
+export type UnitClass = 'A' | 'V' | 'Ω' | 'W' | 'H' | 'F' | 'Hz' | 'VA' | 'VAR' | 's' | '°' | '';
 
 export interface Quantity {
   /** In base units: amperes, not milliamperes. */
@@ -36,6 +36,8 @@ const UNIT_WORDS: [RegExp, UnitClass][] = [
   [/^(h|henr(y|ys|ies))$/i, 'H'],
   [/^(f|farads?)$/i, 'F'],
   [/^(hz|hertz)$/i, 'Hz'],
+  [/^(s|secs?|seconds?)$/i, 's'],
+  [/^(°|deg|degs|degrees?)$/i, '°'],
 ];
 
 const SMALL = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
@@ -97,6 +99,9 @@ export function parseUnit(raw: string): { factor: number; unit: UnitClass } | nu
   return null;
 }
 
+/** Words around a quantity that do not change it: "0.8 lagging", "approximately 20 ms". */
+const QUALIFIERS = /\b(lagging|leading|lag|lead|approximately|approx|about|nearly|only|exactly|in phase|rms|peak)\b\.?/gi;
+
 /**
  * The quantity an answer option states, or null when it states none.
  *
@@ -105,7 +110,9 @@ export function parseUnit(raw: string): { factor: number; unit: UnitClass } | nu
  * it simply cannot be checked against a number.
  */
 export function parseQuantity(text: string): Quantity | null {
-  const s = String(text || '').trim().replace(/,(?=\d{3}\b)/g, '').replace(/−/g, '-');
+  let s = String(text || '').trim().replace(/,(?=\d{3}\b)/g, '').replace(/−/g, '-');
+  // "90°" has no space before the unit; "unity" is how power factor 1 is said.
+  s = s.replace(/^unity\b/i, '1').replace(QUALIFIERS, ' ').replace(/\s+/g, ' ').trim();
   if (!s) return null;
 
   const numeric = /^(-?\d+(?:\.\d+)?|-?\.\d+)\s*(.*)$/.exec(s);
@@ -142,9 +149,10 @@ export function roundForDisplay(n: number): string {
 export function formatQuantity(value: number, unit: UnitClass): string {
   if (!Number.isFinite(value)) return '?';
   if (!unit) return roundForDisplay(value);
+  // Degrees never take a prefix or a space, and hertz reads better without milli-.
+  if (unit === '°') return roundForDisplay(value) + '°';
   const abs = Math.abs(value);
   if (abs < 1e-12) return '0 ' + unit;
-  // Hertz and the power units read better without milli- and micro-.
   const allowSmall = unit !== 'Hz';
   for (const [factor, symbol] of SYMBOL_PREFIXES) {
     if (!allowSmall && factor < 1) break;

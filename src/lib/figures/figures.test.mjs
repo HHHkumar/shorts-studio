@@ -242,7 +242,7 @@ ok('a part left of centre has its label on the left', lay.elements.find((e) => e
 // --- labels never leave the frame, and never sit on each other ---------------------------
 // The first render cut "230 V" and "31.8 mH" off at the edges. These are the
 // portrait and landscape figure boxes the renderer uses, at its font sizes.
-const FRAMES = [['portrait', 940, 760 - 36 * 2.2, 36], ['landscape', 1620, 620 - 32 * 2.2, 32]];
+const FRAMES = [['portrait', 940, 940 - 36 * 2.2, 36], ['landscape', 1620, 620 - 32 * 2.2, 32]];
 const longValues = circuit({
   nodes: [node('A', 0, 0), node('B', MAX_COL, 0), node('C', MAX_COL, MAX_ROW), node('D', 0, MAX_ROW)],
   elements: [

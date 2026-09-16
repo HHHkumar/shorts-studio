@@ -7,6 +7,7 @@ import {
 } from '../lib/figures/circuit.ts';
 import { branchText, layoutJunction, type Junction } from '../lib/figures/junction.ts';
 import { useEnter, useMetrics } from './ui';
+import { AcArt } from './figures/AcArt';
 
 /**
  * The figure of the question itself - the junction, the circuit - drawn from
@@ -27,7 +28,9 @@ export const FigureView: React.FC<{
   const m = useMetrics();
   const enter = useEnter(2, theme);
   const w = Math.round(width - m.padX * 2);
-  const h = m.landscape ? 620 : 760;
+  // Tall enough to use the frame: at 760 a phasor diagram above a waveform left
+  // each at half size with a third of the phone screen empty underneath.
+  const h = m.landscape ? 620 : 940;
   const font = m.landscape ? 32 : 36;
 
   return (
@@ -37,9 +40,10 @@ export const FigureView: React.FC<{
       viewBox={'0 0 ' + w + ' ' + h}
       style={{ display: 'block', opacity: enter, transform: 'scale(' + (0.94 + 0.06 * enter) + ')' }}
     >
-      {figure.type === 'junction'
-        ? <JunctionArt theme={theme} junction={figure} reveal={reveal} w={w} h={h} font={font} />
-        : <CircuitArt theme={theme} circuit={figure} reveal={reveal} highlight={highlight} w={w} h={h} font={font} />}
+      {figure.type === 'junction' ? <JunctionArt theme={theme} junction={figure} reveal={reveal} w={w} h={h} font={font} />
+        : figure.type === 'circuit' ? <CircuitArt theme={theme} circuit={figure} reveal={reveal} highlight={highlight} w={w} h={h} font={font} />
+        : figure.type === 'ac' ? <AcArt theme={theme} figure={figure} reveal={reveal} w={w} h={h} font={font} />
+        : null}
     </svg>
   );
 };
@@ -68,6 +72,7 @@ const JunctionArt: React.FC<ArtProps & { junction: Junction }> = ({ theme, junct
     .map((b) => (b.unknown && !reveal ? b.label : formatQuantity(b.value, 'A')))
     .join(' + ');
   const sum = side('in') + '  =  ' + side('out');
+  const footerY = Math.min(h - font * 0.6, cy + layout.length + font * 2.6);
 
   return (
     <g>
@@ -108,7 +113,7 @@ const JunctionArt: React.FC<ArtProps & { junction: Junction }> = ({ theme, junct
       <circle cx={cx} cy={cy} r={13} fill={theme.text} />
       <text
         x={w / 2}
-        y={h - font * 0.6}
+        y={footerY}
         textAnchor="middle"
         fontFamily={theme.fontBody}
         fontWeight={700}
@@ -150,6 +155,13 @@ const CircuitArt: React.FC<ArtProps & { circuit: Circuit; highlight?: string }> 
   const footer = circuit.ask ? font * 2.2 : 0;
   const layout = layoutCircuit(circuit, w, h - footer, font);
   const asked = circuit.ask?.element;
+  // The question line sits under the drawing, not at the foot of the box: in a
+  // tall frame a small circuit otherwise floats far above its own caption.
+  const drawnBottom = Math.max(
+    ...layout.nodes.map((n) => n.y + 20),
+    ...layout.elements.map((e) => (e.label ? e.label.box.y2 : e.my)),
+  );
+  const footerY = Math.min(h - font * 0.6, drawnBottom + font * 2);
   const terminals = new Set([circuit.ask?.from, circuit.ask?.to].filter(Boolean) as string[]);
 
   return (
@@ -178,7 +190,7 @@ const CircuitArt: React.FC<ArtProps & { circuit: Circuit; highlight?: string }> 
       {circuit.ask ? (
         <text
           x={w / 2}
-          y={h - font * 0.6}
+          y={footerY}
           textAnchor="middle"
           fontFamily={theme.fontBody}
           fontWeight={700}
