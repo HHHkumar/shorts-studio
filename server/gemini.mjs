@@ -10,7 +10,7 @@ import { callClaude } from './claude.mjs';
 // Loaded straight from the app's TypeScript: Node strips the types itself, and
 // sharing the one module means the server checks a figure with exactly the
 // arithmetic the renderer will draw it with.
-import { checkFigure, figurePromptLines, normalizeFigure } from '../src/lib/figures/index.ts';
+import { checkFigure, figurePromptLines, isSetupSafe, normalizeFigure } from '../src/lib/figures/index.ts';
 
 const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models';
 
@@ -988,7 +988,7 @@ export function normalizeContent(input, options) {
   // A question about a particular circuit is unreadable without that circuit
   // on screen. The KCL video asked about a junction and showed a formula card
   // instead; when there is a figure, the question scene always carries it.
-  if (content.figure) {
+  if (content.figure && isSetupSafe(content.figure)) {
     const question = script.find((s) => s.kind === 'question');
     if (question && (!question.visual || question.visual.kind !== 'figure')) {
       question.visual = { kind: 'figure', caption: '', reveal: false };
@@ -1121,6 +1121,8 @@ function normalizeVisual(raw, sceneKind, figure) {
     // Only the question's own figure can be shown, and only if it survived
     // its check. The unknown stays a "?" on the question scene.
     if (!figure) return { kind: 'none' };
+    // A graph or chart on the question scene would give the answer away.
+    if (setupOnly && !isSetupSafe(figure)) return { kind: 'none' };
     const highlight = clean(raw.highlight).replace(/[^A-Za-z0-9_]/g, '').slice(0, 8);
     return {
       kind,

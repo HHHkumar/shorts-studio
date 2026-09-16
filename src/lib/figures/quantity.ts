@@ -125,13 +125,21 @@ export function parseQuantity(text: string): Quantity | null {
   let s = String(text || '').trim().replace(/,(?=\d{3}\b)/g, '').replace(/−/g, '-');
   // "90°" has no space before the unit; "unity" is how power factor 1 is said.
   s = s.replace(/^unity\b/i, '1').replace(QUALIFIERS, ' ').replace(/\s+/g, ' ').trim();
+  // Money: "₹1331", "Rs. 500", "$20" - the amount is the number.
+  s = s.replace(/^(₹|rs\.?|inr|\$|€|£)\s*/i, '');
   if (!s) return null;
+  /**
+   * A word this does not know after a number - "20 units", "12 days", "45 km/h" -
+   * still states the number. It is read as a plain number, so it is compared by
+   * value; a unit this DOES know ("5 W" against a current) is still checked.
+   */
+  const plainWords = (rest: string) => /^[A-Za-z][A-Za-z/.²³ ]{0,20}$/.test(rest.trim());
 
   const SUP: Record<string, string> = { '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9', '⁻': '-' };
   const plain = s.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+/g, (m) => '^' + m.split('').map((c) => SUP[c]).join(''));
   const numeric = /^(-?\d+(?:\.\d+)?|-?\.\d+)(?:\s*[x×*]\s*10\s*\^\s*(-?\d+)|[eE](-?\d+))?\s*(.*)$/.exec(plain);
   if (numeric) {
-    const unit = parseUnit(numeric[4]);
+    const unit = parseUnit(numeric[4]) ?? (plainWords(numeric[4]) ? { factor: 1, unit: '' as UnitClass } : null);
     if (!unit) return null;
     const exponent = Number(numeric[2] ?? numeric[3] ?? 0);
     return { value: Number(numeric[1]) * Math.pow(10, exponent) * unit.factor, unit: unit.unit };
@@ -142,7 +150,8 @@ export function parseQuantity(text: string): Quantity | null {
   for (let n = words.length; n >= 1; n--) {
     const value = wordsToNumber(words.slice(0, n).join(' '));
     if (value === null) continue;
-    const unit = parseUnit(words.slice(n).join(' '));
+    const rest = words.slice(n).join(' ');
+    const unit = parseUnit(rest) ?? (plainWords(rest) ? { factor: 1, unit: '' as UnitClass } : null);
     if (!unit) return null;
     return { value: value * unit.factor, unit: unit.unit };
   }

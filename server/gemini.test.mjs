@@ -233,6 +233,22 @@ ok('an electrical video is taught the circuit and junction figures', /"circuit"/
 const gk = figurePromptLines('Static GK — History, Geography & Polity', 'Indian rivers').join('\n');
 ok('a GK video is told there are no figures, not shown circuit formats', !/"circuit"/.test(gk) && /none/.test(gk));
 
+// A plotted curve gives its answer away, so a graph never goes on the question.
+const rcGraph = normalizeContent({
+  question: 'What is the capacitor voltage after one time constant?',
+  options: ['5 V', '6.32 V', '10 V', '3.68 V'], correctIndex: 1,
+  figure: JSON.stringify({ type: 'graph', variable: 't', x: { unit: 's', min: 0, max: 10 }, y: { unit: 'V' },
+    curves: [{ id: 'vc', formula: '10*(1-exp(-t/2))' }], ask: { kind: 'value', curve: 'vc', x: 2 } }),
+  script: [
+    { kind: 'question', narration: 'After one time constant...', visual: { kind: 'figure' } },
+    { kind: 'explain', narration: 'It reaches 63 percent.', visual: { kind: 'figure' } },
+  ],
+}, base);
+ok('a graph figure that checks out is kept', rcGraph.figure && rcGraph.figureCheck.status === 'match', JSON.stringify(rcGraph.figureCheck));
+ok('but the question scene does not show it', rcGraph.script.find((s) => s.kind === 'question').visual.kind === 'none');
+ok('and is not given it automatically', rcGraph.script.find((s) => s.kind === 'question').visual.kind !== 'figure');
+ok('the explain scene does', rcGraph.script.find((s) => s.kind === 'explain').visual.kind === 'figure');
+
 fig = kclQuestion(junction(5), 2, [{ kind: 'hook', narration: 'hi', visual: { kind: 'figure' } }]);
 ok('a figure is never shown before the question', fig.script.find((s) => s.kind === 'hook').visual.kind === 'none');
 

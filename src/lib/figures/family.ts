@@ -26,6 +26,13 @@ export interface FigureFamily<F extends { type: string } = { type: string }> {
    * which keeps it short enough for the model to follow.
    */
   fits: RegExp;
+  /**
+   * Whether the figure may appear on the question scene, with its answer as
+   * "?". False for families whose drawing IS the answer - a plotted curve can
+   * be read off, a pie chart can be measured - so they wait for the explanation.
+   * Treated as true when absent.
+   */
+  setupSafe?: boolean;
   normalize(raw: any): { figure: F | null; errors: string[] };
   /** The figure's own answer, worked out from its data. Null when it asks nothing. */
   answer(figure: F): FigureAnswer | null;

@@ -12,6 +12,7 @@ import { TriangleArt } from './figures/TriangleArt';
 import { ThreePhaseArt } from './figures/ThreePhaseArt';
 import { TransformerArt } from './figures/TransformerArt';
 import { MachineArt } from './figures/MachineArt';
+import { GraphArt } from './figures/GraphArt';
 
 /**
  * The figure of the question itself - the junction, the circuit - drawn from
@@ -51,6 +52,7 @@ export const FigureView: React.FC<{
         : figure.type === 'three-phase' ? <ThreePhaseArt theme={theme} figure={figure} reveal={reveal} w={w} h={h} font={font} />
         : figure.type === 'transformer' ? <TransformerArt theme={theme} figure={figure} reveal={reveal} w={w} h={h} font={font} />
         : figure.type === 'machine' ? <MachineArt theme={theme} figure={figure} reveal={reveal} w={w} h={h} font={font} />
+        : figure.type === 'graph' ? <GraphArt theme={theme} figure={figure} reveal={reveal} w={w} h={h} font={font} />
         : null}
     </svg>
   );

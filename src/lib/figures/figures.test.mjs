@@ -34,6 +34,14 @@ ok('"It is doubled" states no quantity', q('It is doubled') === null);
 ok('"Zero" is a number', q('Zero')?.value === 0);
 ok('"half" is a number', wordsToNumber('half') === 0.5);
 ok('"1,200 W" drops the thousands comma', q('1,200 W')?.value === 1200);
+ok('"20 units" states 20', q('20 units')?.value === 20 && q('20 units')?.unit === '');
+ok('"12 days" states 12', q('12 days')?.value === 12);
+ok('"45 km/h" states 45', q('45 km/h')?.value === 45);
+ok('"₹1331" and "Rs. 1331" state 1331', q('₹1331')?.value === 1331 && q('Rs. 1331')?.value === 1331);
+ok('"Five apples" states 5', q('Five apples')?.value === 5);
+ok('a known unit is still a unit: "5 W"', q('5 W')?.unit === 'W');
+ok('"It is doubled" still states nothing', q('It is doubled') === null);
+ok('"3 or 4" is not a quantity', q('3 or 4') === null || q('3 or 4')?.value === 3);
 
 ok('0.5 A shows as 500 mA', formatQuantity(0.5, 'A') === '500 mA', formatQuantity(0.5, 'A'));
 ok('2200 Ω shows as 2.2 kΩ', formatQuantity(2200, 'Ω') === '2.2 kΩ', formatQuantity(2200, 'Ω'));

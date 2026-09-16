@@ -24,12 +24,13 @@ import { POWER_TRIANGLE_FAMILY, type PowerTriangle } from './power-triangle.ts';
 import { THREE_PHASE_FAMILY, type ThreePhase } from './three-phase.ts';
 import { TRANSFORMER_FAMILY, type Transformer } from './transformer.ts';
 import { MACHINE_FAMILY, type Machine } from './machine.ts';
+import { GRAPH_FAMILY, type Graph } from './graph.ts';
 import type { FigureAnswer, FigureFamily } from './family.ts';
 import { formatQuantity, parseQuantity, sameValue } from './quantity.ts';
 
-export type Figure = Circuit | Junction | AcFigure | PowerTriangle | ThreePhase | Transformer | Machine;
+export type Figure = Circuit | Junction | AcFigure | PowerTriangle | ThreePhase | Transformer | Machine | Graph;
 
-export const FAMILIES: FigureFamily<any>[] = [JUNCTION_FAMILY, CIRCUIT_FAMILY, AC_FAMILY, POWER_TRIANGLE_FAMILY, THREE_PHASE_FAMILY, TRANSFORMER_FAMILY, MACHINE_FAMILY];
+export const FAMILIES: FigureFamily<any>[] = [JUNCTION_FAMILY, CIRCUIT_FAMILY, AC_FAMILY, POWER_TRIANGLE_FAMILY, THREE_PHASE_FAMILY, TRANSFORMER_FAMILY, MACHINE_FAMILY, GRAPH_FAMILY];
 const BY_TYPE = new Map(FAMILIES.map((f) => [f.type, f]));
 
 /** What the question's correct option said, against what the figure works out. */
@@ -80,6 +81,11 @@ export function normalizeFigure(raw: any): { figure: Figure | null; errors: stri
   const family = BY_TYPE.get(String(value.type));
   if (!family) return { figure: null, errors: ['unknown figure type: ' + String(value.type).slice(0, 20)] };
   return family.normalize(value);
+}
+
+/** Whether this figure may be shown on the question scene. See FigureFamily.setupSafe. */
+export function isSetupSafe(figure: Figure): boolean {
+  return BY_TYPE.get(figure.type)?.setupSafe !== false;
 }
 
 /** The value or phrase the figure itself works out for its question. */
@@ -147,8 +153,8 @@ export function figurePromptLines(subject: string, topic: string): string[] {
     'what you write and checked against your correct option; a figure that does not check out is',
     'thrown away. When none of these types fits the question, set "figure" to "none".',
     'Show it with visual kind "figure" on the question scene - what is asked appears as "?" - and on',
-    'the explain scenes that work through it. Set "highlight" to the id or label of the part a scene',
-    'is about.',
+    'the explain scenes that work through it (graphs and charts: explain scenes only). Set "highlight"',
+    'to the id or label of the part a scene is about.',
     '',
   ];
   for (const family of fitting) {
@@ -167,3 +173,4 @@ export type { PowerTriangle } from './power-triangle.ts';
 export type { ThreePhase } from './three-phase.ts';
 export type { Transformer } from './transformer.ts';
 export type { Machine } from './machine.ts';
+export type { Graph } from './graph.ts';
