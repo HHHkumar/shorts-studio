@@ -9,7 +9,9 @@
 // ---------------------------------------------------------------------------
 
 /** The base units a figure deals in. '' is a bare number. */
-export type UnitClass = 'A' | 'V' | 'Ω' | 'W' | 'H' | 'F' | 'Hz' | 'VA' | 'VAR' | 's' | '°' | '';
+export type UnitClass =
+  | 'A' | 'V' | 'Ω' | 'W' | 'H' | 'F' | 'Hz' | 'VA' | 'VAR' | 's' | '°' | '%'
+  | 'Wb' | 'T' | 'At' | 'At/m' | 'At/Wb' | '';
 
 export interface Quantity {
   /** In base units: amperes, not milliamperes. */
@@ -38,6 +40,12 @@ const UNIT_WORDS: [RegExp, UnitClass][] = [
   [/^(hz|hertz)$/i, 'Hz'],
   [/^(s|secs?|seconds?)$/i, 's'],
   [/^(°|deg|degs|degrees?)$/i, '°'],
+  [/^(%|percent|per ?cent)$/i, '%'],
+  [/^(at\/wb|ampere[- ]?turns? ?(per|\/) ?weber)$/i, 'At/Wb'],
+  [/^(at\/m|ampere[- ]?turns? ?(per|\/) ?met(re|er))$/i, 'At/m'],
+  [/^(at|ampere[- ]?turns?)$/i, 'At'],
+  [/^(wb|webers?)$/i, 'Wb'],
+  [/^(t|teslas?)$/i, 'T'],
 ];
 
 const SMALL = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
@@ -100,7 +108,7 @@ export function parseUnit(raw: string): { factor: number; unit: UnitClass } | nu
 }
 
 /** Words around a quantity that do not change it: "0.8 lagging", "approximately 20 ms". */
-const QUALIFIERS = /\b(lagging|leading|lag|lead|approximately|approx|about|nearly|only|exactly|in phase|rms|peak)\b\.?/gi;
+const QUALIFIERS = /\b(lagging|leading|lag|lead|approximately|approx|about|nearly|only|exactly|in phase|rms|peak|of (the )?(full|rated)[ -]load)\b\.?/gi;
 
 /**
  * The quantity an answer option states, or null when it states none.
@@ -115,11 +123,14 @@ export function parseQuantity(text: string): Quantity | null {
   s = s.replace(/^unity\b/i, '1').replace(QUALIFIERS, ' ').replace(/\s+/g, ' ').trim();
   if (!s) return null;
 
-  const numeric = /^(-?\d+(?:\.\d+)?|-?\.\d+)\s*(.*)$/.exec(s);
+  const SUP: Record<string, string> = { '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9', '⁻': '-' };
+  const plain = s.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+/g, (m) => '^' + m.split('').map((c) => SUP[c]).join(''));
+  const numeric = /^(-?\d+(?:\.\d+)?|-?\.\d+)(?:\s*[x×*]\s*10\s*\^\s*(-?\d+)|[eE](-?\d+))?\s*(.*)$/.exec(plain);
   if (numeric) {
-    const unit = parseUnit(numeric[2]);
+    const unit = parseUnit(numeric[4]);
     if (!unit) return null;
-    return { value: Number(numeric[1]) * unit.factor, unit: unit.unit };
+    const exponent = Number(numeric[2] ?? numeric[3] ?? 0);
+    return { value: Number(numeric[1]) * Math.pow(10, exponent) * unit.factor, unit: unit.unit };
   }
 
   // Words: try the longest run of leading words that reads as a number.
@@ -151,6 +162,16 @@ export function formatQuantity(value: number, unit: UnitClass): string {
   if (!unit) return roundForDisplay(value);
   // Degrees never take a prefix or a space, and hertz reads better without milli-.
   if (unit === '°') return roundForDisplay(value) + '°';
+  if (unit === '%') return roundForDisplay(value) + '%';
+  // Ampere-turns and reluctance run to huge numbers; a prefix on "At/Wb" reads badly.
+  if (unit === 'At' || unit === 'At/m' || unit === 'At/Wb') {
+    const abs = Math.abs(value);
+    if (abs >= 1e5) {
+      const exp = Math.floor(Math.log10(abs));
+      return roundForDisplay(value / Math.pow(10, exp)) + ' × 10^' + exp + ' ' + unit;
+    }
+    return roundForDisplay(value) + ' ' + unit;
+  }
   const abs = Math.abs(value);
   if (abs < 1e-12) return '0 ' + unit;
   const allowSmall = unit !== 'Hz';

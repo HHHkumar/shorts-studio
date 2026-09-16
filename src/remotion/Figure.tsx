@@ -10,6 +10,7 @@ import { useEnter, useMetrics } from './ui';
 import { AcArt } from './figures/AcArt';
 import { TriangleArt } from './figures/TriangleArt';
 import { ThreePhaseArt } from './figures/ThreePhaseArt';
+import { TransformerArt } from './figures/TransformerArt';
 
 /**
  * The figure of the question itself - the junction, the circuit - drawn from
@@ -47,6 +48,7 @@ export const FigureView: React.FC<{
         : figure.type === 'ac' ? <AcArt theme={theme} figure={figure} reveal={reveal} w={w} h={h} font={font} />
         : figure.type === 'power-triangle' ? <TriangleArt theme={theme} figure={figure} reveal={reveal} w={w} h={h} font={font} />
         : figure.type === 'three-phase' ? <ThreePhaseArt theme={theme} figure={figure} reveal={reveal} w={w} h={h} font={font} />
+        : figure.type === 'transformer' ? <TransformerArt theme={theme} figure={figure} reveal={reveal} w={w} h={h} font={font} />
         : null}
     </svg>
   );

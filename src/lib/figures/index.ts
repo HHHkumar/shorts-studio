@@ -22,12 +22,13 @@ import { JUNCTION_FAMILY, type Junction } from './junction.ts';
 import { AC_FAMILY, type AcFigure } from './ac.ts';
 import { POWER_TRIANGLE_FAMILY, type PowerTriangle } from './power-triangle.ts';
 import { THREE_PHASE_FAMILY, type ThreePhase } from './three-phase.ts';
+import { TRANSFORMER_FAMILY, type Transformer } from './transformer.ts';
 import type { FigureAnswer, FigureFamily } from './family.ts';
 import { formatQuantity, parseQuantity, sameValue } from './quantity.ts';
 
-export type Figure = Circuit | Junction | AcFigure | PowerTriangle | ThreePhase;
+export type Figure = Circuit | Junction | AcFigure | PowerTriangle | ThreePhase | Transformer;
 
-export const FAMILIES: FigureFamily<any>[] = [JUNCTION_FAMILY, CIRCUIT_FAMILY, AC_FAMILY, POWER_TRIANGLE_FAMILY, THREE_PHASE_FAMILY];
+export const FAMILIES: FigureFamily<any>[] = [JUNCTION_FAMILY, CIRCUIT_FAMILY, AC_FAMILY, POWER_TRIANGLE_FAMILY, THREE_PHASE_FAMILY, TRANSFORMER_FAMILY];
 const BY_TYPE = new Map(FAMILIES.map((f) => [f.type, f]));
 
 /** What the question's correct option said, against what the figure works out. */
@@ -160,3 +161,4 @@ export type { Junction, Branch } from './junction.ts';
 export type { AcFigure, AcSignal } from './ac.ts';
 export type { PowerTriangle } from './power-triangle.ts';
 export type { ThreePhase } from './three-phase.ts';
+export type { Transformer } from './transformer.ts';
