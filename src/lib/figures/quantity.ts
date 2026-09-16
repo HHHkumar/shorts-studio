@@ -11,7 +11,7 @@
 /** The base units a figure deals in. '' is a bare number. */
 export type UnitClass =
   | 'A' | 'V' | 'Ω' | 'W' | 'H' | 'F' | 'Hz' | 'VA' | 'VAR' | 's' | '°' | '%'
-  | 'Wb' | 'T' | 'At' | 'At/m' | 'At/Wb' | '';
+  | 'Wb' | 'T' | 'At' | 'At/m' | 'At/Wb' | 'rpm' | 'N·m' | '';
 
 export interface Quantity {
   /** In base units: amperes, not milliamperes. */
@@ -46,6 +46,10 @@ const UNIT_WORDS: [RegExp, UnitClass][] = [
   [/^(at|ampere[- ]?turns?)$/i, 'At'],
   [/^(wb|webers?)$/i, 'Wb'],
   [/^(t|teslas?)$/i, 'T'],
+  [/^(rpm|r\.p\.m\.?|revs? ?per ?min(ute)?)$/i, 'rpm'],
+  // Case matters for the symbol: "Nm" is torque, "nm" is a nanometre.
+  [/^N[·.\- ]?m$/, 'N·m'],
+  [/^newton[- ]?met(re|er)s?$/i, 'N·m'],
 ];
 
 const SMALL = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
@@ -163,6 +167,11 @@ export function formatQuantity(value: number, unit: UnitClass): string {
   // Degrees never take a prefix or a space, and hertz reads better without milli-.
   if (unit === '°') return roundForDisplay(value) + '°';
   if (unit === '%') return roundForDisplay(value) + '%';
+  // A fraction of an ohm is written as a decimal in every textbook: 0.5 Ω, not 500 mΩ.
+  if (unit === 'Ω' && Math.abs(value) >= 0.01 && Math.abs(value) < 1) return roundForDisplay(value) + ' Ω';
+  // Speeds are read to the rev; torque to one decimal.
+  if (unit === 'rpm') return Math.round(value) + ' rpm';
+  if (unit === 'N·m') return roundForDisplay(value) + ' N·m';
   // Ampere-turns and reluctance run to huge numbers; a prefix on "At/Wb" reads badly.
   if (unit === 'At' || unit === 'At/m' || unit === 'At/Wb') {
     const abs = Math.abs(value);

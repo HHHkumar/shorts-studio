@@ -23,12 +23,13 @@ import { AC_FAMILY, type AcFigure } from './ac.ts';
 import { POWER_TRIANGLE_FAMILY, type PowerTriangle } from './power-triangle.ts';
 import { THREE_PHASE_FAMILY, type ThreePhase } from './three-phase.ts';
 import { TRANSFORMER_FAMILY, type Transformer } from './transformer.ts';
+import { MACHINE_FAMILY, type Machine } from './machine.ts';
 import type { FigureAnswer, FigureFamily } from './family.ts';
 import { formatQuantity, parseQuantity, sameValue } from './quantity.ts';
 
-export type Figure = Circuit | Junction | AcFigure | PowerTriangle | ThreePhase | Transformer;
+export type Figure = Circuit | Junction | AcFigure | PowerTriangle | ThreePhase | Transformer | Machine;
 
-export const FAMILIES: FigureFamily<any>[] = [JUNCTION_FAMILY, CIRCUIT_FAMILY, AC_FAMILY, POWER_TRIANGLE_FAMILY, THREE_PHASE_FAMILY, TRANSFORMER_FAMILY];
+export const FAMILIES: FigureFamily<any>[] = [JUNCTION_FAMILY, CIRCUIT_FAMILY, AC_FAMILY, POWER_TRIANGLE_FAMILY, THREE_PHASE_FAMILY, TRANSFORMER_FAMILY, MACHINE_FAMILY];
 const BY_TYPE = new Map(FAMILIES.map((f) => [f.type, f]));
 
 /** What the question's correct option said, against what the figure works out. */
@@ -114,7 +115,10 @@ export function checkFigure(figure: Figure, correctOption: string): FigureCheck 
   const stated = parseQuantity(correctOption);
   if (!stated) return { status: 'unchecked', computed, option: correctOption };
   const unitsAgree = !stated.unit || !solved.unit || stated.unit === solved.unit;
-  const agree = unitsAgree && sameValue(stated.value, solved.value);
+  // A percentage written as a fraction - slip "0.04", efficiency "0.96" - is the
+  // same answer. Reading it as 0.04% would throw away a correct figure.
+  const asFraction = solved.unit === '%' && !stated.unit && Math.abs(stated.value) <= 1 && sameValue(stated.value * 100, solved.value);
+  const agree = asFraction || (unitsAgree && sameValue(stated.value, solved.value));
   return { status: agree ? 'match' : 'mismatch', computed, option: correctOption };
 }
 
@@ -162,3 +166,4 @@ export type { AcFigure, AcSignal } from './ac.ts';
 export type { PowerTriangle } from './power-triangle.ts';
 export type { ThreePhase } from './three-phase.ts';
 export type { Transformer } from './transformer.ts';
+export type { Machine } from './machine.ts';

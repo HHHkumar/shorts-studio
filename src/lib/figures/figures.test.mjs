@@ -38,6 +38,8 @@ ok('"1,200 W" drops the thousands comma', q('1,200 W')?.value === 1200);
 ok('0.5 A shows as 500 mA', formatQuantity(0.5, 'A') === '500 mA', formatQuantity(0.5, 'A'));
 ok('2200 Ω shows as 2.2 kΩ', formatQuantity(2200, 'Ω') === '2.2 kΩ', formatQuantity(2200, 'Ω'));
 ok('5 A shows as 5 A', formatQuantity(5, 'A') === '5 A');
+ok('half an ohm shows as 0.5 Ω, not 500 mΩ', formatQuantity(0.5, 'Ω') === '0.5 Ω', formatQuantity(0.5, 'Ω'));
+ok('a very small resistance still takes milli', formatQuantity(0.002, 'Ω') === '2 mΩ', formatQuantity(0.002, 'Ω'));
 ok('1/3 A shows three figures', formatQuantity(1 / 3, 'A') === '333 mA', formatQuantity(1 / 3, 'A'));
 ok('999.9 V moves up a prefix instead of showing 1000 V', formatQuantity(999.9, 'V') === '1 kV', formatQuantity(999.9, 'V'));
 ok('trailing zeros dropped', roundForDisplay(1.5) === '1.5' && roundForDisplay(2) === '2');
