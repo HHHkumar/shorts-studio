@@ -51,6 +51,19 @@ ok('the power factor line reads "0.80 lagging"', triangleAskText(tri({ real: '8 
 ok('a leading load says leading', /leading$/.test(triangleAskText(tri({ real: '8 kW', reactive: '6 kVAR', lagging: false, ask: 'powerFactor' }), true)));
 ok('before the reveal, only "?"', triangleAskText(pfc, false) === 'Capacitor rating = ?');
 
+// Before the reveal only what the question stated is shown. Asking for S while
+// showing P and the power factor would have given S away.
+const askS = tri({ real: '8 kW', reactive: '6 kVAR', ask: 'apparent' });
+const qLabels = layoutTriangle(askS, 940, 800, 36, false).labels.map((l) => l.text).join(' | ');
+ok('question scene: P and Q, as stated', /P = 8 kW/.test(qLabels) && /Q = 6 kVAR/.test(qLabels), qLabels);
+ok('question scene: S and the angle are "?"', /S = \?/.test(qLabels) && /φ = \?/.test(qLabels) && !/0\.80/.test(qLabels), qLabels);
+const aLabels = layoutTriangle(askS, 940, 800, 36, true).labels.map((l) => l.text).join(' | ');
+ok('after the reveal everything is shown', /S = 10 kVA/.test(aLabels) && /0\.80/.test(aLabels), aLabels);
+const withPf = layoutTriangle(tri({ real: '8 kW', powerFactor: 0.8, ask: 'reactive' }), 940, 800, 36, false).labels.map((l) => l.text).join(' | ');
+ok('a stated power factor is shown before the reveal', /pf 0\.80/.test(withPf) && /Q = \?/.test(withPf), withPf);
+const corrQ = layoutTriangle(pfc, 940, 800, 36, false).labels.map((l) => l.text).join(' | ');
+ok('the capacitor rating and S₂ wait for the reveal', /Qc = \?/.test(corrQ) && /S₂ = \?/.test(corrQ), corrQ);
+
 // --- refusing triangles that cannot exist ---------------------------------------------------
 const refused = (label, raw, pattern) => {
   const r = normalizeTriangle({ type: 'power-triangle', ...raw });

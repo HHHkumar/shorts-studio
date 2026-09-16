@@ -1,7 +1,7 @@
 // AC figures, checked against the textbook - and against their own drawing:
 // the shaded power curve must average to the power the figure states, and a
 // lagging current must peak later than its voltage.
-import { acPower, answerAc, layoutPhasors, layoutWaveform, normalizeAc, phasorAngleLabel, relationText, valueAt, acAskText } from './ac.ts';
+import { acPower, answerAc, averagePowerText, layoutPhasors, phaseShown, layoutWaveform, normalizeAc, phasorAngleLabel, relationText, valueAt, acAskText } from './ac.ts';
 import { checkFigure, normalizeFigure } from './index.ts';
 
 let fails = 0;
@@ -111,6 +111,14 @@ for (const phi of [10, 36.87, 60, 90, 150, -45, -90]) {
   ok('φ = ' + phi + '°: the angle label clears both arrows', hits.length === 0, hits.map((h) => h.signal.id).join(','));
 }
 ok('in phase: no angle to label', phasorAngleLabel(resistor, 300, 300, 200, 28, 'φ = 0°') === null);
+
+// Before the reveal: average power is worked out, so it waits; so does φ when
+// the question is the power factor or the phase.
+ok('question scene: average power is "?"', averagePowerText(inductor, false) === 'P avg = ?');
+ok('answer scene: average power is shown', averagePowerText(inductor, true) === 'P avg = 0 W');
+ok('a power-factor question hides φ until the reveal', !phaseShown(pf08, false) && phaseShown(pf08, true));
+ok('a peak-value question may show φ', phaseShown(mains, false));
+ok('and the relation line hides the angle too', relationText(pf08, false) === 'I lags V by ?', relationText(pf08, false));
 
 // --- refusing what cannot be drawn honestly --------------------------------------------------
 const refused = (label, raw, pattern) => {

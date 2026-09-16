@@ -302,14 +302,25 @@ export function phasorAngleLabel(f: AcFigure, cx: number, cy: number, radius: nu
   };
 }
 
+/** "P avg = 1.84 kW" - worked out, so never shown before the reveal. */
+export function averagePowerText(f: AcFigure, reveal: boolean): string {
+  const p = acPower(f);
+  if (!p || !f.showPower) return '';
+  return 'P avg = ' + (reveal ? formatQuantity(p.real, 'W') : '?');
+}
+
+/** Whether the angle between V and I may be printed yet. */
+export function phaseShown(f: AcFigure, reveal: boolean): boolean {
+  return reveal || !f.ask || !['phase', 'powerFactor'].includes(f.ask.quantity);
+}
+
 /** "I lags V by 90°", or "V and I in phase". */
 export function relationText(f: AcFigure, reveal: boolean): string {
   const p = acPower(f);
   const v = f.signals.find((s) => s.kind === 'voltage');
   const i = f.signals.find((s) => s.kind === 'current');
   if (!p || !v || !i) return '';
-  const hidden = !reveal && f.ask?.quantity === 'phase';
-  const angle = hidden ? '?' : formatQuantity(Math.abs(p.phi), '°');
+  const angle = phaseShown(f, reveal) ? formatQuantity(Math.abs(p.phi), '°') : '?';
   if (Math.abs(p.phi) < 1e-9) return v.label + ' and ' + i.label + ' in phase';
   return i.label + (p.phi > 0 ? ' lags ' : ' leads ') + v.label + ' by ' + angle;
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  acAskText, acPower, layoutPhasors, layoutWaveform, phasorAngleLabel, relationText, type AcFigure, type AcSignal,
+  acAskText, acPower, averagePowerText, layoutPhasors, layoutWaveform, phaseShown, phasorAngleLabel, relationText, type AcFigure, type AcSignal,
 } from '../../lib/figures/ac.ts';
 import { formatQuantity } from '../../lib/figures/quantity.ts';
 import { ArrowHead, Footer, STROKE, polyline, useStagger, type ArtProps } from './shared';
@@ -61,8 +61,7 @@ const Phasors: React.FC<Part> = ({ figure, theme, w, h, font, reveal, colourOf, 
   // labelled where the text clears both arrows (see phasorAngleLabel).
   let arc: React.ReactNode = null;
   if (power && v && i) {
-    const hidden = !reveal && figure.ask?.quantity === 'phase';
-    const text = 'φ = ' + (hidden ? '?' : formatQuantity(Math.abs(power.phi), '°'));
+    const text = 'φ = ' + (phaseShown(figure, reveal) ? formatQuantity(Math.abs(power.phi), '°') : '?');
     const label = phasorAngleLabel(figure, cx, cy, radius, small, text);
     if (label) {
       arc = (
@@ -110,7 +109,6 @@ const Waves: React.FC<Part> = ({ figure, theme, w, h, font, reveal, colourOf, da
   const layout = layoutWaveform(figure, w, h - legendH - font * 0.9);
   const small = font * 0.62;
   const power = acPower(figure);
-  const hidePower = !reveal && figure.ask?.quantity === 'power';
 
   return (
     <g>
@@ -125,7 +123,7 @@ const Waves: React.FC<Part> = ({ figure, theme, w, h, font, reveal, colourOf, da
         {layout.averageY !== null && power ? (
           <text x={layout.right} y={font} textAnchor="end" fontFamily={theme.fontBody} fontWeight={700}
             fontSize={small * 1.15} fill={theme.accent}>
-            {'P avg = ' + (hidePower ? '?' : formatQuantity(power.real, 'W'))}
+            {averagePowerText(figure, reveal)}
           </text>
         ) : null}
       </g>

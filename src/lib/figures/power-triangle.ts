@@ -31,6 +31,12 @@ export interface PowerTriangle {
   frequency?: number;
   phases: 1 | 3;
   ask?: TriangleAsk;
+  /**
+   * Which of P, Q, S and pf the question stated. Before the answer is revealed
+   * only these are shown: a question asking for S that also showed the power
+   * factor beside P would have given S away.
+   */
+  given: ('P' | 'Q' | 'S' | 'pf')[];
 }
 
 /** "8 kW" -> 8000, refusing a unit that belongs to another side ("8 kVA" for P). */
@@ -47,23 +53,23 @@ export function normalizeTriangle(raw: any): { figure: PowerTriangle | null; err
   const r = raw && typeof raw === 'object' ? raw : {};
   const lagging = r.lagging !== false && r.leading !== true;
 
-  const given = {
+  const given0 = {
     P: r.real !== undefined ? power(r.real, 'W') : null,
     Q: r.reactive !== undefined ? power(r.reactive, 'VAR') : null,
     S: r.apparent !== undefined ? power(r.apparent, 'VA') : null,
     pf: r.powerFactor !== undefined ? num(r.powerFactor) : null,
   };
   for (const [k, field, unit] of [['P', 'real', 'W'], ['Q', 'reactive', 'VAR'], ['S', 'apparent', 'VA']] as const) {
-    if (r[field] !== undefined && given[k] === null) errors.push(field + ' must be a power in ' + unit + ', e.g. "8 k' + unit + '"');
+    if (r[field] !== undefined && given0[k] === null) errors.push(field + ' must be a power in ' + unit + ', e.g. "8 k' + unit + '"');
   }
-  if (given.pf !== null && !(given.pf > 0 && given.pf <= 1)) errors.push('a power factor lies between 0 and 1');
-  const count = [given.P, given.Q, given.S, given.pf].filter((v) => v !== null).length;
+  if (given0.pf !== null && !(given0.pf > 0 && given0.pf <= 1)) errors.push('a power factor lies between 0 and 1');
+  const count = [given0.P, given0.Q, given0.S, given0.pf].filter((v) => v !== null).length;
   if (count < 2) errors.push('give two of real, reactive, apparent and powerFactor');
 
   let P = 0;
   let Q = 0;
   if (!errors.length) {
-    const { P: p, Q: q, S: s, pf } = given;
+    const { P: p, Q: q, S: s, pf } = given0;
     if (p !== null && q !== null) { P = p; Q = Math.abs(q); }
     else if (p !== null && s !== null) { P = p; Q = Math.sqrt(Math.max(0, s * s - p * p)); if (s < p * 0.999) errors.push('apparent power cannot be smaller than real power'); }
     else if (p !== null && pf !== null) { P = p; Q = p * Math.tan(Math.acos(pf)); }
@@ -106,8 +112,9 @@ export function normalizeTriangle(raw: any): { figure: PowerTriangle | null; err
     else ask = a;
   }
 
+  const given = (['P', 'Q', 'S', 'pf'] as const).filter((k) => given0[k] !== null);
   const figure: PowerTriangle = {
-    type: 'power-triangle', real: P, reactive: lagging ? Q : -Q, phases,
+    type: 'power-triangle', real: P, reactive: lagging ? Q : -Q, phases, given,
     ...(targetPf ? { targetPf } : {}), ...(voltage ? { voltage } : {}), ...(frequency ? { frequency } : {}),
     ...(ask ? { ask } : {}),
   };
@@ -183,7 +190,9 @@ const HIDE: Record<string, TriangleAsk[]> = {
  */
 export function layoutTriangle(t: PowerTriangle, width: number, height: number, font: number, reveal: boolean): TriangleLayout {
   const s = solveTriangle(t);
-  const text = (key: string, value: string) => (!reveal && t.ask && HIDE[key]?.includes(t.ask) ? '?' : value);
+  // Before the reveal: what the question stated, and nothing worked out from it.
+  const stated = (key: string) => key === 'phi' ? t.given.includes('pf') : (t.given as string[]).includes(key);
+  const text = (key: string, value: string) => (!reveal && (!stated(key) || (t.ask && HIDE[key]?.includes(t.ask))) ? '?' : value);
   const qLabel = 'Q = ' + text('Q', formatQuantity(Math.abs(s.Q), 'VAR'));
   const sLabel = 'S = ' + text('S', formatQuantity(s.S, 'VA'));
   const pLabel = 'P = ' + text('P', formatQuantity(s.P, 'W'));
