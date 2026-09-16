@@ -8,6 +8,7 @@ import {
 import { branchText, layoutJunction, type Junction } from '../lib/figures/junction.ts';
 import { useEnter, useMetrics } from './ui';
 import { AcArt } from './figures/AcArt';
+import { TriangleArt } from './figures/TriangleArt';
 
 /**
  * The figure of the question itself - the junction, the circuit - drawn from
@@ -43,6 +44,7 @@ export const FigureView: React.FC<{
       {figure.type === 'junction' ? <JunctionArt theme={theme} junction={figure} reveal={reveal} w={w} h={h} font={font} />
         : figure.type === 'circuit' ? <CircuitArt theme={theme} circuit={figure} reveal={reveal} highlight={highlight} w={w} h={h} font={font} />
         : figure.type === 'ac' ? <AcArt theme={theme} figure={figure} reveal={reveal} w={w} h={h} font={font} />
+        : figure.type === 'power-triangle' ? <TriangleArt theme={theme} figure={figure} reveal={reveal} w={w} h={h} font={font} />
         : null}
     </svg>
   );
