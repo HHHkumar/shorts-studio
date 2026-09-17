@@ -135,6 +135,8 @@ test('givesAnswerAway ignores letter case and punctuation', () => {
   assert(givesAnswerAway('ANSWER: ₹300!', ['₹300']));
   assert(!givesAnswerAway('₹3000 split', ['₹30 0x']));
   assert(!givesAnswerAway('Option A', ['A']), 'a one-letter option should only match on its own');
+  assert(givesAnswerAway('Two waves 90° apart', ['90°']), 'a short number standing alone is the answer');
+  assert(!givesAnswerAway('Invented in 1905', ['90°']) && !givesAnswerAway('A 9.5 volt cell', ['9']), 'but not inside another number');
 });
 
 console.log('\n' + passed + ' checks passed');

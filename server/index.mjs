@@ -37,6 +37,7 @@ import {
 } from './google-images.mjs';
 import { generateSeo } from './seo.mjs';
 import { buildArtPrompt, generateThumbnailBrief } from './thumbnail-brief.mjs';
+import { generateScenePrompts } from './scene-prompts.mjs';
 
 const PORT = Number(process.env.PORT || 3030);
 const GENERATED_DIR = path.join(paths.PUBLIC_DIR, 'generated');
@@ -279,6 +280,15 @@ app.post('/api/image/generate', ok(async (req, res) => {
   });
 
   res.json({ ...saved, id: fileId, generationId: id, prompt, matched: false });
+}));
+
+/** Gemini writes a drawing prompt for each scene no photo can honestly show. Text only - free tier. */
+app.post('/api/image/prompts', ok(async (req, res) => {
+  const { apiKey, model, content, scenes } = req.body || {};
+  if (!content || !Array.isArray(content.script)) throw new Error('Generate a script before writing drawing prompts.');
+  const out = await generateScenePrompts({ apiKey, model: model || 'gemini-2.5-flash', content, scenes });
+  console.log('[image] wrote drawing prompts for ' + Object.keys(out.prompts).length + ' scenes');
+  res.json(out);
 }));
 
 // --- what is worth making a video about right now ----------------------------

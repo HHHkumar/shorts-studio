@@ -96,8 +96,11 @@ export function givesAnswerAway(text, options) {
   if (!t) return false;
   return (Array.isArray(options) ? options : []).some((o) => {
     const opt = bare(o);
-    // Short options ("A", "2") match inside almost anything, so only a whole match counts.
     if (!opt) return false;
+    // A short number ("90°", "12") counts wherever it stands alone as a number -
+    // "waves 90° apart" gives away 90° - but not inside another one, like 1905.
+    if (/^\d{1,2}$/.test(opt)) return new RegExp('(^|[^\\d.])' + opt + '(?![\\d]|\\.\\d)').test(String(text).toLowerCase());
+    // A short word ("A") matches inside almost anything, so only a whole match counts.
     return opt.length <= 2 ? t === opt : t.includes(opt);
   });
 }
@@ -115,6 +118,10 @@ export function markAccent(headline, accentWord) {
 
 /** Words that make an image model draw lettering, however politely they are asked not to. */
 const TEXT_WORDS = /\b(text|words?|letters?|lettering|labels?|captions?|titles?|headlines?|typography|written|writing|numbers?|digits?|signs?)\b/gi;
+
+/** A picture description with the lettering-inviting words taken out. */
+export const stripLettering = (text) =>
+  String(text || '').replace(TEXT_WORDS, '').replace(/\s+/g, ' ').replace(/\s+([,.])/g, '$1').trim();
 
 export function normalizeBrief(raw, content = {}) {
   const r = raw && typeof raw === 'object' ? raw : {};
@@ -150,7 +157,7 @@ export function normalizeBrief(raw, content = {}) {
   let badge = clean(r.badge, 14);
   if (givesAnswerAway(badge, options)) badge = '';
 
-  let scene = clean(r.scene, 600).replace(TEXT_WORDS, '').replace(/\s+/g, ' ').replace(/\s+([,.])/g, '$1').trim();
+  let scene = stripLettering(clean(r.scene, 600));
   if (!scene) scene = 'a bold dramatic image about ' + (content.topic || content.subject || 'the topic');
 
   return {

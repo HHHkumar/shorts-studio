@@ -343,6 +343,11 @@ export const api = {
     );
   },
 
+  /** Gemini writes a drawing prompt for each listed scene - for scenes no photo can honestly show. */
+  scenePrompts(body: { apiKey: string; model: string; content: QuizContent; scenes: number[] }) {
+    return post<{ prompts: Record<string, string>; notes: string[] }>('/api/image/prompts', body);
+  },
+
   seo(
     apiKey: string,
     model: string,

@@ -33,11 +33,13 @@ export const StepStyle: React.FC<{
   imageStyles: { id: string; label: string }[];
   googleImageModels: { id: string; label: string }[];
   geminiKey: string;
+  /** Writes drawing prompts for scenes with no honest photo. */
+  geminiModel?: string;
   onBack: () => void;
   onNext: () => void;
 }> = ({
   design, setDesign, musicMoods, content, setContent, pexelsKey, elevenKey, form,
-  imageModels, imageStyles, googleImageModels, geminiKey, onBack, onNext,
+  imageModels, imageStyles, googleImageModels, geminiKey, geminiModel, onBack, onNext,
 }) => {
   const set = <K extends keyof DesignSettings>(key: K, value: DesignSettings[K]) =>
     setDesign((prev) => ({ ...prev, [key]: value }));
@@ -320,6 +322,7 @@ export const StepStyle: React.FC<{
           imageStyles={imageStyles}
           googleImageModels={googleImageModels}
           geminiKey={geminiKey}
+          geminiModel={geminiModel}
           orientation={design.orientation}
           showStock={design.showStock}
           stockOpacity={design.stockOpacity}
