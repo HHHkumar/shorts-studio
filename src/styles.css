@@ -496,3 +496,21 @@ ul.issues .sev-low .sev { background: rgba(108,140,255,.16); color: var(--accent
 .gemini-thumb-head { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
 .gemini-thumb-head b { font-size: 15px; }
 .gemini-thumb-head span { font-size: 13.5px; color: var(--dim); line-height: 1.5; }
+
+/* ---------- publish: the carousel post ---------- */
+
+.carousel-strip { display: flex; gap: 10px; overflow-x: auto; padding: 4px 2px 10px; margin-top: 14px; }
+.carousel-thumb {
+  flex: 0 0 auto; width: 128px; padding: 6px; border-radius: 10px; cursor: pointer;
+  background: var(--bg); border: 2px solid var(--line); color: var(--dim);
+  display: flex; flex-direction: column; gap: 6px; font-size: 12px; text-align: left;
+}
+.carousel-thumb img { width: 100%; aspect-ratio: 1 / 1; border-radius: 6px; display: block; }
+.carousel-thumb.active { border-color: var(--accent); color: var(--text); }
+.carousel-view { margin-top: 8px; }
+.carousel-view > img {
+  width: 100%; max-width: 520px; aspect-ratio: 1 / 1; display: block;
+  border-radius: 10px; border: 1px solid var(--line);
+}
+.carousel-nav { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 10px 0 14px; }
+.carousel-nav span { font-size: 13.5px; color: var(--dim); font-variant-numeric: tabular-nums; min-width: 48px; text-align: center; }

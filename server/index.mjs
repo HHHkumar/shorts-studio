@@ -20,10 +20,13 @@ import { spawn } from 'node:child_process';
 import { generateContent, listModels } from './gemini.mjs';
 import { checkMotion, generateStoryboard } from './explainer.mjs';
 import { attachIcons } from './icons.mjs';
-import { buildPublishKit } from './publish-kit.mjs';
+import { buildCarouselZip, buildPublishKit, slug } from './publish-kit.mjs';
+import { planCarousel } from '../src/lib/carousel.ts';
 import { CLAUDE_MODELS, DEFAULT_CLAUDE_MODEL, listClaudeModels } from './claude.mjs';
 import { listVoices, speak, VOICE_MODELS } from './tts.mjs';
-import { jobs as renderJobs, renderThumbnail, startRender, paths } from './render.mjs';
+import {
+  jobs as renderJobs, readCarousel, renderCarousel, renderThumbnail, startRender, paths,
+} from './render.mjs';
 import { ensureAudioAssets, MUSIC_MOODS } from './audio-gen.mjs';
 import { validateContent, DEEPSEEK_MODELS } from './deepseek.mjs';
 import { findTrending } from './trends.mjs';
@@ -351,8 +354,10 @@ app.post('/api/generate', ok(async (req, res) => {
 // --- the upload kit ---------------------------------------------------------
 
 app.post('/api/publish-kit', ok(async (req, res) => {
-  const { content, design, seo, title, scenes, fps, thumbnailFile } = req.body || {};
+  const { content, design, seo, title, scenes, fps, thumbnailFile, carouselFolder } = req.body || {};
   if (!content) throw new Error('Generate a video before packing its upload kit.');
+  // readCarousel only accepts a folder name this app made, so nothing else under out/ can be packed.
+  const carousel = carouselFolder ? readCarousel(carouselFolder) : [];
 
   let thumbnail = null;
   if (thumbnailFile) {
@@ -363,13 +368,14 @@ app.post('/api/publish-kit', ok(async (req, res) => {
     else console.log('[kit] the thumbnail has gone from out/, packing without it');
   }
 
-  const kit = buildPublishKit({ content, design, seo, title, scenes, fps, thumbnail });
+  const kit = buildPublishKit({ content, design, seo, title, scenes, fps, thumbnail, carousel });
   fs.mkdirSync(paths.OUT_DIR, { recursive: true });
   fs.writeFileSync(path.join(paths.OUT_DIR, kit.name), kit.buffer);
 
   console.log('[kit] ' + kit.name + ' - ' + Math.round(kit.buffer.length / 1024) + ' KB, '
     + (kit.chapters ? kit.chapters + ' chapters' : 'no chapters')
-    + (kit.hasThumbnail ? ', with the thumbnail' : ', no thumbnail yet'));
+    + (kit.hasThumbnail ? ', with the thumbnail' : ', no thumbnail yet')
+    + (kit.carouselSlides ? ', ' + kit.carouselSlides + ' carousel slides' : ''));
 
   res.json({
     url: '/out/' + encodeURIComponent(kit.name),
@@ -377,6 +383,34 @@ app.post('/api/publish-kit', ok(async (req, res) => {
     bytes: kit.buffer.length,
     chapters: kit.chapters,
     hasThumbnail: kit.hasThumbnail,
+    carouselSlides: kit.carouselSlides,
+  });
+}));
+
+// --- the carousel post ------------------------------------------------------
+
+/** Square slides of the same question - question, answer, why - plus a zip ready to post. */
+app.post('/api/carousel', ok(async (req, res) => {
+  const { content, design, channelName, seo } = req.body || {};
+  if (!content || !content.question) throw new Error('Generate a question before making its carousel.');
+
+  const { slides, notes } = planCarousel(content, { channelName });
+  const started = Date.now();
+  console.log('[carousel] rendering ' + slides.length + ' slides: ' + slides.map((x) => x.kind).join(', '));
+  const out = await renderCarousel({ content, design, channelName, slides });
+
+  const zipName = slug(content.topic || content.question, 'carousel') + '-carousel.zip';
+  const zip = buildCarouselZip({ slides: readCarousel(out.folder), seo });
+  fs.writeFileSync(path.join(out.dir, zipName), zip);
+
+  console.log('[carousel] done in ' + Math.round((Date.now() - started) / 1000) + 's - ' + out.folder);
+  res.json({
+    folder: out.folder,
+    slides: out.files,
+    zipUrl: '/out/' + out.folder + '/' + encodeURIComponent(zipName),
+    zipName,
+    bytes: zip.length,
+    notes,
   });
 }));
 

@@ -29,15 +29,17 @@ export const FigureView: React.FC<{
   figure: Figure;
   reveal: boolean;
   highlight?: string;
-}> = ({ theme, figure, reveal, highlight }) => {
+  /** A fixed box, for places that are not a video frame - a carousel slide. */
+  box?: { w: number; h: number; font: number };
+}> = ({ theme, figure, reveal, highlight, box }) => {
   const { width } = useVideoConfig();
   const m = useMetrics();
   const enter = useEnter(2, theme);
-  const w = Math.round(width - m.padX * 2);
+  const w = box ? box.w : Math.round(width - m.padX * 2);
   // Tall enough to use the frame: at 760 a phasor diagram above a waveform left
   // each at half size with a third of the phone screen empty underneath.
-  const h = m.landscape ? 620 : 940;
-  const font = m.landscape ? 32 : 36;
+  const h = box ? box.h : m.landscape ? 620 : 940;
+  const font = box ? box.font : m.landscape ? 32 : 36;
 
   return (
     <svg

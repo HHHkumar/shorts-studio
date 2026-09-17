@@ -265,6 +265,8 @@ export const api = {
     scenes: Scene[];
     fps: number;
     thumbnailFile: string;
+    /** A carousel made on this step, packed into the kit's carousel/ folder. */
+    carouselFolder?: string;
   }) {
     return post<{
       url: string;
@@ -272,7 +274,20 @@ export const api = {
       bytes: number;
       chapters: number;
       hasThumbnail: boolean;
+      carouselSlides?: number;
     }>('/api/publish-kit', body);
+  },
+
+  /** Render the square carousel post: question, answer, why. Waits for every slide. */
+  carousel(body: { content: QuizContent; design: DesignSettings; channelName: string; seo: SeoPack | null }) {
+    return post<{
+      folder: string;
+      slides: { fileName: string; url: string; kind: string }[];
+      zipUrl: string;
+      zipName: string;
+      bytes: number;
+      notes: string[];
+    }>('/api/carousel', body);
   },
 
   async uploadMusic(file: File) {

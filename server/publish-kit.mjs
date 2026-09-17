@@ -272,6 +272,52 @@ export function buildSocialSheet(platform, social, creditLine) {
   ].join('\n');
 }
 
+/** Said once in the caption of a carousel, where the Reel's caption says nothing about swiping. */
+export const SWIPE_LINE = 'Swipe ➡️ for the answer and the explanation.';
+
+/**
+ * The caption for the carousel post: the platform's caption, a swipe cue,
+ * then the hashtags - last, as on the Reel. The slides carry no icons, so no
+ * credit is owed for them. '' when that platform's text was never written.
+ */
+export function buildCarouselCaption(social) {
+  const s = social || {};
+  if (!s.caption) return '';
+  const tags = (s.hashtags || []).map((h) => '#' + h).join(' ');
+  return [s.caption, SWIPE_LINE, tags].filter(Boolean).join('\n\n');
+}
+
+const HOW_TO_POST = [
+  'POSTING THE CAROUSEL',
+  '',
+  'Instagram',
+  '  1. + > Post, tap the "select multiple" icon, and pick slide-01 to the last slide IN ORDER.',
+  '  2. Keep the square crop - the slides are 1080 x 1080 already.',
+  '  3. Paste caption-instagram.txt. It ends with the hashtags; add no more in a comment.',
+  '',
+  'Facebook',
+  '  1. Create post > Photo/video, select every slide in order.',
+  '  2. Paste caption-facebook.txt.',
+  '',
+  'Post it the same day as the Reel: the carousel is the one people save to revise from.',
+  '',
+].join('\n');
+
+/**
+ * The carousel as its own zip: the slides, a caption per platform, and how to post it.
+ * `slides` is [{ name, data }] in order, as readCarousel returns them.
+ */
+export function buildCarouselZip({ slides, seo }) {
+  const pack = seo || {};
+  const files = (slides || []).map((s) => ({ name: s.name, data: s.data }));
+  const ig = buildCarouselCaption(pack.instagram);
+  const fb = buildCarouselCaption(pack.facebook);
+  if (ig) files.push({ name: 'caption-instagram.txt', data: ig + '\n' });
+  if (fb) files.push({ name: 'caption-facebook.txt', data: fb + '\n' });
+  files.push({ name: 'HOW-TO-POST.txt', data: HOW_TO_POST });
+  return makeZip(files);
+}
+
 /** A filename that is safe on Windows and still recognisable a month later. */
 export function slug(text, fallback = 'video') {
   const out = String(text || '')
@@ -368,7 +414,7 @@ export function buildUploadSheet({
  * `thumbnail` is optional: a kit without one is still worth having, and the
  * creator may not have made one yet.
  */
-export function buildPublishKit({ content, design, seo, title, scenes, fps, thumbnail }) {
+export function buildPublishKit({ content, design, seo, title, scenes, fps, thumbnail, carousel = [] }) {
   const pack = seo || {};
   const chosenTitle = String(title || (pack.titles || [])[0] || content.question || '').trim();
   const chapters = buildChapters(scenes, fps);
@@ -441,11 +487,21 @@ export function buildPublishKit({ content, design, seo, title, scenes, fps, thum
   if (instagram) files.push({ name: 'instagram.txt', data: instagram });
   if (facebook) files.push({ name: 'facebook.txt', data: facebook });
   if (thumbnail) files.push({ name: 'thumbnail.png', data: thumbnail });
+  // The square carousel post, in its own folder so its slides stay in order and apart.
+  if (carousel.length) {
+    for (const slide of carousel) files.push({ name: 'carousel/' + slide.name, data: slide.data });
+    const ig = buildCarouselCaption(pack.instagram);
+    const fb = buildCarouselCaption(pack.facebook);
+    if (ig) files.push({ name: 'carousel/caption-instagram.txt', data: ig + '\n' });
+    if (fb) files.push({ name: 'carousel/caption-facebook.txt', data: fb + '\n' });
+    files.push({ name: 'carousel/HOW-TO-POST.txt', data: HOW_TO_POST });
+  }
 
   return {
     name: slug(chosenTitle || content.topic) + '-upload-kit.zip',
     buffer: makeZip(files),
     chapters: chapters.length,
     hasThumbnail: !!thumbnail,
+    carouselSlides: carousel.length,
   };
 }

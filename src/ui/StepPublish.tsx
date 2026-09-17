@@ -3,6 +3,7 @@ import { api, contentFingerprint, type SeoPack, type TopicForm } from '../lib/ap
 import type { QuizContent, DesignSettings, VideoProps } from '../lib/types';
 import { ErrorNote, Note, Spinner, TextInput } from './controls';
 import { ThumbnailMaker } from './ThumbnailMaker';
+import { CarouselMaker } from './CarouselMaker';
 
 interface KitResult {
   url: string;
@@ -10,6 +11,7 @@ interface KitResult {
   bytes: number;
   chapters: number;
   hasThumbnail: boolean;
+  carouselSlides?: number;
 }
 
 /**
@@ -203,6 +205,7 @@ export const StepPublish: React.FC<{
   const [platform, setPlatform] = useState<'youtube' | 'instagram' | 'facebook'>('youtube');
 
   const [thumbnailFile, setThumbnailFile] = useState('');
+  const [carouselFolder, setCarouselFolder] = useState('');
   const [kit, setKit] = useState<KitResult | null>(null);
   const [packing, setPacking] = useState(false);
   const [kitError, setKitError] = useState<string | null>(null);
@@ -243,6 +246,7 @@ export const StepPublish: React.FC<{
         scenes: videoProps?.scenes || [],
         fps: videoProps?.fps || 30,
         thumbnailFile,
+        carouselFolder,
       });
       setKit(out);
     } catch (e) {
@@ -383,6 +387,14 @@ export const StepPublish: React.FC<{
         description={fresh?.description || ''}
       />
 
+      <CarouselMaker
+        content={content}
+        design={design}
+        channelName={channelName}
+        seo={fresh}
+        onCarousel={setCarouselFolder}
+      />
+
       <div className="section-title">The upload kit</div>
       <p className="lede" style={{ marginTop: 0 }}>
         Everything above in one zip, saved beside your video. Useful because the boxes on this page
@@ -424,6 +436,9 @@ export const StepPublish: React.FC<{
             {kit.hasThumbnail
               ? ' The thumbnail is in there too.'
               : ' Make a thumbnail above and pack again to include it.'}
+            {kit.carouselSlides
+              ? ' So is the carousel - ' + kit.carouselSlides + ' slides with their captions, in carousel/.'
+              : ''}
           </p>
         </Note>
       ) : null}

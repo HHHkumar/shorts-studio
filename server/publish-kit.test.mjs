@@ -7,6 +7,7 @@
 import assert from 'node:assert/strict';
 import { inflateRawSync } from 'node:zlib';
 import {
+  SWIPE_LINE, buildCarouselCaption, buildCarouselZip,
   buildChapters, buildCredits, buildDescription, buildPublishKit, buildSocialSheet, buildUploadSheet, slug, stamp,
 } from './publish-kit.mjs';
 
@@ -413,6 +414,55 @@ test('the kit carries instagram.txt and facebook.txt when they were written', ()
   assert.match(unzipEntry(kit.buffer, 'hashtags.txt'), /^#rivers #salmon/);
   assert.match(unzipEntry(kit.buffer, 'UPLOAD.txt'), /see instagram\.txt and facebook\.txt/);
   assert.equal(JSON.parse(unzipEntry(kit.buffer, 'metadata.json')).instagram.altText, SOCIAL.instagram.altText);
+});
+
+console.log('\nthe carousel post');
+
+const PNG = Buffer.from('89504e470d0a1a0a', 'hex');
+const SLIDES = [{ name: 'slide-01.png', data: PNG }, { name: 'slide-02.png', data: PNG }];
+
+test('the carousel caption puts the swipe cue before the hashtags', () => {
+  const text = buildCarouselCaption(SOCIAL.instagram);
+  assert.equal(text, SOCIAL.instagram.caption + '\n\n' + SWIPE_LINE + '\n\n#fishladder #salmon #rivers');
+});
+
+test('no caption is written for a platform that was never written', () => {
+  assert.equal(buildCarouselCaption(undefined), '');
+});
+
+test('the carousel zip has the slides in order, both captions and how to post', () => {
+  const zip = buildCarouselZip({ slides: SLIDES, seo: SOCIAL });
+  const raw = zip.toString('latin1');
+  assert.ok(raw.indexOf('slide-01.png') < raw.indexOf('slide-02.png'), 'slides out of order');
+  assert.match(unzipEntry(zip, 'caption-instagram.txt'), /Swipe ➡️/);
+  assert.match(unzipEntry(zip, 'caption-facebook.txt'), /#salmon/);
+  assert.match(unzipEntry(zip, 'HOW-TO-POST.txt'), /IN ORDER/);
+});
+
+test('a carousel zip made before any metadata still has the slides and instructions', () => {
+  const zip = buildCarouselZip({ slides: SLIDES, seo: null });
+  const raw = zip.toString('latin1');
+  assert.ok(raw.includes('slide-02.png') && raw.includes('HOW-TO-POST.txt') && !raw.includes('caption-instagram.txt'));
+});
+
+test('the upload kit carries the carousel in its own folder', () => {
+  const kit = buildPublishKit({
+    content: CONTENT, design: {}, seo: SOCIAL, title: SOCIAL.titles[0],
+    scenes: lay([20, 20, 20, 20]), fps: FPS, thumbnail: null, carousel: SLIDES,
+  });
+  assert.equal(kit.carouselSlides, 2);
+  const raw = kit.buffer.toString('latin1');
+  assert.ok(raw.includes('carousel/slide-01.png') && raw.includes('carousel/slide-02.png'));
+  assert.match(unzipEntry(kit.buffer, 'carousel/caption-instagram.txt'), /Swipe/);
+});
+
+test('a kit without a carousel has no carousel folder', () => {
+  const kit = buildPublishKit({
+    content: CONTENT, design: {}, seo: SOCIAL, title: SOCIAL.titles[0],
+    scenes: lay([20, 20, 20, 20]), fps: FPS, thumbnail: null,
+  });
+  assert.equal(kit.carouselSlides, 0);
+  assert.ok(!kit.buffer.toString('latin1').includes('carousel/'));
 });
 
 test('an older pack without them says to write it again, and adds no empty files', () => {
