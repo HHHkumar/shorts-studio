@@ -314,6 +314,35 @@ export function phaseShown(f: AcFigure, reveal: boolean): boolean {
   return reveal || !f.ask || !['phase', 'powerFactor'].includes(f.ask.quantity);
 }
 
+/**
+ * What a signal is labelled with.
+ *
+ * A figure states RMS values, so that is what a label may show; the peak is
+ * worked out from it. Printing the peak of a 230 V supply on the question that
+ * asks for the peak hands the answer over in the key, however carefully the
+ * footer says "= ?" underneath - so whichever of the two the question asks for
+ * is the one that waits for the reveal.
+ */
+export function signalValueText(f: AcFigure, s: AcSignal, reveal: boolean, want: 'rms' | 'peak' = 'rms'): string {
+  const unit: UnitClass = s.kind === 'voltage' ? 'V' : 'A';
+  const asked = f.ask && f.ask.signal === s.id ? f.ask.quantity : null;
+  // Asked for, and not revealed yet: the label carries the question, not the answer.
+  if (!reveal && asked === want) return '?';
+  if (want === 'peak') return formatQuantity(s.rms * Math.SQRT2, unit);
+  return formatQuantity(s.rms, unit);
+}
+
+/**
+ * The line above a waveform: "V: 230 V rms", or the peak when that is what the
+ * question is about - and "?" for whichever of them is being asked.
+ */
+export function waveKeyText(f: AcFigure, s: AcSignal, reveal: boolean): string {
+  const asked = f.ask && f.ask.signal === s.id ? f.ask.quantity : null;
+  const want: 'rms' | 'peak' = asked === 'peak' || asked === 'rms' ? asked : 'rms';
+  const value = signalValueText(f, s, reveal, want);
+  return s.label + ': ' + (want === 'peak' ? 'peak ' + value : value + ' rms');
+}
+
 /** "I lags V by 90°", or "V and I in phase". */
 export function relationText(f: AcFigure, reveal: boolean): string {
   const p = acPower(f);

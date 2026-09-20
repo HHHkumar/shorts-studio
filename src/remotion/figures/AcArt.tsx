@@ -1,6 +1,7 @@
 import React from 'react';
 import {
-  acAskText, acPower, averagePowerText, layoutPhasors, layoutWaveform, phaseShown, phasorAngleLabel, relationText, type AcFigure, type AcSignal,
+  acAskText, acPower, averagePowerText, layoutPhasors, layoutWaveform, phaseShown, phasorAngleLabel,
+  relationText, signalValueText, waveKeyText, type AcFigure, type AcSignal,
 } from '../../lib/figures/ac.ts';
 import { formatQuantity } from '../../lib/figures/quantity.ts';
 import { ArrowHead, Footer, STROKE, polyline, useStagger, type ArtProps } from './shared';
@@ -94,7 +95,7 @@ const Phasors: React.FC<Part> = ({ figure, theme, w, h, font, reveal, colourOf, 
             <ArrowHead x={a.x} y={a.y} dx={dx} dy={dy} size={24} fill={colour} />
             <text x={lx} y={ly} textAnchor={dx < -1 ? 'end' : dx > 1 ? 'start' : 'middle'} fontFamily={theme.fontBody}
               fontWeight={700} fontSize={small} fill={colour}>
-              {a.signal.label + ' ' + formatQuantity(a.signal.rms, a.signal.kind === 'voltage' ? 'V' : 'A')}
+              {a.signal.label + ' ' + signalValueText(figure, a.signal, reveal)}
             </text>
           </g>
         );
@@ -117,7 +118,7 @@ const Waves: React.FC<Part> = ({ figure, theme, w, h, font, reveal, colourOf, da
         {figure.signals.map((s, k) => (
           <text key={s.id} x={layout.left + k * (w * 0.3)} y={font} fontFamily={theme.fontBody} fontWeight={700}
             fontSize={small * 1.15} fill={colourOf(s)}>
-            {s.label + ': peak ' + formatQuantity(s.rms * Math.SQRT2, s.kind === 'voltage' ? 'V' : 'A')}
+            {waveKeyText(figure, s, reveal)}
           </text>
         ))}
         {layout.averageY !== null && power ? (

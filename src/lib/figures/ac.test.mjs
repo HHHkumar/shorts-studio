@@ -1,7 +1,7 @@
 // AC figures, checked against the textbook - and against their own drawing:
 // the shaded power curve must average to the power the figure states, and a
 // lagging current must peak later than its voltage.
-import { acPower, answerAc, averagePowerText, layoutPhasors, phaseShown, layoutWaveform, normalizeAc, phasorAngleLabel, relationText, valueAt, acAskText } from './ac.ts';
+import { acPower, answerAc, averagePowerText, layoutPhasors, phaseShown, layoutWaveform, normalizeAc, phasorAngleLabel, relationText, signalValueText, valueAt, acAskText, waveKeyText } from './ac.ts';
 import { checkFigure, normalizeFigure } from './index.ts';
 
 let fails = 0;
@@ -119,6 +119,22 @@ ok('answer scene: average power is shown', averagePowerText(inductor, true) === 
 ok('a power-factor question hides φ until the reveal', !phaseShown(pf08, false) && phaseShown(pf08, true));
 ok('a peak-value question may show φ', phaseShown(mains, false));
 ok('and the relation line hides the angle too', relationText(pf08, false) === 'I lags V by ?', relationText(pf08, false));
+
+// --- the key above the waves says the question, not the answer ---------------------------------
+// A 230 V supply peaks at 325 V. Printing "V: peak 325 V" over the question
+// that ASKS for the peak gives it away in the key, whatever the footer says.
+ok('peak question: the key asks rather than answers', waveKeyText(mains, mains.signals[0], false) === 'V: peak ?', waveKeyText(mains, mains.signals[0], false));
+ok('and answers on the reveal', waveKeyText(mains, mains.signals[0], true) === 'V: peak 325 V', waveKeyText(mains, mains.signals[0], true));
+ok('no worked-out peak anywhere in the key before the reveal', !/325/.test(waveKeyText(mains, mains.signals[0], false)));
+
+const rmsAsked = fig([V(230)], { ask: { quantity: 'rms', signal: 'V' } });
+ok('rms question: the stated peak shows, the asked rms does not', waveKeyText(rmsAsked, rmsAsked.signals[0], false) === 'V: ? rms', waveKeyText(rmsAsked, rmsAsked.signals[0], false));
+ok('and the phasor label hides it too', signalValueText(rmsAsked, rmsAsked.signals[0], false) === '?');
+
+ok('a power question keeps the stated rms on the key', waveKeyText(inductor, inductor.signals[0], false) === 'V: 230 V rms', waveKeyText(inductor, inductor.signals[0], false));
+ok('and shows the current the question gave', waveKeyText(inductor, inductor.signals[1], false) === 'I: 10 A rms', waveKeyText(inductor, inductor.signals[1], false));
+ok('the key never prints a peak the question did not ask about', !/peak/.test(waveKeyText(pf08, pf08.signals[0], false)));
+ok('phasor labels carry the stated rms', signalValueText(pf08, pf08.signals[1], false) === '10 A');
 
 // --- refusing what cannot be drawn honestly --------------------------------------------------
 const refused = (label, raw, pattern) => {
