@@ -895,8 +895,23 @@ export function normalizeContent(input, options) {
   const { figure, errors: figureErrors } = normalizeFigure(c.figure);
   if (figure) {
     const check = checkFigure(figure, opts[correctIndex]);
-    content.figureCheck = check;
-    if (check.status !== 'mismatch') content.figure = figure;
+    // A figure that marks no unknown works nothing out, so nothing about it was
+    // ever checked - and an unchecked figure is where invented values live: a
+    // phase angle, a second waveform, a rating the question never mentioned.
+    // Those are the ones that come out looking like a picture of a different
+    // question, so they are dropped rather than drawn.
+    if (check.status === 'unchecked' && check.computed === undefined) {
+      content.figureCheck = {
+        status: 'invalid',
+        problems: [
+          'The figure marks nothing for the video to work out, so it could not be checked against the '
+          + 'answer - and a figure like that usually shows values the question never gave. Nothing was drawn.',
+        ],
+      };
+    } else {
+      content.figureCheck = check;
+      if (check.status !== 'mismatch') content.figure = figure;
+    }
   } else if (figureErrors.length) {
     content.figureCheck = { status: 'invalid', problems: figureErrors.slice(0, 4) };
   }

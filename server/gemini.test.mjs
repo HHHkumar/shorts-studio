@@ -212,6 +212,46 @@ fig = kclQuestion(junction(7));
 ok('a junction where charge is not conserved is refused', !fig.figure && fig.figureCheck && fig.figureCheck.status === 'invalid');
 ok('with the reason spelled out', /balance/.test((fig.figureCheck.problems || []).join()), JSON.stringify(fig.figureCheck));
 
+// The AC video asked how many times the current passes through zero, and was
+// given a perfectly valid waveform of a DIFFERENT question: two signals, a 60
+// degree lag nobody mentioned, and nothing marked as the unknown. It could not
+// be checked against the answer, so it was drawn - and looked like a picture of
+// another question.
+const decorative = {
+  type: 'ac', frequency: 50,
+  signals: [
+    { id: 'v', label: 'Voltage', kind: 'voltage', rms: 230, phase: 0 },
+    { id: 'i', label: 'I', kind: 'current', rms: 10, phase: -60 },
+  ],
+};
+fig = normalizeContent({
+  question: 'How many times does an alternating current pass through zero in one complete cycle?',
+  options: ['Once', 'Twice', 'Four times', 'Never'], correctIndex: 1,
+  figure: decorative,
+  script: [
+    { kind: 'question', narration: 'How many zero crossings?', visual: { kind: 'figure' } },
+    { kind: 'explain', narration: 'It changes direction twice.', visual: { kind: 'figure' } },
+  ],
+}, base);
+ok('a figure that marks no unknown is not drawn', !fig.figure, JSON.stringify(fig.figureCheck));
+ok('and is reported as one that could not be checked',
+   fig.figureCheck && fig.figureCheck.status === 'invalid' && /marks nothing/.test((fig.figureCheck.problems || []).join()),
+   JSON.stringify(fig.figureCheck));
+ok('so no scene is left showing it', fig.script.every((s) => s.visual.kind !== 'figure'));
+
+// A figure that DOES work something out is still kept when the option it has to
+// be checked against carries no number - the creator is told to look it over.
+fig = kclQuestion(junction(5), 3);
+fig = normalizeContent({
+  question: 'What current leaves through the fourth branch?',
+  options: ['It doubles', 'It halves', 'It stays the same', 'It reverses'], correctIndex: 2,
+  figure: junction(5),
+  script: [{ kind: 'explain', narration: 'Add what enters.', visual: { kind: 'figure' } }],
+}, base);
+ok('a working figure with a worded answer is kept, and marked unchecked',
+   fig.figure && fig.figureCheck.status === 'unchecked' && fig.figureCheck.computed === '5 A',
+   JSON.stringify(fig.figureCheck));
+
 fig = kclQuestion({ type: 'none' });
 ok('no figure: nothing drawn and nothing reported', !fig.figure && !fig.figureCheck);
 ok('and a figure visual degrades to none', fig.script.every((s) => s.visual.kind !== 'figure'));
@@ -232,6 +272,9 @@ const electrical = figurePromptLines('Basic Electrical Engineering', 'Kirchhoffâ
 ok('an electrical video is taught the circuit and junction figures', /"circuit"/.test(electrical) && /"junction"/.test(electrical));
 const gk = figurePromptLines('Static GK â€” History, Geography & Polity', 'Indian rivers').join('\n');
 ok('a GK video is told there are no figures, not shown circuit formats', !/"circuit"/.test(gk) && /none/.test(gk));
+ok('the figure must mark what the question asks, or be dropped', /MARK WHAT THE QUESTION ASKS/.test(electrical) && /DROPPED/.test(electrical));
+ok('and may not invent values the question never gave', /Never invent a phase angle/.test(electrical));
+ok('a conceptual question is told to take no figure', /conceptual question/.test(electrical) && /crosses zero/.test(electrical));
 
 // A plotted curve gives its answer away, so a graph never goes on the question.
 const rcGraph = normalizeContent({

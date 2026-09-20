@@ -466,11 +466,17 @@ curve *is* the answer. On the explanation the same diagram comes back with every
 |---|---|
 | ✅ **The diagram agrees with the answer** | The worked-out value matches the marked option. A genuine second check. |
 | ❌ **The diagram does not agree with the answer** | They differ, so the diagram was **left out** rather than show one number while the voice says another. Check the question — one of the two is wrong. |
-| ⚠️ **The diagram was not drawn** | The description could not be drawn honestly — the card lists why. Generating again usually fixes it. |
+| ⚠️ **The diagram was not drawn** | The description could not be drawn honestly — the card lists why. Generating again usually fixes it. One common reason: the diagram **marked nothing for the video to work out**, so it could not be checked, and a diagram like that is usually a picture of a different question, with values the question never gave. |
 | **The diagram is drawn but not checked** | The answer has no number to compare, e.g. a word answer. Look it over yourself. |
 
 > The cards say "circuit" whichever kind of diagram it is — a graph or a bar model gets the same
 > wording. The check itself is the right one for that kind.
+
+**A conceptual question gets no diagram, on purpose.** *"How many times does alternating current pass
+through zero in a cycle?"* has no particular circuit behind it, so there is nothing honest to draw.
+The model is told to ask for no figure in that case, and any figure that marks no unknown is dropped
+rather than drawn — that is exactly where invented values used to creep in, such as a phase lag
+nobody mentioned.
 
 Topics without one of the nine kinds still get the illustrated diagrams and animations from step 5.
 
