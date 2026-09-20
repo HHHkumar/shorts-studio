@@ -267,6 +267,32 @@ ok('the string "none" means no figure', !fig.figure && !fig.figureCheck);
 fig = kclQuestion('{"type": "junction", "branches": [');
 ok('broken JSON is refused and reported, not thrown', !fig.figure && fig.figureCheck.status === 'invalid');
 
+// --- a sketch whose labels make it meaningless ------------------------------------------
+// "RMS lags Peak by 60°" was drawn over a question asking what the peak of a
+// 230 V supply is. RMS and peak are two measurements of one wave, so nothing
+// can lag anything; the curves were fine, the labels made it nonsense.
+const sketchScene = (params, sketch = 'waveform') => normalizeContent({
+  question: 'For a sinusoidal voltage of 230 V RMS, what is the peak value?',
+  options: ['163 V', '230 V', '325 V', '460 V'], correctIndex: 2,
+  script: [{ kind: 'explain', narration: 'Root two scales it up.', visual: { kind: 'sketch', sketch, params } }],
+}, base).script.find((s) => s.kind === 'explain').visual;
+
+ok('a waveform labelled Peak against RMS is not drawn',
+   sketchScene({ mode: 'phase', angle: 60, labelA: 'Peak', labelB: 'RMS' }).kind === 'none');
+ok('nor a phasor labelled the same way',
+   sketchScene({ angle: 60, labelA: 'RMS', labelB: 'Peak' }, 'phasor').kind === 'none');
+ok('nor the wordier version of it',
+   sketchScene({ mode: 'phase', labelA: 'Peak voltage', labelB: 'RMS voltage' }).kind === 'none');
+ok('a real pair of signals still is',
+   sketchScene({ mode: 'phase', angle: 90, labelA: 'V', labelB: 'I' }).kind === 'sketch');
+ok('and keeps its parameters', sketchScene({ mode: 'phase', angle: 90, labelA: 'V', labelB: 'I' }).params.angle === 90);
+ok('a rectifier waveform is unaffected - it has one wave in and one out',
+   sketchScene({ mode: 'half-wave', labelA: 'Peak', labelB: 'RMS' }).kind === 'sketch');
+ok('one measure against a real signal is refused too',
+   sketchScene({ mode: 'phase', labelA: 'Peak', labelB: 'Current' }).kind === 'none');
+ok('an unlabelled phase waveform is left alone',
+   sketchScene({ mode: 'phase', angle: 90 }).kind === 'sketch');
+
 const { figurePromptLines } = await import('../src/lib/figures/index.ts');
 const electrical = figurePromptLines('Basic Electrical Engineering', 'Kirchhoff’s laws').join('\n');
 ok('an electrical video is taught the circuit and junction figures', /"circuit"/.test(electrical) && /"junction"/.test(electrical));

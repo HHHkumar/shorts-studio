@@ -1100,6 +1100,30 @@ const SETUP_SAFE_SKETCHES = new Set([
   'pendulum', 'orbit', 'atom', 'refraction', 'vector-field', 'wave-interference', 'sine-wave',
 ]);
 
+/**
+ * Two measures of ONE wave, which are not two things that can be out of phase.
+ *
+ * An RMS-versus-peak question came back as a waveform captioned "RMS lags Peak
+ * by 60°": two curves, a phase angle between them, and no meaning at all - RMS
+ * and peak are two ways of measuring the same sine wave. The labels are the
+ * only place this shows, because the drawing itself is a perfectly good pair of
+ * sine waves.
+ */
+const ONE_WAVE_MEASURES = /^(rms|r\.?m\.?s\.?|peak|peak to peak|peak-to-peak|average|avg|mean|effective|maximum|max|minimum|min|instantaneous|amplitude|crest|form factor)$/i;
+const MEASURE_INSIDE = /\b(rms|peak|average|mean|effective|instantaneous|amplitude|crest)\b/i;
+
+/** True when a two-signal sketch has been labelled with two measures of one signal. */
+function sketchLabelsAreNonsense(name, params) {
+  // Only the sketches whose whole content is "these two differ in phase".
+  if (name !== 'waveform' && name !== 'phasor') return false;
+  if (name === 'waveform' && ['half-wave', 'full-wave', 'pwm'].includes(String(params.mode || ''))) return false;
+  const a = String(params.labelA || '').trim();
+  const b = String(params.labelB || '').trim();
+  if (!a || !b) return false;
+  if (ONE_WAVE_MEASURES.test(a) || ONE_WAVE_MEASURES.test(b)) return true;
+  return MEASURE_INSIDE.test(a) && MEASURE_INSIDE.test(b);
+}
+
 /** Only known knobs, only finite numbers, only short labels. */
 function normalizeParams(raw) {
   const p = raw && typeof raw === 'object' ? raw : {};
@@ -1171,13 +1195,15 @@ function normalizeVisual(raw, sceneKind, figure) {
     // schema no longer carries an enum - see the comment on the `sketch` field.
     const name = matchSketch(raw.sketch);
     if (!name) return { kind: 'none' };
+    const params = normalizeParams(raw.params);
+    if (sketchLabelsAreNonsense(name, params)) return { kind: 'none' };
     // Sketches share the items array: block-flow uses it for stage labels,
     // pie for slices, circuit for component values.
     return {
       kind,
       sketch: name,
       caption,
-      params: normalizeParams(raw.params),
+      params,
       items: items.slice(0, 5).map((it) => ({ label: it.label, value: it.value, symbol: it.symbol })),
     };
   }
