@@ -11,7 +11,7 @@ import {
   buildStoryboardPrompt, checkMotion, MOTION_ACTIONS, normalizePanel, normalizeStoryboard,
   storyboardBudget,
 } from './explainer.mjs';
-import { buildQuizPrompt } from './gemini.mjs';
+import { buildQuizPrompt, outputCapFor, rejectedOutputCap } from './gemini.mjs';
 
 let passed = 0;
 const test = (name, fn) => {
@@ -651,6 +651,56 @@ test('writing instructions no longer silently rewrites the outro', () => {
   const without = buildStoryboardPrompt({ ...FORM, videoKind: 'explainer', extra: '' });
   assert.ok(withExtra.includes('a short sign-off'), 'the description went missing again');
   assert.ok(without.includes('a short sign-off'));
+});
+
+console.log('\nroom for the answer');
+
+test('a thinking model gets far more than the 8192 default', () => {
+  // The whole bug: leaving maxOutputTokens unset does NOT mean "the model's
+  // maximum". Google defaults it to 8192 whatever the model can do, and on a
+  // thinking model the reasoning comes out of that same 8192 first.
+  for (const model of ['gemini-3.1-flash', 'gemini-3-pro', 'gemini-2.5-flash', 'gemini-2.5-pro']) {
+    assert.ok(outputCapFor(model) > 8192, model + ' got ' + outputCapFor(model));
+  }
+});
+
+test('the ceiling clears a full-length storyboard with the thinking on top', () => {
+  // The longest storyboard is 36 scenes and measures about 5,500 tokens of
+  // JSON. The thinking budget is another 8,192. Anything that does not clear
+  // the sum of those truncates on exactly the videos that need the room.
+  const longest = 5500;
+  const thinking = 8192;
+  assert.ok(outputCapFor('gemini-2.5-flash') > longest + thinking,
+    'not enough room for the answer and the reasoning together');
+});
+
+test('older models are left alone, because asking gains nothing', () => {
+  // 2.0 and earlier top out at 8192, which is already the default - asking for
+  // more cannot help and can get the request refused.
+  for (const model of ['gemini-2.0-flash', 'gemini-1.5-pro', 'gemini-1.5-flash']) {
+    assert.equal(outputCapFor(model), null, model);
+  }
+});
+
+test('an unrecognisable model name does not get a ceiling it may refuse', () => {
+  for (const model of ['', null, undefined, 'some-other-model', 'gpt-4']) {
+    assert.equal(outputCapFor(model), null, String(model));
+  }
+});
+
+test('a refusal is recognised so the caller can drop it and retry', () => {
+  // Same escape hatch the thinking setting has: an optimisation must never
+  // cost the whole request.
+  assert.ok(rejectedOutputCap('maxOutputTokens must be less than or equal to 8192'));
+  assert.ok(rejectedOutputCap('{"error":{"message":"Invalid max_output_tokens"}}'));
+  assert.ok(!rejectedOutputCap('Quota exceeded for requests'));
+});
+
+test('the request actually carries the ceiling', () => {
+  // A helper returning the right number is no use if nothing sends it.
+  const src = readFileSync(new URL('./gemini.mjs', import.meta.url), 'utf8');
+  assert.match(src, /maxOutputTokens: cap/, 'the body no longer sets it');
+  assert.match(src, /outputCapFor\(model\)/, 'nothing calls the helper');
 });
 
 console.log('\n' + passed + ' checks passed\n');

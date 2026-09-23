@@ -586,32 +586,62 @@ export function thinkingFor(model) {
   return null;
 }
 
+/**
+ * How much room to give the answer.
+ *
+ * MUST be set. Leaving it out does not mean "the model's maximum" - the API
+ * defaults it to 8192 whatever the model can actually do, and on a thinking
+ * model the reasoning is spent out of that same 8192 before a word of the
+ * answer is written. A long explainer needs about 5,500 tokens of JSON on its
+ * own; add a thinking budget of 8192 and the default is not close.
+ *
+ * That is the failure this fixes: a script that starts correctly and stops in
+ * the middle of a scene, on exactly the long videos that need the room most.
+ *
+ * Generous rather than calculated, because an unused ceiling costs nothing -
+ * billing is for tokens produced, not tokens allowed. Sized per generation
+ * because the older models cannot go above 8192 and reject the request if
+ * asked to; the caller drops the field and retries if one does.
+ */
+export function outputCapFor(model) {
+  const version = parseFloat((String(model).match(/gemini-(\d+(?:\.\d+)?)/i) || [])[1] || '0');
+  // 2.5 and later document 65,536 output tokens. 32,768 is four times what the
+  // longest storyboard needs, with the whole thinking budget on top, and stays
+  // clear of the ceiling on every model in the dropdown.
+  if (version >= 2.5) return 32768;
+  // 2.0 and earlier top out at 8192, which is also the default - so asking
+  // changes nothing and risks a rejection for no gain.
+  return null;
+}
+
+/** True when a 400 is complaining about the output ceiling rather than the ask. */
+export const rejectedOutputCap = (raw) =>
+  /maxOutputTokens|max_output_tokens/i.test(String(raw));
+
 /** True when a 400 is complaining about the thinking field rather than the ask. */
 export const rejectedThinking = (raw) =>
   /thinking|thinkingLevel|thinkingConfig|thinkingBudget|Unknown name|not supported/i.test(String(raw));
 
 export async function callGemini(apiKey, model, { system, prompt, schema, temperature, label }) {
-  const buildBody = (thinking) => JSON.stringify({
+  const buildBody = (thinking, cap) => JSON.stringify({
     systemInstruction: { parts: [{ text: system }] },
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
     generationConfig: {
       temperature,
       topP: 0.95,
-      // No maxOutputTokens on purpose. On the 2.5 models the thinking tokens
-      // count against it, so a fixed 8192 truncated long scripts before they
-      // were finished; each model's own maximum is the right ceiling here.
+      ...(cap ? { maxOutputTokens: cap } : {}),
       responseMimeType: 'application/json',
       responseSchema: schema,
       ...(thinking || {}),
     },
   });
 
-  const send = (thinking) => fetchRetrying(
+  const send = (thinking, cap) => fetchRetrying(
     ENDPOINT + '/' + encodeURIComponent(model) + ':generateContent',
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
-      body: buildBody(thinking),
+      body: buildBody(thinking, cap),
     },
     {
       // A long explainer on a thinking model genuinely takes minutes. Cutting
@@ -624,14 +654,22 @@ export async function callGemini(apiKey, model, { system, prompt, schema, temper
 
   const started = Date.now();
   const thinking = thinkingFor(model);
-  let res = await send(thinking);
+  let cap = outputCapFor(model);
+  let res = await send(thinking, cap);
   let raw = await res.text();
 
-  // An older or unusual model may not know the field. Losing the request over
-  // an optimisation would be worse than doing without it.
+  // An older or unusual model may not know a field. Losing the request over an
+  // optimisation would be worse than doing without it. The ceiling is checked
+  // first: it is the newer of the two settings and the likelier to be refused.
+  if (!res.ok && res.status === 400 && cap && rejectedOutputCap(raw)) {
+    console.log('[gemini] ' + (label || 'call') + ': model will not take that output ceiling, retrying without');
+    cap = null;
+    res = await send(thinking, null);
+    raw = await res.text();
+  }
   if (!res.ok && res.status === 400 && thinking && rejectedThinking(raw)) {
     console.log('[gemini] ' + (label || 'call') + ': model does not take a thinking setting, retrying without');
-    res = await send(null);
+    res = await send(null, cap);
     raw = await res.text();
   }
   const seconds = Math.round((Date.now() - started) / 1000);
@@ -644,14 +682,23 @@ export async function callGemini(apiKey, model, { system, prompt, schema, temper
     if (why) console.log('[gemini] ' + (label || 'call') + ' rejected: ' + why);
     throw new Error(explainGeminiError(res.status, raw));
   }
-  console.log('[gemini] ' + (label || 'call') + ' answered in ' + seconds + 's');
-
   let payload;
   try {
     payload = JSON.parse(raw);
   } catch {
     throw new Error('Gemini sent back something that was not JSON. Try again.');
   }
+
+  // What it actually spent, against what it was allowed. Not logged before,
+  // which is exactly why a script stopping half way through was hard to read:
+  // "ran out of room" and "wandered off" look identical without these numbers.
+  const used = payload.usageMetadata || {};
+  const answer = Number(used.candidatesTokenCount) || 0;
+  const thoughts = Number(used.thoughtsTokenCount) || 0;
+  const ceiling = cap ? ' of ' + cap : ' (default ceiling)';
+  console.log('[gemini] ' + (label || 'call') + ' answered in ' + seconds + 's'
+    + ' - ' + (answer + thoughts) + ceiling + ' tokens'
+    + (thoughts ? ' (' + thoughts + ' of them thinking)' : ''));
 
   const candidate = payload.candidates && payload.candidates[0];
   if (!candidate) {
@@ -674,7 +721,9 @@ export async function callGemini(apiKey, model, { system, prompt, schema, temper
       + 's (wrote some answer: ' + wrote + ')');
     throw new Error(
       wrote
-        ? 'Gemini ran out of room part way through the script. Lower the target length and try again.'
+        ? 'Gemini stopped part way through the script. The output ceiling is now set generously, '
+          + 'so this usually means the model wandered rather than ran short: try again, and if it '
+          + 'keeps happening on the same topic, shorten the target length or pick another model.'
         : 'This model spent its whole budget thinking and never started writing. It is a known '
           + 'trait of the newest Flash models on long structured output. Pick a 2.5 model in the '
           + 'dropdown - they are reliable for this - or try again.',

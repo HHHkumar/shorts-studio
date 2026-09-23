@@ -329,6 +329,13 @@ hard maths.
 Edit the question afterwards and the badge is replaced by *"the check is out of date"* — a stale tick
 is never left pretending the new version was verified.
 
+> **On long explainers.** A five-minute video is a lot of script for one reply, and the room the
+> model is given used to be left at the provider's default — 8,192 tokens, whatever the model was
+> capable of. On a thinking model the reasoning is spent out of that first, so the longest videos
+> were the ones most likely to stop mid-scene. It is now set explicitly, to four times what the
+> longest storyboard needs with the whole thinking budget on top. The black window prints the tokens
+> each generation actually used against that ceiling, so you can see how close it came.
+
 **Watch the length.** A bar shows how many seconds you have written against the length you asked for.
 If a generated script came out well under target you also get a warning — regenerate now, while it is
 still free.
@@ -1197,6 +1204,7 @@ To stretch ElevenLabs credits: shorter targets, and the **Flash** voice model.
 | *"Your Anthropic account has no credit left"* | Claude has no free tier. | Top up, or switch **Who writes it** back to Gemini on step 2. |
 | *"Claude declined this topic"* | A safety classifier refused it. | Reword the topic, or use Gemini for that one. |
 | The **Who writes it** choice is missing | No Claude key is set. | Paste one on step 1; the choice appears by itself. |
+| *"Gemini stopped part way through the script"* | It wandered rather than ran short — the room it is given is now four times what the longest video needs. | Try again. If it repeats on one topic, shorten the target length or change model. |
 | *"This model spent its whole budget thinking"* | A newer Flash model reasoned until it had no room left to write. | Pick a **2.5** model in the dropdown. They are the reliable choice for long scripts. |
 | *"No reply after 240 seconds"* | The model stalled. | Try again, or switch to a Flash model. |
 | *"That … API key was rejected"* | Bad key, usually a stray space. | Re-copy it from the provider and paste again. |
