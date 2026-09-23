@@ -61,6 +61,10 @@ const RESPONSE_SCHEMA = {
                 type: 'OBJECT',
                 properties: {
                   mode: { type: 'STRING' },
+                  network: {
+                    type: 'STRING',
+                    description: 'circuit only: the network, e.g. "12 + (12 | 12)". | is parallel, + is series, and | binds tighter.',
+                  },
                   angle: { type: 'NUMBER' },
                   speed: { type: 'NUMBER' },
                   frequency: { type: 'NUMBER' },
@@ -71,7 +75,8 @@ const RESPONSE_SCHEMA = {
                   labelB: { type: 'STRING' },
                 },
                 propertyOrdering: [
-                  'mode', 'angle', 'speed', 'frequency', 'amplitude', 'count', 'ratio', 'labelA', 'labelB',
+                  'mode', 'network', 'angle', 'speed', 'frequency', 'amplitude', 'count', 'ratio',
+                  'labelA', 'labelB',
                 ],
               },
               items: {
@@ -1117,6 +1122,11 @@ function normalizeParams(raw) {
     const v = clean(p[key]).slice(0, 24);
     if (v) out[key] = v;
   }
+  // A circuit network needs more than 24 characters - "12 + (12 | 12)" is
+  // already fourteen and a four-component ladder is twice that - so it is not
+  // in the loop above. Still capped: this is an expression, not an essay.
+  const network = clean(p.network).slice(0, 120);
+  if (network) out.network = network;
   return out;
 }
 

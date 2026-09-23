@@ -395,7 +395,7 @@ Everything here is instant, free, and never touches the voiceover.
   side-by-side panel, an icon) Gemini can choose a **live animation** from a fixed library of ten:
   wave interference, a travelling wave, orbits, a projectile arc, a pendulum, a vector field,
   spreading particles, a graph being drawn, an atom, light refracting — plus six built for
-  electrical and power work: a **circuit** (series or parallel), a **phasor diagram** and power
+  electrical and power work: a **circuit** (any arrangement — see below), a **phasor diagram** and power
   triangle, an AC **waveform** (phase shift, rectified, PWM), a **block flow** that lights up
   stage by stage (boiler → turbine → condenser → pump), a **transformer** with turns ratio, and
   a **pie** for a fuel mix or a loss breakdown. There are now **over two hundred** of these — enough that every sub-topic the tool offers has one that fits — covering
@@ -421,6 +421,30 @@ Everything here is instant, free, and never touches the voiceover.
 - **Sound** — three built-in music beds (calm, tense, upbeat), or load your own file. The music
   **ducks automatically** under the narration. Effects: a countdown tick, an option whoosh, an answer
   chime, and a sweep between scenes.
+
+**Circuits are described, not chosen from a list.** The circuit diagram used to offer two shapes,
+*series* and *parallel* — so a question about two resistors in parallel wired in series with a third
+got whichever of the two was closer, and the picture disagreed with the words. A picture that
+contradicts the question is worse than no picture: the words get checked and the picture gets
+believed.
+
+It now takes the **network itself**, written as a short expression where `+` is series and `|` is
+parallel:
+
+| Written | Drawn |
+|---|---|
+| `12 + (12 \| 12)` | one in series with two in parallel |
+| `(12 + 12) \| 12` | two in series, in parallel with a third |
+| `4 \| 4 \| 4` | three in parallel |
+| `10 + (20 \| (5 + 5))` | a ladder |
+
+Parallel binds tighter than series, as it does on paper, so `R1 + R2 | R3` is R1 in series with the
+pair. Every arrangement these questions use reduces to series and parallel, so this covers the set
+rather than a sample of it — there is no longer a list of shapes to run out of. A bridge does not
+reduce and is a separate figure.
+
+If the expression cannot be read it falls back to the old two shapes rather than drawing a guess.
+
 
 Play the phone preview before rendering. Fixing something here takes a second; after a render it
 takes minutes.
