@@ -326,6 +326,21 @@ export const api = {
     return post<TrendingResult>('/api/trending', { apiKey, model, options });
   },
 
+  /**
+   * The exact words the model will be sent, without sending them.
+   *
+   * No key and no cost: it runs the same builders the generate route runs, on
+   * the server, so what is shown cannot drift from what is asked. Rebuilding it
+   * in the browser would have been cheaper and would eventually have started
+   * describing a request nobody makes.
+   */
+  previewPrompt(options: TopicForm) {
+    return post<{ videoKind: string; system: string; prompt: string; words: number }>(
+      '/api/prompt/preview',
+      { options },
+    );
+  },
+
   generate(apiKey: string, model: string, options: TopicForm) {
     return post<{ content: QuizContent }>('/api/generate', { apiKey, model, options });
   },

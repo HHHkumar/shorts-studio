@@ -7,7 +7,11 @@
 
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { checkMotion, MOTION_ACTIONS, normalizePanel, normalizeStoryboard, storyboardBudget } from './explainer.mjs';
+import {
+  buildStoryboardPrompt, checkMotion, MOTION_ACTIONS, normalizePanel, normalizeStoryboard,
+  storyboardBudget,
+} from './explainer.mjs';
+import { buildQuizPrompt } from './gemini.mjs';
 
 let passed = 0;
 const test = (name, fn) => {
@@ -552,6 +556,101 @@ test('a layout with no icons still works, since they are optional', () => {
   const p = normalizePanel({ steps: [{ label: 'One' }, { label: 'Two' }] }, 'process');
   assert.equal(p.steps.length, 2);
   assert.equal(p.steps[0].icon, undefined);
+});
+
+console.log('\nthe preview is the request');
+
+const FORM = {
+  videoKind: 'mcq',
+  subject: 'Electrical Machines',
+  topic: 'Transformer losses',
+  level: 'exam',
+  difficulty: 'medium',
+  flavour: 'calculation',
+  curiosity: 5,
+  tone: 'calm',
+  language: 'English',
+  targetSeconds: 45,
+  avoid: 'nothing about DC machines',
+  extra: 'Name the formula before using it.',
+  orientation: 'portrait',
+  contentType: 'electrical',
+  exam: 'GATE EE',
+};
+
+test('the generator and the preview call the SAME builder', () => {
+  // The whole value of the panel is that it shows the real request. A second
+  // copy of the assembly - in the route, or in the browser - would drift and
+  // start describing something nobody sends, which is worse than showing
+  // nothing at all.
+  const gemini = readFileSync(new URL('./gemini.mjs', import.meta.url), 'utf8');
+  const explainer = readFileSync(new URL('./explainer.mjs', import.meta.url), 'utf8');
+  const server = readFileSync(new URL('./index.mjs', import.meta.url), 'utf8');
+
+  assert.match(gemini, /prompt: buildQuizPrompt\(options\)/, 'the quiz generator stopped using it');
+  assert.match(explainer, /prompt: buildStoryboardPrompt\(options\)/, 'the storyboard generator stopped using it');
+
+  const route = server.slice(server.indexOf("app.post('/api/prompt/preview'"));
+  const body = route.slice(0, route.indexOf('}));'));
+  assert.match(body, /buildQuizPrompt\(o\)/, 'the preview stopped using the quiz builder');
+  assert.match(body, /buildStoryboardPrompt\(o\)/, 'the preview stopped using the storyboard builder');
+});
+
+test('the same form gives the same prompt every time', () => {
+  // It is shown while the creator edits, so an unstable builder would make the
+  // panel flicker between two readings of one form.
+  assert.equal(buildQuizPrompt(FORM), buildQuizPrompt({ ...FORM }));
+  assert.equal(buildStoryboardPrompt(FORM), buildStoryboardPrompt({ ...FORM }));
+});
+
+console.log('\nthe creator has the last word');
+
+test('their instructions come after the guidance they may need to overrule', () => {
+  const p = buildQuizPrompt(FORM);
+  const creator = p.indexOf('INSTRUCTIONS FROM THE CREATOR');
+  assert.ok(creator > 0, 'the creator block is missing');
+  // Every line it is meant to outrank must come first.
+  for (const earlier of ['Difficulty:', 'Tone of voice:', 'Diagram density:', 'Style required:']) {
+    const at = p.indexOf(earlier);
+    if (at === -1) continue;
+    assert.ok(at < creator, earlier + ' comes after the creator, so it gets the last word instead');
+  }
+});
+
+test('but not after the length budget, which is not guidance', () => {
+  // Length is the requirement most often missed, and the one the creator is
+  // least likely to mean to override by writing about style.
+  const p = buildQuizPrompt(FORM);
+  assert.ok(p.indexOf('LENGTH BUDGET') > p.indexOf('INSTRUCTIONS FROM THE CREATOR'));
+
+  const s = buildStoryboardPrompt(FORM);
+  assert.ok(s.indexOf('LENGTH.') > s.indexOf('INSTRUCTIONS FROM THE CREATOR'));
+});
+
+test('an empty box adds nothing at all', () => {
+  // No stray heading introducing instructions that are not there.
+  for (const build of [buildQuizPrompt, buildStoryboardPrompt]) {
+    for (const extra of ['', '   ', undefined]) {
+      const p = build({ ...FORM, extra });
+      assert.ok(!p.includes('INSTRUCTIONS FROM THE CREATOR'), JSON.stringify(extra));
+    }
+  }
+});
+
+test('what the creator typed appears verbatim', () => {
+  const odd = 'Use "root three" and the ohm sign, and keep 50% of it numeric.';
+  assert.ok(buildQuizPrompt({ ...FORM, extra: odd }).includes(odd));
+  assert.ok(buildStoryboardPrompt({ ...FORM, extra: odd }).includes(odd));
+});
+
+test('writing instructions no longer silently rewrites the outro', () => {
+  // It used to: `o.extra ? '' : ' - a short sign-off'` meant typing anything
+  // at all in the instructions box removed the outro's description, which the
+  // two have nothing to do with each other.
+  const withExtra = buildStoryboardPrompt({ ...FORM, videoKind: 'explainer', extra: 'Anything.' });
+  const without = buildStoryboardPrompt({ ...FORM, videoKind: 'explainer', extra: '' });
+  assert.ok(withExtra.includes('a short sign-off'), 'the description went missing again');
+  assert.ok(without.includes('a short sign-off'));
 });
 
 console.log('\n' + passed + ' checks passed\n');

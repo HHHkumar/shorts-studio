@@ -107,7 +107,7 @@ const RESPONSE_SCHEMA = {
   ],
 };
 
-const SYSTEM = [
+export const QUIZ_SYSTEM = [
   'You write short-form science and maths quiz videos (YouTube Shorts, Reels and TikTok, plus',
   'longer landscape explainers). You always return one multiple-choice question with exactly 4',
   'options, and a narration script.',
@@ -406,7 +406,7 @@ function curiosityHint(c) {
   return '  (Maximum: choose something that sounds impossible until explained. The answer should make the viewer say "wait, what?".)';
 }
 
-function buildPrompt(o) {
+export function buildQuizPrompt(o) {
   const budget = scriptBudget(o.targetSeconds, o.orientation);
   const lines = [];
   lines.push('Make one quiz video with these settings:');
@@ -434,10 +434,21 @@ function buildPrompt(o) {
   }
 
   if (o.avoid && o.avoid.trim()) lines.push('- Avoid these topics or question types: ' + o.avoid.trim());
-  if (o.extra && o.extra.trim()) lines.push('- Extra instructions from the creator: ' + o.extra.trim());
 
   lines.push(densityLine(o));
   examLines(o).forEach((l) => lines.push(l));
+
+  // The creator's own instructions go AFTER every line they might need to
+  // overrule, and before the length budget, which is a hard spec rather than
+  // guidance. Buried in the middle they were one bullet against eighty-odd
+  // lines of fixed direction, and quietly lost to it.
+  if (o.extra && o.extra.trim()) {
+    lines.push('');
+    lines.push('INSTRUCTIONS FROM THE CREATOR. These override the guidance above wherever they');
+    lines.push('disagree with it. They do not override the length budget or the output format.');
+    lines.push(o.extra.trim());
+  }
+
   budgetLines(budget).forEach((l) => lines.push(l));
 
   lines.push('');
@@ -536,8 +547,8 @@ export function callModel(provider, apiKey, model, request) {
 
 export async function generateContent(apiKey, model, options) {
   const parsed = await callModel(options.provider, apiKey, model, {
-    system: SYSTEM,
-    prompt: buildPrompt(options),
+    system: QUIZ_SYSTEM,
+    prompt: buildQuizPrompt(options),
     schema: RESPONSE_SCHEMA,
     temperature: 0.4 + (Number(options.curiosity) || 5) * 0.06,
     label: 'quiz',

@@ -269,6 +269,40 @@ this**: whatever you type is spoken and shown word for word.
 
 Press **Generate the question**. Five to twenty seconds.
 
+### Telling it exactly what you want
+
+The dropdowns cover the common choices. **Your own instructions** covers everything else — a box
+with room to write, at the bottom of step 2.
+
+```text
+Use an Indian everyday example wherever possible.
+Name the formula before using it, and show the unit at every step.
+Make one wrong option the mistake of forgetting the root three.
+```
+
+**Where it lands matters, and it is placed for you.** Your instructions go in near the end of the
+request — after every line of built-in guidance they might need to overrule, and before the target
+length. So *"keep the tone dry"* beats the tone you picked from the dropdown, and *"write twenty
+scenes"* does not beat the length you asked for. Length and the output format are enforced outside
+the prompt entirely, so nothing you write here can break a generation.
+
+Buried in the middle, as it used to be, a line here was one bullet against eighty-odd lines of
+fixed direction, and quietly lost to it.
+
+**See exactly what will be sent.** Open that panel under the box and you get the real request, built
+by the same code the Generate button uses — not an impression of it, and not a second version that
+can drift. It updates as you change the form.
+
+It shows two things: **your request**, assembled from the settings, and **the standing instructions**
+it gets added to. The second is the one worth reading once. Most "why did it do that?" moments are
+a line in there you did not know existed, and once you have seen it you can write an instruction that
+actually overrules it.
+
+Nothing is sent and nothing is charged by looking. It works for both kinds of video — a quiz shows
+its question request, an explainer its storyboard request.
+
+---
+
 ### Step 3 — Script
 
 You check Gemini's homework. **This is the most important step and the one people skip.**
@@ -684,7 +718,7 @@ moment that genuinely moves — something blocked, carried, escaping, or finding
 obstacle — and to put it in the middle, where the mechanism is being explained. Two at most. On a
 subject that does not move, none is the right answer and you will get none.
 
-To ask for one directly, put it in **Extra instructions** on step 2:
+To ask for one directly, put it in **Your own instructions** on step 2:
 
 > *act out the mechanism with a moving scene*
 
@@ -1181,12 +1215,13 @@ To stretch ElevenLabs credits: shorter targets, and the **Flash** voice model.
 | A spoken line sounds clipped | Trailing silence trimmed too aggressively. | Step 5 → turn off **Trim trailing silence**. |
 | A diagram shows wrong numbers | Gemini invented them. | Fix that scene in step 3, or turn off **Draw the diagrams**. |
 | A video feels too busy | Too much is moving for the subject. | Step 5 → **Narration effects → How strong**. Turn it down; 0 holds everything still. |
+| It ignored something you asked for | Your instruction was outranked, or never landed. | Step 2 → **See exactly what will be sent**. If a built-in line contradicts you, say so more plainly. |
 | A scene feels flat and still | The narration names no movement. | Step 3 → check the **✨ Moves on these words** row. Use the real verb: *flows*, not *goes*. |
 | An effect fires where it makes no sense | A word matched that you did not mean physically. | Reword that phrase; the row shows which word did it. |
 | A moving scene is out of step with the voice | A cue is missing from that scene's narration. | The window says which words. Put them back, or regenerate. |
 | A box has no picture in it | No icon matched that noun, or the storyboard named an abstract idea. | Normal for abstractions. Otherwise use a plainer noun. |
 | A moving scene has a blank circle in it | No icon matched that word. | Step 3 → reword it to a plainer noun, e.g. "fish" not "salmonid". |
-| No moving scenes ever appear | The subject may not have a moment that moves — or the model skipped it. | Step 2 → **Extra instructions** → *act out the mechanism with a moving scene*. |
+| No moving scenes ever appear | The subject may not have a moment that moves — or the model skipped it. | Step 2 → **Your own instructions** → *act out the mechanism with a moving scene*. |
 | The script is far shorter than asked | Gemini underwrote it. | Step 3 warns you. Regenerate, or switch to a stronger model. |
 | Push fails: *"Permission denied to …"* | Windows has another GitHub account saved. | Make sure the address includes `HHHkumar@`. |
 | The kit has no chapters | The video is too short, or YouTube's rules cannot be met. | Normal on Shorts. Chapters need 60s+, three marks, ten seconds each. |

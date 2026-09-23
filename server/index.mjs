@@ -17,8 +17,10 @@ import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { spawn } from 'node:child_process';
 
-import { generateContent, listModels } from './gemini.mjs';
-import { checkMotion, generateStoryboard } from './explainer.mjs';
+import { buildQuizPrompt, generateContent, listModels, QUIZ_SYSTEM } from './gemini.mjs';
+import {
+  buildStoryboardPrompt, checkMotion, generateStoryboard, STORYBOARD_SYSTEM,
+} from './explainer.mjs';
 import { attachIcons } from './icons.mjs';
 import { buildPublishKit } from './publish-kit.mjs';
 import { CLAUDE_MODELS, DEFAULT_CLAUDE_MODEL, listClaudeModels } from './claude.mjs';
@@ -344,6 +346,29 @@ app.post('/api/image/compare', ok(async (req, res) => {
 
   console.log('[compare] done - ' + drew + ' of ' + results.length + ' drew');
   res.json({ prompt, results });
+}));
+
+// --- what the model is actually going to be asked --------------------------
+
+app.post('/api/prompt/preview', ok(async (req, res) => {
+  const { options } = req.body || {};
+  const o = options && typeof options === 'object' ? options : {};
+
+  // No key, no network, no cost. It calls the SAME builders the generate route
+  // calls, which is the whole value: a preview assembled by a second copy of
+  // the logic would drift and start describing a request nobody is sending.
+  const explainer = o.videoKind === 'explainer';
+  const prompt = explainer ? buildStoryboardPrompt(o) : buildQuizPrompt(o);
+  const system = explainer ? STORYBOARD_SYSTEM : QUIZ_SYSTEM;
+
+  res.json({
+    videoKind: explainer ? 'explainer' : 'mcq',
+    system,
+    prompt,
+    // Counted here rather than in the browser so the two can never disagree
+    // about what was measured.
+    words: prompt.split(/\s+/).filter(Boolean).length + system.split(/\s+/).filter(Boolean).length,
+  });
 }));
 
 // --- what is worth making a video about right now ----------------------------

@@ -496,6 +496,24 @@ ul.issues .sev-low .sev { background: rgba(108,140,255,.16); color: var(--accent
   .compare-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* The request, shown verbatim. Monospaced and scrollable rather than wrapped
+   into prose: the line breaks are part of what the model receives, and a
+   preview that reflowed them would be showing something else. */
+.prompt-view { display: flex; flex-direction: column; gap: 14px; margin-top: 10px; }
+.prompt-part label {
+  display: block; font-size: 12.5px; font-weight: 700; color: var(--dim);
+  text-transform: uppercase; letter-spacing: .8px; margin: 0 0 6px;
+}
+.prompt-part pre {
+  margin: 0; max-height: 330px; overflow: auto;
+  padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--bg); color: var(--text);
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 12px; line-height: 1.55; white-space: pre-wrap; word-break: break-word;
+}
+/* The standing instructions are context, not the thing being edited. */
+.prompt-part pre.quiet { color: var(--dim); max-height: 240px; }
+
 .stock-prompt { padding: 0 12px 12px; }
 .stock-prompt label {
   display: block; font-size: 12.5px; font-weight: 700; color: var(--dim);
