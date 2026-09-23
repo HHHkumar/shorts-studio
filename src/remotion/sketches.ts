@@ -539,7 +539,7 @@ const CORE_SKETCHES: Record<string, SketchDef> = {
     shape: 'wide',
     label: 'Circuit',
     describe: 'a source and ANY arrangement of components in series and parallel, drawn from a description of the network. Use for: equivalent resistance, series and parallel combinations, current and voltage division, ladders, basic circuit questions',
-    uses: 'network - the circuit written as an expression, where + is series and | is parallel and | binds tighter: "12 + (12 | 12)" is one in series with two in parallel, "(12 + 12) | 12" is two in series in parallel with a third, "4 | 4 | 4" is three in parallel, "2 + 3 + 4" is three in series. Put the component value in each position and nothing else. ALSO: labelA (the source, e.g. "12 V"). Prefer network over mode - mode ("series"/"parallel") is the old way and only draws those two shapes',
+    uses: 'network (REQUIRED - without it no circuit is drawn at all) - the circuit written as an expression, where + is series and | is parallel and | binds tighter. "12 + (12 | 12)" is one in series with two in parallel. "(12 + 12) | 12" is two in series in parallel with a third. "4 | 4 | 4" is three in parallel. "2 + 3 + 4" is three in series. Read the question and write the arrangement it describes, with the component value in each position. Also labelA (the source, e.g. "12 V")',
     draw: ({ p, progress, width, height, params, items, colors }) => {
       const mode = String(params.mode || 'series');
       const parallel = mode === 'parallel';

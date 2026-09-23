@@ -25,8 +25,22 @@ ok('question: compare BLOCKED',
    vis('question', { kind:'compare', items:[{label:'a',symbol:'x'},{label:'b',symbol:'y'}] }).kind === 'none');
 ok('question: icon BLOCKED (the "Venus mystery" case)',
    vis('question', { kind:'icon', items:[{label:'Venus mystery',symbol:'🪐'}] }).kind === 'none');
+// Needs a circuit that survives on its own, or this measures the rule about
+// circuits without a network rather than the rule about captions.
 ok('question: caption stripped (captions leak answers)',
-   vis('question', { kind:'sketch', sketch:'circuit', caption:'the answer is 4 ohms' }).caption === '');
+   vis('question', { kind:'sketch', sketch:'circuit', params:{ network:'12 | 6' },
+                     caption:'the answer is 4 ohms' }).caption === '');
+
+// --- a circuit nobody described is not drawn ---------------------------------
+// The old modes could draw two of the many arrangements a question describes,
+// so the model picked the nearest wrong one and the picture contradicted the
+// words. No picture is better: the words get checked, the picture gets believed.
+ok('circuit with no network refused',
+   vis('explain', { kind:'sketch', sketch:'circuit', params:{ labelA:'12 V' } }).kind === 'none');
+ok('circuit with a network drawn',
+   vis('explain', { kind:'sketch', sketch:'circuit', params:{ network:'(12 | 6) + 2' } }).kind === 'sketch');
+ok('circuit with only the old mode still drawn (saved scripts keep their diagram)',
+   vis('explain', { kind:'sketch', sketch:'circuit', params:{ mode:'series' } }).kind === 'sketch');
 
 // --- the other pre-reveal scenes stay completely bare ------------------------
 for (const k of ['hook','options','countdown','answer']) {

@@ -1171,6 +1171,19 @@ function normalizeVisual(raw, sceneKind) {
     // schema no longer carries an enum - see the comment on the `sketch` field.
     const name = matchSketch(raw.sketch);
     if (!name) return { kind: 'none' };
+
+    // A circuit with no network is a circuit whose shape nobody stated, and
+    // the old modes could only draw two of the many a question describes - so
+    // the model picked the nearest wrong one and drew a diagram that
+    // contradicted the words. No diagram is better than a wrong one: the words
+    // get checked and the picture gets believed.
+    //
+    // `mode` still renders, so a script saved before this keeps its diagram.
+    // It is simply no longer offered, so nothing new can choose it.
+    if (name === 'circuit') {
+      const params = raw.params && typeof raw.params === 'object' ? raw.params : {};
+      if (!clean(params.network) && !clean(params.mode)) return { kind: 'none' };
+    }
     // Sketches share the items array: block-flow uses it for stage labels,
     // pie for slices, circuit for component values.
     return {
