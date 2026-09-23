@@ -799,6 +799,29 @@ draws two nouns. The prompt box is where you describe the picture instead.
 Whatever you write, the **Look** and the composition rule are still added on the end — so an edited
 prompt keeps the style match and keeps the middle of the frame clear for your captions.
 
+**Which model, and how to find out.** The model dropdown is the biggest quality lever in this step,
+and it is impossible to feel one press at a time — by the time the second image arrives you are
+comparing it against a memory. **Compare models** draws the *same prompt* with all four at once and
+puts them side by side:
+
+| Model | Roughly |
+|---|---|
+| **Flash Lite** | 3c — the default |
+| **Flash** | 4c — best at matching a reference |
+| **Flash 2.5** | 4c — the older model |
+| **Pro** | 13c — best quality |
+
+Click whichever you would keep: it becomes that scene's backdrop **and** the model the Draw button
+uses from then on.
+
+One press is about **24c**, because it is four images. It deliberately does not use the style
+reference — matching a reference is a different question from which model draws better, and including
+it would judge every model after the first on how well it copied. If your key cannot use one of the
+models, that square says so and the other three still arrive.
+
+If you have seen nicer images elsewhere — Google Slides, say — this is usually the whole explanation:
+those tools are not running a budget model, and the default here is the cheapest of the four.
+
 **Keep every scene in the same style.** On Google only, and on by default. The first image you draw
 becomes the reference for every one after it, so a video looks like one set instead of twelve
 unrelated pictures. It costs nothing extra.

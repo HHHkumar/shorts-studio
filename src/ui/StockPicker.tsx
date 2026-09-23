@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { api, type StockImage, type TopicForm } from '../lib/api';
+import { api, type ImageComparison, type StockImage, type TopicForm } from '../lib/api';
 import type { QuizContent, ScriptLine } from '../lib/types';
 import { draftImagePrompt } from '../lib/image-prompt';
 import { Check, ErrorNote, Note, Select, Slider, Spinner } from './controls';
@@ -59,6 +59,10 @@ export const StockPicker: React.FC<{
   const [modelId, setModelId] = useState('');
   const [provider, setProvider] = useState<'google' | 'elevenlabs'>('google');
   const [matchStyle, setMatchStyle] = useState(true);
+  const [comparingScene, setComparingScene] = useState<number | null>(null);
+  const [comparison, setComparison] = useState<
+    { index: number; prompt: string; results: ImageComparison[] } | null
+  >(null);
 
   const google = provider === 'google';
   const models = google ? googleImageModels : imageModels;
@@ -198,6 +202,63 @@ export const StockPicker: React.FC<{
     } finally {
       setDrawingScene(null);
     }
+  };
+
+  /**
+   * Draw one scene with every model, to judge them against each other.
+   *
+   * Exists because the model dropdown is the biggest quality lever in this
+   * whole step and there is no way to feel it one press at a time - by the time
+   * the second image arrives you are comparing it against a memory. Four
+   * charges, which is why the button says so before it is pressed.
+   */
+  const compare = async (index: number, line: ScriptLine) => {
+    const query = (line.imageQuery || '').trim() || fallbackQuery(line, content);
+    if (!query) {
+      setError('Type what this scene should show in its box above, then press Compare again.');
+      return;
+    }
+
+    setComparingScene(index);
+    setComparison(null);
+    setError(null);
+    try {
+      const out = await api.compareImages({
+        apiKey: drawKey,
+        query,
+        subject: content.subject || form.subject,
+        topic: content.topic || form.topic,
+        styleId: style,
+        orientation,
+        jobId,
+        imagePrompt: (line.imagePrompt || '').trim() || undefined,
+      });
+      setComparison({ index, prompt: out.prompt, results: out.results });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setComparingScene(null);
+    }
+  };
+
+  /** Take one of the compared images as this scene's backdrop. */
+  const keepFromComparison = (index: number, shot: ImageComparison) => {
+    if (!shot.src) return;
+    const drawn: StockImage = {
+      id: shot.modelId,
+      provider: 'ai',
+      thumb: '/' + shot.src,
+      full: shot.src,
+      credit: AI_CREDIT,
+      sourceUrl: '',
+      width: 0,
+      height: 0,
+      saved: true,
+    };
+    setCandidates((prev) => ({ ...prev, [index]: [drawn, ...(prev[index] || [])] }));
+    // Whichever one won is almost certainly the model to keep using.
+    setModelId(shot.modelId);
+    setComparison(null);
   };
 
   const choose = async (index: number, image: StockImage) => {
@@ -422,6 +483,17 @@ export const StockPicker: React.FC<{
                       {options.some((o) => o.provider === 'ai') ? 'Draw another' : 'Draw'}
                     </button>
                   ) : null}
+                  {canGenerate && google ? (
+                    <button
+                      className="btn small"
+                      disabled={drawingScene !== null || comparingScene !== null}
+                      title={'Draw this scene with all ' + googleImageModels.length
+                        + ' models and see them together (about 24c)'}
+                      onClick={() => compare(index, line)}
+                    >
+                      {comparingScene === index ? <Spinner /> : '⚖️'} Compare models
+                    </button>
+                  ) : null}
                   {canGenerate ? (
                     <button
                       className="link-btn"
@@ -438,6 +510,49 @@ export const StockPicker: React.FC<{
                   ) : null}
                 </div>
 
+                {comparison && comparison.index === index ? (
+                  <div className="compare-panel">
+                    <div className="compare-head">
+                      <b>Same prompt, every model.</b> Pick the one you would keep — it becomes this
+                      scene&rsquo;s backdrop and the model the Draw button uses from now on.
+                    </div>
+                    <div className="compare-grid">
+                      {comparison.results.map((shot) => (
+                        <div className="compare-cell" key={shot.modelId}>
+                          {shot.src ? (
+                            <button
+                              className="compare-shot"
+                              title={'Keep this one and switch to ' + shot.modelId}
+                              onClick={() => keepFromComparison(index, shot)}
+                            >
+                              <img src={'/' + shot.src} alt={shot.label} />
+                            </button>
+                          ) : (
+                            // One model failing costs one cell, not the grid.
+                            // Usually a key without access to that model.
+                            <div className="compare-failed">{shot.error}</div>
+                          )}
+                          <div className="compare-meta">
+                            <b>{shot.label.split('—')[0].trim()}</b>
+                            <span>
+                              {shot.cents}c · {shot.seconds}s
+                              {shot.bytes ? ' · ' + Math.round(shot.bytes / 1024) + ' KB' : ''}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="compare-foot">
+                      <span title={comparison.prompt}>
+                        Drawn from: {comparison.prompt.slice(0, 110)}
+                        {comparison.prompt.length > 110 ? '…' : ''}
+                      </span>
+                      <button className="link-btn" onClick={() => setComparison(null)}>
+                        close
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
                 {canGenerate && openPrompt === index ? (
                   <div className="stock-prompt">
                     <label>What to draw for this scene</label>

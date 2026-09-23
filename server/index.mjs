@@ -30,7 +30,7 @@ import { findTrending } from './trends.mjs';
 import { searchStock, downloadStock, saveImageBuffer, readGeneratedImage } from './stock.mjs';
 import { buildPrompt, generateImage, IMAGE_MODELS, IMAGE_STYLES } from './images.mjs';
 import {
-  generateGoogleImage, GOOGLE_IMAGE_MODELS, DEFAULT_GOOGLE_IMAGE_MODEL,
+  generateGoogleImage, GOOGLE_IMAGE_MODELS, DEFAULT_GOOGLE_IMAGE_MODEL, COMPARE_CENTS,
 } from './google-images.mjs';
 import { generateSeo } from './seo.mjs';
 
@@ -275,6 +275,75 @@ app.post('/api/image/generate', ok(async (req, res) => {
   });
 
   res.json({ ...saved, id: fileId, generationId: id, prompt, matched: false });
+}));
+
+// --- one prompt, every model, side by side -----------------------------------
+
+app.post('/api/image/compare', ok(async (req, res) => {
+  const {
+    apiKey, jobId, query, subject, topic, styleId, orientation, imagePrompt,
+  } = req.body || {};
+
+  if (!apiKey) throw new Error('No Gemini API key was sent. Add it on the Keys step.');
+
+  // The SAME prompt for every model. Comparing four models on four prompts
+  // tells you nothing about the models.
+  const prompt = buildPrompt({ query, custom: imagePrompt, subject, topic, styleId });
+  if (!prompt) throw new Error('Type what this scene should show, then press Compare again.');
+
+  const safeJob = String(jobId || 'default').replace(/[^a-zA-Z0-9_-]+/g, '-').slice(0, 40) || 'default';
+
+  console.log('[compare] drawing the same prompt with ' + GOOGLE_IMAGE_MODELS.length
+    + ' models (~' + COMPARE_CENTS + 'c)...');
+
+  const results = [];
+  for (const model of GOOGLE_IMAGE_MODELS) {
+    const started = Date.now();
+    try {
+      // Deliberately no reference image. Matching a reference is a different
+      // question from which model draws better, and mixing the two would mean
+      // every model after the first was judged on how well it copied.
+      const { base64, mimeType } = await generateGoogleImage({
+        apiKey,
+        prompt,
+        orientation,
+        modelId: model.id,
+        reference: null,
+      });
+
+      const saved = saveImageBuffer({
+        buffer: Buffer.from(base64, 'base64'),
+        mimeType,
+        id: 'cmp-' + randomUUID().slice(0, 8),
+        jobId: safeJob,
+        publicDir: paths.PUBLIC_DIR,
+        folder: 'ai',
+      });
+
+      const seconds = Math.round((Date.now() - started) / 100) / 10;
+      results.push({ ...saved, modelId: model.id, label: model.label, cents: model.cents, seconds });
+      console.log('  ok    ' + model.id + '  ' + seconds + 's, '
+        + Math.round(saved.bytes / 1024) + ' KB');
+    } catch (err) {
+      // One model failing must not cost the other three. A 404 on a model this
+      // key cannot use is the likeliest case, and it is worth SEEING that
+      // rather than losing the whole comparison to it.
+      const seconds = Math.round((Date.now() - started) / 100) / 10;
+      const message = err instanceof Error ? err.message : String(err);
+      results.push({ modelId: model.id, label: model.label, cents: model.cents, seconds, error: message });
+      console.log('  FAIL  ' + model.id + '  ' + message);
+    }
+  }
+
+  const drew = results.filter((r) => r.src).length;
+  if (!drew) {
+    // Every one failed, which is a key or billing problem rather than a model
+    // problem. Say the first reason instead of an empty grid.
+    throw new Error('None of the models drew anything. ' + (results[0] && results[0].error));
+  }
+
+  console.log('[compare] done - ' + drew + ' of ' + results.length + ' drew');
+  res.json({ prompt, results });
 }));
 
 // --- what is worth making a video about right now ----------------------------

@@ -28,11 +28,14 @@ const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/interactions'
  * single fact most likely to send somebody round in circles.
  */
 export const GOOGLE_IMAGE_MODELS = [
-  { id: 'gemini-3.1-flash-lite-image', label: 'Flash Lite — cheapest, ~3c an image (recommended)' },
-  { id: 'gemini-3.1-flash-image', label: 'Flash — better, and best at matching a reference' },
-  { id: 'gemini-2.5-flash-image', label: 'Flash 2.5 — the older model, ~4c' },
-  { id: 'gemini-3-pro-image', label: 'Pro — best quality, ~13c an image' },
+  { id: 'gemini-3.1-flash-lite-image', cents: 3, label: 'Flash Lite — cheapest, ~3c an image (recommended)' },
+  { id: 'gemini-3.1-flash-image', cents: 4, label: 'Flash — better, and best at matching a reference' },
+  { id: 'gemini-2.5-flash-image', cents: 4, label: 'Flash 2.5 — the older model, ~4c' },
+  { id: 'gemini-3-pro-image', cents: 13, label: 'Pro — best quality, ~13c an image' },
 ];
+
+/** What pressing Compare costs, totalled from the list rather than retyped. */
+export const COMPARE_CENTS = GOOGLE_IMAGE_MODELS.reduce((sum, m) => sum + m.cents, 0);
 
 export const DEFAULT_GOOGLE_IMAGE_MODEL = 'gemini-3.1-flash-lite-image';
 
