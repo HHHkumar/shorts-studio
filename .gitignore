@@ -20,6 +20,11 @@ public/audio
 # Scratch output from render tests.
 stills/
 
+# The built front end. `npx vite build` writes it, Vite serves from memory in
+# development, and nothing in the repo reads it - so a committed copy could
+# only ever be a stale one.
+dist/
+
 # The built manual is committed on purpose - it is a deliverable people share,
 # and `npm run guide:pdf` rebuilds it from USER_GUIDE.md whenever that changes.
 
