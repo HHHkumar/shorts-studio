@@ -325,6 +325,7 @@ export const App: React.FC = () => {
               googleImageModels={googleImageModels}
               geminiKey={geminiKey}
               geminiModel={geminiModel}
+              onOpenMascot={() => setLab(true)}
               onBack={() => go(3)}
               onNext={() => go(5)}
             />

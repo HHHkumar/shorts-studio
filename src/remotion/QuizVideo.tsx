@@ -10,6 +10,9 @@ import { Soundtrack } from './Soundtrack';
 import { StockLayer } from './StockLayer';
 import { OverlayLayer } from './Overlays';
 import { RevealContext } from './ReadAlong';
+import { DoodlePicture, DoodleText } from './DoodleStage';
+import { HandFonts } from './fonts';
+import { wantsDoodle } from '../lib/doodle';
 
 /**
  * The whole video. Every scene is a <Sequence> that starts at the exact frame
@@ -23,14 +26,21 @@ export const QuizVideo: React.FC<VideoProps> = ({ content, scenes, design }) => 
 
   const explainScenes = scenes.filter((s) => s.kind === 'explain');
 
+  // The Doodle look owns the whole frame. Drifting symbols, the animated
+  // backdrop and stock photos are all ways of filling a frame that has no
+  // picture of its own; every doodle scene has one, and they would only be
+  // clutter around it.
+  const doodle = theme.layout === 'doodle';
+
   return (
     <RevealContext.Provider value={design.textReveal || 'fade'}>
     <AbsoluteFill style={{ backgroundColor: theme.bg }}>
+      {doodle ? <HandFonts /> : null}
       <Backdrop theme={theme} />
 
       {/* Outside every Sequence on purpose: its frame counter is the whole
           video's, so the motion runs through the cuts instead of restarting. */}
-      {design.ambient && design.ambient !== 'none' ? (
+      {!doodle && design.ambient && design.ambient !== 'none' ? (
         <AmbientLayer
           theme={theme}
           content={content}
@@ -41,11 +51,14 @@ export const QuizVideo: React.FC<VideoProps> = ({ content, scenes, design }) => 
         />
       ) : null}
 
-      {design.showMotif ? <MotifLayer theme={theme} symbols={content.motifSymbols || []} /> : null}
+      {!doodle && design.showMotif ? <MotifLayer theme={theme} symbols={content.motifSymbols || []} /> : null}
 
       {scenes.map((scene, sceneIndex) => {
         const Component = SCENE_COMPONENTS[scene.kind] || SCENE_COMPONENTS.explain;
         const stepIndex = scene.kind === 'explain' ? explainScenes.indexOf(scene) : 0;
+        // Checked here, not only when drawing: a scene drawn before its
+        // diagram was switched on must give the frame back to the diagram.
+        const doodleHere = doodle && Boolean(scene.doodleSrc) && wantsDoodle(scene, design.showVisuals);
         return (
           <Sequence
             key={scene.id}
@@ -56,9 +69,12 @@ export const QuizVideo: React.FC<VideoProps> = ({ content, scenes, design }) => 
             durationInFrames={scene.durationInFrames + SCENE_OVERLAP}
             name={scene.kind + ' - ' + scene.narration.slice(0, 28)}
           >
-            {design.showStock && scene.stockSrc ? (
+            {!doodle && design.showStock && scene.stockSrc ? (
               <StockLayer theme={theme} src={scene.stockSrc} opacity={design.stockOpacity} />
             ) : null}
+
+            {/* Outside SceneFade on purpose - see DoodleStage.tsx. */}
+            {doodleHere ? <DoodlePicture theme={theme} src={scene.doodleSrc!} hold={scene.durationInFrames} /> : null}
 
             <SceneFade
               theme={theme}
@@ -67,18 +83,23 @@ export const QuizVideo: React.FC<VideoProps> = ({ content, scenes, design }) => 
               transition={design.transition || 'auto'}
               kind={scene.kind}
             >
-              <Component
-                theme={theme}
-                scene={scene}
-                content={content}
-                stepIndex={stepIndex}
-                stepTotal={explainScenes.length}
-                showVisuals={design.showVisuals}
-                showText={design.showCaptions}
-                // Older saved videos have no setting, and full is what they
-                // were made with.
-                motion={design.motionStrength ?? 1}
-              />
+              {(() => {
+                const body = (
+                  <Component
+                    theme={theme}
+                    scene={scene}
+                    content={content}
+                    stepIndex={stepIndex}
+                    stepTotal={explainScenes.length}
+                    showVisuals={design.showVisuals}
+                    showText={design.showCaptions}
+                    // Older saved videos have no setting, and full is what they
+                    // were made with.
+                    motion={design.motionStrength ?? 1}
+                  />
+                );
+                return doodleHere ? <DoodleText>{body}</DoodleText> : body;
+              })()}
             </SceneFade>
 
             {scene.audioSrc ? <Audio src={resolveSrc(scene.audioSrc)} /> : null}

@@ -25,7 +25,7 @@ export interface Theme {
   displayTracking: number;
   displayItalic: boolean;
   /** Background decoration drawn behind everything. */
-  decor: 'plain' | 'rays' | 'grid' | 'burst';
+  decor: 'plain' | 'rays' | 'grid' | 'burst' | 'paper';
   /** How bouncy the entrance animations are. 0 = calm glide, 1 = big overshoot. */
   bounce: number;
   shadow: string;
@@ -47,6 +47,11 @@ const FONTS = {
   serif: "Georgia, 'Iowan Old Style', 'Times New Roman', " + INDIC + ", serif",
   mono: "'Cascadia Mono', Consolas, 'DejaVu Sans Mono', 'Courier New', " + INDIC + ", monospace",
   heavy: "'Arial Black', 'Segoe UI Black', Impact, " + INDIC + ", sans-serif",
+  // The one exception to "nothing is downloaded": Kalam is self-hosted in
+  // public/fonts and the render waits for it (src/remotion/fonts.tsx), so no
+  // frame is captured in the fallback. It covers Latin only - Kannada and the
+  // other Indic scripts fall through to the stack behind it.
+  hand: "'Kalam', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, " + INDIC + ", sans-serif",
 };
 
 // Looks ported from Claude Design name their webfont first and fall back to
@@ -70,6 +75,7 @@ const BUILT_IN_ALIGN: Record<BuiltInLayout, Align> = {
   elegant: 'center',
   nerdy: 'center',
   flashy: 'center',
+  doodle: 'center',
 };
 
 const RECIPES: Record<BuiltInLayout, Record<ThemeMode, Recipe>> = {
@@ -177,6 +183,37 @@ const RECIPES: Record<BuiltInLayout, Record<ThemeMode, Recipe>> = {
       shadow: '0 18px 50px rgba(255,47,135,0.28)', glow: '0 0 30px rgba(255,122,0,0.35)',
     },
   },
+
+  // --- DOODLE: the mascot on paper, words in marker --------------------------
+  // Black ink and one red, the same rule the drawings follow: red is for what
+  // is live. Cards get a hard offset ink shadow rather than a soft one - a
+  // blurred shadow is a photograph's idea of depth, not a pen's.
+  doodle: {
+    light: {
+      bg: '#fbf8f1', bgAlt: '#f3eee2', surface: '#fffdf8', surfaceAlt: '#f7f2e7',
+      border: '#1c1c1c', borderWidth: 3,
+      text: '#1c1c1c', textDim: '#5c574d',
+      accent: '#e0301e', accentSoft: 'rgba(224,48,30,0.12)',
+      correct: '#1f9d55', wrong: '#e0301e',
+      fontDisplay: FONTS.hand, fontBody: FONTS.hand,
+      radius: 18, displayWeight: 700, displayTransform: 'none', displayTracking: 0,
+      displayItalic: false, decor: 'paper', bounce: 0.6,
+      shadow: '6px 7px 0 rgba(28,28,28,0.9)', glow: 'none',
+    },
+    // Dark is a chalkboard: the drawings are inverted to chalk lines in
+    // DoodleStage, with the red put back so it still means "live".
+    dark: {
+      bg: '#1e2a24', bgAlt: '#243229', surface: 'rgba(255,255,255,0.05)', surfaceAlt: 'rgba(255,255,255,0.09)',
+      border: '#ecebe4', borderWidth: 3,
+      text: '#f1efe6', textDim: '#b7bdb2',
+      accent: '#ff5a47', accentSoft: 'rgba(255,90,71,0.16)',
+      correct: '#7ee0a1', wrong: '#ff5a47',
+      fontDisplay: FONTS.hand, fontBody: FONTS.hand,
+      radius: 18, displayWeight: 700, displayTransform: 'none', displayTracking: 0,
+      displayItalic: false, decor: 'paper', bounce: 0.6,
+      shadow: '6px 7px 0 rgba(0,0,0,0.35)', glow: 'none',
+    },
+  },
 };
 
 export const LAYOUT_INFO: { name: LayoutName; label: string; blurb: string }[] = [
@@ -184,6 +221,11 @@ export const LAYOUT_INFO: { name: LayoutName; label: string; blurb: string }[] =
   { name: 'elegant', label: 'Elegant', blurb: 'Serif type, calm pacing. Feels like a documentary.' },
   { name: 'nerdy', label: 'Nerdy', blurb: 'Terminal green on graph paper. Great for code and maths.' },
   { name: 'flashy', label: 'Flashy', blurb: 'Loud colours, big bounce. Built for the scroll feed.' },
+  {
+    name: 'doodle',
+    label: 'Doodle',
+    blurb: 'The mascot, hand-drawn in every scene; words in marker. Light is paper, dark is chalkboard.',
+  },
   ...DESIGN_LOOKS.map((look) => ({ name: look.slug, label: look.label, blurb: look.blurb })),
 ];
 
@@ -259,4 +301,5 @@ export const DEFAULT_DESIGN: DesignSettings = {
   sfx: true,
   sfxVolume: 0.5,
   orientation: 'portrait',
+  doodleEnergy: 'lively',
 };

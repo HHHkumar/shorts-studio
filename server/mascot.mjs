@@ -43,11 +43,33 @@ export const DOODLE_LOOK = [
   'Flat: no shading, no gradients, no texture, no grey.',
   'The only colour is one bright red, used sparingly for the lightning bolt on the hat and for',
   'anything electrical and live: sparks, current, live wires, a probe tip.',
-  'Funny and expressive: exaggerated poses, motion lines, sweat drops, stress squiggles and',
-  'zig-zag zap marks.',
   'Doodle symbols such as question marks, exclamation marks and lightning bolts are fine.',
-  'No words, letters, numbers or labels anywhere in the picture.',
+  'No words, letters, numbers or labels anywhere in the picture - and no written sound effects',
+  'either: no zzz, zap, bzzt, boom, pow or anything like them, and no speech bubbles.',
 ].join(' ');
+
+/**
+ * How wild one scene is drawn. Chosen per scene by src/lib/doodle.ts, which
+ * caps the dial by scene kind.
+ *
+ * This used to be one sentence inside the look - "sweat drops, stress
+ * squiggles and zig-zag zap marks" - which put all of it in every scene. The
+ * test's calm teaching beat came back sweating beside a sparking probe it was
+ * never given. So calm names what to leave out, including sparks on anything
+ * the scene did not ask to be live.
+ */
+export const ENERGY_LINES = {
+  calm: 'Energy: calm. A clear, relaxed pose and a simple, readable expression. No sweat drops, '
+    + 'no stress squiggles, no zap marks, no sparks and no motion lines. Nothing electrical, live '
+    + 'or sparking unless the props name it.',
+  lively: 'Energy: lively. An expressive pose and face, with at most one or two small marks where the '
+    + 'emotion needs them, such as a sweat drop or a few motion lines. Sparks only on something the '
+    + 'props name as live.',
+  chaotic: 'Energy: chaotic. Full cartoon: an exaggerated pose, motion lines, sweat drops, stress '
+    + 'squiggles and red zig-zag zap marks.',
+};
+
+const energyLine = (energy) => ENERGY_LINES[energy] || ENERGY_LINES.lively;
 
 /** What every drawing of the engineer must get right. */
 const BIBLE = [
@@ -144,6 +166,7 @@ export function mascotDesignPrompt(variantId) {
 export const TEST_BEATS = [
   {
     id: 'hook',
+    energy: 'lively',
     label: 'Hook — puzzled',
     action: 'stands in front of a wall-mounted electricity meter, head tilted, scratching the side of the hard hat',
     emotion: 'puzzled',
@@ -152,6 +175,7 @@ export const TEST_BEATS = [
   },
   {
     id: 'question',
+    energy: 'lively',
     label: 'Question — alarmed',
     action: 'points at the meter with one arm straight out, leaning back',
     emotion: 'alarmed, eyes wide, mouth a small round O',
@@ -160,6 +184,7 @@ export const TEST_BEATS = [
   },
   {
     id: 'think',
+    energy: 'calm',
     label: 'Thinking',
     action: 'sits cross-legged on the floor, chin resting on one hand',
     emotion: 'concentrating, eyes looking up',
@@ -168,6 +193,7 @@ export const TEST_BEATS = [
   },
   {
     id: 'zap',
+    energy: 'chaotic',
     label: 'Gag — zapped',
     action: 'touches a tangle of wires with a multimeter probe and gets a harmless cartoon zap; body stiff, arms out',
     emotion: 'shocked, eyes as spirals',
@@ -176,6 +202,7 @@ export const TEST_BEATS = [
   },
   {
     id: 'answer',
+    energy: 'lively',
     label: 'Answer — got it',
     action: 'jumps in the air with both arms raised',
     emotion: 'delighted, huge grin',
@@ -184,6 +211,7 @@ export const TEST_BEATS = [
   },
   {
     id: 'explain',
+    energy: 'calm',
     label: 'Explain — teaching',
     action: 'stands beside a blank whiteboard, pointing at it with a marker pen',
     emotion: 'confident and friendly, small smile',
@@ -197,24 +225,42 @@ export const TEST_BEATS = [
  *
  * The engineer is the hero of the frame, not a backdrop. That is the opposite
  * of every other picture this studio draws, which is why it has its own
- * composition line: whole figure, centred, white space above and below for
- * the words the renderer adds.
+ * composition lines.
+ *
+ * Two framings:
+ *   'tall'   - the lab's 9:16 test, with white space above and below.
+ *   'square' - a video scene. The renderer puts the words in their own band
+ *              beside the picture rather than over it, so the drawing is
+ *              composed tight, with a margin of empty paper all round that the
+ *              renderer fades out to blend the picture into the page.
  */
-export function doodleScenePrompt(beat, variantId) {
+export function doodleScenePrompt(beat, variantId, { energy, framing = 'tall' } = {}) {
+  const say = (s) => String(s || '').trim().replace(/[.\s]+$/, '');
   const direction = [
-    'THE SCENE: the engineer ' + beat.action + '.',
-    'Emotion: ' + beat.emotion + '.',
-    'Props: ' + beat.props + '.',
-    beat.gag && !/^none/i.test(beat.gag) ? 'Gag: ' + beat.gag + '.' : '',
+    'THE SCENE: the engineer ' + say(beat.action) + '.',
+    'Emotion: ' + say(beat.emotion) + '.',
+    beat.props ? 'Props: ' + say(beat.props) + '.' : '',
+    beat.gag && !/^none/i.test(beat.gag) ? 'Gag: ' + say(beat.gag) + '.' : '',
   ].filter(Boolean).join(' ');
+
+  const composition = framing === 'square'
+    ? [
+      'Square picture. The engineer is drawn large and whole, head to feet, in the middle, with the',
+      'named props close by. Only the props named are drawn; everything else is plain white paper.',
+      'Keep a margin of empty paper all round - nothing touches the edges.',
+    ]
+    : [
+      'The engineer is the centre of the picture, drawn large and whole, head to feet.',
+      'Only the props named are drawn; everything else is plain white paper.',
+      'Leave clear white space above and below for words to be added later.',
+    ];
 
   return [
     DOODLE_LOOK,
+    energyLine(energy || beat.energy),
     bibleFor(variantId),
     direction,
-    'The engineer is the centre of the picture, drawn large and whole, head to feet.',
-    'Only the props named are drawn; everything else is plain white paper.',
-    'Leave clear white space above and below for words to be added later.',
+    composition.join(' '),
   ].join('\n\n');
 }
 

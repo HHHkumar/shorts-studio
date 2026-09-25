@@ -1,5 +1,6 @@
 import type { DesignSettings, QuizContent, Scene, ScriptLine, VideoKind, VideoProps } from './types';
 import type { AudioResult } from './timeline';
+import type { DoodleDirection } from './doodle';
 
 export type ContentType = 'general' | 'electrical' | 'aptitude';
 
@@ -426,6 +427,25 @@ export const api = {
   /** The six test beats, drawn against the model sheet. Six pictures of credits. */
   mascotTest(body: { apiKey: string; modelId: string }) {
     return post<{ model: string; cents: number; results: MascotDrawing[] }>('/api/mascot/test', body);
+  },
+
+  /** Gemini directs the mascot for the listed scenes. Text only - one request for the whole script. */
+  doodleDirections(body: { apiKey: string; model: string; content: QuizContent; scenes: number[]; energy: string }) {
+    return post<{ directions: Record<string, DoodleDirection>; notes: string[] }>('/api/doodle/directions', body);
+  },
+
+  /** One scene, drawn against the model sheet. Spends one picture of credits. */
+  doodleDraw(body: {
+    apiKey: string;
+    modelId: string;
+    jobId: string;
+    scene: number;
+    kind: string;
+    direction: DoodleDirection;
+    energy: string;
+    orientation: string;
+  }) {
+    return post<{ src: string; referenced: boolean; energy: string; prompt: string; cents: number }>('/api/doodle/draw', body);
   },
 
   seo(

@@ -44,6 +44,8 @@ import {
   adoptMascot, CHARACTER_MATCH_LINE, doodleScenePrompt, MASCOT_VARIANTS, mascotDesignPrompt,
   readMascot, readMascotImage, TEST_BEATS,
 } from './mascot.mjs';
+import { generateDoodleDirections } from './doodle-directions.mjs';
+import { energyFor, tidyDirection } from '../src/lib/doodle.ts';
 
 const PORT = Number(process.env.PORT || 3030);
 const GENERATED_DIR = path.join(paths.PUBLIC_DIR, 'generated');
@@ -475,6 +477,55 @@ app.post('/api/mascot/test', ok(async (req, res) => {
 
   if (!results.some((r) => r.src)) throw new Error('No scene was drawn. ' + (results[0] && results[0].error));
   res.json({ model, cents: centsOf(model) * TEST_BEATS.length, results });
+}));
+
+// --- doodle scenes -----------------------------------------------------------
+//
+// The mascot, directed and drawn for every scene of a real video. Directions
+// are text - cheap, one request for the whole script. Drawings are one scene
+// per request, on purpose: the browser shows each as it lands, can stop part
+// way, and uses the same route for a single Redraw.
+
+app.post('/api/doodle/directions', ok(async (req, res) => {
+  const { apiKey, model, content, scenes, energy } = req.body || {};
+  if (!content || !Array.isArray(content.script)) throw new Error('Generate a script before directing the doodles.');
+  const out = await generateDoodleDirections({ apiKey, model: model || 'gemini-2.5-flash', content, scenes, energy });
+  console.log('[doodle] directed ' + Object.keys(out.directions).length + ' scenes'
+    + (out.notes.length ? ' (' + out.notes.length + ' notes)' : ''));
+  res.json(out);
+}));
+
+app.post('/api/doodle/draw', ok(async (req, res) => {
+  const { apiKey, modelId, jobId, direction, kind, energy, orientation, scene } = req.body || {};
+  if (!apiKey) throw new Error('No Gemini API key was sent. Add it on the Keys step.');
+  const mascot = readMascot(paths.PUBLIC_DIR);
+  const sheet = readMascotImage(paths.PUBLIC_DIR);
+  if (!mascot || !sheet) throw new Error('There is no mascot yet. Design one in the Mascot lab first.');
+
+  // The direction comes from the browser, where the creator may have edited
+  // it, so it is held to the same shape and lengths as one Gemini wrote.
+  const directed = tidyDirection(direction);
+  if (!directed) throw new Error('Say what the engineer is doing in this scene, then draw it.');
+
+  const level = energyFor(String(kind || ''), energy);
+  const prompt = doodleScenePrompt(directed, mascot.variant, { energy: level, framing: 'square' });
+  const model = modelOr(modelId, 'gemini-3.1-flash-image');
+  const safeJob = String(jobId || 'default').replace(/[^a-zA-Z0-9_-]+/g, '-').slice(0, 40) || 'default';
+  const index = Number.isInteger(Number(scene)) ? Number(scene) : 0;
+  // A fresh name per drawing, so a Redraw sits beside the last attempt rather
+  // than replacing a file the preview may still be showing.
+  const fileId = 's' + index + '-' + randomUUID().slice(0, 6);
+
+  const { base64, mimeType, referenced } = await generateGoogleImage({
+    apiKey, prompt, orientation, modelId: model, aspectRatio: '1:1',
+    reference: sheet, matchLine: CHARACTER_MATCH_LINE,
+  });
+  const saved = saveImageBuffer({
+    buffer: Buffer.from(base64, 'base64'), mimeType, id: fileId, jobId: safeJob,
+    publicDir: paths.PUBLIC_DIR, folder: 'doodle',
+  });
+  console.log('[doodle] scene ' + index + ' (' + level + ') ' + (referenced ? '' : 'WITHOUT the model sheet ') + '-> ' + saved.src);
+  res.json({ src: saved.src, referenced, energy: level, prompt, cents: centsOf(model) });
 }));
 
 // --- what the model is actually going to be asked --------------------------

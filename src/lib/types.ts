@@ -8,8 +8,9 @@
 export type ThemeMode = 'dark' | 'light';
 import type { DesignLookSlug } from './design-looks';
 import type { Figure, FigureCheck } from './figures/index.ts';
+import type { DoodleDirection } from './doodle.ts';
 
-export type BuiltInLayout = 'simple' | 'elegant' | 'nerdy' | 'flashy';
+export type BuiltInLayout = 'simple' | 'elegant' | 'nerdy' | 'flashy' | 'doodle';
 /** The built-in layouts plus every look imported from Claude Design (design-kits/). */
 export type LayoutName = BuiltInLayout | DesignLookSlug;
 export type MusicMood = 'none' | 'calm' | 'tense' | 'upbeat' | 'custom';
@@ -329,6 +330,16 @@ export interface ScriptLine {
   stockCredit?: string;
   /** Which candidate was chosen, so the picker can show the tick on the right one. */
   stockId?: string;
+  /**
+   * Doodle look only: what the mascot does in this scene, written by Gemini
+   * and editable. See src/lib/doodle.ts.
+   */
+  doodle?: DoodleDirection;
+  /**
+   * Doodle look only: the drawing of the mascot for this scene, relative to
+   * public/. Kept apart from stockSrc so switching looks never loses a pick.
+   */
+  doodleSrc?: string;
 }
 
 /** A ScriptLine after we know how long its audio actually is. */
@@ -414,6 +425,12 @@ export interface DesignSettings {
   sfxVolume: number;
   /** portrait = 1080x1920 shorts. landscape = 1920x1080 long-form explainers. */
   orientation: Orientation;
+  /**
+   * Doodle look only: how wild the drawings may be. 'calm' | 'lively' |
+   * 'chaotic', capped per scene by src/lib/doodle.ts. Optional because
+   * settings saved before the doodle look lack it.
+   */
+  doodleEnergy?: string;
 }
 
 /**

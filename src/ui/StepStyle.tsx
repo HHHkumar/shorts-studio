@@ -4,6 +4,7 @@ import { getTheme, LAYOUT_INFO } from '../lib/theme';
 import type { DesignSettings, LayoutName, MusicMood, QuizContent, ThemeMode } from '../lib/types';
 import { Check, ErrorNote, Note, Select, Slider, Spinner } from './controls';
 import { StockPicker } from './StockPicker';
+import { DoodlePanel } from './DoodlePanel';
 import { AMBIENT_GROUPS } from '../remotion/ambient';
 import { TRANSITIONS } from '../lib/transitions';
 import { TEXT_REVEALS } from '../lib/text-reveal';
@@ -35,11 +36,13 @@ export const StepStyle: React.FC<{
   geminiKey: string;
   /** Writes drawing prompts for scenes with no honest photo. */
   geminiModel?: string;
+  /** Opens the mascot lab - offered when the Doodle look has no mascot to draw. */
+  onOpenMascot?: () => void;
   onBack: () => void;
   onNext: () => void;
 }> = ({
   design, setDesign, musicMoods, content, setContent, pexelsKey, elevenKey, form,
-  imageModels, imageStyles, googleImageModels, geminiKey, geminiModel, onBack, onNext,
+  imageModels, imageStyles, googleImageModels, geminiKey, geminiModel, onOpenMascot, onBack, onNext,
 }) => {
   const set = <K extends keyof DesignSettings>(key: K, value: DesignSettings[K]) =>
     setDesign((prev) => ({ ...prev, [key]: value }));
@@ -310,8 +313,27 @@ export const StepStyle: React.FC<{
         }
       />
 
-      <div className="section-title">Backdrop photos</div>
-      {content ? (
+      {design.layout === 'doodle' ? (
+        <>
+          <div className="section-title">Doodles</div>
+          {content ? (
+            <DoodlePanel
+              content={content}
+              setContent={setContent}
+              geminiKey={geminiKey}
+              geminiModel={geminiModel}
+              energy={design.doodleEnergy || 'lively'}
+              setEnergy={(v) => set('doodleEnergy', v)}
+              orientation={design.orientation}
+              showVisuals={design.showVisuals}
+              onOpenMascot={onOpenMascot}
+            />
+          ) : null}
+        </>
+      ) : null}
+
+      <div className="section-title" hidden={design.layout === 'doodle'}>Backdrop photos</div>
+      {content && design.layout !== 'doodle' ? (
         <StockPicker
           content={content}
           setContent={setContent}

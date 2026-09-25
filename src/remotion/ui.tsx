@@ -4,6 +4,7 @@ import type { Theme } from '../lib/theme';
 import { hexToRgba } from '../lib/theme';
 import { flexAlignFor, textAlignFor } from '../lib/align';
 import { autoTransitionFor, isTransition, transitionStyle } from '../lib/transitions';
+import { DoodleZoneContext } from './doodle-zone';
 
 /**
  * How the frame is laid out for the shape we are rendering into.
@@ -29,6 +30,42 @@ export interface Metrics {
 export function useMetrics(): Metrics {
   const { width, height } = useVideoConfig();
   const landscape = width > height;
+
+  // Inside a doodle scene the text has only its own band - the top of a
+  // portrait frame, the left of a landscape one - with the drawing beside it.
+  // Same components, smaller room: the padding that keeps text clear of the
+  // phone's own buttons is only needed at the edge the band actually touches.
+  const zone = React.useContext(DoodleZoneContext);
+  if (zone === 'text-top') {
+    return {
+      landscape: false,
+      padTop: 120,
+      padX: 70,
+      padBottom: 20,
+      gap: 26,
+      headlineMax: 86,
+      headlineMin: 46,
+      optionColumns: 1,
+      optionMax: 40,
+      optionMin: 28,
+      ring: 160,
+    };
+  }
+  if (zone === 'text-left') {
+    return {
+      landscape: true,
+      padTop: 100,
+      padX: 90,
+      padBottom: 90,
+      gap: 24,
+      headlineMax: 74,
+      headlineMin: 42,
+      optionColumns: 1,
+      optionMax: 36,
+      optionMin: 26,
+      ring: 160,
+    };
+  }
 
   if (landscape) {
     return {
@@ -271,6 +308,30 @@ export const Backdrop: React.FC<{ theme: Theme }> = ({ theme }) => {
           style={{
             background:
               'radial-gradient(circle at 50% 30%, ' + hexToRgba(theme.accent, 0.1) + ' 0%, transparent 60%)',
+          }}
+        />
+      </AbsoluteFill>
+    );
+  }
+
+  if (theme.decor === 'paper') {
+    // A notebook page: faint dots and a little warmth at the edges. It does
+    // not drift like the grid does - under a still drawing, a moving page
+    // makes the engineer look as if they are sliding.
+    const dot = theme.mode === 'dark' ? 'rgba(236,235,228,0.10)' : 'rgba(28,28,28,0.10)';
+    return (
+      <AbsoluteFill style={{ background: theme.bg }}>
+        <AbsoluteFill
+          style={{
+            backgroundImage: 'radial-gradient(' + dot + ' 2.4px, transparent 2.6px)',
+            backgroundSize: '44px 44px',
+            backgroundPosition: '22px 22px',
+          }}
+        />
+        <AbsoluteFill
+          style={{
+            background: 'radial-gradient(ellipse 80% 70% at 50% 45%, transparent 55%, '
+              + hexToRgba(theme.bgAlt, theme.mode === 'dark' ? 0.9 : 0.8) + ' 100%)',
           }}
         />
       </AbsoluteFill>

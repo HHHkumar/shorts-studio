@@ -42,6 +42,9 @@ export const DEFAULT_GOOGLE_IMAGE_MODEL = 'gemini-3.1-flash-lite-image';
 /** Lite is documented as 1K only, so 1K is what everything asks for. */
 const IMAGE_SIZE = '1K';
 
+/** Only shapes every model on the list is documented to draw; anything else falls back to the frame. */
+const SQUARE_OR_FRAME = /^(1:1|9:16|16:9)$/;
+
 /** The frame we are actually rendering, in the shape this API names it. */
 export const aspectFor = (orientation) => (orientation === 'landscape' ? '16:9' : '9:16');
 
@@ -69,6 +72,9 @@ export async function generateGoogleImage({
   modelId = DEFAULT_GOOGLE_IMAGE_MODEL,
   reference = null,
   matchLine = MATCH_LINE,
+  // A doodle scene sits in a band beside the words rather than filling the
+  // frame, so it asks for a square instead of the frame's own shape.
+  aspectRatio = '',
 } = {}) {
   if (!apiKey) throw new Error('No Gemini API key was sent. Add it on the Keys step.');
   const text = String(prompt || '').trim();
@@ -91,7 +97,7 @@ export async function generateGoogleImage({
       response_format: {
         type: 'image',
         mime_type: 'image/jpeg',
-        aspect_ratio: aspectFor(orientation),
+        aspect_ratio: SQUARE_OR_FRAME.test(aspectRatio) ? aspectRatio : aspectFor(orientation),
         image_size: IMAGE_SIZE,
       },
     });

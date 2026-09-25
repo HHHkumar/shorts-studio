@@ -25,6 +25,7 @@ your work safe with Git, and how to run the same tool on a second computer.
    - [Scenes that move](#scenes-that-move)
    - [Moving backdrops](#moving-backdrops)
    - [Drawing your own backdrops](#drawing-your-own-backdrops)
+   - [The Doodle look and the mascot](#the-doodle-look-and-the-mascot)
    - [Cuts, text and the finishing layer](#cuts-text-and-the-finishing-layer)
    - [Looks from Claude Design](#looks-from-claude-design)
    - [Aptitude and reasoning videos](#aptitude-and-reasoning-videos)
@@ -1112,6 +1113,60 @@ AI-made imagery to be declared, and the line is short enough that it costs you n
 
 ---
 
+### The Doodle look and the mascot
+
+**Doodle** is a look of its own: a hand-drawn stick-figure engineer — the channel's mascot — acting
+out every scene, on a notebook page, with the words in a handwritten marker font. Light is paper;
+dark is a chalkboard, with the drawings turned into chalk lines.
+
+It is built around **one character who never changes**. A recurring face is what makes a run of
+videos recognisable in a feed, and image models drift — by the sixth picture the hat is gone and
+the head is a different shape. So the engineer is drawn against a fixed **model sheet** every time.
+
+**1. The mascot, once.** Press **Mascot** in the top bar. *Draw 4 designs* draws four directions for
+the character on the best model (about 52c); click the one you want and it becomes the model sheet.
+It is saved in `public/mascot/` and **committed with the code**, so your other computer draws the
+same engineer. *Draw 6 test scenes* (about 24c) acts out one question — puzzled, alarmed, thinking,
+zapped, got it, teaching — so you can see the character hold before you use it for real. You only do
+this again if you want a different mascot.
+
+**2. Choose Doodle on the Look step.** The *Backdrop photos* section becomes **Doodles**:
+
+- **Energy** — *Calm*, *Lively* or *Chaotic*: how much sweat, squiggle and zap the drawings get.
+  It is a maximum, and **teaching scenes stay calm whatever it says** — a sparking wire beside the
+  explanation tells the viewer something is dangerous when nothing is. Only the hook and the reveal
+  can go fully chaotic. Each scene shows the energy it will actually be drawn at.
+- **Direct N scenes** — Gemini writes, for each scene, what the engineer is *doing*, *feeling*, what
+  they are *with*, and the *gag*. Text only, one request. Every field is yours to edit afterwards.
+- **Draw N scenes** — draws every directed scene against the model sheet, three at a time, each
+  appearing as it lands. The price is on the button before you press it. *Stop after these* stops it
+  part way.
+- **Redraw** on any one scene draws just that scene again, for one picture's price. No rule stops an
+  image model misbehaving every time, so the fix for one bad drawing is one more drawing.
+
+**What it does on screen.** Each scene is split rather than layered: the words get their own band —
+the top of a portrait frame, the left of a landscape one — and the drawing gets the rest, so a
+caption can never land on the engineer's face. The drawing is blended *into* the page, not pasted
+on: its white paper disappears and the notebook dots run through it.
+
+**What it leaves out, on purpose.** Backdrop photos, the moving backdrop and the drifting symbols are
+all switched off in the Doodle look — they are ways of filling a frame that has no picture, and every
+doodle scene has one. A scene that shows **its own diagram** — a worked-out circuit, a chart, a moving
+sketch — keeps the diagram and gets no doodle: the checked picture wins. The panel lists those scenes.
+
+**Rules the drawings follow.** Black ink and **one red, which means electricity** — sparks, live
+wires, the bolt on the hat. **No words in the picture**, and no written sound effects (*zzz*, *zap*,
+*boom*): image models misspell them, and the words are the renderer's job. Scenes before the answer
+never show it — a direction that gives it away is dropped, and a note names the scene.
+
+**The font.** Kalam, stored in `public/fonts/`, so a render never waits on the internet. It covers
+English only — Kannada and other Indian scripts use the regular font.
+
+To see the look without spending anything, `npm run doodle:preview` renders stills of every kind of
+scene into `stills/` from the mascot test drawings.
+
+---
+
 ### Cuts, text and the finishing layer
 
 Three settings on step 5 that apply to every scene. Because they run on all of them, a choice here
@@ -1454,7 +1509,8 @@ step.
 | **DeepSeek** *(optional)* | Pay as you go, no free tier | A fraction of a cent per check. |
 | **Pexels / NASA** *(optional)* | Free | Nothing. |
 | **Drawn pictures** *(optional)* — scene backdrops and thumbnail art | **None.** Needs **billing on the Gemini key**, or an **ElevenLabs Pro plan** | One press, one picture: about **3c–13c** on Gemini depending on the model, or ElevenLabs credits from the voice balance. *Draw and attach* on a video with five no-photo scenes is five pictures. |
-| **Gemini text extras** — metadata for three platforms, thumbnail design, drawing prompts | The same free tier | One request each. |
+| **Doodle scenes** *(optional)* | **None.** Needs **billing on the Gemini key** | One picture per scene: about **4c** on Flash. A short of 8–10 scenes is **30–40c**; a 90-second explainer of 15 scenes about **60c**. Directing them is text — free tier. The mascot itself is a one-off: about 52c to design, 24c to test. |
+| **Gemini text extras** — metadata for three platforms, thumbnail design, drawing prompts, doodle directions | The same free tier | One request each. |
 | **Rendering** — videos, thumbnails, carousel slides | Unlimited | Your own computer. Costs electricity. |
 
 Changing the look, re-rendering, editing text, picking photos, making thumbnails without a painted

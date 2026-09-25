@@ -9,7 +9,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {
   adoptMascot, bibleFor, CHARACTER_MATCH_LINE, DEFAULT_VARIANT, DOODLE_LOOK, doodleScenePrompt,
-  MASCOT_VARIANTS, mascotDesignPrompt, readMascot, readMascotImage, TEST_BEATS,
+  ENERGY_LINES, MASCOT_VARIANTS, mascotDesignPrompt, readMascot, readMascotImage, TEST_BEATS,
 } from './mascot.mjs';
 import { saveImageBuffer } from './stock.mjs';
 
@@ -108,6 +108,57 @@ test('the six beats cover calm, alarm and the zap - not six calm poses', () => {
 test('no beat asks for writing on the whiteboard', () => {
   const board = TEST_BEATS.find((b) => /whiteboard/.test(b.props));
   assert(board && /blank/.test(board.props) && /nothing written/.test(board.props));
+});
+
+console.log('\nwhat the first test taught');
+
+test('written sound effects are banned by name - the test drew "zizz"', () => {
+  assert(/written sound effects/.test(DOODLE_LOOK), 'the ban is not in the look');
+  assert(/zzz/.test(DOODLE_LOOK) && /speech bubbles/.test(DOODLE_LOOK), 'the ban names no examples');
+});
+
+test('the look no longer puts stress marks in every scene', () => {
+  assert(!/sweat drops/.test(DOODLE_LOOK), 'stress belongs to the energy line, not the look');
+});
+
+test('calm names what to leave out, sparks included - the teaching beat grew a sparking probe', () => {
+  assert(/no sweat drops/i.test(ENERGY_LINES.calm) && /no sparks/.test(ENERGY_LINES.calm));
+  assert(/unless the props name it/.test(ENERGY_LINES.calm));
+});
+
+test('chaotic still allows the full cartoon', () => {
+  assert(/zig-zag zap marks/.test(ENERGY_LINES.chaotic) && /sweat drops/.test(ENERGY_LINES.chaotic));
+});
+
+test('the energy asked for is the energy in the prompt', () => {
+  const beat = TEST_BEATS[0];
+  assert(doodleScenePrompt(beat, DEFAULT_VARIANT, { energy: 'calm' }).includes(ENERGY_LINES.calm));
+  assert(doodleScenePrompt(beat, DEFAULT_VARIANT, { energy: 'chaotic' }).includes(ENERGY_LINES.chaotic));
+});
+
+test('with no energy given, a test beat uses its own', () => {
+  const calmBeat = TEST_BEATS.find((b) => b.energy === 'calm');
+  assert(doodleScenePrompt(calmBeat, DEFAULT_VARIANT).includes(ENERGY_LINES.calm));
+});
+
+test('the teaching beat is calm now', () => {
+  assert(TEST_BEATS.find((b) => b.id === 'explain').energy === 'calm');
+});
+
+test('a video scene is square and kept off the edges; the lab test stays tall', () => {
+  const square = doodleScenePrompt(TEST_BEATS[0], DEFAULT_VARIANT, { framing: 'square' });
+  assert(/Square picture/.test(square) && /nothing touches the edges/.test(square));
+  assert(!/above and below for words/.test(square), 'the words sit beside a video drawing, not over it');
+  assert(/above and below for words/.test(doodleScenePrompt(TEST_BEATS[0], DEFAULT_VARIANT)));
+});
+
+test('a direction ending in a full stop does not get two', () => {
+  const p = doodleScenePrompt({ action: 'waves.', emotion: 'happy.', props: 'a bulb.', gag: 'none' }, DEFAULT_VARIANT);
+  assert(!/\.\./.test(p), 'doubled full stop');
+});
+
+test('a direction with no props says nothing about props', () => {
+  assert(!/Props:/.test(doodleScenePrompt({ action: 'waves', emotion: 'happy', props: '', gag: 'none' }, DEFAULT_VARIANT)));
 });
 
 console.log('\nthe reference line');
