@@ -286,7 +286,8 @@ export const api = {
   },
 
   /** Gemini's image model paints the picture behind the words. Needs billing on the key. */
-  thumbnailArt(body: { apiKey: string; modelId: string; scene: string; shape: string; accent: string }) {
+  /** `doodle`: draw the mascot against its model sheet instead of painting a backdrop. */
+  thumbnailArt(body: { apiKey: string; modelId: string; scene: string; shape: string; accent: string; doodle?: boolean }) {
     return post<{ src: string; bytes: number; prompt: string }>('/api/thumbnail/art', body);
   },
 

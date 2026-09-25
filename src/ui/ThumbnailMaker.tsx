@@ -73,8 +73,16 @@ export const ThumbnailMaker: React.FC<{
   const modelId = imageModel || googleImageModels[0]?.id || '';
   const accent = getTheme(design).accent;
 
+  // In the Doodle look the picture is the engineer, drawn on the page beside
+  // the words. Until one is drawn for the thumbnail, the video's own drawing
+  // is used - it already exists and it cost nothing more. The reveal and the
+  // hook are the best faces for a cover; any drawing of the engineer will do.
+  const doodle = design.layout === 'doodle';
+  const sceneDoodle = doodle ? coverDoodle(content) : '';
+  const picture = art || sceneDoodle;
+
   type Fields = { title: string; kicker: string; badge: string; figure: string; symbol: string; layout: string; art: string };
-  const current = (): Fields => ({ title, kicker, badge, figure, symbol, layout, art: useArt ? art : '' });
+  const current = (): Fields => ({ title, kicker, badge, figure, symbol, layout, art: useArt ? picture : '' });
 
   /** Render with these fields - passed in, because state set a moment ago has not landed yet. */
   const render = async (fields: Fields) => {
@@ -101,8 +109,10 @@ export const ThumbnailMaker: React.FC<{
   const make = () => run('Drawing it…', () => render(current()));
 
   const paintArt = async (forScene: string) => {
-    setStage('Gemini is painting the picture - this takes 10 to 30 seconds…');
-    const out = await api.thumbnailArt({ apiKey: geminiKey.trim(), modelId, scene: forScene, shape, accent });
+    setStage(doodle
+      ? 'Drawing the engineer for the cover - this takes 10 to 30 seconds…'
+      : 'Gemini is painting the picture - this takes 10 to 30 seconds…');
+    const out = await api.thumbnailArt({ apiKey: geminiKey.trim(), modelId, scene: forScene, shape, accent, doodle });
     setArt(out.src);
     setUseArt(true);
     return out.src;
@@ -126,12 +136,12 @@ export const ThumbnailMaker: React.FC<{
     setLayout(brief.layout);
     setScene(brief.scene);
     setNotes(brief.notes);
-    const drawn = paint ? await paintArt(brief.scene) : (useArt ? art : '');
+    const drawn = paint ? await paintArt(brief.scene) : (useArt ? picture : '');
     setStage('Setting the words over it…');
     await render({ ...brief, art: drawn });
   });
 
-  const repaint = () => run('Painting…', async () => {
+  const repaint = () => run(doodle ? 'Drawing…' : 'Painting…', async () => {
     const drawn = await paintArt(scene);
     setStage('Setting the words over it…');
     await render({ ...current(), art: drawn });
@@ -169,10 +179,12 @@ export const ThumbnailMaker: React.FC<{
           <div className="field">
             <label>&nbsp;</label>
             <Check
-              label="Paint a background picture"
+              label={doodle ? 'Draw the engineer for the cover' : 'Paint a background picture'}
               checked={paint}
               onChange={setPaint}
-              hint="Off: Gemini writes the words and layout only, over the video's own backdrop."
+              hint={doodle
+                ? 'Off: the cover uses the drawing already made for the video, at no cost.'
+                : "Off: Gemini writes the words and layout only, over the video's own backdrop."}
             />
           </div>
         </div>
@@ -198,9 +210,11 @@ export const ThumbnailMaker: React.FC<{
             />
             <div className="actions" style={{ marginTop: 0 }}>
               <button className="btn" onClick={repaint} disabled={busy || !scene.trim() || !geminiKey.trim()}>
-                🎨 {art ? 'Repaint the picture' : 'Paint the picture'}
+                {doodle
+                  ? '🖍 ' + (art ? 'Redraw the engineer' : 'Draw the engineer')
+                  : '🎨 ' + (art ? 'Repaint the picture' : 'Paint the picture')}
               </button>
-              {art ? (
+              {picture ? (
                 <Check label="Use the picture" checked={useArt} onChange={setUseArt} />
               ) : null}
             </div>
@@ -342,3 +356,14 @@ export const ThumbnailMaker: React.FC<{
     </>
   );
 };
+
+/**
+ * The best drawing of the engineer the video already has, for the cover. The
+ * reveal and the hook come first - they are the big faces - then any scene
+ * with the engineer in it. An illustration is never used: a cover needs a face.
+ */
+function coverDoodle(content: QuizContent): string {
+  const drawn = (content.script || []).filter((l) => l.doodleSrc && (!l.doodle || l.doodle.subject !== 'illustration'));
+  const pick = drawn.find((l) => l.kind === 'answer') || drawn.find((l) => l.kind === 'hook') || drawn[0];
+  return pick ? pick.doodleSrc || '' : '';
+}

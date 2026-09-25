@@ -1157,6 +1157,19 @@ this again if you want a different mascot.
 - **Redraw** on any one scene draws just that scene again, for one picture's price. No rule stops an
   image model misbehaving every time, so the fix for one bad drawing is one more drawing.
 
+**The thumbnail and the carousel match.** Choose Doodle and both come out on the same notebook page,
+in the same marker, inked by hand like the video:
+
+- **The thumbnail** puts the engineer *beside* the title — right of a YouTube cover, below a Short's —
+  drawn on the page, not painted behind the words. *Draw the engineer for the cover* (on by default,
+  one picture) draws him with a big reaction to whatever Gemini's design says the picture shows —
+  a face is what stops a thumb in a feed. Turn it off and the cover uses the drawing already made for
+  the video's reveal or hook, for nothing.
+- **The carousel** circles the right answer and strikes out the rest on its answer slide, and the
+  last slide ends with the engineer waving under *Follow for one every day* — his own model sheet, so
+  it costs nothing. If the slide has a long fun fact, the fact gets the room and the engineer is left
+  out: the words matter more than the drawing.
+
 **What it does on screen.** Each scene is split rather than layered: the words get their own band —
 the top of a portrait frame, the left of a landscape one — and the drawing gets the rest, so a
 caption can never land on the engineer's face. The drawing is blended *into* the page, not pasted

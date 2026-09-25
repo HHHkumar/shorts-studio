@@ -23,6 +23,7 @@ import { normalizePanel } from '../server/explainer.mjs';
 import { attachIcons } from '../server/icons.mjs';
 import { DEFAULT_DESIGN } from '../src/lib/theme.ts';
 import { normalizeCircuit } from '../src/lib/figures/circuit.ts';
+import { planCarousel } from '../src/lib/carousel.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PUBLIC = path.join(ROOT, 'public');
@@ -183,4 +184,29 @@ for (const [name, content] of SETS) {
     console.log('  ' + path.basename(file));
   }
 }
+// The thumbnail and the carousel, in the same look - they have to read as one
+// set with the video beside them in a feed.
+if (!ONLY || ONLY === 'post') {
+  const design = { ...DEFAULT_DESIGN, layout: 'doodle', mode: MODE, orientation: ORIENTATION };
+  for (const shape of ['landscape', 'portrait']) {
+    const props = {
+      content: CIRCUIT, design, shape, layout: 'question', art: art('answer'),
+      title: 'Can you find the *current*?', kicker: 'Series circuits', badge: 'KPTCL AE', figure: '', symbol: '',
+    };
+    const composition = await selectComposition({ serveUrl, id: 'Thumbnail', inputProps: props });
+    const file = path.join(OUT, 'doodle-thumb-' + MODE + '-' + shape + '.png');
+    await renderStill({ composition, serveUrl, output: file, frame: 0, inputProps: props, overwrite: true });
+    console.log('  ' + path.basename(file));
+  }
+
+  const plan = planCarousel(CIRCUIT, { channelName: 'Electrical MCQs', picture: true });
+  for (const [index, slide] of plan.slides.entries()) {
+    const props = { content: CIRCUIT, design, slide, index, total: plan.slides.length, channelName: 'Electrical MCQs', mascot: 'mascot/mascot.jpg' };
+    const composition = await selectComposition({ serveUrl, id: 'CarouselSlide', inputProps: props });
+    const file = path.join(OUT, 'doodle-slide-' + MODE + '-' + (index + 1) + '-' + slide.kind + '.png');
+    await renderStill({ composition, serveUrl, output: file, frame: composition.durationInFrames - 1, inputProps: props, overwrite: true });
+    console.log('  ' + path.basename(file));
+  }
+}
+
 console.log('wrote ' + OUT);

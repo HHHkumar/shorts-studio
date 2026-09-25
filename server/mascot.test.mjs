@@ -10,7 +10,7 @@ import path from 'node:path';
 import {
   adoptMascot, bibleFor, CHARACTER_MATCH_LINE, DEFAULT_VARIANT, DOODLE_LOOK, doodleScenePrompt,
   ENERGY_LINES, ILLUSTRATION_MATCH_LINE, MASCOT_VARIANTS, mascotDesignPrompt, readMascot,
-  readMascotImage, TEST_BEATS,
+  readMascotImage, TEST_BEATS, thumbnailDoodlePrompt,
 } from './mascot.mjs';
 import { saveImageBuffer } from './stock.mjs';
 
@@ -200,6 +200,28 @@ test('its reference line borrows the style and forbids the character', () => {
 test('a direction with no subject is the engineer, as every older one was', () => {
   const p = doodleScenePrompt({ action: 'waves', emotion: 'happy', props: '', gag: 'none' }, DEFAULT_VARIANT);
   assert(p.includes(bibleFor(DEFAULT_VARIANT)));
+});
+
+console.log('\nthe thumbnail');
+
+test('a cover is always the engineer, at full volume', () => {
+  const p = thumbnailDoodlePrompt('a glowing transformer on a pole', 'shirt');
+  assert(p.includes(bibleFor('shirt')), 'a cover with no face');
+  assert(p.includes(ENERGY_LINES.chaotic), 'a cover drawn calm');
+});
+
+test('the brief\'s picture becomes what the engineer points at', () => {
+  assert(/Props: a glowing transformer on a pole\./.test(thumbnailDoodlePrompt('a glowing transformer on a pole', 'shirt')));
+});
+
+test('a long brief is cut to a prop, not a paragraph', () => {
+  const p = thumbnailDoodlePrompt('a transformer '.repeat(60), 'shirt');
+  const props = /Props: ([^\n]*?)\./.exec(p)[1];
+  assert(props.length <= 200, 'props ran to ' + props.length);
+});
+
+test('a cover is square, like every doodle', () => {
+  assert(/Square picture/.test(thumbnailDoodlePrompt('a meter', 'shirt')));
 });
 
 console.log('\nthe reference line');

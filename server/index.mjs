@@ -42,7 +42,7 @@ import { buildArtPrompt, generateThumbnailBrief } from './thumbnail-brief.mjs';
 import { generateScenePrompts } from './scene-prompts.mjs';
 import {
   adoptMascot, CHARACTER_MATCH_LINE, doodleScenePrompt, ILLUSTRATION_MATCH_LINE, MASCOT_VARIANTS,
-  mascotDesignPrompt, readMascot, readMascotImage, TEST_BEATS,
+  mascotDesignPrompt, readMascot, readMascotImage, TEST_BEATS, thumbnailDoodlePrompt,
 } from './mascot.mjs';
 import { generateDoodleDirections } from './doodle-directions.mjs';
 import { energyFor, tidyDirection } from '../src/lib/doodle.ts';
@@ -669,10 +669,13 @@ app.post('/api/carousel', ok(async (req, res) => {
   const { content, design, channelName, seo } = req.body || {};
   if (!content || !content.question) throw new Error('Generate a question before making its carousel.');
 
-  const { slides, notes } = planCarousel(content, { channelName });
+  // In the Doodle look the closing slide waves goodbye with the mascot - so
+  // the plan keeps room for it, if there is a mascot and the text still fits.
+  const mascot = design && design.layout === 'doodle' ? readMascot(paths.PUBLIC_DIR) : null;
+  const { slides, notes } = planCarousel(content, { channelName, picture: Boolean(mascot) });
   const started = Date.now();
   console.log('[carousel] rendering ' + slides.length + ' slides: ' + slides.map((x) => x.kind).join(', '));
-  const out = await renderCarousel({ content, design, channelName, slides });
+  const out = await renderCarousel({ content, design, channelName, slides, mascot: mascot ? mascot.src : '' });
 
   const zipName = slug(content.topic || content.question, 'carousel') + '-carousel.zip';
   const zip = buildCarouselZip({ slides: readCarousel(out.folder), seo });
@@ -733,14 +736,31 @@ app.post('/api/thumbnail/brief', ok(async (req, res) => {
 
 /** Gemini's image model paints the picture behind the words - with no words in it. */
 app.post('/api/thumbnail/art', ok(async (req, res) => {
-  const { apiKey, modelId, scene, shape, accent } = req.body || {};
+  const { apiKey, modelId, scene, shape, accent, doodle } = req.body || {};
   if (!String(scene || '').trim()) throw new Error('Describe the picture first, or let Gemini design the thumbnail.');
   const orientation = shape === 'portrait' ? 'portrait' : 'landscape';
-  const prompt = buildArtPrompt({ scene: String(scene).slice(0, 600), shape: orientation, accent });
+
+  // The Doodle look's thumbnail is not a painting behind the words but the
+  // engineer drawn beside them, against the same model sheet as the video.
+  let request;
+  if (doodle) {
+    const mascot = readMascot(paths.PUBLIC_DIR);
+    const sheet = readMascotImage(paths.PUBLIC_DIR);
+    if (!mascot || !sheet) throw new Error('There is no mascot yet. Design one in the Mascot lab first.');
+    request = {
+      prompt: thumbnailDoodlePrompt(scene, mascot.variant),
+      aspectRatio: '1:1',
+      reference: sheet,
+      matchLine: CHARACTER_MATCH_LINE,
+    };
+  } else {
+    request = { prompt: buildArtPrompt({ scene: String(scene).slice(0, 600), shape: orientation, accent }) };
+  }
+  const prompt = request.prompt;
 
   const started = Date.now();
   const { base64, mimeType } = await generateGoogleImage({
-    apiKey, prompt, orientation, modelId: modelId || DEFAULT_GOOGLE_IMAGE_MODEL,
+    apiKey, orientation, modelId: modelId || DEFAULT_GOOGLE_IMAGE_MODEL, ...request,
   });
   // Under generated/thumbs, which the daily sweep leaves alone: the picture was paid for.
   const saved = saveImageBuffer({

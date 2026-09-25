@@ -298,6 +298,25 @@ export function doodleScenePrompt(beat, variantId, { energy, framing = 'tall' } 
   ].join('\n\n');
 }
 
+/**
+ * The thumbnail's drawing: the engineer at full volume beside the thing the
+ * video is about. A face with a big reaction is what stops a thumb in a feed,
+ * so this is always the mascot, always at the top energy, whatever the dial
+ * says for the scenes.
+ *
+ * `scene` is the thumbnail brief's own description of its picture, which has
+ * already had lettering and spoilers taken out by thumbnail-brief.mjs.
+ */
+export function thumbnailDoodlePrompt(scene, variantId) {
+  return doodleScenePrompt({
+    subject: 'mascot',
+    action: 'leans towards the viewer with a huge reaction, pointing at the thing beside them',
+    emotion: 'amazed, eyes wide, mouth wide open',
+    props: String(scene || '').replace(/\s+/g, ' ').trim().slice(0, 200),
+    gag: 'none',
+  }, variantId, { energy: 'chaotic', framing: 'square' });
+}
+
 // --- the approved mascot, on disk ---------------------------------------------
 
 /** Where the approved model sheet lives. Committed - both machines need it. */

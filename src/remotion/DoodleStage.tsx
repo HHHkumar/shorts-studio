@@ -46,7 +46,26 @@ const LANDSCAPE = {
 const place = (box: Box): React.CSSProperties => ({ position: 'absolute', ...box });
 
 /** Solid in the middle, clear at the edges, in case the image's paper was not quite white. */
-const FADE_EDGES = 'radial-gradient(ellipse 62% 62% at 50% 50%, #000 70%, transparent 100%)';
+export const FADE_EDGES = 'radial-gradient(ellipse 62% 62% at 50% 50%, #000 70%, transparent 100%)';
+
+/**
+ * How a doodle drawing is laid onto the page so its paper vanishes. Shared by
+ * the video, the thumbnail and the carousel, so the three never disagree.
+ *
+ * The contrast is what makes the paper disappear. The drawings come back on
+ * paper that is photographed-grey rather than white, and after inversion that
+ * grey lifted the chalkboard into a visible box. Pushing contrast clips
+ * near-white paper to pure white (pure black once inverted) - the one value
+ * the blend treats as "nothing here" - while the ink stays solid.
+ *
+ * Whatever carries this must NOT sit inside anything with a transform,
+ * opacity or filter - see the note at the top of this file.
+ */
+export function doodleBlend(theme: Theme): React.CSSProperties {
+  return theme.mode === 'dark'
+    ? { mixBlendMode: 'screen', filter: 'invert(1) hue-rotate(180deg) contrast(1.45)' }
+    : { mixBlendMode: 'multiply', filter: 'brightness(1.12) contrast(1.2)' };
+}
 
 /** Frames to fade over - the same third of a second the scene transition uses. */
 const FADE = 10;
@@ -74,15 +93,7 @@ export const DoodlePicture: React.FC<{ theme: Theme; src: string; hold: number }
     extrapolateRight: 'clamp',
   });
 
-  // The contrast is what makes the paper disappear. The drawings come back on
-  // paper that is photographed-grey rather than white, and after inversion
-  // that grey lifted the chalkboard into a visible box. Pushing contrast clips
-  // near-white paper to pure white (pure black once inverted) - the one value
-  // the blend treats as "nothing here" - while the ink stays solid.
-  const chalk = theme.mode === 'dark';
-  const ink: React.CSSProperties = chalk
-    ? { mixBlendMode: 'screen', filter: 'invert(1) hue-rotate(180deg) contrast(1.45)' }
-    : { mixBlendMode: 'multiply', filter: 'brightness(1.12) contrast(1.2)' };
+  const ink = doodleBlend(theme);
 
   return (
     <AbsoluteFill style={{ pointerEvents: 'none' }}>

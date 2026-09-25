@@ -5,6 +5,9 @@ import type { DesignSettings, QuizContent, ThumbnailShape } from '../lib/types';
 export { THUMB_SIZES, thumbSizeFor, type ThumbnailShape } from '../lib/types';
 import { AmbientLayer } from './AmbientLayer';
 import { Backdrop } from './ui';
+import { HandFonts } from './fonts';
+import { DoodleFilters, DoodleInk } from './DoodleInk';
+import { doodleBlend, FADE_EDGES } from './DoodleStage';
 
 // ---------------------------------------------------------------------------
 // The thumbnail.
@@ -122,18 +125,42 @@ export const Thumbnail: React.FC<ThumbnailProps> = ({
 
   const titleCap = portrait ? 150 : 134;
 
+  // The Doodle look draws its picture ON the page rather than behind the words:
+  // the engineer beside the title - right of a wide frame, below a tall one -
+  // blended so the drawing's paper is the page's paper. No scrim, because
+  // there is nothing behind the words to hold back.
+  const doodle = theme.layout === 'doodle';
+  const doodleArt = doodle && Boolean(art);
+  const picture: React.CSSProperties = portrait
+    ? { position: 'absolute', top: '50%', bottom: '3%', left: '5%', right: '5%' }
+    : { position: 'absolute', top: '6%', bottom: '4%', left: '56%', right: '2%' };
+
   return (
     <AbsoluteFill style={{ backgroundColor: theme.bg, overflow: 'hidden' }}>
+      {doodle ? <HandFonts /> : null}
+      {doodle ? <DoodleFilters boil={false} /> : null}
       <Backdrop theme={theme} />
 
-      {art ? (
+      {doodleArt ? (
+        <div style={picture}>
+          <Img
+            src={staticFile(art!.replace(/^\/+/, ''))}
+            style={{
+              width: '100%', height: '100%', objectFit: 'contain',
+              WebkitMaskImage: FADE_EDGES, maskImage: FADE_EDGES, ...doodleBlend(theme),
+            }}
+          />
+        </div>
+      ) : null}
+
+      {art && !doodle ? (
         <Img
           src={staticFile(art.replace(/^\/+/, ''))}
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
         />
       ) : null}
 
-      {!art && design.ambient && design.ambient !== 'none' ? (
+      {!art && !doodle && design.ambient && design.ambient !== 'none' ? (
         <AmbientLayer
           theme={theme}
           content={content}
@@ -145,8 +172,9 @@ export const Thumbnail: React.FC<ThumbnailProps> = ({
       ) : null}
 
       {/* The scrim. Without it the title competes with the backdrop at the one
-          size where the title has to win outright. */}
-      <AbsoluteFill
+          size where the title has to win outright. Not on a doodle page: the
+          picture is beside the words, not behind them. */}
+      {doodle ? null : <AbsoluteFill
         style={{
           // Over a painting the scrim darkens only the side the words sit on, so
           // the picture stays vivid where it was asked to be.
@@ -159,8 +187,9 @@ export const Thumbnail: React.FC<ThumbnailProps> = ({
             : 'linear-gradient(180deg, ' + hexToRgba(theme.bg, 0.55) + ' 0%, ' +
               hexToRgba(theme.bg, 0.8) + ' 55%, ' + hexToRgba(theme.bg, 0.94) + ' 100%)',
         }}
-      />
+      />}
 
+      <Inked on={doodle}>
       {/* A thick accent edge, which is what makes the tile read as one object
           at two hundred pixels rather than as a rectangle of text. */}
       <AbsoluteFill
@@ -176,10 +205,12 @@ export const Thumbnail: React.FC<ThumbnailProps> = ({
           padding: px(portrait ? 74 : 62) + 'px ' + px(68) + 'px',
           // With art the words keep to the calm side: the left of a wide frame,
           // the top of a tall one.
-          ...(art ? (portrait ? { paddingTop: px(230) } : { paddingRight: px(500) }) : {}),
+          ...(doodleArt
+            ? (portrait ? { paddingBottom: Math.round(height * 0.5) } : { paddingRight: px(580) })
+            : art ? (portrait ? { paddingTop: px(230) } : { paddingRight: px(500) }) : {}),
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: art && portrait ? 'flex-start' : 'center',
+          justifyContent: art && portrait && !doodle ? 'flex-start' : 'center',
         }}
       >
         {badge ? (
@@ -241,7 +272,10 @@ export const Thumbnail: React.FC<ThumbnailProps> = ({
               <Marked text={bigText} accent={theme.accent} />
             </div>
             {symbol ? (
-              <div style={{ fontSize: px(portrait ? 400 : 300), lineHeight: 1, flex: '0 0 auto' }}>
+              <div style={{
+                fontSize: px(portrait ? 400 : 300), lineHeight: 1, flex: '0 0 auto',
+                ...(doodle ? { filter: 'grayscale(1) contrast(1.4)' } : {}),
+              }}>
                 {symbol}
               </div>
             ) : null}
@@ -317,6 +351,11 @@ export const Thumbnail: React.FC<ThumbnailProps> = ({
           }}
         />
       </AbsoluteFill>
+      </Inked>
     </AbsoluteFill>
   );
 };
+
+/** Hand-inks what it wraps in the Doodle look; passes it through untouched in any other. */
+const Inked: React.FC<{ on: boolean; children: React.ReactNode }> = ({ on, children }) =>
+  (on ? <DoodleInk>{children}</DoodleInk> : <>{children}</>);

@@ -44,13 +44,24 @@ function getBundle(onStage) {
  * the bundle between renders, a voiceover recorded after that copy would be
  * missing and the video would come out silent. Re-syncing the audio folder into
  * the bundle before every render keeps the cache fast and the sound correct.
+ *
+ * Not only the audio: everything that can change while the helper is running.
+ *   generated - voiceovers, backdrops, doodle drawings, thumbnail art
+ *   mascot    - the model sheet; redesigning it mid-session would otherwise
+ *               leave the carousel and the thumbnail drawing the old engineer
+ *               until the helper was restarted
+ *   fonts     - small, and the Doodle look is wrong without them
  */
+const LIVE_FOLDERS = ['generated', 'mascot', 'fonts'];
+
 function syncAudioIntoBundle(bundleDir) {
-  const src = path.join(PUBLIC_DIR, 'generated');
-  if (!fs.existsSync(src)) return;
-  const dest = path.join(bundleDir, 'public', 'generated');
-  fs.mkdirSync(dest, { recursive: true });
-  fs.cpSync(src, dest, { recursive: true, force: true });
+  for (const folder of LIVE_FOLDERS) {
+    const src = path.join(PUBLIC_DIR, folder);
+    if (!fs.existsSync(src)) continue;
+    const dest = path.join(bundleDir, 'public', folder);
+    fs.mkdirSync(dest, { recursive: true });
+    fs.cpSync(src, dest, { recursive: true, force: true });
+  }
 }
 
 export function startRender(jobId, inputProps, quality) {
@@ -169,7 +180,7 @@ export const CAROUSEL_FOLDER = /^carousel-[0-9]{13}$/;
  * shares with the video have finished. Sequential: the slides share one
  * browser, and a handful of stills is a few seconds either way.
  */
-export async function renderCarousel({ content, design, channelName, slides }, onProgress = () => undefined) {
+export async function renderCarousel({ content, design, channelName, slides, mascot = '' }, onProgress = () => undefined) {
   const folder = 'carousel-' + Date.now();
   const dir = path.join(OUT_DIR, folder);
   fs.mkdirSync(dir, { recursive: true });
@@ -181,7 +192,9 @@ export async function renderCarousel({ content, design, channelName, slides }, o
   const files = [];
   for (let index = 0; index < slides.length; index++) {
     onProgress(index, slides.length);
-    const inputProps = { content, design, channelName: channelName || '', slide: slides[index], index, total: slides.length };
+    const inputProps = {
+      content, design, channelName: channelName || '', slide: slides[index], index, total: slides.length, mascot,
+    };
     const composition = await selectComposition({ serveUrl, id: 'CarouselSlide', inputProps });
     const fileName = 'slide-' + String(index + 1).padStart(2, '0') + '.png';
     await renderStill({

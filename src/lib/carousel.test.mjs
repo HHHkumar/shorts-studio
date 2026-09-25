@@ -4,8 +4,8 @@
 // fits a 1080 square.
 
 import {
-  BODY_HEIGHT, CONTENT_WIDTH, MAX_SLIDES, QUESTION_GAP, optionsHeight, planCarousel, rationaleSteps,
-  slideFileName, textHeight, wrapLines,
+  BODY_HEIGHT, CONTENT_WIDTH, MAX_SLIDES, OUTRO_PICTURE, QUESTION_GAP, optionsHeight, planCarousel,
+  rationaleSteps, slideFileName, textHeight, wrapLines,
 } from './carousel.ts';
 import { DEMO_CONTENT } from './demo.ts';
 
@@ -128,6 +128,42 @@ test('never more than Instagram allows, and the follow slide survives the cut', 
   const plan = planCarousel({ ...DEMO_CONTENT, explanation: steps });
   assert(plan.slides.length <= MAX_SLIDES, String(plan.slides.length));
   assert(plan.slides[plan.slides.length - 1].kind === 'outro', 'outro dropped');
+});
+
+console.log('\nthe mascot on the closing slide (Doodle look)');
+
+const outroOf = (content, opts) => {
+  const plan = planCarousel(content, opts);
+  return plan.slides[plan.slides.length - 1];
+};
+const withFact = (fact) => ({ ...DEMO_CONTENT, funFact: fact });
+
+test('no picture unless asked - every other look is untouched', () => {
+  assert(outroOf(withFact(''), {}).picture === 0 && outroOf(withFact('Short.'), {}).picture === 0);
+});
+
+test('with no fact, the engineer gets the big band', () => {
+  assert(outroOf(withFact(''), { picture: true }).picture === OUTRO_PICTURE.alone);
+});
+
+test('a short fact shares the slide with a smaller band', () => {
+  const o = outroOf(withFact('Copper was the first metal people worked.'), { picture: true });
+  assert(o.picture === OUTRO_PICTURE.withFact, 'picture ' + o.picture);
+  assert(o.factSize >= 32, 'the fact went below a readable size: ' + o.factSize);
+});
+
+test('the fact still fits above the band it shares', () => {
+  const o = outroOf(withFact('Copper was the first metal people worked, and it still carries most of the power in your home.'), { picture: true });
+  assert(o.picture === OUTRO_PICTURE.withFact, 'a two-line fact should share the slide, got picture ' + o.picture);
+  const room = BODY_HEIGHT - 330 - o.picture;
+  assert(textHeight(o.fact, o.factSize, CONTENT_WIDTH - 120, 1.3) <= room, 'the fact overflows into the drawing');
+});
+
+test('a long fact keeps the whole slide - words over drawings', () => {
+  const long = 'Engineers ' + 'measure things carefully and write every reading down twice, '.repeat(6);
+  const o = outroOf(withFact(long), { picture: true });
+  assert(o.picture === 0, 'squeezed the engineer in over a long fact');
+  assert(o.factSize === outroOf(withFact(long), {}).factSize, 'the fact was sized differently for having asked');
 });
 
 test('file names sort in order', () => {

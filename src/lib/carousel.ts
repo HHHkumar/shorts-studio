@@ -40,7 +40,8 @@ export type Slide =
   | { kind: 'answer'; options: string[]; correctIndex: number; optionSize: number; answerLine: string; answerSize: number }
   | { kind: 'worked'; caption: string }
   | { kind: 'why'; steps: { number: number; text: string }[]; size: number; part: number; parts: number }
-  | { kind: 'outro'; fact: string; factSize: number; cta: string; handle: string };
+  /** `picture`: height kept at the foot of the body for the mascot, in the Doodle look. 0 for none. */
+  | { kind: 'outro'; fact: string; factSize: number; cta: string; handle: string; picture: number };
 
 export interface CarouselPlan {
   slides: Slide[];
@@ -108,7 +109,14 @@ export function rationaleSteps(content: QuizContent): string[] {
     .slice(0, 8);
 }
 
-export function planCarousel(content: QuizContent, opts: { channelName?: string } = {}): CarouselPlan {
+/**
+ * Room for the mascot on the closing slide, in the Doodle look: the waving
+ * engineer under the sign-off, the same model sheet the video is drawn from.
+ * Smaller when there is a fun fact to fit as well.
+ */
+export const OUTRO_PICTURE = { alone: 440, withFact: 280 };
+
+export function planCarousel(content: QuizContent, opts: { channelName?: string; picture?: boolean } = {}): CarouselPlan {
   const notes: string[] = [];
   const slides: Slide[] = [];
   const options = (content.options || []).map((o) => String(o || '').trim()).filter(Boolean);
@@ -193,8 +201,25 @@ export function planCarousel(content: QuizContent, opts: { channelName?: string 
   // --- the fun fact and the follow ----------------------------------------------------------
   const fact = String(content.funFact || '').trim();
   const handle = String(opts.channelName || '').trim();
-  const factSize = fact ? (largest(52, 32, (s) => textHeight(fact, s, CONTENT_WIDTH - 120, 1.3) <= BODY_HEIGHT - 330) ?? 30) : 0;
-  slides.push({ kind: 'outro', fact, factSize, cta: 'Save this for revision. Follow for one every day.', handle });
+  // The picture only goes in if the fact still fits beside it at a readable
+  // size. A long fact keeps the whole slide: the words matter more than the
+  // drawing, and a drawing squeezed over text is worse than none.
+  const factFits = (picture: number) =>
+    largest(52, 32, (s) => textHeight(fact, s, CONTENT_WIDTH - 120, 1.3) <= BODY_HEIGHT - 330 - picture);
+  let factSize = 0;
+  let picture = 0;
+  if (fact) {
+    const withPicture = opts.picture ? factFits(OUTRO_PICTURE.withFact) : null;
+    if (withPicture) {
+      factSize = withPicture;
+      picture = OUTRO_PICTURE.withFact;
+    } else {
+      factSize = factFits(0) ?? 30;
+    }
+  } else if (opts.picture) {
+    picture = OUTRO_PICTURE.alone;
+  }
+  slides.push({ kind: 'outro', fact, factSize, cta: 'Save this for revision. Follow for one every day.', handle, picture });
 
   if (slides.length > MAX_SLIDES) {
     notes.push('Trimmed to ' + MAX_SLIDES + ' slides, the most Instagram takes in one post.');

@@ -7,6 +7,10 @@ import { getTheme, hexToRgba, type Theme } from '../lib/theme';
 import type { DesignSettings, QuizContent } from '../lib/types';
 import { FigureView } from './Figure';
 import { Backdrop } from './ui';
+import { HandFonts } from './fonts';
+import { DoodleFilters, DoodleInk, DoodleMark } from './DoodleInk';
+import { doodleBlend, FADE_EDGES } from './DoodleStage';
+import { Img, staticFile } from 'remotion';
 
 // ---------------------------------------------------------------------------
 // One square carousel slide.
@@ -32,6 +36,8 @@ export type CarouselSlideProps = {
   index: number;
   total: number;
   channelName: string;
+  /** Doodle look: the mascot's model sheet, relative to public/, for the closing slide. */
+  mascot?: string;
 };
 
 const PAD_X = (SLIDE_SIZE - CONTENT_WIDTH) / 2;
@@ -46,7 +52,7 @@ const LABELS: Record<Slide['kind'], string> = {
   outro: 'Did you know?',
 };
 
-export const CarouselSlide: React.FC<CarouselSlideProps> = ({ content, design, slide, index, total, channelName }) => {
+export const CarouselSlide: React.FC<CarouselSlideProps> = ({ content, design, slide, index, total, channelName, mascot }) => {
   const theme = getTheme(design);
   const last = index === total - 1;
   const label = slide.kind === 'why' && slide.parts > 1
@@ -54,11 +60,42 @@ export const CarouselSlide: React.FC<CarouselSlideProps> = ({ content, design, s
     : slide.kind === 'outro' && !slide.fact ? 'Keep going' : LABELS[slide.kind];
   const swipe = last ? '' : slide.kind === 'question' || slide.kind === 'options' ? 'Swipe for the answer →' : 'Swipe →';
 
+  // In the Doodle look the post matches the video: the same page, the same
+  // marker, everything inked by hand. Held still - a slide is a photograph of
+  // one frame, and a boil only exists between frames.
+  const doodle = theme.layout === 'doodle';
+  // The band the plan kept free at the foot of the closing slide. The body
+  // shrinks by it, and the engineer stands in it - never over the words.
+  const band = doodle && mascot && slide.kind === 'outro' ? slide.picture : 0;
+
   return (
     <AbsoluteFill style={{ backgroundColor: theme.bg, color: theme.text, overflow: 'hidden' }}>
+      {doodle ? <HandFonts /> : null}
+      {doodle ? <DoodleFilters boil={false} /> : null}
       <Backdrop theme={theme} />
       {/* Calms the decoration so the body text never competes with it. */}
       <AbsoluteFill style={{ background: hexToRgba(theme.bg, 0.55) }} />
+
+      {band ? (
+        // Outside the inked group on purpose: a blend inside a filtered group
+        // has nothing behind it to blend with, and shows as a white box.
+        <div style={{ position: 'absolute', left: PAD_X, width: CONTENT_WIDTH, top: STRIP + BODY_HEIGHT - band, height: band }}>
+          <Img
+            src={staticFile(mascot!.replace(/^\/+/, ''))}
+            style={{
+              width: '100%', height: '100%', objectFit: 'contain',
+              // The model sheet is mostly empty paper round a figure in its
+              // middle third. That paper blends away to nothing, so the sheet
+              // is scaled up past its band: the engineer grows, and only
+              // invisible paper crosses into the room above.
+              transform: 'scale(1.4)', transformOrigin: '50% 62%',
+              WebkitMaskImage: FADE_EDGES, maskImage: FADE_EDGES, ...doodleBlend(theme),
+            }}
+          />
+        </div>
+      ) : null}
+
+      <Inked on={doodle}>
 
       {/* Top strip: what this slide is, and where it sits in the post. */}
       <div style={{ position: 'absolute', left: PAD_X, right: PAD_X, top: 0, height: STRIP, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -74,7 +111,7 @@ export const CarouselSlide: React.FC<CarouselSlideProps> = ({ content, design, s
       </div>
 
       {/* Body. */}
-      <div style={{ position: 'absolute', left: PAD_X, width: CONTENT_WIDTH, top: STRIP, height: BODY_HEIGHT, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+      <div style={{ position: 'absolute', left: PAD_X, width: CONTENT_WIDTH, top: STRIP, height: BODY_HEIGHT - band, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <Body slide={slide} theme={theme} content={content} channelName={channelName} />
       </div>
 
@@ -91,9 +128,14 @@ export const CarouselSlide: React.FC<CarouselSlideProps> = ({ content, design, s
 
       {/* The same accent edge as the thumbnail, so the post and the Reel cover look like one set. */}
       <AbsoluteFill style={{ border: '10px solid ' + theme.accent, pointerEvents: 'none' }} />
+      </Inked>
     </AbsoluteFill>
   );
 };
+
+/** Hand-inks what it wraps in the Doodle look; passes it through untouched in any other. */
+const Inked: React.FC<{ on: boolean; children: React.ReactNode }> = ({ on, children }) =>
+  (on ? <DoodleInk>{children}</DoodleInk> : <>{children}</>);
 
 const display = (theme: Theme, size: number): React.CSSProperties => ({
   fontFamily: theme.fontDisplay,
@@ -188,7 +230,9 @@ const Body: React.FC<{ slide: Slide; theme: Theme; content: QuizContent; channel
             </div>
           ) : null}
           <div style={display(theme, slide.fact ? 54 : 76)}>
-            💾 Save this for revision.
+            {/* An emoji is the one full-colour thing on an ink page - so on one, it is inked too. */}
+            <span style={theme.layout === 'doodle' ? { filter: 'grayscale(1) contrast(1.4)' } : undefined}>💾</span>{' '}
+            Save this for revision.
             <br />
             <span style={{ color: theme.accent }}>Follow for one every day.</span>
           </div>
@@ -205,6 +249,9 @@ const Body: React.FC<{ slide: Slide; theme: Theme; content: QuizContent; channel
 /** The option rows. With `correctIndex`, the right one is marked and the rest step back. */
 const Options: React.FC<{ options: string[]; size: number; theme: Theme; correctIndex?: number }> = ({ options, size, theme, correctIndex }) => {
   const marking = typeof correctIndex === 'number';
+  // Marked like the video's answer: circled and struck through by hand,
+  // rather than faded and given a typed line-through.
+  const doodle = theme.layout === 'doodle';
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: OPTION.gap }}>
       {options.map((option, i) => {
@@ -216,7 +263,8 @@ const Options: React.FC<{ options: string[]; size: number; theme: Theme; correct
             borderRadius: Math.max(theme.radius, 14),
             background: right ? hexToRgba(theme.correct, 0.2) : theme.surface,
             border: Math.max(3, theme.borderWidth) + 'px solid ' + (right ? theme.correct : theme.border),
-            opacity: wrong ? 0.45 : 1,
+            opacity: wrong ? (doodle ? 0.62 : 0.45) : 1,
+            position: doodle ? 'relative' : undefined,
           }}>
             <div style={{
               flex: '0 0 auto', width: size * OPTION.badge, height: size * OPTION.badge, borderRadius: '50%',
@@ -228,10 +276,13 @@ const Options: React.FC<{ options: string[]; size: number; theme: Theme; correct
             </div>
             <div style={{
               fontFamily: theme.fontBody, fontWeight: right ? 800 : 700, fontSize: size, lineHeight: OPTION.lineHeight,
-              textDecoration: wrong ? 'line-through' : 'none', textDecorationColor: hexToRgba(theme.wrong, 0.7),
+              textDecoration: wrong && !doodle ? 'line-through' : 'none', textDecorationColor: hexToRgba(theme.wrong, 0.7),
             }}>
               {option}
             </div>
+            {doodle && marking ? (
+              <DoodleMark kind={right ? 'circle' : 'strike'} color={right ? theme.correct : theme.text} width={right ? 7 : 5} progress={1} />
+            ) : null}
           </div>
         );
       })}
