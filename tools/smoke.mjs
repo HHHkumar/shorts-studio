@@ -26,6 +26,8 @@ import { buildScenes } from '../src/lib/timeline.ts';
 import { DEFAULT_DESIGN } from '../src/lib/theme.ts';
 import { DEMO_CONTENT } from '../src/lib/demo.ts';
 import { thumbSizeFor } from '../src/lib/types.ts';
+import { wantsDoodle } from '../src/lib/doodle.ts';
+import { planCarousel } from '../src/lib/carousel.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(ROOT, 'stills', 'smoke');
@@ -173,11 +175,25 @@ function voice(scenes) {
   return scenes;
 }
 
-function propsFor(content, orientation) {
-  const design = { ...DEFAULT_DESIGN, orientation, ambient: 'none', music: 'none' };
+function propsFor(content, orientation, look = {}) {
+  const design = { ...DEFAULT_DESIGN, orientation, ambient: 'none', music: 'none', ...look };
   const { scenes, totalDurationInFrames } = buildScenes(content.script, {}, design, FPS);
   return { content, design, scenes: voice(scenes), fps: FPS, totalDurationInFrames };
 }
+
+/**
+ * The same video with a doodle in every scene that takes one. The drawing is
+ * the committed model sheet, so this runs on any machine without anything
+ * having been drawn - it is the layout, the blend and the font under test,
+ * not the drawings.
+ */
+const SHEET = 'mascot/mascot.jpg';
+const doodled = (content) => ({
+  ...content,
+  script: content.script.map((line) => (wantsDoodle(line, true) ? { ...line, doodleSrc: SHEET } : line)),
+});
+const DOODLE = { layout: 'doodle', mode: 'light' };
+const CHALK = { layout: 'doodle', mode: 'dark' };
 
 console.log('\nfetching the artwork');
 const art = await attachIcons(EXPLAINER, { root: ROOT });
@@ -205,11 +221,16 @@ const COMBOS = [
   { name: 'explainer-portrait', content: EXPLAINER, orientation: 'portrait' },
   { name: 'quiz-portrait', content: DEMO_CONTENT, orientation: 'portrait' },
   { name: 'quiz-landscape', content: DEMO_CONTENT, orientation: 'landscape' },
+  // The Doodle look: paper and chalkboard, both kinds, both shapes between them.
+  { name: 'doodle-quiz-portrait', content: doodled(DEMO_CONTENT), orientation: 'portrait', look: DOODLE },
+  { name: 'doodle-explainer-landscape', content: doodled(EXPLAINER), orientation: 'landscape', look: DOODLE },
+  { name: 'chalk-quiz-landscape', content: doodled(DEMO_CONTENT), orientation: 'landscape', look: CHALK },
+  { name: 'chalk-explainer-portrait', content: doodled(EXPLAINER), orientation: 'portrait', look: CHALK },
 ];
 
 for (const combo of COMBOS) {
   console.log('\n' + combo.name);
-  const props = propsFor(combo.content, combo.orientation);
+  const props = propsFor(combo.content, combo.orientation, combo.look);
   const composition = await selectComposition({ serveUrl, id: 'QuizVideo', inputProps: props });
 
   const wide = combo.orientation === 'landscape';
@@ -266,6 +287,53 @@ for (const shape of ['landscape', 'portrait']) {
     await renderStill({ composition, serveUrl, output: file, frame: 0, inputProps, overwrite: true });
     const kb = fs.statSync(file).size / 1024;
     check(shape + ' ' + layout + ' drew something', kb > BLANK_KB, Math.round(kb) + ' KB');
+  }
+}
+
+// The Doodle look's cover: the engineer beside the words, in both shapes.
+for (const [name, look] of [['doodle', DOODLE], ['chalk', CHALK]]) {
+  for (const shape of ['landscape', 'portrait']) {
+    const inputProps = {
+      content: EXPLAINER,
+      design: { ...DEFAULT_DESIGN, orientation: shape, ...look },
+      title: 'Where does your *electricity* come from?',
+      kicker: 'Power', badge: 'PHYSICS', figure: '60%', symbol: '⚡',
+      layout: 'question', shape, art: SHEET,
+    };
+    const composition = await selectComposition({ serveUrl, id: 'Thumbnail', inputProps });
+    const file = path.join(OUT, 'thumb-' + name + '-' + shape + '.png');
+    await renderStill({ composition, serveUrl, output: file, frame: 0, inputProps, overwrite: true });
+    const kb = fs.statSync(file).size / 1024;
+    check(name + ' ' + shape + ' cover drew something', kb > BLANK_KB, Math.round(kb) + ' KB');
+  }
+}
+
+// ---------------------------------------------------------------------------
+// The carousel: every slide of one post, in the ordinary look and the Doodle
+// one - the closing slide with its engineer in the Doodle one.
+// ---------------------------------------------------------------------------
+
+console.log('\ncarousel');
+for (const [name, look, picture] of [['plain', {}, false], ['doodle', DOODLE, true]]) {
+  const plan = planCarousel(DEMO_CONTENT, { channelName: 'Smoke Test', picture });
+  let blank = 0;
+  let smallest = Infinity;
+  for (const [index, slide] of plan.slides.entries()) {
+    const inputProps = {
+      content: DEMO_CONTENT, design: { ...DEFAULT_DESIGN, ...look }, slide, index, total: plan.slides.length,
+      channelName: 'Smoke Test', mascot: picture ? SHEET : '',
+    };
+    const composition = await selectComposition({ serveUrl, id: 'CarouselSlide', inputProps });
+    const file = path.join(OUT, 'slide-' + name + '-' + (index + 1) + '-' + slide.kind + '.png');
+    await renderStill({ composition, serveUrl, output: file, frame: composition.durationInFrames - 1, inputProps, overwrite: true });
+    const kb = fs.statSync(file).size / 1024;
+    smallest = Math.min(smallest, kb);
+    if (kb < BLANK_KB) blank++;
+  }
+  check(name + ': ' + plan.slides.length + ' slides, none blank', blank === 0, 'smallest ' + Math.round(smallest) + ' KB');
+  if (picture) {
+    const outro = plan.slides[plan.slides.length - 1];
+    check(name + ': the closing slide kept room for the engineer', outro.picture > 0, 'band ' + outro.picture + ' px');
   }
 }
 

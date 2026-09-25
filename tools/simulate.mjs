@@ -27,6 +27,10 @@ import { DEFAULT_DESIGN } from '../src/lib/theme.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const RENDER = process.argv.includes('--render');
+// --doodle: the same pipeline in the Doodle look, with the committed model sheet
+// standing in for every scene's drawing - the layout, blend, font and boil under
+// test through a real encode, not the drawings.
+const DOODLE = process.argv.includes('--doodle');
 const FPS = 30;
 
 let failures = 0;
@@ -146,7 +150,12 @@ check('no icon needs an attribution credit', art.attribution.length === 0, art.a
 console.log('\n=== 4. the timeline ===');
 // No ElevenLabs here, so scenes fall back to their estimated length and the
 // word timings are synthesised at the voice's own measured pace.
-const design = { ...DEFAULT_DESIGN, orientation: 'landscape', ambient: 'none', music: 'none' };
+const design = { ...DEFAULT_DESIGN, orientation: 'landscape', ambient: 'none', music: 'none', ...(DOODLE ? { layout: 'doodle' } : {}) };
+if (DOODLE) {
+  const { wantsDoodle } = await import('../src/lib/doodle.ts');
+  content.script = content.script.map((line) => (wantsDoodle(line, true) ? { ...line, doodleSrc: 'mascot/mascot.jpg' } : line));
+  check('the doodle run has scenes with a drawing', content.script.some((l) => l.doodleSrc));
+}
 const { scenes, totalDurationInFrames } = buildScenes(content.script, {}, design, FPS);
 check('every scene got a real start frame', scenes.every((s) => Number.isFinite(s.startFrame)));
 check('every scene got a real length', scenes.every((s) => Number.isFinite(s.durationInFrames) && s.durationInFrames > 0));
@@ -219,7 +228,7 @@ check('the composition length matches the timeline',
   composition.durationInFrames === totalDurationInFrames);
 
 if (RENDER) {
-  const out = path.join(ROOT, 'out', 'simulation.mp4');
+  const out = path.join(ROOT, 'out', DOODLE ? 'simulation-doodle.mp4' : 'simulation.mp4');
   fs.mkdirSync(path.dirname(out), { recursive: true });
   let last = -1;
   await renderMedia({

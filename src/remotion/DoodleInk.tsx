@@ -27,6 +27,17 @@ import { useCurrentFrame } from 'remotion';
 /** Re-trace the diagrams every this many frames: 7.5 times a second at 30fps. */
 const BOIL_EVERY = 4;
 
+/**
+ * The paper levels: out = in * slope + intercept, clipped to 0..1. Input 0.05
+ * maps to 0 and 0.70 maps to 1, so all paper from 70% up is pure white while
+ * marker ink (about 0.1) stays black and red keeps its red channel full and
+ * its others low. Exported so the numbers can be checked, not just trusted.
+ */
+export const PAPER_FROM = 0.05;
+export const PAPER_TO = 0.7;
+export const PAPER_SLOPE = 1 / (PAPER_TO - PAPER_FROM);
+export const PAPER_INTERCEPT = -PAPER_FROM * PAPER_SLOPE;
+
 /** Mount once per Doodle video. Defines the two filters every DoodleInk uses. */
 export const DoodleFilters: React.FC<{ boil: boolean }> = ({ boil }) => {
   const frame = useCurrentFrame();
@@ -38,6 +49,22 @@ export const DoodleFilters: React.FC<{ boil: boolean }> = ({ boil }) => {
         <filter id="doodle-soft" x="-2%" y="-2%" width="104%" height="104%">
           <feTurbulence type="fractalNoise" baseFrequency="0.013" numOctaves={2} seed={7} result="noise" />
           <feDisplacementMap in="SourceGraphic" in2="noise" scale={4} xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+        {/* Paper to nothing. The drawings come back on paper that looks
+            photographed - grey, and darker towards the bottom - and a blend
+            only makes PURE white vanish. So this is a levels adjustment:
+            everything from about 70% brightness up becomes pure white, and
+            ink (black, or red at about 30%) is left where it was. Before it,
+            a contrast push cleared only near-white paper, and the darker
+            paper under the engineer's feet showed as a grey blotch - on the
+            chalkboard, where it is inverted, as a lifted patch of board.
+            sRGB, because the default linear space would move the knee. */}
+        <filter id="doodle-paper" colorInterpolationFilters="sRGB">
+          <feComponentTransfer>
+            <feFuncR type="linear" slope={PAPER_SLOPE} intercept={PAPER_INTERCEPT} />
+            <feFuncG type="linear" slope={PAPER_SLOPE} intercept={PAPER_INTERCEPT} />
+            <feFuncB type="linear" slope={PAPER_SLOPE} intercept={PAPER_INTERCEPT} />
+          </feComponentTransfer>
         </filter>
         <filter id="doodle-boil" x="-3%" y="-3%" width="106%" height="106%">
           <feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves={2} seed={seed} result="noise" />

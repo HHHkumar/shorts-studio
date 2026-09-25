@@ -52,19 +52,23 @@ export const FADE_EDGES = 'radial-gradient(ellipse 62% 62% at 50% 50%, #000 70%,
  * How a doodle drawing is laid onto the page so its paper vanishes. Shared by
  * the video, the thumbnail and the carousel, so the three never disagree.
  *
- * The contrast is what makes the paper disappear. The drawings come back on
- * paper that is photographed-grey rather than white, and after inversion that
- * grey lifted the chalkboard into a visible box. Pushing contrast clips
- * near-white paper to pure white (pure black once inverted) - the one value
- * the blend treats as "nothing here" - while the ink stays solid.
+ * The paper levels (#doodle-paper, in DoodleInk.tsx) are what make the paper
+ * disappear: every paper tone becomes pure white - pure black once inverted -
+ * the one value the blend treats as "nothing here", while the ink stays solid.
+ * A contrast push used to do this and cleared only near-white paper; the
+ * darker, photographed-looking paper at the foot of a drawing survived it and
+ * showed in the finished video as a smudge under the engineer's feet.
  *
  * Whatever carries this must NOT sit inside anything with a transform,
  * opacity or filter - see the note at the top of this file.
  */
 export function doodleBlend(theme: Theme): React.CSSProperties {
+  // #doodle-paper is defined by DoodleFilters, which every Doodle composition
+  // mounts: it turns any paper tone to pure white first, so the blend has
+  // nothing left to show.
   return theme.mode === 'dark'
-    ? { mixBlendMode: 'screen', filter: 'invert(1) hue-rotate(180deg) contrast(1.45)' }
-    : { mixBlendMode: 'multiply', filter: 'brightness(1.12) contrast(1.2)' };
+    ? { mixBlendMode: 'screen', filter: 'url(#doodle-paper) invert(1) hue-rotate(180deg)' }
+    : { mixBlendMode: 'multiply', filter: 'url(#doodle-paper)' };
 }
 
 /** Frames to fade over - the same third of a second the scene transition uses. */
