@@ -15,6 +15,9 @@ import { Check, ErrorNote, Note, Select, Slider, Spinner } from './controls';
  * photo for "gravity", and dropping that behind a physics question would make
  * the video look worse, not better - so every image is one the creator picked.
  * That rule matters more, not less, for the generated ones: those cost credits.
+ *
+ * The one exception is "Draw and attach" for scenes no honest photo exists for:
+ * the creator asks for it by name, on drawing prompts they could read first.
  */
 
 /** What a drawn image is credited as, in the caption and the publish kit. */
@@ -37,13 +40,15 @@ export const StockPicker: React.FC<{
   imageStyles: { id: string; label: string }[];
   googleImageModels: { id: string; label: string }[];
   geminiKey: string;
+  /** The text model that writes drawing prompts for scenes with no honest photo. */
+  geminiModel?: string;
   orientation: string;
   showStock: boolean;
   stockOpacity: number;
   setStockOpacity: (v: number) => void;
 }> = ({
   content, setContent, pexelsKey, elevenKey, form, imageModels, imageStyles,
-  googleImageModels, geminiKey,
+  googleImageModels, geminiKey, geminiModel = 'gemini-2.5-flash',
   orientation, showStock, stockOpacity, setStockOpacity,
 }) => {
   const [candidates, setCandidates] = useState<SceneCandidates>({});
@@ -110,6 +115,59 @@ export const StockPicker: React.FC<{
 
   const chosenCount = content.script.filter((l) => l.stockSrc).length;
 
+  // Scenes Gemini judged no honest photo exists for. A drawing is not bound by
+  // what a camera can capture, so these are the ones worth a drawing prompt.
+  const noPhoto = eligible.filter(({ line }) => !(line.imageQuery || '').trim());
+  const noPhotoIndexes = new Set(noPhoto.map(({ index }) => index));
+  const canWrite = geminiKey.trim().length > 5;
+  const needPrompt = noPhoto.filter(({ line }) => !(line.imagePrompt || '').trim());
+  const readyToDraw = noPhoto.filter(({ line }) => (line.imagePrompt || '').trim() && !line.stockSrc);
+  const [writing, setWriting] = useState<'all' | number | null>(null);
+  const [promptNotes, setPromptNotes] = useState<string[]>([]);
+  const [drawAll, setDrawAll] = useState<{ done: number; total: number } | null>(null);
+  const batchBusy = writing !== null || drawAll !== null;
+
+  /** Ask Gemini for drawing prompts for these scenes, and put them in each scene's prompt box. */
+  const writePrompts = async (scenes: number[], which: 'all' | number) => {
+    setWriting(which);
+    setError(null);
+    try {
+      const out = await api.scenePrompts({ apiKey: geminiKey.trim(), model: geminiModel, content, scenes });
+      setPromptNotes(out.notes);
+      setContent((prev) => ({
+        ...prev,
+        script: prev.script.map((line, i) => (out.prompts[i] ? { ...line, imagePrompt: out.prompts[i] } : line)),
+      }));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setWriting(null);
+    }
+  };
+
+  /**
+   * Draw every no-photo scene that has a prompt and no image yet, and attach
+   * each to its scene. The one place anything is applied for you - and only
+   * because you pressed a button that says so, on prompts you could read first.
+   */
+  const drawAndAttachAll = async () => {
+    const queue = readyToDraw.map(({ index }) => index);
+    setDrawAll({ done: 0, total: queue.length });
+    setError(null);
+    // The reference is read from state, which does not update mid-loop - so the
+    // first picture drawn here is carried along by hand to keep the rest in step.
+    let styleReference = reference;
+    for (let k = 0; k < queue.length; k++) {
+      const index = queue[k];
+      const drawn = await generate(index, content.script[index], styleReference);
+      if (!drawn) break;
+      if (!styleReference) styleReference = drawn.full;
+      await choose(index, drawn);
+      setDrawAll({ done: k + 1, total: queue.length });
+    }
+    setDrawAll(null);
+  };
+
   const searchAll = async () => {
     setSearching(true);
     setError(null);
@@ -154,11 +212,13 @@ export const StockPicker: React.FC<{
    * can be compared against the stock options - and so pressing Generate twice
    * gives you two to choose between instead of silently discarding the first.
    */
-  const generate = async (index: number, line: ScriptLine) => {
+  const generate = async (index: number, line: ScriptLine, styleReference = reference): Promise<StockImage | null> => {
     const query = (line.imageQuery || '').trim() || fallbackQuery(line, content);
-    if (!query) {
-      setError('Type what this scene should show in its box above, then press Draw again.');
-      return;
+    const written = (line.imagePrompt || '').trim();
+    // A written prompt is enough on its own: it is how a scene with no photo gets drawn.
+    if (!query && !written) {
+      setError('Write what this scene should show - press "Write a drawing prompt" - then press Draw again.');
+      return null;
     }
 
     setDrawingScene(index);
@@ -174,8 +234,8 @@ export const StockPicker: React.FC<{
         orientation,
         jobId,
         provider,
-        referenceSrc: reference || undefined,
-        imagePrompt: (line.imagePrompt || '').trim() || undefined,
+        referenceSrc: (google && matchStyle && styleReference) || undefined,
+        imagePrompt: written || undefined,
       });
 
       // Keep what was actually sent, so it can be shown and refined rather
@@ -197,8 +257,10 @@ export const StockPicker: React.FC<{
       };
 
       setCandidates((prev) => ({ ...prev, [index]: [drawn, ...(prev[index] || [])] }));
+      return drawn;
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
+      return null;
     } finally {
       setDrawingScene(null);
     }
@@ -319,10 +381,11 @@ export const StockPicker: React.FC<{
         </Note>
       ) : null}
 
-      <Note kind="info" title="Nothing is applied for you">
+      <Note kind="info" title="You choose what goes in">
         A photo library will cheerfully return a beach for "gravity". Search, then pick only the
         images that genuinely fit — an unrelated backdrop makes a science video look worse, not better.
-        Scenes you skip simply keep the plain background.
+        Scenes you skip simply keep the plain background. The one exception is <b>Draw and attach</b>{' '}
+        below, which attaches what it draws because that is what the button says.
       </Note>
 
       <div className="tiles" style={{ gridTemplateColumns: '1fr 1fr', marginTop: 4 }}>
@@ -458,7 +521,69 @@ export const StockPicker: React.FC<{
         </div>
       ) : null}
 
-      {Object.keys(candidates).length || canGenerate ? (
+      {noPhoto.length ? (
+        <div className="no-photo-panel">
+          <div className="no-photo-head">
+            <b>
+              ✨ {noPhoto.length} {noPhoto.length === 1 ? 'scene has' : 'scenes have'} no honest photo — draw{' '}
+              {noPhoto.length === 1 ? 'it' : 'them'} instead
+            </b>
+            <span>
+              Gemini writes a drawing prompt for each from what the scene says - a process made visible,
+              an apparatus, a clear metaphor. Read or edit them in each scene below, then draw and attach
+              them in one go. Nothing drawn before the answer scene shows the answer.
+            </span>
+          </div>
+          <div className="actions" style={{ marginTop: 0 }}>
+            <button
+              className="btn primary"
+              disabled={!canWrite || batchBusy}
+              onClick={() => writePrompts((needPrompt.length ? needPrompt : noPhoto).map(({ index }) => index), 'all')}
+            >
+              {writing === 'all' ? <Spinner /> : '✨'}{' '}
+              {needPrompt.length
+                ? 'Write drawing prompts for ' + needPrompt.length + (needPrompt.length === 1 ? ' scene' : ' scenes')
+                : 'Rewrite all ' + noPhoto.length + ' prompts'}
+            </button>
+            {canGenerate && readyToDraw.length ? (
+              <button className="btn" disabled={batchBusy || drawingScene !== null} onClick={drawAndAttachAll}>
+                {drawAll ? <Spinner /> : '🎨'} Draw and attach {readyToDraw.length}{' '}
+                {readyToDraw.length === 1 ? 'image' : 'images'}
+              </button>
+            ) : null}
+          </div>
+          {!canWrite ? (
+            <Note kind="info">Add a Gemini key on step 1 to write drawing prompts. Writing them is free-tier.</Note>
+          ) : null}
+          {canWrite && readyToDraw.length && !canGenerate ? (
+            <Note kind="info">
+              The prompts are written. Add your {google ? 'Gemini' : 'ElevenLabs'} key above to draw them.
+            </Note>
+          ) : null}
+          {readyToDraw.length && canGenerate && !drawAll ? (
+            <div className="hint" style={{ fontSize: 12.5, color: 'var(--dim)' }}>
+              {readyToDraw.length} new {readyToDraw.length === 1 ? 'image' : 'images'} at the chosen model's price
+              {google ? ' (billing must be on for the Gemini key)' : ' (ElevenLabs credits)'}.
+            </div>
+          ) : null}
+          {drawAll ? (
+            <>
+              <div className="bar">
+                <div style={{ width: ((drawAll.done + 0.3) / drawAll.total) * 100 + '%' }} />
+              </div>
+              <div className="progress-line">
+                <span>Drawing and attaching…</span>
+                <span>{drawAll.done} / {drawAll.total}</span>
+              </div>
+            </>
+          ) : null}
+          {promptNotes.map((n) => (
+            <Note key={n} kind="warn">{n}</Note>
+          ))}
+        </div>
+      ) : null}
+
+      {Object.keys(candidates).length || canGenerate || noPhoto.length ? (
         <div className="stock-list">
           {eligible.map(({ line, index }) => {
             const options = candidates[index] || [];
@@ -605,13 +730,45 @@ export const StockPicker: React.FC<{
                       </button>
                     ))}
                   </div>
+                ) : noPhotoIndexes.has(index) ? (
+                  <div className="stock-empty">
+                    {line.imagePrompt ? (
+                      <>
+                        <div className="no-photo-prompt">
+                          <b>Drawing prompt:</b> {line.imagePrompt}
+                        </div>
+                        <div className="stock-prompt-row">
+                          {canGenerate ? <span>Press <b>Draw</b> above, or draw them all at once.</span> : null}
+                          {canGenerate ? (
+                            <button className="link-btn" onClick={() => setOpenPrompt(index)}>edit</button>
+                          ) : null}
+                          <button
+                            className="link-btn"
+                            disabled={!canWrite || batchBusy}
+                            onClick={() => writePrompts([index], index)}
+                          >
+                            {writing === index ? 'rewriting…' : 'rewrite with Gemini'}
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        No honest photo exists for this scene, so draw one instead.{' '}
+                        <button
+                          className="link-btn"
+                          disabled={!canWrite || batchBusy}
+                          onClick={() => writePrompts([index], index)}
+                        >
+                          {writing === index ? 'writing…' : '✨ Write a drawing prompt'}
+                        </button>
+                      </>
+                    )}
+                  </div>
                 ) : (
                   <div className="stock-empty">
-                    {line.imageQuery
-                      ? searched
-                        ? 'Nothing found. Try different search words above, then search again.'
-                        : 'Search the free libraries, or draw one for this scene.'
-                      : 'Gemini judged that no honest photo exists for this scene.'}
+                    {searched
+                      ? 'Nothing found. Try different search words above, then search again.'
+                      : 'Search the free libraries, or draw one for this scene.'}
                   </div>
                 )}
               </div>

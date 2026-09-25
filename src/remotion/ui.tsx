@@ -2,6 +2,7 @@ import React from 'react';
 import { AbsoluteFill, interpolate, random, spring, useCurrentFrame, useVideoConfig } from 'remotion';
 import type { Theme } from '../lib/theme';
 import { hexToRgba } from '../lib/theme';
+import { flexAlignFor, textAlignFor } from '../lib/align';
 import { autoTransitionFor, isTransition, transitionStyle } from '../lib/transitions';
 
 /**
@@ -146,10 +147,12 @@ export const Stage: React.FC<{
         padding: m.padTop + 'px ' + m.padX + 'px ' + m.padBottom + 'px',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
+        // Across follows the look; down stays centred, so a flush-left scene
+        // is still balanced top to bottom.
+        alignItems: flexAlignFor(theme.align),
         justifyContent: 'center',
         gap: m.gap,
-        textAlign: 'center',
+        textAlign: textAlignFor(theme.align),
       }}
     >
       {header ? (

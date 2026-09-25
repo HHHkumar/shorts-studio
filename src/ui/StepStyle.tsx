@@ -8,6 +8,7 @@ import { AMBIENT_GROUPS } from '../remotion/ambient';
 import { TRANSITIONS } from '../lib/transitions';
 import { TEXT_REVEALS } from '../lib/text-reveal';
 import { OVERLAYS } from '../remotion/Overlays';
+import { ALIGN_OPTIONS } from '../lib/align';
 
 const ACCENTS = [
   { name: 'Layout default', value: '' },
@@ -32,11 +33,13 @@ export const StepStyle: React.FC<{
   imageStyles: { id: string; label: string }[];
   googleImageModels: { id: string; label: string }[];
   geminiKey: string;
+  /** Writes drawing prompts for scenes with no honest photo. */
+  geminiModel?: string;
   onBack: () => void;
   onNext: () => void;
 }> = ({
   design, setDesign, musicMoods, content, setContent, pexelsKey, elevenKey, form,
-  imageModels, imageStyles, googleImageModels, geminiKey, onBack, onNext,
+  imageModels, imageStyles, googleImageModels, geminiKey, geminiModel, onBack, onNext,
 }) => {
   const set = <K extends keyof DesignSettings>(key: K, value: DesignSettings[K]) =>
     setDesign((prev) => ({ ...prev, [key]: value }));
@@ -222,6 +225,13 @@ export const StepStyle: React.FC<{
           onChange={(v) => set('textReveal', v)}
           hint={TEXT_REVEALS.find((r) => r.id === (design.textReveal || 'fade'))?.blurb}
         />
+        <Select
+          label="Where the text sits"
+          value={design.align || 'auto'}
+          options={ALIGN_OPTIONS.map((o) => ({ id: o.id, label: o.label }))}
+          onChange={(v) => set('align', v)}
+          hint={ALIGN_OPTIONS.find((o) => o.id === (design.align || 'auto'))?.blurb}
+        />
       </div>
 
       <div className="section-title">Finishing layer</div>
@@ -312,6 +322,7 @@ export const StepStyle: React.FC<{
           imageStyles={imageStyles}
           googleImageModels={googleImageModels}
           geminiKey={geminiKey}
+          geminiModel={geminiModel}
           orientation={design.orientation}
           showStock={design.showStock}
           stockOpacity={design.stockOpacity}

@@ -6,6 +6,8 @@ import { dimensionsFor, FPS, PORTRAIT } from '../lib/types';
 import type { VideoProps } from '../lib/types';
 import { QuizVideo } from './QuizVideo';
 import { Thumbnail, THUMBNAIL_ID, thumbSizeFor, type ThumbnailProps } from './Thumbnail';
+import { CarouselSlide, CAROUSEL_FRAMES, CAROUSEL_ID } from './Carousel';
+import { planCarousel, SLIDE_SIZE } from '../lib/carousel';
 
 export const COMPOSITION_ID = 'QuizVideo';
 
@@ -56,6 +58,23 @@ export const RemotionRoot: React.FC = () => {
         symbol: '🌙',
         layout: 'question' as const,
         shape: 'landscape' as const,
+      }}
+    />
+    {/* One square slide of the carousel post; the server renders each slide in turn. */}
+    <Composition
+      id={CAROUSEL_ID}
+      component={CarouselSlide}
+      width={SLIDE_SIZE}
+      height={SLIDE_SIZE}
+      fps={FPS}
+      durationInFrames={CAROUSEL_FRAMES}
+      defaultProps={{
+        content: makeDemoProps().content,
+        design: DEFAULT_DESIGN,
+        slide: planCarousel(makeDemoProps().content).slides[0],
+        index: 0,
+        total: planCarousel(makeDemoProps().content).slides.length,
+        channelName: '',
       }}
     />
     </>

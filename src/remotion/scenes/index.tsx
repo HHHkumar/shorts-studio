@@ -3,6 +3,7 @@ import { interpolate, useCurrentFrame, useVideoConfig } from 'remotion';
 import { activeOption, alignOptions } from '../../lib/options-timing';
 import type { Theme } from '../../lib/theme';
 import { hexToRgba } from '../../lib/theme';
+import { flexAlignFor } from '../../lib/align';
 import type { QuizContent, Scene } from '../../lib/types';
 import { ReadAlong } from '../ReadAlong';
 import { autoFontSize, Pill, Stage, useEnter, useMetrics, useSceneSeconds } from '../ui';
@@ -219,7 +220,7 @@ export const QuestionScene: React.FC<SceneProps> = ({ theme, scene, content, sho
         />
       ) : null}
       {/* Setup only - the server strips anything that could reveal the answer. */}
-      {showVisuals ? <Visual theme={theme} visual={scene.visual} /> : null}
+      {showVisuals ? <Visual theme={theme} visual={scene.visual} figure={content.figure} /> : null}
     </Stage>
   );
 };
@@ -329,6 +330,7 @@ export const AnswerScene: React.FC<SceneProps> = ({ theme, scene, content, showT
 export const ExplainScene: React.FC<SceneProps> = ({
   theme,
   scene,
+  content,
   stepIndex,
   stepTotal,
   showVisuals,
@@ -349,7 +351,7 @@ export const ExplainScene: React.FC<SceneProps> = ({
             minSize={Math.round(m.headlineMin * 0.82)}
           />
         ) : null}
-        {showVisuals ? <Visual theme={theme} visual={scene.visual} /> : null}
+        {showVisuals ? <Visual theme={theme} visual={scene.visual} figure={content.figure} /> : null}
       </div>
     </Stage>
   );
@@ -371,7 +373,7 @@ export const OutroScene: React.FC<SceneProps> = ({ theme, scene, content, showVi
             minSize={Math.round(m.headlineMin * 0.9)}
           />
         ) : null}
-        {showVisuals ? <Visual theme={theme} visual={scene.visual} /> : null}
+        {showVisuals ? <Visual theme={theme} visual={scene.visual} figure={content.figure} /> : null}
       </div>
     </Stage>
   );
@@ -401,7 +403,7 @@ const CaptionBand: React.FC<{ scene: Scene; theme: Theme }> = ({ scene, theme })
         right: m.padX,
         bottom: Math.round(m.padBottom * 0.42),
         display: 'flex',
-        justifyContent: 'center',
+        justifyContent: flexAlignFor(theme.align),
       }}
     >
       <ReadAlong

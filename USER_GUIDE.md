@@ -13,7 +13,10 @@ your work safe with Git, and how to run the same tool on a second computer.
 2. [Setting up, once](#2-setting-up-once)
 3. [Starting it, every time](#3-starting-it-every-time)
 4. [Making a video — the seven steps](#4-making-a-video--the-seven-steps)
+   - [Diagrams that are worked out, not guessed](#diagrams-that-are-worked-out-not-guessed)
+   - [Instagram and Facebook](#instagram-and-facebook)
    - [Making a thumbnail](#making-a-thumbnail)
+   - [A carousel post](#a-carousel-post)
    - [The upload kit](#the-upload-kit)
    - [Using Claude instead of Gemini](#using-claude-instead-of-gemini)
    - [Writing the script yourself](#writing-the-script-yourself)
@@ -23,6 +26,7 @@ your work safe with Git, and how to run the same tool on a second computer.
    - [Moving backdrops](#moving-backdrops)
    - [Drawing your own backdrops](#drawing-your-own-backdrops)
    - [Cuts, text and the finishing layer](#cuts-text-and-the-finishing-layer)
+   - [Looks from Claude Design](#looks-from-claude-design)
    - [Aptitude and reasoning videos](#aptitude-and-reasoning-videos)
    - [A note on units](#a-note-on-units)
 5. [Git — your undo button](#5-git--your-undo-button)
@@ -48,7 +52,7 @@ Four services do the work, and they all run from one page in your browser:
 
 | | What it does | Needed? |
 |---|---|---|
-| **Google Gemini** | Writes the question, the four options, the explanation and the exact words the narrator says — or, in explainer mode, the whole storyboard. Also writes your title, tags and description at the end, and **draws the backdrop pictures** if you enable billing. | Required |
+| **Google Gemini** | Writes the question, the four options, the explanation and the exact words the narrator says — or, in explainer mode, the whole storyboard. At the end it writes your title, tags and description for **YouTube, Instagram and Facebook**, and can **design the thumbnail**. With billing enabled it also **draws pictures** — scene backdrops and the thumbnail art. | Required |
 | **Anthropic Claude** | An alternative writer for the question or the storyboard. Pick which one on step 2. | Optional |
 | **ElevenLabs** | Turns that script into speech. Can also draw backdrops, but only on a Pro plan. | Required |
 | **DeepSeek** | Solves the question independently and says whether it agrees with Gemini. | Optional |
@@ -77,6 +81,9 @@ The video itself is drawn on your own computer by **Remotion**, which is why ren
 
 - **Portrait 9:16** — Shorts, Reels, TikTok. 30 to 90 seconds.
 - **Landscape 16:9** — a proper explainer for YouTube. 2 to 5 minutes.
+
+Alongside either, step 7 can make a **square carousel post** of the same question — 1080 × 1080
+slides for Instagram and Facebook. See [A carousel post](#a-carousel-post).
 
 **How long does one video take?** Roughly 3–4 minutes of your attention, most of it waiting. The very
 first video takes longer, because the tool downloads its rendering engine once.
@@ -329,6 +336,11 @@ hard maths.
 Edit the question afterwards and the badge is replaced by *"the check is out of date"* — a stale tick
 is never left pretending the new version was verified.
 
+**The diagram check.** Many electrical and aptitude questions come with a diagram of the question
+itself — the circuit, the phasors, the price bars. Its numbers are *worked out*, not written, so the
+diagram doubles as a free second opinion on the answer. A card under the question says what happened;
+see [Diagrams that are worked out, not guessed](#diagrams-that-are-worked-out-not-guessed).
+
 > **On long explainers.** A five-minute video is a lot of script for one reply, and the room the
 > model is given used to be left at the provider's default — 8,192 tokens, whatever the model was
 > capable of. On a thinking model the reasoning is spent out of that first, so the longest videos
@@ -384,8 +396,12 @@ Open **Show the sync report** to see the numbers per scene. If a line ever sound
 
 Everything here is instant, free, and never touches the voiceover.
 
-- **Dark or light**, and four layouts: **Simple** (clean), **Elegant** (serif, documentary),
-  **Nerdy** (terminal green on graph paper), **Flashy** (loud, best in a feed).
+- **Dark or light**, and the layouts: **Simple** (clean), **Elegant** (serif, documentary),
+  **Nerdy** (terminal green on graph paper), **Flashy** (loud, best in a feed), plus one for every
+  design system you have brought in from Claude Design — **Organic** so far. See
+  [Looks from Claude Design](#looks-from-claude-design).
+- **Where the text sits** — *Match the look*, *Centred* or *Flush left*. Only blocks of text move;
+  labels stay under the thing they name.
 - **Highlight colour**, **thinking time** (3–5s), **breathing room**.
 - **Show the spoken words** — the read-along text. Leave it on; most people watch on mute.
 - **Draw the diagrams** — on the explanation and outro scenes, and a **setup diagram on the question
@@ -416,8 +432,10 @@ Everything here is instant, free, and never touches the voiceover.
 - **Backdrop photos** — press **Find backdrop photos** and it searches Pexels and NASA per scene,
   using a search term Gemini wrote for that scene. **Nothing is applied for you**: a photo library
   will cheerfully return a beach for "gravity". Click the ones that fit, skip the rest.
-- **Drawn backdrops** — if your ElevenLabs plan allows it, each scene also gets a **Draw** button
-  that makes a picture instead of finding one. See [Drawing your own backdrops](#drawing-your-own-backdrops).
+- **Drawn backdrops** — with billing on your Gemini key (or an ElevenLabs Pro plan), each scene also
+  gets a **Draw** button that makes a picture instead of finding one. Scenes where *no honest photo
+  exists* get a drawing prompt written for them and can be drawn and attached in one go. See
+  [Drawing your own backdrops](#drawing-your-own-backdrops).
 - **Sound** — three built-in music beds (calm, tense, upbeat), or load your own file. The music
   **ducks automatically** under the narration. Effects: a countdown tick, an option whoosh, an answer
   chime, and a sweep between scenes.
@@ -462,19 +480,136 @@ saved into the `out` folder automatically.
 
 ### Step 7 — Publish
 
-Gemini writes the metadata from the finished video: **several title options** to choose from, a
-description, tags, hashtags, suggested thumbnail text, and a pinned comment. Each has a copy button,
-and all of it goes into [the upload kit](#the-upload-kit) at the bottom of the step.
+Fill in **Channel or site** first — it goes into the description and onto every carousel slide.
 
-For exam-prep videos the title and first line of the description lead with the exam name, subject and
-topic, because that is what people actually type into search.
+Press **Write the metadata** and Gemini writes it from the finished video, for three platforms at
+once, in three tabs:
+
+| Tab | What you get |
+|---|---|
+| **▶ YouTube** | **Several title options** to choose from, a description, tags, hashtags, suggested thumbnail text and a pinned comment. |
+| **📸 Instagram** | A Reel caption with its hashtags, and alt text. See [Instagram and Facebook](#instagram-and-facebook). |
+| **👍 Facebook** | A title, a short description with hashtags, and tags. |
+
+Every box has a copy button and is already inside that platform's limits. For exam-prep videos the
+title and first line lead with the exam name, subject and topic, because that is what people type
+into search.
+
+Further down the same step: the [thumbnail](#making-a-thumbnail), the
+[carousel post](#a-carousel-post), and [the upload kit](#the-upload-kit), which packs all of it into
+one zip.
+
+---
+
+### Diagrams that are worked out, not guessed
+
+A diagram that shows the wrong number is worse than no diagram, so for the question itself the tool
+does not let the model draw numbers. The model only *describes* the setup — which components, which
+values the question states — and the tool **works out** everything else itself and draws it.
+
+Nine kinds are built:
+
+| Kind | Draws |
+|---|---|
+| **Junction** | Currents meeting at a node (Kirchhoff's current law). |
+| **Circuit** | DC and AC circuits, solved for every current and voltage. |
+| **AC** | Phasors and waveforms, with the power shaded. |
+| **Power triangle** | P, Q, S and power factor, including power-factor correction. |
+| **Three-phase** | Star and delta, line and phase values. |
+| **Transformer** | Ratios, currents, EMF, efficiency and regulation. |
+| **Machine** | Induction and synchronous speed and slip, DC back EMF and generated EMF. |
+| **Graph** | Curves from formulas, with roots, peaks, slopes and crossings worked out. |
+| **Bar model** | Ratio, percentage, profit and discount, interest, time and work, mixtures, replacement, averages. |
+
+On the **question scene** anything the question does not state is shown as **?**, so the diagram
+never gives the answer away. Graphs never appear on the question scene at all — a marked point on a
+curve *is* the answer. On the explanation the same diagram comes back with every value filled in.
+
+**The card on step 3** tells you what happened:
+
+| Card | Meaning |
+|---|---|
+| ✅ **The diagram agrees with the answer** | The worked-out value matches the marked option. A genuine second check. |
+| ❌ **The diagram does not agree with the answer** | They differ, so the diagram was **left out** rather than show one number while the voice says another. Check the question — one of the two is wrong. |
+| ⚠️ **The diagram was not drawn** | The description could not be drawn honestly — the card lists why. Generating again usually fixes it. One common reason: the diagram **marked nothing for the video to work out**, so it could not be checked, and a diagram like that is usually a picture of a different question, with values the question never gave. |
+| **The diagram is drawn but not checked** | The answer has no number to compare, e.g. a word answer. Look it over yourself. |
+
+> The cards say "circuit" whichever kind of diagram it is — a graph or a bar model gets the same
+> wording. The check itself is the right one for that kind.
+
+**A conceptual question gets no diagram, on purpose.** *"How many times does alternating current pass
+through zero in a cycle?"* has no particular circuit behind it, so there is nothing honest to draw.
+The model is told to ask for no figure in that case, and any figure that marks no unknown is dropped
+rather than drawn — that is exactly where invented values used to creep in, such as a phase lag
+nobody mentioned.
+
+Topics without one of the nine kinds still get the illustrated diagrams and animations from step 5.
+
+---
+
+### Instagram and Facebook
+
+The same Reel goes to Instagram and Facebook, but they are searched differently from YouTube, so the
+text is written for each rather than copied across.
+
+**Instagram**
+
+- **The caption is what search reads.** Instagram's search looks at the words of the caption, so the
+  topic and exam are written into the sentences themselves.
+- **The first line is the hook.** Only about 125 characters show before *more*; the page warns you
+  if the first line is longer.
+- **Five hashtags, no more.** Since December 2025 Instagram ignores every hashtag past the fifth —
+  and it counts hashtags in comments too. The tool caps the list at five, takes any that slipped into
+  the caption back out, and drops YouTube-only tags like #Shorts. Do not add more in a first comment.
+- **Alt text** — paste it under *Advanced settings → Accessibility → Write alt text*. It helps search
+  as well as screen readers.
+
+Copy **Caption with hashtags** — it is one block, hashtags already at the end.
+
+**Facebook**
+
+Facebook shows a line or two before *See more*, so the description is short, with one to three
+hashtags. The **title** is for a normal video upload — a Reel has no title field. **Tags** go in the
+video Tags field where the upload form offers one.
+
+> Metadata written before these tabs existed shows *"No Instagram text yet"*. Press **Write it
+> again** to get it.
 
 ---
 
 ### Making a thumbnail
 
 Step 7 has a **Thumbnail** section. It renders an image in the same colours as the video, on your own
-machine, so it costs nothing and you can make as many as you like.
+machine. The words are always free to render as often as you like; only a picture painted by Gemini
+costs anything.
+
+#### Design it with Gemini
+
+Press **✨ Design with Gemini** and it does the whole design in one go:
+
+1. **Gemini reads the title you picked and the description** and writes a short, scroll-stopping
+   headline of two to five words, picks the one word to colour, the layout, a corner tag and a
+   symbol.
+2. **Gemini's image model paints a picture** for behind it, composed to leave the left side (16:9) or
+   the top (9:16) calm for the words — with **no lettering in the picture at all**.
+3. **The words are set on top as real type**, so they are always spelled right and in the video's
+   fonts. Image models still misspell words; a thumbnail reading "Tranformer" is worse than none.
+
+All the fields below fill in, and you can change any of them and press **Make it again** without
+paying for the picture again. **The picture** box shows what was painted — edit it and press
+**🎨 Repaint the picture**, or untick **Use the picture** to go back to the plain backdrop.
+
+**It never gives a quiz away.** Gemini is not told which option is correct, and a headline or figure
+that repeats the correct answer anyway is replaced — a note tells you when that happened.
+
+**What it costs.** The headline design is a normal text request (free tier). The picture needs
+**billing on your Gemini key**, about 3c to 13c depending on the **Picture model**. Untick **Paint a
+background picture** and you get the design without the picture, for free.
+
+> The button needs a Gemini key on step 1. It works best after **Write the metadata**, because it
+> builds from the title and description you chose; before that it works from the question.
+
+#### Designing it yourself
 
 **Pick the shape first.** It defaults to the shape of the video you just made.
 
@@ -511,6 +646,48 @@ The PNG is saved into `out\` next to your videos. Press **Save the PNG** to put 
 
 ---
 
+### A carousel post
+
+The Reel gets watched once; a carousel gets **saved** and come back to before an exam. Step 7 turns
+the same question into a swipeable post of **square 1080 × 1080 slides** for Instagram and Facebook,
+in the video's own theme. It renders on your machine and costs nothing.
+
+Press **🗂️ Make the carousel**. The slides come in the order a reader wants them:
+
+| Slide | Shows |
+|---|---|
+| **Question** | The question and its options A–D, with *Swipe for the answer →*. A question with a diagram gets the diagram here, and the options move to their own slide. A very long question does the same. |
+| **Answer** | All the options — the right one in green with a ✓, the others struck through — and the answer line. |
+| **Worked out** | The question's diagram with every value filled in, when it has one. |
+| **Why** | The explanation as numbered steps, over as many slides as it needs (*Why · 1 of 2*). |
+| **Did you know?** | The fun fact, *Save this for revision · Follow for one every day*, and your channel name. |
+
+Every slide carries a counter (*2 / 5*) and your channel along the bottom, so the post reads as one
+set in a profile grid. Text is sized to fit the square, and a post never exceeds Instagram's limit of
+twenty slides. Explainers without options get the question, the why slides and the follow slide.
+
+Below the button: a strip of all the slides and a larger view with **Previous / Next** to check each
+one, **⬇ This slide** to save one, and **⬇ Save all slides (.zip)**. The zip holds:
+
+```text
+gravity-carousel.zip
+├── slide-01.png … slide-04.png
+├── caption-instagram.txt   the Instagram caption + a "Swipe ➡️" line + the hashtags
+├── caption-facebook.txt    the same for Facebook
+└── HOW-TO-POST.txt
+```
+
+**Posting it**
+
+- **Instagram:** **+ → Post**, tap *select multiple*, pick the slides **in order**, keep the square
+  crop, and paste `caption-instagram.txt`.
+- **Facebook:** **Photo/video**, select every slide in order, paste `caption-facebook.txt`.
+
+> Write the metadata first if you want the captions in the zip — the slides themselves do not need
+> it. Make the carousel before packing the upload kit and it goes into the kit too.
+
+---
+
 ### The upload kit
 
 The boxes on step 7 are gone the moment you close the tab, and the upload usually happens later — on
@@ -527,9 +704,16 @@ how-does-a-fish-get-past-a-dam-upload-kit.zip
 ├── pinned-comment.txt
 ├── chapters.txt
 ├── credits.txt
+├── instagram.txt        the Reel caption with hashtags, and the alt text
+├── facebook.txt         title, description with hashtags, and tags
 ├── metadata.json        if you ever script the upload
-└── thumbnail.png
+├── thumbnail.png
+└── carousel\            the carousel slides, both captions and HOW-TO-POST.txt
 ```
+
+`instagram.txt`, `facebook.txt` and `carousel\` are only there when you wrote the metadata and made
+the carousel before packing. If an icon in the video needs a credit, that line is added to the
+Instagram and Facebook captions as well as the YouTube description.
 
 Open **UPLOAD.txt** first. It walks the YouTube form field by field, counts every character against
 the real limit, and shouts if the title is over 100 — silently trimming it would hand you something
@@ -555,8 +739,8 @@ rather than a broken one. Shorts never get chapters.
 | **Music** | Always yours. It is synthesised here from scratch — not sampled, not licensed from anyone, so no copyright claim is possible. |
 | **Narration** | Flagged as a synthetic voice, since some platforms want that disclosed. |
 
-Pack it again any time — after changing the title, or after making a thumbnail. It rebuilds from
-whatever is on the page at that moment.
+Pack it again any time — after changing the title, or after making a thumbnail or a carousel. It
+rebuilds from whatever is on the page at that moment.
 
 ---
 
@@ -817,8 +1001,9 @@ the heaviest of them; set it to *None* if you want the fastest possible render.
 
 ### Drawing your own backdrops
 
-The ElevenLabs key that speaks your script can also **draw** the picture behind it. On step 5 every
-scene gets a **Draw** button next to its search box, beside the free Pexels and NASA search.
+The keys you already have can also **draw** the picture behind a scene — your **Gemini** key with
+billing enabled, or your **ElevenLabs** key on a Pro plan. On step 5 every scene gets a **Draw** button
+next to its search box, beside the free Pexels and NASA search.
 
 **Why bother, when photos are free?** Two reasons.
 
@@ -895,11 +1080,35 @@ unrelated pictures. It costs nothing extra.
 voiceover, and drawing through the API needs a **Pro plan or above**. On the free or Starter plan the voice
 still works perfectly — only the Draw button will tell you the plan is not enough. There is
 deliberately no "draw every scene" button: it would be one click to spend a lot of credit on scenes
-you were going to skip anyway.
+you were going to skip anyway. The one batch button is for the scenes below, where there is nothing
+else to choose from.
 
-**Being honest about it.** Drawn backdrops are labelled *Generated with ElevenLabs* in your caption
-and in the publish kit's credits file. Leave that in. YouTube and the other platforms increasingly
-expect AI-made imagery to be declared, and the line is short enough that it costs you nothing.
+#### Scenes with no honest photo
+
+When Gemini writes the script it leaves a scene's search words **empty** if no real photograph fits
+the idea — *"why the current lags the voltage"* has no stock photo, and a misleading one is worse than
+none. A drawing is not bound by what a camera can capture, so those scenes are drawn instead.
+
+A panel above the scenes says how many there are, e.g. *"✨ 5 scenes have no honest photo — draw them
+instead"*:
+
+1. **✨ Write drawing prompts for N scenes.** Gemini writes a prompt for each from what that scene
+   says, with the whole script as context — an apparatus, a process made visible, a clear metaphor.
+   This is a text request, so it works on the free tier.
+2. **Read them.** Each scene shows its **Drawing prompt**, with **edit** and **rewrite with Gemini**.
+   A single scene can also get its own **✨ Write a drawing prompt**.
+3. **🎨 Draw and attach N images.** Draws each scene that has a prompt and no picture yet, in the
+   Look and model you picked, and **attaches each to its scene** — the one place anything is applied
+   for you, and only because the button says so. The first picture becomes the style reference for
+   the rest. A progress bar counts them off.
+
+Two rules are enforced whatever Gemini writes: a picture for a scene **before the answer** is never
+allowed to show the answer (it is replaced with a plainer one, and a note names the scene), and words
+that make image models paint lettering — *text*, *labels*, *numbers* — are taken out.
+
+**Being honest about it.** Drawn backdrops are labelled *Generated with AI* in your caption and in
+the publish kit's credits file. Leave that in. YouTube and the other platforms increasingly expect
+AI-made imagery to be declared, and the line is short enough that it costs you nothing.
 
 ---
 
@@ -962,6 +1171,47 @@ almost everything and is impossible to notice.
 
 > One at a time. These stack with the moving backdrop, the drift symbols and the backdrop photo,
 > and a frame carrying all four is a frame with nothing to look at.
+
+---
+
+### Looks from Claude Design
+
+A design system you make at claude.ai/design can become a layout here. Its colours, fonts, corner
+radius and alignment come across exactly as published; motion, timing and narration stay with
+Shorts Studio.
+
+**What carries over.** The ground, card, text and accent colours are the system's own tokens. The
+dim text, borders and alternate surfaces come off its neutral ramp, so they have the same visual
+weight they have in Claude Design. Its layout style sets where text sits: Organic says *flush left*,
+so Organic scenes are flush left unless you change **Where the text sits**.
+
+**The mode it was not designed for is worked out, not guessed.** Organic was designed on a light
+ground. Its dark mode uses the system's own ink as the ground and moves the accent to the step
+Claude Design recommends for dark grounds. Every look is checked in both modes for readable contrast
+before it is allowed in.
+
+**Right and wrong stay green and red.** A system's second accent is used for the correct answer only
+when it is actually green. A brand with a red accent never marks the right answer in red.
+
+**Fonts.** The system's webfonts (Caprasimo and Figtree, for Organic) are named first, but they are
+not installed yet. Until they are, the text falls back to the closest installed face, so a render
+looks plain rather than broken.
+
+#### Adding another look
+
+Create or open the design system at claude.ai/design, then ask Claude Code to *pull the design
+system called …*. It saves the system into `design-kits/<name>/` and runs:
+
+```
+node tools/import-design.mjs
+```
+
+That rebuilds `src/lib/design-looks.ts`, and the new layout appears on step 5. A kit cannot take the
+name of a built-in layout, and one that fails the contrast checks stops the tests rather than
+quietly shipping unreadable text.
+
+> The first time this is done on a computer, Claude Code needs design access once: run `claude` in
+> a terminal and type `/design-login`.
 
 ---
 
@@ -1203,12 +1453,14 @@ step.
 | **Claude** *(optional)* | Pay as you go, **no free tier** | Opus: about **9c** a quiz, **35c** a five-minute storyboard. Sonnet: about **4c** and **14c**. |
 | **DeepSeek** *(optional)* | Pay as you go, no free tier | A fraction of a cent per check. |
 | **Pexels / NASA** *(optional)* | Free | Nothing. |
-| **Drawn backdrops** *(optional)* | **None — needs an ElevenLabs Pro plan** | One press, one picture. Spends the same credits as the voice, so draw only the scenes that need it. |
-| **Rendering** | Unlimited | Your own computer. Costs electricity. |
+| **Drawn pictures** *(optional)* — scene backdrops and thumbnail art | **None.** Needs **billing on the Gemini key**, or an **ElevenLabs Pro plan** | One press, one picture: about **3c–13c** on Gemini depending on the model, or ElevenLabs credits from the voice balance. *Draw and attach* on a video with five no-photo scenes is five pictures. |
+| **Gemini text extras** — metadata for three platforms, thumbnail design, drawing prompts | The same free tier | One request each. |
+| **Rendering** — videos, thumbnails, carousel slides | Unlimited | Your own computer. Costs electricity. |
 
-Changing the look, re-rendering, editing text and picking photos all cost **nothing**, and neither
-does **Write it myself** — that path needs no Gemini key at all. Only *Generate the question*,
-*Make the voiceover*, *Check the answer* and *Publish* spend anything.
+Changing the look, re-rendering, editing text, picking photos, making thumbnails without a painted
+picture and making carousels all cost **nothing**, and neither does **Write it myself** — that path
+needs no Gemini key at all. Only *Generate the question*, *Make the voiceover*, *Check the answer*,
+*Write the metadata* and anything that **draws a picture** spend anything.
 
 To stretch ElevenLabs credits: shorter targets, and the **Flash** voice model.
 
@@ -1236,8 +1488,8 @@ To stretch ElevenLabs credits: shorter targets, and the **Flash** voice model.
 | *"ElevenLabs image generation needs a Pro plan or above"* | Drawing backdrops is a paid-plan feature on the API. Your voiceover is unaffected. | Use **Find backdrop photos** instead, or upgrade the plan. |
 | *"ElevenLabs refused that prompt as unsafe"* | A moderation filter rejected the words for that scene. | Reword that scene's search box and press **Draw** again. |
 | *"ElevenLabs was still drawing after 120 seconds"* | The model queued rather than failed. | Press **Draw** again, or pick a **Flash** image model — they answer in seconds. |
-| The **Draw** button is missing on step 5 | No ElevenLabs key is set. | Paste one on step 1; the button and its two dropdowns appear by themselves. |
-| `public\generated\ai\` keeps growing | Drawn images are never deleted automatically, because they cost credits. | Delete the folder yourself when you have finished with those videos. |
+| The **Draw** button is missing on step 5 | No key for the service picked in the tiles above — **Google** uses the Gemini key, **ElevenLabs** its own. | Paste that key on step 1, or switch tiles; the button and its dropdowns appear by themselves. |
+| `public\generated\ai\` or `\thumbs\` keeps growing | Drawn images are never deleted automatically, because they cost money. | Delete the folder yourself when you have finished with those videos. |
 | *"Your DeepSeek account has no credit left"* | DeepSeek has no free tier. | Top up, or clear the key to turn the check off. |
 | *"Gemini rate limit hit"* | You generated too fast. | Wait a minute and try again. |
 | *"Your key cannot use that Gemini model"* | The model is not available to your key. | Reload the page — the dropdown rebuilds from your own key. |
@@ -1259,6 +1511,15 @@ To stretch ElevenLabs credits: shorter targets, and the **Flash** voice model.
 | The kit has no chapters | The video is too short, or YouTube's rules cannot be met. | Normal on Shorts. Chapters need 60s+, three marks, ten seconds each. |
 | **Pack the upload kit** is greyed out | The metadata has not been written yet. | Press **Write the metadata** first — the kit is built from it. |
 | The kit has no thumbnail in it | It was packed before you made one. | Make the thumbnail, then press **Pack it again**. |
+| The kit has no `carousel\` folder, or no `instagram.txt` | The carousel was made, or the metadata written, after packing — or the metadata predates the Instagram tab. | Make the carousel / press **Write it again**, then **Pack it again**. |
+| Step 3: ❌ *"The diagram does not agree with the answer"* | The worked-out diagram and the marked option differ. One of them is wrong. | Check the question before recording. Fix the answer, or generate again. The video simply has no diagram until they agree. |
+| Step 3: ⚠️ *"The diagram was not drawn"* | The model described a setup that cannot be drawn honestly. | Generate again. The video is fine without it. |
+| A scene that should have an animation has none | Its labels made it meaningless and it was dropped — most often a two-signal animation (waveform, phasor) labelled with two measures of **one** wave, such as *Peak* against *RMS*, which cannot be out of phase with each other. | Nothing to do: the scene plays with its words alone. If you want a picture there, step 5 → draw one for that scene. |
+| Step 7, Instagram tab: *"No Instagram text yet"* | The metadata was written before that tab existed. | Press **Write it again**. |
+| *"Google would not draw that image"* on **Design with Gemini**, **Repaint** or **Draw and attach** | Image generation is not on the Gemini free tier. | Enable billing on the key's project — or untick **Paint a background picture** for a free design without one. |
+| **Draw and attach** stopped part-way | One picture failed (usually billing or a rate limit); the ones before it are attached. | Read the red note, fix it, press **Draw and attach** again — it only draws the scenes still without a picture. |
+| **Keys** and **Topic** are greyed out at the top | Those two only unlock with both a Gemini and an ElevenLabs key present — so after **Write it myself** without keys there is no chip back to step 1. | Reload the page: it always opens on step 1, and your script is kept. |
+| A new button or step does nothing, or says *"Request failed (404)"* | The helper was started before the tool was updated. The page updates by itself; the helper does not. | `Ctrl + C` in PowerShell, then `npm start` again. |
 | A change seems to have no effect | An old server is still running from before. | `Ctrl + C` in PowerShell, then `npm start` again. |
 | Everything is confusing | — | Step 7 → **Reset everything**, then start from step 1. |
 
@@ -1328,6 +1589,17 @@ checks catch a blank frame, they cannot tell you a layout is ugly.
 
 Every line of all three should say `ok`.
 
+None of them can call Gemini, Claude, ElevenLabs or DeepSeek — the keys live in your browser, not on
+disk — so they prove everything *around* the models, not the models' answers. That is what step 3 is
+for.
+
+> **Last full test: 17 September 2026.** `npm test` — 1,360 checks, about 15 seconds. `npm run smoke`
+> — every video kind and shape plus all eight thumbnails, none blank. `npm run simulate -- --render`
+> — every stage, ending in a real 73-second video. On top of those: all nine diagram kinds drawn at
+> the question and the reveal with every worked-out answer matching its option, five kinds of
+> carousel, thumbnails over drawn art in every layout, every helper route that needs no paid key, and
+> all seven steps of the page. Everything passed.
+
 ---
 
 ## 10. Where things are saved
@@ -1335,11 +1607,14 @@ Every line of all three should say `ok`.
 Inside `C:\Projects\shorts-studio`:
 
 - **`out\`** — your finished videos. **This is the folder you want.** Nothing here is ever deleted
-  automatically, and nothing here goes to GitHub.
-- `public\generated\` — voiceover clips and backdrop images.
+  automatically, and nothing here goes to GitHub. Beside the videos: thumbnails (`thumbnail-….png`),
+  upload kits (`…-upload-kit.zip`), and one `carousel-…\` folder per carousel, holding its slides and
+  its zip.
+- `public\generated\` — voiceover clips and pictures.
   - `vo-…\` and `stock\` are **cleared automatically after a day**. Both are free to make again.
-  - `ai\` is **never cleared**, because those images cost ElevenLabs credits and deleting them on a
-    timer would spend your money twice. It grows until you empty it yourself.
+  - `ai\` (drawn backdrops) and `thumbs\` (painted thumbnail art) are **never cleared**, because
+    those pictures cost money and deleting them on a timer would spend it twice. They grow until you
+    empty them yourself.
 - `public\audio\` — the music beds and effects, regenerated on first boot.
 - `.cache\` — the icon drawings, kept so the same noun is never fetched twice. Safe to delete;
   it refills itself.
@@ -1364,7 +1639,9 @@ you already generated works offline.
 
 **Is my data going anywhere?**
 Your topic settings go to Google, your script to ElevenLabs, your question to DeepSeek if you enabled
-it, and — only if you press **Draw** — that scene's few words go to ElevenLabs as an image prompt.
+it. When you press **Write the metadata**, **Design with Gemini** or **Write drawing prompts**, the
+question and script go to Google again to write them; when you press **Draw** or **Repaint**, that
+picture's description goes to whichever service draws it.
 Nothing else leaves the computer — the helper server listens only on `127.0.0.1`, so nothing on your
 network can reach it.
 
@@ -1390,6 +1667,11 @@ Look at the PowerShell window. The last few red lines usually say plainly what f
 - Keep the read-along text on; most viewers are on mute.
 - Only pick backdrop photos that genuinely fit. An unrelated one makes it look worse, not better.
 - If you draw backdrops, keep one **Look** for the whole video. Mixed styles read as carelessness.
+- Read the drawing prompts before **Draw and attach** — reading is free, drawing is not.
+- If step 3 shows ❌ on the diagram, stop and check the answer. It is the cheapest second opinion
+  you will get.
+- Judge the thumbnail in the small preview box, not the big one.
+- Post the carousel the same day as the Reel, slides in order, with no more than five hashtags.
 - For an aptitude video, check the wrong options are real mistakes. If one is obviously silly, the
   question is easier than the paper it is meant to prepare you for.
 - Thinking time of 3–5 seconds. Longer and people scroll away.

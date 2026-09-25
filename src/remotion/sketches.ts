@@ -742,7 +742,7 @@ const CORE_SKETCHES: Record<string, SketchDef> = {
     shape: 'wide',
     label: 'Waveform',
     describe: 'an AC waveform: two signals out of phase, or a rectified or switched output. Use for: AC theory, phase shift, rectifiers, inverters and PWM',
-    uses: 'mode ("phase", "half-wave", "full-wave", "pwm"), angle (phase shift in degrees; POSITIVE means the second wave LAGS, so 90 is a pure inductor and -90 a pure capacitor), frequency (1-4), labelA (first wave, e.g. V), labelB (second wave, e.g. I)',
+    uses: 'mode ("phase", "half-wave", "full-wave", "pwm"), angle (phase shift in degrees; POSITIVE means the second wave LAGS, so 90 is a pure inductor and -90 a pure capacitor), frequency (1-4), labelA (first wave, e.g. V), labelB (second wave, e.g. I). "phase" compares TWO SIGNALS - a voltage and a current, or two supplies. Never label the two waves with two measures of ONE wave (RMS and peak, average and RMS, instantaneous and maximum): they are the same wave, so a phase between them means nothing. A question about RMS against peak takes no sketch at all',
     draw: ({ p, time, width, height, params, colors }) => {
       const mode = String(params.mode || 'phase');
       const k = num(params.frequency, 2, 1, 4);

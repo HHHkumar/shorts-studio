@@ -7,6 +7,10 @@
 import { SKETCH_NAMES, sketchPromptLines } from './sketch-catalogue.mjs';
 import { fetchRetrying } from './retry.mjs';
 import { callClaude } from './claude.mjs';
+// Loaded straight from the app's TypeScript: Node strips the types itself, and
+// sharing the one module means the server checks a figure with exactly the
+// arithmetic the renderer will draw it with.
+import { checkFigure, figurePromptLines, isSetupSafe, normalizeFigure } from '../src/lib/figures/index.ts';
 
 const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models';
 
@@ -32,6 +36,10 @@ const RESPONSE_SCHEMA = {
     outro: { type: 'STRING' },
     hashtags: { type: 'ARRAY', items: { type: 'STRING' } },
     motifSymbols: { type: 'ARRAY', items: { type: 'STRING' } },
+    // JSON text, not an object schema: there is a family for every kind of
+    // figure, and a schema that grew with each one would eventually be too big
+    // for the API to accept. src/lib/figures validates it instead, completely.
+    figure: { type: 'STRING' },
     script: {
       type: 'ARRAY',
       items: {
@@ -43,7 +51,8 @@ const RESPONSE_SCHEMA = {
           visual: {
             type: 'OBJECT',
             properties: {
-              kind: { type: 'STRING', enum: ['none', 'formula', 'bars', 'compare', 'icon', 'sketch'] },
+              kind: { type: 'STRING', enum: ['none', 'formula', 'bars', 'compare', 'icon', 'sketch', 'figure'] },
+              highlight: { type: 'STRING' },
               formula: { type: 'STRING' },
               caption: { type: 'STRING' },
               // Deliberately NOT an enum, though every valid name is listed in
@@ -94,7 +103,7 @@ const RESPONSE_SCHEMA = {
               },
             },
             required: ['kind'],
-            propertyOrdering: ['kind', 'formula', 'caption', 'items', 'sketch', 'params'],
+            propertyOrdering: ['kind', 'highlight', 'formula', 'caption', 'items', 'sketch', 'params'],
           },
         },
         required: ['kind', 'narration'],
@@ -108,7 +117,7 @@ const RESPONSE_SCHEMA = {
   ],
   propertyOrdering: [
     'subject', 'topic', 'difficulty', 'hook', 'question', 'options', 'correctIndex',
-    'answerLine', 'explanation', 'funFact', 'outro', 'hashtags', 'motifSymbols', 'script',
+    'answerLine', 'explanation', 'funFact', 'outro', 'hashtags', 'motifSymbols', 'figure', 'script',
   ],
 };
 
@@ -143,13 +152,16 @@ export const QUIZ_SYSTEM = [
   'The four options must all be plausible. Exactly one is correct. correctIndex is 0-based.',
   'Do not put "A)", "B)" or bullet characters inside the option strings.',
   '',
-  'DIAGRAMS. Use them generously. A wall of text is a weak video; showing the thing is what makes',
-  'an explainer worth watching. Reach for one whenever there is something to show.',
+  'DIAGRAMS. A diagram must show the actual thing the scene is about. A picture that is merely',
+  'related to the topic - three resistors in parallel for a question about one junction, a bar',
+  'magnet for a question about an inductor - teaches the viewer something false and is worse than',
+  'no picture. When nothing available shows the real situation, use "none". Never decorate.',
   '',
   'Where they are allowed:',
   '- explain and outro scenes: any kind.',
   '- question scene: a SETUP diagram only - the circuit, the apparatus, the geometry being asked',
-  '  about. It must not hint at which option is correct. Use "sketch" or "formula" here, never',
+  '  about. It must not hint at which option is correct. Use "figure" whenever the question has one,',
+  '  otherwise "sketch" or "formula", never',
   '  bars, compare or icon, and never a graph or pie, because a plotted curve usually IS the answer.',
   '- hook, options, countdown and answer: always "none".',
   '- formula : one short equation in plain unicode, e.g. "F = m × a" or "v² = u² + 2as".',
@@ -161,10 +173,13 @@ export const QUIZ_SYSTEM = [
   '- compare : exactly 2 things side by side. Each item needs a short label and one emoji as',
   '            "symbol". Best for before/after, or here/there.',
   '- icon    : one emoji as "symbol" plus a 1-3 word label.',
-  '- sketch  : a real animation from the library below.',
+  '- figure  : the question\'s own figure, drawn from "figure" (see THE FIGURE in the request).',
+  '            Set "highlight" to a part id or branch label when the scene is about that part.',
+  '- sketch  : a real animation from the library below - only when it shows THIS situation.',
   '- none    : no diagram for this scene.',
   'Say nothing in a diagram that gives away the answer before the answer scene.',
   '',
+
   ...sketchPromptLines(),
   '',
   'motifSymbols: 3 to 6 single emoji or symbols evoking the topic, e.g. ["🪐","🌙","⭐","g"].',
@@ -249,7 +264,8 @@ function budgetLines(budget) {
     lines.push('  e. The common misconception, named and corrected.');
     lines.push('  f. Where it shows up in the real world, and why it matters.');
     lines.push('Each scene still says ONE thing. Depth comes from the sequence, not from cramming.');
-    lines.push('Use the diagram field often here - a formula, a bar chart or a sketch every few scenes.');
+    lines.push('Use the diagram field often here - a formula, a bar chart or a sketch every few scenes -');
+    lines.push('but only where it shows the real thing being said. A merely related picture is worse than none.');
   }
 
   return lines;
@@ -288,8 +304,8 @@ const DIAGRAM_DENSITY = {
   sparse: 'Use a diagram only where it genuinely earns its place - roughly one explain scene in three.',
   balanced: 'Put a diagram on most explain scenes, and on the question scene when there is a setup worth showing.',
   rich: 'Put a diagram on EVERY explain scene, and a setup diagram on the question scene. '
-    + 'Vary the kind - do not use the same one twice in a row. If nothing fits a scene, prefer a '
-    + 'sketch over leaving it bare.',
+    + 'Vary the kind - do not use the same one twice in a row. If nothing shows the real situation '
+    + 'of a scene, leave it bare: a merely related picture is worse than none.',
 };
 
 function densityLine(o) {
@@ -442,11 +458,14 @@ export function buildQuizPrompt(o) {
 
   lines.push(densityLine(o));
   examLines(o).forEach((l) => lines.push(l));
+  lines.push('');
+  figurePromptLines(o.subject, o.topic).forEach((l) => lines.push(l));
 
   // The creator's own instructions go AFTER every line they might need to
-  // overrule, and before the length budget, which is a hard spec rather than
-  // guidance. Buried in the middle they were one bullet against eighty-odd
-  // lines of fixed direction, and quietly lost to it.
+  // overrule - the figure direction above included - and before the length
+  // budget, which is a hard spec rather than guidance. Buried in the middle
+  // they were one bullet against eighty-odd lines of fixed direction, and
+  // quietly lost to it.
   if (o.extra && o.extra.trim()) {
     lines.push('');
     lines.push('INSTRUCTIONS FROM THE CREATOR. These override the guidance above wherever they');
@@ -935,12 +954,40 @@ export function normalizeContent(input, options) {
     script: [],
   };
 
+  // The question's own figure. Kept only when its arithmetic agrees with the
+  // correct option: a mismatch means the figure or the answer is wrong, and
+  // either way a video must not draw one number and say another. What was
+  // wrong is kept in figureCheck, so the creator hears about it.
+  const { figure, errors: figureErrors } = normalizeFigure(c.figure);
+  if (figure) {
+    const check = checkFigure(figure, opts[correctIndex]);
+    // A figure that marks no unknown works nothing out, so nothing about it was
+    // ever checked - and an unchecked figure is where invented values live: a
+    // phase angle, a second waveform, a rating the question never mentioned.
+    // Those are the ones that come out looking like a picture of a different
+    // question, so they are dropped rather than drawn.
+    if (check.status === 'unchecked' && check.computed === undefined) {
+      content.figureCheck = {
+        status: 'invalid',
+        problems: [
+          'The figure marks nothing for the video to work out, so it could not be checked against the '
+          + 'answer - and a figure like that usually shows values the question never gave. Nothing was drawn.',
+        ],
+      };
+    } else {
+      content.figureCheck = check;
+      if (check.status !== 'mismatch') content.figure = figure;
+    }
+  } else if (figureErrors.length) {
+    content.figureCheck = { status: 'invalid', problems: figureErrors.slice(0, 4) };
+  }
+
   let script = (Array.isArray(c.script) ? c.script : [])
     .map((s) => ({
       kind: SCENE_KINDS.includes(s && s.kind) ? s.kind : 'explain',
       narration: clean(s && s.narration),
       imageQuery: clean(s && s.imageQuery).slice(0, 60),
-      visual: normalizeVisual(s && s.visual, SCENE_KINDS.includes(s && s.kind) ? s.kind : 'explain'),
+      visual: normalizeVisual(s && s.visual, SCENE_KINDS.includes(s && s.kind) ? s.kind : 'explain', content.figure),
     }))
     .filter((s) => s.narration || s.kind === 'countdown');
 
@@ -1019,6 +1066,16 @@ export function normalizeContent(input, options) {
 
   script = dropRepeatedSketches(script);
 
+  // A question about a particular circuit is unreadable without that circuit
+  // on screen. The KCL video asked about a junction and showed a formula card
+  // instead; when there is a figure, the question scene always carries it.
+  if (content.figure && isSetupSafe(content.figure)) {
+    const question = script.find((s) => s.kind === 'question');
+    if (question && (!question.visual || question.visual.kind !== 'figure')) {
+      question.visual = { kind: 'figure', caption: '', reveal: false };
+    }
+  }
+
   content.script = script;
   return content;
 }
@@ -1068,7 +1125,7 @@ export function dropRepeatedSketches(script) {
 // Diagram validation
 // ---------------------------------------------------------------------------
 
-const VISUAL_KINDS = ['none', 'formula', 'bars', 'compare', 'icon', 'sketch'];
+const VISUAL_KINDS = ['none', 'formula', 'bars', 'compare', 'icon', 'sketch', 'figure'];
 
 /** Every sketch name, keyed by a loosened form of itself. Built once. */
 const SKETCH_BY_LOOSE = new Map(
@@ -1109,6 +1166,30 @@ const SETUP_SAFE_SKETCHES = new Set([
   'pendulum', 'orbit', 'atom', 'refraction', 'vector-field', 'wave-interference', 'sine-wave',
 ]);
 
+/**
+ * Two measures of ONE wave, which are not two things that can be out of phase.
+ *
+ * An RMS-versus-peak question came back as a waveform captioned "RMS lags Peak
+ * by 60°": two curves, a phase angle between them, and no meaning at all - RMS
+ * and peak are two ways of measuring the same sine wave. The labels are the
+ * only place this shows, because the drawing itself is a perfectly good pair of
+ * sine waves.
+ */
+const ONE_WAVE_MEASURES = /^(rms|r\.?m\.?s\.?|peak|peak to peak|peak-to-peak|average|avg|mean|effective|maximum|max|minimum|min|instantaneous|amplitude|crest|form factor)$/i;
+const MEASURE_INSIDE = /\b(rms|peak|average|mean|effective|instantaneous|amplitude|crest)\b/i;
+
+/** True when a two-signal sketch has been labelled with two measures of one signal. */
+function sketchLabelsAreNonsense(name, params) {
+  // Only the sketches whose whole content is "these two differ in phase".
+  if (name !== 'waveform' && name !== 'phasor') return false;
+  if (name === 'waveform' && ['half-wave', 'full-wave', 'pwm'].includes(String(params.mode || ''))) return false;
+  const a = String(params.labelA || '').trim();
+  const b = String(params.labelB || '').trim();
+  if (!a || !b) return false;
+  if (ONE_WAVE_MEASURES.test(a) || ONE_WAVE_MEASURES.test(b)) return true;
+  return MEASURE_INSIDE.test(a) && MEASURE_INSIDE.test(b);
+}
+
 /** Only known knobs, only finite numbers, only short labels. */
 function normalizeParams(raw) {
   const p = raw && typeof raw === 'object' ? raw : {};
@@ -1135,7 +1216,7 @@ function normalizeParams(raw) {
  * numbers, or a "compare" with one side missing, would draw a broken scene.
  * Anything that does not fully check out degrades to no diagram at all.
  */
-function normalizeVisual(raw, sceneKind) {
+function normalizeVisual(raw, sceneKind, figure) {
   if (!raw || typeof raw !== 'object') return { kind: 'none' };
   // A diagram before the answer gives the game away: an icon captioned
   // "Venus mystery" on the opening screen tells the viewer the answer is Venus
@@ -1146,6 +1227,20 @@ function normalizeVisual(raw, sceneKind) {
   if (kind === 'none') return { kind: 'none' };
 
   const setupOnly = sceneKind === 'question';
+  if (kind === 'figure') {
+    // Only the question's own figure can be shown, and only if it survived
+    // its check. The unknown stays a "?" on the question scene.
+    if (!figure) return { kind: 'none' };
+    // A graph or chart on the question scene would give the answer away.
+    if (setupOnly && !isSetupSafe(figure)) return { kind: 'none' };
+    const highlight = clean(raw.highlight).replace(/[^A-Za-z0-9_]/g, '').slice(0, 8);
+    return {
+      kind,
+      caption: setupOnly ? '' : clean(raw.caption).slice(0, 60),
+      reveal: !setupOnly,
+      ...(highlight ? { highlight } : {}),
+    };
+  }
   if (setupOnly) {
     if (kind === 'sketch') {
       if (!SETUP_SAFE_SKETCHES.has(clean(raw.sketch))) return { kind: 'none' };
@@ -1171,6 +1266,8 @@ function normalizeVisual(raw, sceneKind) {
     // schema no longer carries an enum - see the comment on the `sketch` field.
     const name = matchSketch(raw.sketch);
     if (!name) return { kind: 'none' };
+    const params = normalizeParams(raw.params);
+    if (sketchLabelsAreNonsense(name, params)) return { kind: 'none' };
 
     // A circuit with no network is a circuit whose shape nobody stated, and
     // the old modes could only draw two of the many a question describes - so
@@ -1180,9 +1277,12 @@ function normalizeVisual(raw, sceneKind) {
     //
     // `mode` still renders, so a script saved before this keeps its diagram.
     // It is simply no longer offered, so nothing new can choose it.
+    //
+    // Read from raw.params rather than the normalised copy above, so this asks
+    // exactly what the model stated and nothing a default filled in.
     if (name === 'circuit') {
-      const params = raw.params && typeof raw.params === 'object' ? raw.params : {};
-      if (!clean(params.network) && !clean(params.mode)) return { kind: 'none' };
+      const stated = raw.params && typeof raw.params === 'object' ? raw.params : {};
+      if (!clean(stated.network) && !clean(stated.mode)) return { kind: 'none' };
     }
     // Sketches share the items array: block-flow uses it for stage labels,
     // pie for slices, circuit for component values.
@@ -1190,7 +1290,7 @@ function normalizeVisual(raw, sceneKind) {
       kind,
       sketch: name,
       caption,
-      params: normalizeParams(raw.params),
+      params,
       items: items.slice(0, 5).map((it) => ({ label: it.label, value: it.value, symbol: it.symbol })),
     };
   }

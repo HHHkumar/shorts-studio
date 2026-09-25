@@ -2,6 +2,7 @@ import React, { createContext, useContext, useMemo } from 'react';
 import { interpolate, useCurrentFrame, useVideoConfig } from 'remotion';
 import type { Theme } from '../lib/theme';
 import { hexToRgba } from '../lib/theme';
+import { flexAlignFor, textAlignFor } from '../lib/align';
 import type { WordTiming } from '../lib/types';
 import { wordStyle } from '../lib/text-reveal';
 
@@ -105,7 +106,9 @@ export const ReadAlong: React.FC<{
   const base: React.CSSProperties = {
     display: 'flex',
     flexWrap: 'wrap',
-    justifyContent: 'center',
+    // The words are flex items, so this - not textAlign - is what places a
+    // wrapped line.
+    justifyContent: flexAlignFor(theme.align),
     alignItems: 'baseline',
     // Wide enough that the 1.06x scale on the current word cannot close it up.
     gap: '0.14em 0.34em',
@@ -115,7 +118,7 @@ export const ReadAlong: React.FC<{
     textTransform: complex ? 'none' : theme.displayTransform,
     fontStyle: theme.displayItalic && !complex ? 'italic' : 'normal',
     lineHeight: 1.14,
-    textAlign: 'center',
+    textAlign: textAlignFor(theme.align),
     width: '100%',
   };
 

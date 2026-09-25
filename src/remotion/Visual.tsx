@@ -2,7 +2,9 @@ import React from 'react';
 import { interpolate, random, useCurrentFrame, useVideoConfig } from 'remotion';
 import type { Theme } from '../lib/theme';
 import { hexToRgba } from '../lib/theme';
+import type { Figure } from '../lib/figures/index.ts';
 import type { SceneVisual } from '../lib/types';
+import { FigureView } from './Figure';
 import { P5Sketch, type SketchArgs } from './P5Sketch';
 import { SKETCHES, type SketchParams } from './sketches';
 import { useEnter, useMetrics } from './ui';
@@ -12,11 +14,14 @@ import { useEnter, useMetrics } from './ui';
  * each kind is drawn here from theme tokens so it matches whatever layout the
  * user picked. Everything is sized to fit inside roughly 360px of height.
  */
-export const Visual: React.FC<{ theme: Theme; visual?: SceneVisual }> = ({ theme, visual }) => {
+export const Visual: React.FC<{ theme: Theme; visual?: SceneVisual; figure?: Figure }> = ({ theme, visual, figure }) => {
   if (!visual || visual.kind === 'none') return null;
 
   let body: React.ReactNode = null;
-  if (visual.kind === 'formula' && visual.formula) body = <Formula theme={theme} text={visual.formula} />;
+  if (visual.kind === 'figure' && figure) {
+    body = <FigureView theme={theme} figure={figure} reveal={visual.reveal !== false} highlight={visual.highlight} />;
+  }
+  else if (visual.kind === 'formula' && visual.formula) body = <Formula theme={theme} text={visual.formula} />;
   else if (visual.kind === 'bars' && visual.items?.length) body = <Bars theme={theme} items={visual.items} />;
   else if (visual.kind === 'compare' && visual.items?.length) body = <Compare theme={theme} items={visual.items} />;
   else if (visual.kind === 'icon' && visual.items?.length) body = <Icon theme={theme} item={visual.items[0]} />;

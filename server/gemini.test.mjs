@@ -165,5 +165,161 @@ ok('a body with no details yields nothing rather than throwing',
    fieldViolations('{"error":{"message":"x"}}') === '');
 ok('unparseable body yields nothing rather than throwing', fieldViolations('<html>') === '');
 
+// --- the question's own figure --------------------------------------------------------
+// The KCL video asked about a junction with 2 A and 4 A in and 1 A out, and
+// illustrated it with a formula card and three resistors in parallel. These are
+// the rules that stop that happening again.
+const junction = (unknownValue) => ({
+  type: 'junction',
+  branches: [
+    { label: 'I1', value: 2, unit: 'A', direction: 'in' },
+    { label: 'I2', value: 4, unit: 'A', direction: 'in' },
+    { label: 'I3', value: 1, unit: 'A', direction: 'out' },
+    { label: 'I4', value: unknownValue, unit: 'A', direction: 'out', unknown: true },
+  ],
+});
+const kclQuestion = (figure, correctIndex = 2, extraScript = []) => normalizeContent({
+  question: 'What current leaves through the fourth branch?',
+  options: ['Seven amperes', 'One ampere', 'Five amperes', 'Three amperes'], correctIndex,
+  figure,
+  script: [
+    { kind: 'question', narration: 'Two currents enter...', visual: { kind: 'formula', formula: 'ΣI = 0' } },
+    { kind: 'explain', narration: 'Add what enters.', visual: { kind: 'figure', highlight: 'I1' } },
+    ...extraScript,
+  ],
+}, base);
+
+let fig = kclQuestion(junction(5));
+ok('a figure that agrees with the correct option is kept', fig.figure && fig.figure.type === 'junction');
+ok('and its check says so', fig.figureCheck && fig.figureCheck.status === 'match' && fig.figureCheck.computed === '5 A',
+   JSON.stringify(fig.figureCheck));
+const qScene = fig.script.find((s) => s.kind === 'question');
+ok('the question scene shows the figure, not the formula card it asked for', qScene.visual.kind === 'figure');
+ok('with the answer still hidden', qScene.visual.reveal === false);
+const eScene = fig.script.find((s) => s.kind === 'explain' && s.visual.kind === 'figure');
+ok('an explain scene shows it with the answer revealed', eScene && eScene.visual.reveal === true);
+ok('and keeps its highlight', eScene && eScene.visual.highlight === 'I1');
+
+fig = kclQuestion(junction(5), 0);
+ok('a figure that disagrees with the correct option is NOT drawn', !fig.figure);
+ok('the mismatch is reported with both numbers',
+   fig.figureCheck && fig.figureCheck.status === 'mismatch' && fig.figureCheck.computed === '5 A' && fig.figureCheck.option === 'Seven amperes',
+   JSON.stringify(fig.figureCheck));
+ok('and no scene is left pointing at a figure that is gone',
+   fig.script.every((s) => s.visual.kind !== 'figure'));
+
+fig = kclQuestion(junction(7));
+ok('a junction where charge is not conserved is refused', !fig.figure && fig.figureCheck && fig.figureCheck.status === 'invalid');
+ok('with the reason spelled out', /balance/.test((fig.figureCheck.problems || []).join()), JSON.stringify(fig.figureCheck));
+
+// The AC video asked how many times the current passes through zero, and was
+// given a perfectly valid waveform of a DIFFERENT question: two signals, a 60
+// degree lag nobody mentioned, and nothing marked as the unknown. It could not
+// be checked against the answer, so it was drawn - and looked like a picture of
+// another question.
+const decorative = {
+  type: 'ac', frequency: 50,
+  signals: [
+    { id: 'v', label: 'Voltage', kind: 'voltage', rms: 230, phase: 0 },
+    { id: 'i', label: 'I', kind: 'current', rms: 10, phase: -60 },
+  ],
+};
+fig = normalizeContent({
+  question: 'How many times does an alternating current pass through zero in one complete cycle?',
+  options: ['Once', 'Twice', 'Four times', 'Never'], correctIndex: 1,
+  figure: decorative,
+  script: [
+    { kind: 'question', narration: 'How many zero crossings?', visual: { kind: 'figure' } },
+    { kind: 'explain', narration: 'It changes direction twice.', visual: { kind: 'figure' } },
+  ],
+}, base);
+ok('a figure that marks no unknown is not drawn', !fig.figure, JSON.stringify(fig.figureCheck));
+ok('and is reported as one that could not be checked',
+   fig.figureCheck && fig.figureCheck.status === 'invalid' && /marks nothing/.test((fig.figureCheck.problems || []).join()),
+   JSON.stringify(fig.figureCheck));
+ok('so no scene is left showing it', fig.script.every((s) => s.visual.kind !== 'figure'));
+
+// A figure that DOES work something out is still kept when the option it has to
+// be checked against carries no number - the creator is told to look it over.
+fig = kclQuestion(junction(5), 3);
+fig = normalizeContent({
+  question: 'What current leaves through the fourth branch?',
+  options: ['It doubles', 'It halves', 'It stays the same', 'It reverses'], correctIndex: 2,
+  figure: junction(5),
+  script: [{ kind: 'explain', narration: 'Add what enters.', visual: { kind: 'figure' } }],
+}, base);
+ok('a working figure with a worded answer is kept, and marked unchecked',
+   fig.figure && fig.figureCheck.status === 'unchecked' && fig.figureCheck.computed === '5 A',
+   JSON.stringify(fig.figureCheck));
+
+fig = kclQuestion({ type: 'none' });
+ok('no figure: nothing drawn and nothing reported', !fig.figure && !fig.figureCheck);
+ok('and a figure visual degrades to none', fig.script.every((s) => s.visual.kind !== 'figure'));
+
+fig = kclQuestion({ type: 'circuit', nodes: [{ id: 'A', col: 0, row: 0 }, { id: 'B', col: 1, row: 1 }],
+  elements: [{ id: 'R1', kind: 'resistor', from: 'A', to: 'B', value: 1, unit: 'Ω' }] });
+ok('a diagonal circuit is refused rather than drawn wrong', !fig.figure && /diagonal/.test((fig.figureCheck.problems || []).join()));
+
+fig = kclQuestion(JSON.stringify(junction(5)));
+ok('a figure written as JSON text - how the model sends it - is read the same', fig.figure && fig.figureCheck.status === 'match');
+fig = kclQuestion('none');
+ok('the string "none" means no figure', !fig.figure && !fig.figureCheck);
+fig = kclQuestion('{"type": "junction", "branches": [');
+ok('broken JSON is refused and reported, not thrown', !fig.figure && fig.figureCheck.status === 'invalid');
+
+// --- a sketch whose labels make it meaningless ------------------------------------------
+// "RMS lags Peak by 60°" was drawn over a question asking what the peak of a
+// 230 V supply is. RMS and peak are two measurements of one wave, so nothing
+// can lag anything; the curves were fine, the labels made it nonsense.
+const sketchScene = (params, sketch = 'waveform') => normalizeContent({
+  question: 'For a sinusoidal voltage of 230 V RMS, what is the peak value?',
+  options: ['163 V', '230 V', '325 V', '460 V'], correctIndex: 2,
+  script: [{ kind: 'explain', narration: 'Root two scales it up.', visual: { kind: 'sketch', sketch, params } }],
+}, base).script.find((s) => s.kind === 'explain').visual;
+
+ok('a waveform labelled Peak against RMS is not drawn',
+   sketchScene({ mode: 'phase', angle: 60, labelA: 'Peak', labelB: 'RMS' }).kind === 'none');
+ok('nor a phasor labelled the same way',
+   sketchScene({ angle: 60, labelA: 'RMS', labelB: 'Peak' }, 'phasor').kind === 'none');
+ok('nor the wordier version of it',
+   sketchScene({ mode: 'phase', labelA: 'Peak voltage', labelB: 'RMS voltage' }).kind === 'none');
+ok('a real pair of signals still is',
+   sketchScene({ mode: 'phase', angle: 90, labelA: 'V', labelB: 'I' }).kind === 'sketch');
+ok('and keeps its parameters', sketchScene({ mode: 'phase', angle: 90, labelA: 'V', labelB: 'I' }).params.angle === 90);
+ok('a rectifier waveform is unaffected - it has one wave in and one out',
+   sketchScene({ mode: 'half-wave', labelA: 'Peak', labelB: 'RMS' }).kind === 'sketch');
+ok('one measure against a real signal is refused too',
+   sketchScene({ mode: 'phase', labelA: 'Peak', labelB: 'Current' }).kind === 'none');
+ok('an unlabelled phase waveform is left alone',
+   sketchScene({ mode: 'phase', angle: 90 }).kind === 'sketch');
+
+const { figurePromptLines } = await import('../src/lib/figures/index.ts');
+const electrical = figurePromptLines('Basic Electrical Engineering', 'Kirchhoff’s laws').join('\n');
+ok('an electrical video is taught the circuit and junction figures', /"circuit"/.test(electrical) && /"junction"/.test(electrical));
+const gk = figurePromptLines('Static GK — History, Geography & Polity', 'Indian rivers').join('\n');
+ok('a GK video is told there are no figures, not shown circuit formats', !/"circuit"/.test(gk) && /none/.test(gk));
+ok('the figure must mark what the question asks, or be dropped', /MARK WHAT THE QUESTION ASKS/.test(electrical) && /DROPPED/.test(electrical));
+ok('and may not invent values the question never gave', /Never invent a phase angle/.test(electrical));
+ok('a conceptual question is told to take no figure', /conceptual question/.test(electrical) && /crosses zero/.test(electrical));
+
+// A plotted curve gives its answer away, so a graph never goes on the question.
+const rcGraph = normalizeContent({
+  question: 'What is the capacitor voltage after one time constant?',
+  options: ['5 V', '6.32 V', '10 V', '3.68 V'], correctIndex: 1,
+  figure: JSON.stringify({ type: 'graph', variable: 't', x: { unit: 's', min: 0, max: 10 }, y: { unit: 'V' },
+    curves: [{ id: 'vc', formula: '10*(1-exp(-t/2))' }], ask: { kind: 'value', curve: 'vc', x: 2 } }),
+  script: [
+    { kind: 'question', narration: 'After one time constant...', visual: { kind: 'figure' } },
+    { kind: 'explain', narration: 'It reaches 63 percent.', visual: { kind: 'figure' } },
+  ],
+}, base);
+ok('a graph figure that checks out is kept', rcGraph.figure && rcGraph.figureCheck.status === 'match', JSON.stringify(rcGraph.figureCheck));
+ok('but the question scene does not show it', rcGraph.script.find((s) => s.kind === 'question').visual.kind === 'none');
+ok('and is not given it automatically', rcGraph.script.find((s) => s.kind === 'question').visual.kind !== 'figure');
+ok('the explain scene does', rcGraph.script.find((s) => s.kind === 'explain').visual.kind === 'figure');
+
+fig = kclQuestion(junction(5), 2, [{ kind: 'hook', narration: 'hi', visual: { kind: 'figure' } }]);
+ok('a figure is never shown before the question', fig.script.find((s) => s.kind === 'hook').visual.kind === 'none');
+
 console.log(fails ? '\n' + fails + ' FAILURES' : '\nall checks passed');
 process.exit(fails ? 1 : 0);

@@ -22,10 +22,13 @@ import {
   buildStoryboardPrompt, checkMotion, generateStoryboard, STORYBOARD_SYSTEM,
 } from './explainer.mjs';
 import { attachIcons } from './icons.mjs';
-import { buildPublishKit } from './publish-kit.mjs';
+import { buildCarouselZip, buildPublishKit, slug } from './publish-kit.mjs';
+import { planCarousel } from '../src/lib/carousel.ts';
 import { CLAUDE_MODELS, DEFAULT_CLAUDE_MODEL, listClaudeModels } from './claude.mjs';
 import { listVoices, speak, VOICE_MODELS } from './tts.mjs';
-import { jobs as renderJobs, renderThumbnail, startRender, paths } from './render.mjs';
+import {
+  jobs as renderJobs, readCarousel, renderCarousel, renderThumbnail, startRender, paths,
+} from './render.mjs';
 import { ensureAudioAssets, MUSIC_MOODS } from './audio-gen.mjs';
 import { validateContent, DEEPSEEK_MODELS } from './deepseek.mjs';
 import { findTrending } from './trends.mjs';
@@ -35,6 +38,8 @@ import {
   generateGoogleImage, GOOGLE_IMAGE_MODELS, DEFAULT_GOOGLE_IMAGE_MODEL, COMPARE_CENTS,
 } from './google-images.mjs';
 import { generateSeo } from './seo.mjs';
+import { buildArtPrompt, generateThumbnailBrief } from './thumbnail-brief.mjs';
+import { generateScenePrompts } from './scene-prompts.mjs';
 
 const PORT = Number(process.env.PORT || 3030);
 const GENERATED_DIR = path.join(paths.PUBLIC_DIR, 'generated');
@@ -279,6 +284,15 @@ app.post('/api/image/generate', ok(async (req, res) => {
   res.json({ ...saved, id: fileId, generationId: id, prompt, matched: false });
 }));
 
+/** Gemini writes a drawing prompt for each scene no photo can honestly show. Text only - free tier. */
+app.post('/api/image/prompts', ok(async (req, res) => {
+  const { apiKey, model, content, scenes } = req.body || {};
+  if (!content || !Array.isArray(content.script)) throw new Error('Generate a script before writing drawing prompts.');
+  const out = await generateScenePrompts({ apiKey, model: model || 'gemini-2.5-flash', content, scenes });
+  console.log('[image] wrote drawing prompts for ' + Object.keys(out.prompts).length + ' scenes');
+  res.json(out);
+}));
+
 // --- one prompt, every model, side by side -----------------------------------
 
 app.post('/api/image/compare', ok(async (req, res) => {
@@ -444,8 +458,10 @@ app.post('/api/generate', ok(async (req, res) => {
 // --- the upload kit ---------------------------------------------------------
 
 app.post('/api/publish-kit', ok(async (req, res) => {
-  const { content, design, seo, title, scenes, fps, thumbnailFile } = req.body || {};
+  const { content, design, seo, title, scenes, fps, thumbnailFile, carouselFolder } = req.body || {};
   if (!content) throw new Error('Generate a video before packing its upload kit.');
+  // readCarousel only accepts a folder name this app made, so nothing else under out/ can be packed.
+  const carousel = carouselFolder ? readCarousel(carouselFolder) : [];
 
   let thumbnail = null;
   if (thumbnailFile) {
@@ -456,13 +472,14 @@ app.post('/api/publish-kit', ok(async (req, res) => {
     else console.log('[kit] the thumbnail has gone from out/, packing without it');
   }
 
-  const kit = buildPublishKit({ content, design, seo, title, scenes, fps, thumbnail });
+  const kit = buildPublishKit({ content, design, seo, title, scenes, fps, thumbnail, carousel });
   fs.mkdirSync(paths.OUT_DIR, { recursive: true });
   fs.writeFileSync(path.join(paths.OUT_DIR, kit.name), kit.buffer);
 
   console.log('[kit] ' + kit.name + ' - ' + Math.round(kit.buffer.length / 1024) + ' KB, '
     + (kit.chapters ? kit.chapters + ' chapters' : 'no chapters')
-    + (kit.hasThumbnail ? ', with the thumbnail' : ', no thumbnail yet'));
+    + (kit.hasThumbnail ? ', with the thumbnail' : ', no thumbnail yet')
+    + (kit.carouselSlides ? ', ' + kit.carouselSlides + ' carousel slides' : ''));
 
   res.json({
     url: '/out/' + encodeURIComponent(kit.name),
@@ -470,18 +487,50 @@ app.post('/api/publish-kit', ok(async (req, res) => {
     bytes: kit.buffer.length,
     chapters: kit.chapters,
     hasThumbnail: kit.hasThumbnail,
+    carouselSlides: kit.carouselSlides,
+  });
+}));
+
+// --- the carousel post ------------------------------------------------------
+
+/** Square slides of the same question - question, answer, why - plus a zip ready to post. */
+app.post('/api/carousel', ok(async (req, res) => {
+  const { content, design, channelName, seo } = req.body || {};
+  if (!content || !content.question) throw new Error('Generate a question before making its carousel.');
+
+  const { slides, notes } = planCarousel(content, { channelName });
+  const started = Date.now();
+  console.log('[carousel] rendering ' + slides.length + ' slides: ' + slides.map((x) => x.kind).join(', '));
+  const out = await renderCarousel({ content, design, channelName, slides });
+
+  const zipName = slug(content.topic || content.question, 'carousel') + '-carousel.zip';
+  const zip = buildCarouselZip({ slides: readCarousel(out.folder), seo });
+  fs.writeFileSync(path.join(out.dir, zipName), zip);
+
+  console.log('[carousel] done in ' + Math.round((Date.now() - started) / 1000) + 's - ' + out.folder);
+  res.json({
+    folder: out.folder,
+    slides: out.files,
+    zipUrl: '/out/' + out.folder + '/' + encodeURIComponent(zipName),
+    zipName,
+    bytes: zip.length,
+    notes,
   });
 }));
 
 // --- the thumbnail ----------------------------------------------------------
 
 app.post('/api/thumbnail', ok(async (req, res) => {
-  const { content, design, title, kicker, badge, figure, symbol, layout, shape } = req.body || {};
+  const { content, design, title, kicker, badge, figure, symbol, layout, shape, art } = req.body || {};
   if (!content) throw new Error('Generate a video before making a thumbnail for it.');
+
+  // The art path comes from the browser. Only an image this app drew, inside
+  // public/generated, is passed to the renderer - anything else is ignored.
+  const safeArt = art && readGeneratedImage({ src: art, publicDir: paths.PUBLIC_DIR }) ? String(art) : '';
 
   const started = Date.now();
   console.log('[thumbnail] rendering the ' + (layout || 'statement') + ' layout, '
-    + (shape === 'portrait' ? '9:16' : '16:9') + '...');
+    + (shape === 'portrait' ? '9:16' : '16:9') + (safeArt ? ', over Gemini art' : '') + '...');
   const out = await renderThumbnail({
     content,
     design,
@@ -492,10 +541,48 @@ app.post('/api/thumbnail', ok(async (req, res) => {
     symbol: symbol || '',
     layout: layout || 'statement',
     shape: shape === 'portrait' ? 'portrait' : 'landscape',
+    art: safeArt,
   });
   console.log('[thumbnail] done in ' + Math.round((Date.now() - started) / 1000) + 's - '
     + Math.round(out.bytes / 1024) + ' KB');
   res.json(out);
+}));
+
+/** Gemini reads the title and description and designs the thumbnail: words, layout, picture. */
+app.post('/api/thumbnail/brief', ok(async (req, res) => {
+  const { apiKey, model, content, title, description, shape } = req.body || {};
+  if (!content) throw new Error('Generate a video before making a thumbnail for it.');
+  const brief = await generateThumbnailBrief({
+    apiKey, model: model || 'gemini-2.5-flash', content, title, description,
+    shape: shape === 'portrait' ? 'portrait' : 'landscape',
+  });
+  console.log('[thumbnail] Gemini brief: "' + brief.title + '" (' + brief.layout + ')');
+  res.json({ brief });
+}));
+
+/** Gemini's image model paints the picture behind the words - with no words in it. */
+app.post('/api/thumbnail/art', ok(async (req, res) => {
+  const { apiKey, modelId, scene, shape, accent } = req.body || {};
+  if (!String(scene || '').trim()) throw new Error('Describe the picture first, or let Gemini design the thumbnail.');
+  const orientation = shape === 'portrait' ? 'portrait' : 'landscape';
+  const prompt = buildArtPrompt({ scene: String(scene).slice(0, 600), shape: orientation, accent });
+
+  const started = Date.now();
+  const { base64, mimeType } = await generateGoogleImage({
+    apiKey, prompt, orientation, modelId: modelId || DEFAULT_GOOGLE_IMAGE_MODEL,
+  });
+  // Under generated/thumbs, which the daily sweep leaves alone: the picture was paid for.
+  const saved = saveImageBuffer({
+    buffer: Buffer.from(base64, 'base64'),
+    mimeType,
+    id: 'art-' + randomUUID().slice(0, 8),
+    jobId: 'covers',
+    publicDir: paths.PUBLIC_DIR,
+    folder: 'thumbs',
+  });
+  console.log('[thumbnail] drew ' + saved.src + ' in ' + Math.round((Date.now() - started) / 1000) + 's ('
+    + Math.round(saved.bytes / 1024) + ' KB)');
+  res.json({ ...saved, prompt });
 }));
 
 // --- title, tags and description for the upload form ------------------------

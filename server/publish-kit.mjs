@@ -191,6 +191,12 @@ export function buildCredits(content, scenes) {
   return lines.join('\n');
 }
 
+/**
+ * The metadata step stores hashtags bare, the way the UI prefixes them. Without
+ * this the description ended in plain words that YouTube does not link.
+ */
+const asHashtag = (h) => '#' + String(h).replace(/^#+/, '');
+
 /** The description as it should actually be pasted: body, chapters, credits, tags. */
 export function buildDescription(seo, chapters, mustCreditLine) {
   const parts = [String((seo && seo.description) || '').trim()];
@@ -202,9 +208,114 @@ export function buildDescription(seo, chapters, mustCreditLine) {
   if (mustCreditLine) parts.push(mustCreditLine);
 
   const hashtags = (seo && seo.hashtags) || [];
-  if (hashtags.length) parts.push(hashtags.join(' '));
+  if (hashtags.length) parts.push(hashtags.map(asHashtag).join(' '));
 
   return parts.filter(Boolean).join('\n\n').slice(0, DESCRIPTION_LIMIT);
+}
+
+/**
+ * One paste-ready sheet for the Reel on Instagram or Facebook.
+ *
+ * A required icon credit goes into the caption itself: the licence asks for it
+ * wherever the video is shown, not only on YouTube. Returns '' when that
+ * platform's text was never written, so no empty file lands in the kit.
+ */
+export function buildSocialSheet(platform, social, creditLine) {
+  const s = social || {};
+  const caption = [s.caption || '', creditLine || ''].filter(Boolean).join('\n\n');
+  const tags = (s.hashtags || []).map((h) => '#' + h).join(' ');
+  const post = [caption, tags].filter(Boolean).join('\n\n');
+  if (!s.caption) return '';
+  const rule = '='.repeat(72);
+
+  if (platform === 'instagram') {
+    return [
+      'INSTAGRAM REEL',
+      '',
+      rule,
+      '1. CAPTION   (' + post.length + '/2200 - paste this whole block, hashtags included)',
+      rule,
+      post,
+      '',
+      rule,
+      '2. HASHTAGS   (' + (s.hashtags || []).length + '/5)',
+      rule,
+      'Already at the end of the caption. Instagram ignores any past five and counts',
+      'hashtags in comments too, so do not add more in a first comment.',
+      '',
+      rule,
+      '3. ALT TEXT   (Advanced settings > Accessibility > Write alt text)',
+      rule,
+      s.altText || '(none written)',
+      '',
+    ].join('\n');
+  }
+
+  return [
+    'FACEBOOK REEL OR VIDEO',
+    '',
+    rule,
+    '1. TITLE   (for a video upload; a Reel has no title field)',
+    rule,
+    s.title || '(none written)',
+    '',
+    rule,
+    '2. DESCRIPTION   (paste this whole block)',
+    rule,
+    post,
+    '',
+    rule,
+    '3. TAGS   (for the video Tags field, where the upload form offers one)',
+    rule,
+    (s.keywords || []).join(', ') || '(none written)',
+    '',
+  ].join('\n');
+}
+
+/** Said once in the caption of a carousel, where the Reel's caption says nothing about swiping. */
+export const SWIPE_LINE = 'Swipe ➡️ for the answer and the explanation.';
+
+/**
+ * The caption for the carousel post: the platform's caption, a swipe cue,
+ * then the hashtags - last, as on the Reel. The slides carry no icons, so no
+ * credit is owed for them. '' when that platform's text was never written.
+ */
+export function buildCarouselCaption(social) {
+  const s = social || {};
+  if (!s.caption) return '';
+  const tags = (s.hashtags || []).map((h) => '#' + h).join(' ');
+  return [s.caption, SWIPE_LINE, tags].filter(Boolean).join('\n\n');
+}
+
+const HOW_TO_POST = [
+  'POSTING THE CAROUSEL',
+  '',
+  'Instagram',
+  '  1. + > Post, tap the "select multiple" icon, and pick slide-01 to the last slide IN ORDER.',
+  '  2. Keep the square crop - the slides are 1080 x 1080 already.',
+  '  3. Paste caption-instagram.txt. It ends with the hashtags; add no more in a comment.',
+  '',
+  'Facebook',
+  '  1. Create post > Photo/video, select every slide in order.',
+  '  2. Paste caption-facebook.txt.',
+  '',
+  'Post it the same day as the Reel: the carousel is the one people save to revise from.',
+  '',
+].join('\n');
+
+/**
+ * The carousel as its own zip: the slides, a caption per platform, and how to post it.
+ * `slides` is [{ name, data }] in order, as readCarousel returns them.
+ */
+export function buildCarouselZip({ slides, seo }) {
+  const pack = seo || {};
+  const files = (slides || []).map((s) => ({ name: s.name, data: s.data }));
+  const ig = buildCarouselCaption(pack.instagram);
+  const fb = buildCarouselCaption(pack.facebook);
+  if (ig) files.push({ name: 'caption-instagram.txt', data: ig + '\n' });
+  if (fb) files.push({ name: 'caption-facebook.txt', data: fb + '\n' });
+  files.push({ name: 'HOW-TO-POST.txt', data: HOW_TO_POST });
+  return makeZip(files);
 }
 
 /** A filename that is safe on Windows and still recognisable a month later. */
@@ -286,6 +397,14 @@ export function buildUploadSheet({
     rule,
     credits,
     '',
+    rule,
+    '7. INSTAGRAM AND FACEBOOK',
+    rule,
+    pack.instagram && pack.instagram.caption
+      ? 'Written separately for each, because they are searched differently -\n'
+        + 'see instagram.txt and facebook.txt.'
+      : 'Not written: this metadata was made before they were added. Write it again on step 7.',
+    '',
   ].join('\n');
 }
 
@@ -295,7 +414,7 @@ export function buildUploadSheet({
  * `thumbnail` is optional: a kit without one is still worth having, and the
  * creator may not have made one yet.
  */
-export function buildPublishKit({ content, design, seo, title, scenes, fps, thumbnail }) {
+export function buildPublishKit({ content, design, seo, title, scenes, fps, thumbnail, carousel = [] }) {
   const pack = seo || {};
   const chosenTitle = String(title || (pack.titles || [])[0] || content.question || '').trim();
   const chapters = buildChapters(scenes, fps);
@@ -314,7 +433,7 @@ export function buildPublishKit({ content, design, seo, title, scenes, fps, thum
 
   const description = buildDescription(pack, chapters, creditLine);
   const tagLine = (pack.tags || []).join(', ');
-  const hashLine = (pack.hashtags || []).join(' ');
+  const hashLine = (pack.hashtags || []).map(asHashtag).join(' ');
   const chapterText = chapters.length
     ? chapters.map((c) => stamp(c.seconds) + ' ' + c.title).join('\n')
     : 'This video is too short for chapters. YouTube needs at least three,\n'
@@ -338,6 +457,8 @@ export function buildPublishKit({ content, design, seo, title, scenes, fps, thum
     tags: pack.tags || [],
     hashtags: pack.hashtags || [],
     pinnedComment: pack.pinnedComment || '',
+    instagram: pack.instagram || null,
+    facebook: pack.facebook || null,
     // Floor, not round: `stamp` floors, and a script seeking to a `seconds`
     // that disagreed with the printed mark would land somewhere else.
     chapters: chapters.map((c) => ({
@@ -361,12 +482,26 @@ export function buildPublishKit({ content, design, seo, title, scenes, fps, thum
     { name: 'credits.txt', data: credits + '\n' },
     { name: 'metadata.json', data: JSON.stringify(metadata, null, 2) + '\n' },
   ];
+  const instagram = buildSocialSheet('instagram', pack.instagram, creditLine);
+  const facebook = buildSocialSheet('facebook', pack.facebook, creditLine);
+  if (instagram) files.push({ name: 'instagram.txt', data: instagram });
+  if (facebook) files.push({ name: 'facebook.txt', data: facebook });
   if (thumbnail) files.push({ name: 'thumbnail.png', data: thumbnail });
+  // The square carousel post, in its own folder so its slides stay in order and apart.
+  if (carousel.length) {
+    for (const slide of carousel) files.push({ name: 'carousel/' + slide.name, data: slide.data });
+    const ig = buildCarouselCaption(pack.instagram);
+    const fb = buildCarouselCaption(pack.facebook);
+    if (ig) files.push({ name: 'carousel/caption-instagram.txt', data: ig + '\n' });
+    if (fb) files.push({ name: 'carousel/caption-facebook.txt', data: fb + '\n' });
+    files.push({ name: 'carousel/HOW-TO-POST.txt', data: HOW_TO_POST });
+  }
 
   return {
     name: slug(chosenTitle || content.topic) + '-upload-kit.zip',
     buffer: makeZip(files),
     chapters: chapters.length,
     hasThumbnail: !!thumbnail,
+    carouselSlides: carousel.length,
   };
 }

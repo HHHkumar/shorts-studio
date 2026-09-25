@@ -308,6 +308,7 @@ export const App: React.FC = () => {
               imageStyles={imageStyles}
               googleImageModels={googleImageModels}
               geminiKey={geminiKey}
+              geminiModel={geminiModel}
               onBack={() => go(3)}
               onNext={() => go(5)}
             />
@@ -342,6 +343,7 @@ export const App: React.FC = () => {
               orientation={design.orientation}
               design={design}
               videoProps={videoProps}
+              googleImageModels={googleImageModels}
               onBack={() => go(5)}
             />
           ) : null}

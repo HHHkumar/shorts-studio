@@ -1,4 +1,6 @@
-import type { DesignSettings, LayoutName, ThemeMode } from './types';
+import { resolveAlign, type Align } from './align';
+import { DESIGN_LOOKS, type DesignFont, type DesignLook } from './design-looks';
+import type { BuiltInLayout, DesignSettings, LayoutName, ThemeMode } from './types';
 
 export interface Theme {
   layout: LayoutName;
@@ -28,6 +30,8 @@ export interface Theme {
   bounce: number;
   shadow: string;
   glow: string;
+  /** Where blocks of text sit. See src/lib/align.ts for what does not follow it. */
+  align: Align;
 }
 
 // Font stacks only - nothing is downloaded, so the headless-Chrome render
@@ -45,9 +49,30 @@ const FONTS = {
   heavy: "'Arial Black', 'Segoe UI Black', Impact, " + INDIC + ", sans-serif",
 };
 
-type Recipe = Omit<Theme, 'layout' | 'mode'>;
+// Looks ported from Claude Design name their webfont first and fall back to
+// one of the stacks above, so a render without the font installed is plain
+// rather than broken. Self-host the woff2 files into public/fonts to get the
+// real thing - loading them from Google at render time would let some frames
+// screenshot before the font arrives, which is exactly the flicker the
+// system-font rule was written to avoid.
+function stackFor(font: DesignFont): string {
+  const family = font.family.replace(/['"\\]/g, '').trim();
+  return family ? "'" + family + "', " + FONTS[font.fallback] : FONTS[font.fallback];
+}
 
-const RECIPES: Record<LayoutName, Record<ThemeMode, Recipe>> = {
+type Recipe = Omit<Theme, 'layout' | 'mode' | 'align'>;
+
+// What each built-in layout was designed for. Separate from the recipes because
+// it does not change between dark and light, and a creator can override it.
+// Claude Design looks carry their own, from the kit's layoutStyle.
+const BUILT_IN_ALIGN: Record<BuiltInLayout, Align> = {
+  simple: 'center',
+  elegant: 'center',
+  nerdy: 'center',
+  flashy: 'center',
+};
+
+const RECIPES: Record<BuiltInLayout, Record<ThemeMode, Recipe>> = {
   // --- SIMPLE: clean, high contrast, nothing to distract -------------------
   simple: {
     dark: {
@@ -159,7 +184,31 @@ export const LAYOUT_INFO: { name: LayoutName; label: string; blurb: string }[] =
   { name: 'elegant', label: 'Elegant', blurb: 'Serif type, calm pacing. Feels like a documentary.' },
   { name: 'nerdy', label: 'Nerdy', blurb: 'Terminal green on graph paper. Great for code and maths.' },
   { name: 'flashy', label: 'Flashy', blurb: 'Loud colours, big bounce. Built for the scroll feed.' },
+  ...DESIGN_LOOKS.map((look) => ({ name: look.slug, label: look.label, blurb: look.blurb })),
 ];
+
+const lookFor = (layout: string): DesignLook | undefined =>
+  DESIGN_LOOKS.find((look) => look.slug === layout);
+
+/**
+ * The recipe for a layout, with a Claude Design look's fonts turned into real
+ * stacks. A layout nobody knows - a look whose kit was since removed, saved in
+ * someone's settings - draws as Simple rather than crashing the preview.
+ */
+function recipeFor(layout: string, mode: ThemeMode): { recipe: Recipe; align: Align; name: LayoutName } {
+  const look = lookFor(layout);
+  if (look) {
+    const r = look[mode] || look.light;
+    return {
+      recipe: { ...r, fontDisplay: stackFor(r.fontDisplay), fontBody: stackFor(r.fontBody) },
+      align: look.align,
+      name: look.slug,
+    };
+  }
+  const built = (layout in RECIPES ? layout : 'simple') as BuiltInLayout;
+  const modes = RECIPES[built];
+  return { recipe: modes[mode] || modes.dark, align: BUILT_IN_ALIGN[built], name: built };
+}
 
 export function hexToRgba(hex: string, alpha: number): string {
   const clean = hex.replace('#', '');
@@ -170,15 +219,16 @@ export function hexToRgba(hex: string, alpha: number): string {
 }
 
 export function getTheme(design: DesignSettings): Theme {
-  const recipe = RECIPES[design.layout][design.mode];
+  const { recipe, align, name } = recipeFor(design.layout, design.mode);
   const custom = design.accent && design.accent.trim();
   const accent = custom ? design.accent.trim() : recipe.accent;
   return {
     ...recipe,
     accent,
     accentSoft: custom ? hexToRgba(accent, 0.16) : recipe.accentSoft,
-    layout: design.layout,
+    layout: name,
     mode: design.mode,
+    align: resolveAlign(design.align, align),
   };
 }
 
@@ -200,6 +250,7 @@ export const DEFAULT_DESIGN: DesignSettings = {
   textReveal: 'fade',
   overlay: 'none',
   overlayIntensity: 0.5,
+  align: 'auto',
   showStock: true,
   stockOpacity: 0.45,
   music: 'calm',

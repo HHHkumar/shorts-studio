@@ -158,4 +158,51 @@ export async function renderThumbnail(inputProps) {
   return { fileName, url: '/out/' + fileName, bytes: fs.statSync(output).size };
 }
 
+/** A carousel folder name this app made - the only shape accepted back from the browser. */
+export const CAROUSEL_FOLDER = /^carousel-[0-9]{13}$/;
+
+/**
+ * Every slide of the square carousel post, into its own folder under out/.
+ *
+ * `slides` is the plan from src/lib/carousel.ts. Each slide is one still of
+ * the same composition, taken at its last frame so the entrance animations it
+ * shares with the video have finished. Sequential: the slides share one
+ * browser, and a handful of stills is a few seconds either way.
+ */
+export async function renderCarousel({ content, design, channelName, slides }, onProgress = () => undefined) {
+  const folder = 'carousel-' + Date.now();
+  const dir = path.join(OUT_DIR, folder);
+  fs.mkdirSync(dir, { recursive: true });
+
+  const serveUrl = await getBundle(() => undefined);
+  syncAudioIntoBundle(serveUrl);
+  await ensureBrowser();
+
+  const files = [];
+  for (let index = 0; index < slides.length; index++) {
+    onProgress(index, slides.length);
+    const inputProps = { content, design, channelName: channelName || '', slide: slides[index], index, total: slides.length };
+    const composition = await selectComposition({ serveUrl, id: 'CarouselSlide', inputProps });
+    const fileName = 'slide-' + String(index + 1).padStart(2, '0') + '.png';
+    await renderStill({
+      composition, serveUrl, inputProps, imageFormat: 'png',
+      output: path.join(dir, fileName),
+      frame: composition.durationInFrames - 1,
+    });
+    files.push({ fileName, url: '/out/' + folder + '/' + fileName, kind: slides[index].kind });
+  }
+  return { folder, dir, files };
+}
+
+/** The PNGs of a carousel made earlier, in slide order. [] when the folder is gone or not ours. */
+export function readCarousel(folder) {
+  if (!CAROUSEL_FOLDER.test(String(folder || ''))) return [];
+  const dir = path.join(OUT_DIR, folder);
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir)
+    .filter((f) => /^slide-\d{2}\.png$/.test(f))
+    .sort()
+    .map((name) => ({ name, data: fs.readFileSync(path.join(dir, name)) }));
+}
+
 export const paths = { ROOT, OUT_DIR, PUBLIC_DIR };

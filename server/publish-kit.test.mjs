@@ -7,7 +7,8 @@
 import assert from 'node:assert/strict';
 import { inflateRawSync } from 'node:zlib';
 import {
-  buildChapters, buildCredits, buildDescription, buildPublishKit, buildUploadSheet, slug, stamp,
+  SWIPE_LINE, buildCarouselCaption, buildCarouselZip,
+  buildChapters, buildCredits, buildDescription, buildPublishKit, buildSocialSheet, buildUploadSheet, slug, stamp,
 } from './publish-kit.mjs';
 
 /**
@@ -346,6 +347,131 @@ test('the subject is left out when it only repeats the topic', () => {
 test('a subject that says something new is kept', () => {
   const different = { ...CONTENT, subject: 'Civil engineering' };
   assert.match(sheet({ content: different }), /Subject:\s+Civil engineering/);
+});
+
+console.log('\ninstagram and facebook');
+
+const SOCIAL = {
+  ...SEO,
+  // Stored bare, exactly as the metadata step leaves them.
+  hashtags: ['rivers', 'salmon'],
+  instagram: {
+    caption: 'How does a salmon climb a dam? Tell us below.\nThe fish ladder, explained.',
+    hashtags: ['fishladder', 'salmon', 'rivers'],
+    altText: 'A salmon leaping up the steps of a fish ladder beside a dam',
+  },
+  facebook: {
+    title: 'How a fish ladder gets salmon past a dam',
+    caption: 'A dam should end a salmon run. Here is how it does not.',
+    hashtags: ['salmon'],
+    keywords: ['fish ladder', 'salmon migration'],
+  },
+};
+
+test('bare hashtags get their # back in the YouTube description', () => {
+  const out = buildDescription({ description: 'B', hashtags: ['rivers', '#salmon'] }, [], '');
+  assert.match(out, /#rivers #salmon$/);
+});
+
+test('the Instagram sheet is the caption with its hashtags, and the alt text', () => {
+  const text = buildSocialSheet('instagram', SOCIAL.instagram, '');
+  assert.match(text, /Tell us below\.\nThe fish ladder, explained\.\n\n#fishladder #salmon #rivers/);
+  assert.match(text, /\(3\/5\)/);
+  assert.match(text, /A salmon leaping up the steps/);
+});
+
+test('a required icon credit goes into both captions', () => {
+  const line = 'Icons by game-icons (CC BY 3.0), via Iconify.';
+  assert.match(buildSocialSheet('instagram', SOCIAL.instagram, line), /explained\.\n\nIcons by game-icons[^\n]*\n\n#fishladder/);
+  assert.match(buildSocialSheet('facebook', SOCIAL.facebook, line), /Icons by game-icons/);
+});
+
+test('the Instagram character count covers everything pasted', () => {
+  const text = buildSocialSheet('instagram', SOCIAL.instagram, '');
+  const post = SOCIAL.instagram.caption + '\n\n#fishladder #salmon #rivers';
+  assert.match(text, new RegExp('\\(' + post.length + '/2200'));
+});
+
+test('the Facebook sheet has the title, the description and the tags', () => {
+  const text = buildSocialSheet('facebook', SOCIAL.facebook, '');
+  assert.match(text, /How a fish ladder gets salmon past a dam/);
+  assert.match(text, /Here is how it does not\.\n\n#salmon/);
+  assert.match(text, /fish ladder, salmon migration/);
+});
+
+test('no sheet when that platform was never written', () => {
+  assert.equal(buildSocialSheet('instagram', undefined, ''), '');
+  assert.equal(buildSocialSheet('facebook', { caption: '' }, ''), '');
+});
+
+test('the kit carries instagram.txt and facebook.txt when they were written', () => {
+  const kit = buildPublishKit({
+    content: CONTENT, design: {}, seo: SOCIAL, title: SOCIAL.titles[0],
+    scenes: lay([20, 20, 20, 20]), fps: FPS, thumbnail: null,
+  });
+  assert.match(unzipEntry(kit.buffer, 'instagram.txt'), /#fishladder/);
+  assert.match(unzipEntry(kit.buffer, 'facebook.txt'), /salmon migration/);
+  assert.match(unzipEntry(kit.buffer, 'hashtags.txt'), /^#rivers #salmon/);
+  assert.match(unzipEntry(kit.buffer, 'UPLOAD.txt'), /see instagram\.txt and facebook\.txt/);
+  assert.equal(JSON.parse(unzipEntry(kit.buffer, 'metadata.json')).instagram.altText, SOCIAL.instagram.altText);
+});
+
+console.log('\nthe carousel post');
+
+const PNG = Buffer.from('89504e470d0a1a0a', 'hex');
+const SLIDES = [{ name: 'slide-01.png', data: PNG }, { name: 'slide-02.png', data: PNG }];
+
+test('the carousel caption puts the swipe cue before the hashtags', () => {
+  const text = buildCarouselCaption(SOCIAL.instagram);
+  assert.equal(text, SOCIAL.instagram.caption + '\n\n' + SWIPE_LINE + '\n\n#fishladder #salmon #rivers');
+});
+
+test('no caption is written for a platform that was never written', () => {
+  assert.equal(buildCarouselCaption(undefined), '');
+});
+
+test('the carousel zip has the slides in order, both captions and how to post', () => {
+  const zip = buildCarouselZip({ slides: SLIDES, seo: SOCIAL });
+  const raw = zip.toString('latin1');
+  assert.ok(raw.indexOf('slide-01.png') < raw.indexOf('slide-02.png'), 'slides out of order');
+  assert.match(unzipEntry(zip, 'caption-instagram.txt'), /Swipe ➡️/);
+  assert.match(unzipEntry(zip, 'caption-facebook.txt'), /#salmon/);
+  assert.match(unzipEntry(zip, 'HOW-TO-POST.txt'), /IN ORDER/);
+});
+
+test('a carousel zip made before any metadata still has the slides and instructions', () => {
+  const zip = buildCarouselZip({ slides: SLIDES, seo: null });
+  const raw = zip.toString('latin1');
+  assert.ok(raw.includes('slide-02.png') && raw.includes('HOW-TO-POST.txt') && !raw.includes('caption-instagram.txt'));
+});
+
+test('the upload kit carries the carousel in its own folder', () => {
+  const kit = buildPublishKit({
+    content: CONTENT, design: {}, seo: SOCIAL, title: SOCIAL.titles[0],
+    scenes: lay([20, 20, 20, 20]), fps: FPS, thumbnail: null, carousel: SLIDES,
+  });
+  assert.equal(kit.carouselSlides, 2);
+  const raw = kit.buffer.toString('latin1');
+  assert.ok(raw.includes('carousel/slide-01.png') && raw.includes('carousel/slide-02.png'));
+  assert.match(unzipEntry(kit.buffer, 'carousel/caption-instagram.txt'), /Swipe/);
+});
+
+test('a kit without a carousel has no carousel folder', () => {
+  const kit = buildPublishKit({
+    content: CONTENT, design: {}, seo: SOCIAL, title: SOCIAL.titles[0],
+    scenes: lay([20, 20, 20, 20]), fps: FPS, thumbnail: null,
+  });
+  assert.equal(kit.carouselSlides, 0);
+  assert.ok(!kit.buffer.toString('latin1').includes('carousel/'));
+});
+
+test('an older pack without them says to write it again, and adds no empty files', () => {
+  const kit = buildPublishKit({
+    content: CONTENT, design: {}, seo: SEO, title: SEO.titles[0],
+    scenes: lay([20, 20, 20, 20]), fps: FPS, thumbnail: null,
+  });
+  assert.ok(!kit.buffer.toString('latin1').includes('instagram.txt'));
+  assert.match(unzipEntry(kit.buffer, 'UPLOAD.txt'), /Write it again on step 7/);
 });
 
 console.log('\n' + passed + ' checks passed\n');
