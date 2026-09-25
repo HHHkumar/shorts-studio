@@ -162,7 +162,7 @@ const RESPONSE_SCHEMA = {
   required: ['topic', 'question', 'hook', 'outro', 'script'],
 };
 
-const SYSTEM = [
+export const STORYBOARD_SYSTEM = [
   'You are a director writing the storyboard for an explainer video. Your job is to make somebody',
   'understand how something works, using pictures and analogies rather than equations.',
   '',
@@ -375,7 +375,7 @@ export function aptitudeBrief(o) {
   ];
 }
 
-function buildPrompt(o) {
+export function buildStoryboardPrompt(o) {
   const b = storyboardBudget(o.targetSeconds);
   const lines = [];
 
@@ -390,8 +390,16 @@ function buildPrompt(o) {
     lines.push('Write ALL narration and every on-screen label in ' + o.language + '.');
   }
   if (o.avoid) lines.push('Avoid: ' + o.avoid + '.');
-  if (o.extra) lines.push('Also: ' + o.extra + '.');
   lines.push('');
+
+  // After everything it might need to overrule, before the length spec, which
+  // is not guidance and is the requirement most often missed.
+  if (o.extra && String(o.extra).trim()) {
+    lines.push('INSTRUCTIONS FROM THE CREATOR. These override the guidance above wherever they');
+    lines.push('disagree with it. They do not override the length below or the output format.');
+    lines.push(String(o.extra).trim());
+    lines.push('');
+  }
 
   lines.push('LENGTH. Write EXACTLY ' + b.scenes + ' scenes.');
   lines.push('Each scene needs about ' + b.wordsPerScene + ' words of narration - not 10, not 15.');
@@ -404,7 +412,10 @@ function buildPrompt(o) {
   lines.push('afterwards - the video simply comes out at half the length that was asked for.');
   lines.push('');
 
-  lines.push('The last scene is the outro' + (o.extra ? '' : ' - a short sign-off') + '.');
+  // Was: `o.extra ? '' : ' - a short sign-off'`, so writing anything at all in
+  // the creator's instructions box silently removed the description of the
+  // outro. The two have nothing to do with each other.
+  lines.push('The last scene is the outro - a short sign-off.');
   lines.push('The scene before it is the recap.');
   lines.push('');
   lines.push('Return the JSON. No commentary.');
@@ -413,8 +424,8 @@ function buildPrompt(o) {
 
 export async function generateStoryboard(apiKey, model, options) {
   const parsed = await callModel(options.provider, apiKey, model, {
-    system: SYSTEM,
-    prompt: buildPrompt(options),
+    system: STORYBOARD_SYSTEM,
+    prompt: buildStoryboardPrompt(options),
     schema: RESPONSE_SCHEMA,
     temperature: 0.55 + (Number(options.curiosity) || 5) * 0.03,
     label: 'storyboard',

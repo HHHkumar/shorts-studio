@@ -3,6 +3,7 @@ import type { SketchArgs } from './P5Sketch';
 import { EXTRA_SKETCHES } from './sketches-extra';
 import { MORE_SKETCHES } from './sketches-more';
 import { GAP_SKETCHES } from './sketches-gaps';
+import { layoutNet, parseNet } from '../lib/circuit-net';
 
 // ---------------------------------------------------------------------------
 // The curated sketch library.
@@ -25,6 +26,11 @@ export interface SketchColors {
 }
 
 export interface SketchParams {
+  /**
+   * A series-parallel network, written as an expression: "12 + (12 | 12)".
+   * Parallel binds tighter than series, as it does on paper. See circuit-net.
+   */
+  network?: string;
   mode?: string;
   angle?: number;
   speed?: number;
@@ -532,11 +538,18 @@ const CORE_SKETCHES: Record<string, SketchDef> = {
   circuit: {
     shape: 'wide',
     label: 'Circuit',
-    describe: 'a source with two or three components in series or parallel. Use for: series and parallel resistance, current division, basic circuit questions',
-    uses: 'mode ("series" or "parallel"), count (2-3), labelA (source), items (component labels)',
+    describe: 'a source and ANY arrangement of components in series and parallel, drawn from a description of the network. Use for: equivalent resistance, series and parallel combinations, current and voltage division, ladders, basic circuit questions',
+    uses: 'network (REQUIRED - without it no circuit is drawn at all) - the circuit written as an expression, where + is series and | is parallel and | binds tighter. "12 + (12 | 12)" is one in series with two in parallel. "(12 + 12) | 12" is two in series in parallel with a third. "4 | 4 | 4" is three in parallel. "2 + 3 + 4" is three in series. Read the question and write the arrangement it describes, with the component value in each position. Also labelA (the source, e.g. "12 V")',
     draw: ({ p, progress, width, height, params, items, colors }) => {
-      const parallel = String(params.mode || 'series') === 'parallel';
+      const mode = String(params.mode || 'series');
+      const parallel = mode === 'parallel';
       const n = Math.round(num(params.count, Math.max(2, Math.min(3, items.length || 2)), 2, 3));
+
+      // `network` describes the circuit rather than naming a shape, so any
+      // series-parallel arrangement can be drawn instead of the two that
+      // happened to have been given a mode. Falls through to the old modes
+      // when it is absent or unreadable - an older saved script still draws.
+      const net = parseNet(String(params.network || ''));
       const left = width * 0.12;
       const right = width * 0.88;
       const top = height * 0.26;
@@ -605,6 +618,45 @@ const CORE_SKETCHES: Record<string, SketchDef> = {
           p.rect(x - 20, midY - 20, 40, 40, 3);
           p.noFill();
           label(p, (items[i] && items[i].label) || '', x, midY + 46, colors, 22);
+        });
+      } else if (net) {
+        // Laid out by the recursive placer, drawn dumbly here. The sketch does
+        // not know what shape it is drawing, which is the entire point: a new
+        // arrangement is a different string, not a new branch in this file.
+        // The network sits ON the top wire, because the battery interrupts the
+        // left rail half way up - so the loop has to leave from above it and
+        // return below it, exactly as the plain series mode already did.
+        //
+        // Its branches therefore straddle `top`, which is why the band is
+        // centred there rather than starting there. Capped so the topmost
+        // branch of a deep network stays on the canvas.
+        const netLeft = left + 54;
+        const bandH = Math.min((bottom - top) * 1.3, (top - 12) * 2);
+        const placed = layoutNet(net, netLeft, top - bandH / 2, right - netLeft, bandH, 84, 32);
+
+        p.stroke(colors.text);
+        p.strokeWeight(4);
+        // The loop around it: across the top to where the network starts, then
+        // down the far side and back along the bottom to the battery.
+        p.line(left, top, netLeft, top);
+        p.line(right, top, right, bottom);
+        p.line(left, bottom, right, bottom);
+        placed.wires.forEach((w) => p.line(w.x1, w.y1, w.x2, w.y2));
+
+        p.noStroke();
+        p.fill(colors.text);
+        placed.dots.forEach((d) => p.circle(d.x, d.y, 10));
+        p.noFill();
+
+        placed.boxes.forEach((b, i) => {
+          const lit = progress > i / (placed.boxes.length + 2);
+          p.stroke(lit ? colors.accent : colors.text);
+          p.strokeWeight(4);
+          p.fill(colors.bg);
+          p.rect(b.x, b.y, b.w, placed.boxH);
+          p.noFill();
+          label(p, b.label, b.x + b.w / 2, b.y - placed.labelGap + 8, colors,
+            Math.max(14, Math.min(22, placed.boxH * 0.68)));
         });
       } else {
         p.stroke(colors.text);

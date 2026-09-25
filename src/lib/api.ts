@@ -120,6 +120,18 @@ export interface ThumbnailBrief {
   notes: string[];
 }
 
+/** One model's attempt in a side-by-side comparison. `error` instead of `src`
+ *  when that one model failed - the others still drew. */
+export interface ImageComparison {
+  modelId: string;
+  label: string;
+  cents: number;
+  seconds: number;
+  src?: string;
+  bytes?: number;
+  error?: string;
+}
+
 export interface StockImage {
   id: string;
   provider: 'pexels' | 'nasa' | 'ai';
@@ -348,6 +360,27 @@ export const api = {
     return post<{ prompts: Record<string, string>; notes: string[] }>('/api/image/prompts', body);
   },
 
+  /**
+   * Draw the SAME prompt with every Google image model, to judge them together.
+   *
+   * Four requests, so four charges - the caller is responsible for saying so
+   * before it is pressed. No reference image is used: matching a reference is a
+   * different question from which model draws better, and mixing the two would
+   * judge every model after the first on how well it copied.
+   */
+  compareImages(body: {
+    apiKey: string;
+    query: string;
+    subject: string;
+    topic: string;
+    styleId: string;
+    orientation: string;
+    jobId: string;
+    imagePrompt?: string;
+  }) {
+    return post<{ prompt: string; results: ImageComparison[] }>('/api/image/compare', body);
+  },
+
   seo(
     apiKey: string,
     model: string,
@@ -363,6 +396,21 @@ export const api = {
 
   trending(apiKey: string, model: string, options: Partial<TopicForm> & { region?: string }) {
     return post<TrendingResult>('/api/trending', { apiKey, model, options });
+  },
+
+  /**
+   * The exact words the model will be sent, without sending them.
+   *
+   * No key and no cost: it runs the same builders the generate route runs, on
+   * the server, so what is shown cannot drift from what is asked. Rebuilding it
+   * in the browser would have been cheaper and would eventually have started
+   * describing a request nobody makes.
+   */
+  previewPrompt(options: TopicForm) {
+    return post<{ videoKind: string; system: string; prompt: string; words: number }>(
+      '/api/prompt/preview',
+      { options },
+    );
   },
 
   generate(apiKey: string, model: string, options: TopicForm) {

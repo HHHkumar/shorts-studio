@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { blankContent } from '../lib/blank-script';
 import {
   api,
@@ -69,6 +69,32 @@ export const StepTopic: React.FC<{
 }) => {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [showPrompt, setShowPrompt] = useState(false);
+  const [preview, setPreview] = useState<
+    { videoKind: string; system: string; prompt: string; words: number } | null
+  >(null);
+  const [promptError, setPromptError] = useState<string | null>(null);
+
+  /**
+   * Keep the preview in step with the form while the panel is open.
+   *
+   * Debounced because a slider fires on every pixel, and cancelled on the way
+   * out so a slow reply cannot land after the form has moved on and show the
+   * previous request as if it were the current one.
+   */
+  useEffect(() => {
+    if (!showPrompt) return undefined;
+    let live = true;
+    const timer = setTimeout(() => {
+      api.previewPrompt({ ...form, orientation: design.orientation })
+        .then((out) => { if (live) { setPreview(out); setPromptError(null); } })
+        .catch((e) => {
+          if (live) setPromptError(e instanceof Error ? e.message : String(e));
+        });
+    }, 350);
+    return () => { live = false; clearTimeout(timer); };
+  }, [showPrompt, form, design.orientation]);
 
   const set = <K extends keyof TopicForm>(key: K) => (value: TopicForm[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -428,6 +454,55 @@ export const StepTopic: React.FC<{
           </button>
         ) : null}
       </div>
+
+      <div className="section-title">Your own instructions</div>
+      <p className="lede" style={{ marginTop: 0 }}>
+        Anything the dropdowns above cannot say. These are placed near the end of the request, after
+        the guidance they may need to overrule.
+      </p>
+      <TextArea
+        label="Tell it what you want"
+        value={form.extra}
+        onChange={set('extra')}
+        rows={7}
+        placeholder={
+          'e.g. Use an Indian everyday example wherever possible.\n'
+          + 'Name the formula before using it, and show the unit at every step.\n'
+          + 'Make one wrong option the mistake of forgetting the root three.'
+        }
+        hint={
+          'These override the settings above wherever they disagree. They cannot override the '
+          + 'target length or the output format — those are enforced outside the prompt.'
+        }
+      />
+
+      <details className="help" open={showPrompt} onToggle={(e) => setShowPrompt(e.currentTarget.open)}>
+        <summary>See exactly what will be sent</summary>
+        <div className="inner">
+          {promptError ? (
+            <Note kind="warn">{promptError}</Note>
+          ) : (
+            <>
+              <p className="hint" style={{ marginTop: 10 }}>
+                Built by the server from the settings above — the same code the Generate button uses,
+                so this is the request, not an impression of it. Nothing is sent and nothing is
+                charged by looking.
+                {preview ? ' About ' + preview.words.toLocaleString() + ' words in total.' : ''}
+              </p>
+              <div className="prompt-view">
+                <div className="prompt-part">
+                  <label>Your request{preview ? ' — ' + preview.videoKind : ''}</label>
+                  <pre>{preview ? preview.prompt : 'Reading…'}</pre>
+                </div>
+                <div className="prompt-part">
+                  <label>The standing instructions it is added to</label>
+                  <pre className="quiet">{preview ? preview.system : ''}</pre>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </details>
 
       <details className="help">
         <summary>Advanced (optional)</summary>
