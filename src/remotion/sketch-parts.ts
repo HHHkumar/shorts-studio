@@ -262,13 +262,20 @@ export function bars(
 // --- component symbols -------------------------------------------------------
 
 /** A battery or DC source, drawn across the wire at (x, y), vertically. */
+/**
+ * How far each battery plate sits from the battery's centre. A vertical wire
+ * leading into a battery must stop exactly here, top and bottom - the
+ * sketches used to stop at 16 and left the battery connected to nothing.
+ */
+export const BATTERY_LEAD = 7;
+
 export function battery(p: p5, x: number, y: number, colors: SketchColors, size = 22) {
   p.push();
   p.stroke(colors.text);
   p.strokeWeight(6);
-  p.line(x - size, y - 7, x + size, y - 7);
+  p.line(x - size, y - BATTERY_LEAD, x + size, y - BATTERY_LEAD);
   p.strokeWeight(3);
-  p.line(x - size * 0.5, y + 7, x + size * 0.5, y + 7);
+  p.line(x - size * 0.5, y + BATTERY_LEAD, x + size * 0.5, y + BATTERY_LEAD);
   p.pop();
 }
 
@@ -318,7 +325,13 @@ export function lamp(p: p5, x: number, y: number, colors: SketchColors, lit = fa
   p.pop();
 }
 
-/** A switch, open or closed. */
+/**
+ * A switch, open or closed, spanning `w` - which must be the whole gap left
+ * in the wire for it: its outer leads end at x - w/2 and x + w/2, and nothing
+ * else joins the wire either side. Sized in pixels against a gap sized in
+ * proportions, it left bare wire on both sides, and "Closed - current flows"
+ * sat under a circuit that was plainly broken.
+ */
 export function switchSym(p: p5, x: number, y: number, colors: SketchColors, closed = false, w = 56) {
   p.push();
   p.stroke(colors.text);
@@ -327,7 +340,9 @@ export function switchSym(p: p5, x: number, y: number, colors: SketchColors, clo
   p.line(x - w / 2, y, x - w * 0.28, y);
   p.line(x + w * 0.28, y, x + w / 2, y);
   if (closed) p.line(x - w * 0.28, y, x + w * 0.28, y);
-  else p.line(x - w * 0.28, y, x + w * 0.22, y - 26);
+  // The lift grows with the switch, so a wide open switch still reads as
+  // open - a fixed 26 pixels over a 200-pixel blade looked nearly shut.
+  else p.line(x - w * 0.28, y, x + w * 0.22, y - Math.max(26, w * 0.2));
   p.pop();
   junction(p, x - w * 0.28, y, colors.text, 8);
   junction(p, x + w * 0.28, y, colors.text, 8);

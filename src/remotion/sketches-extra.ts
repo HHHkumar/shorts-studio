@@ -1,7 +1,7 @@
 import type p5 from 'p5';
 import type { SketchDef } from './sketches';
 import {
-  arcArrow, arrow, axes, bars, battery, beaker, box, bubble, capacitor, caption, clean, curve,
+  arcArrow, arrow, axes, bars, battery, BATTERY_LEAD, beaker, box, bubble, capacitor, caption, clean, curve,
   ground, inductor, junction, labels, lamp, num, resistor, safe, setDash, spread, stagger,
   switchSym, tint, title, values, wire,
 } from './sketch-parts';
@@ -1515,8 +1515,8 @@ export const EXTRA_SKETCHES: Record<string, SketchDef> = {
       p.line(left, top, right, top);
       p.line(left, bottom, right, bottom);
       p.line(right, top, right, bottom);
-      p.line(left, top, left, (top + bottom) / 2 - 16);
-      p.line(left, (top + bottom) / 2 + 16, left, bottom);
+      p.line(left, top, left, (top + bottom) / 2 - BATTERY_LEAD);
+      p.line(left, (top + bottom) / 2 + BATTERY_LEAD, left, bottom);
       p.pop();
       battery(p, left, (top + bottom) / 2, colors);
       caption(p, clean(params.labelA, 10), left + 60, (top + bottom) / 2, colors, 20);
@@ -1561,19 +1561,24 @@ export const EXTRA_SKETCHES: Record<string, SketchDef> = {
       const right = width * 0.82;
       const top = height * 0.32;
       const bottom = height * 0.7;
+      const mid = (top + bottom) / 2;
+      // The gap left in the top wire, and the switch sized to fill exactly
+      // that gap - see switchSym for what a mismatch looked like.
+      const gapFrom = width * 0.4;
+      const gapTo = width * 0.62;
       p.push();
       p.stroke(colors.text);
       p.strokeWeight(4);
       p.noFill();
       p.line(left, bottom, right, bottom);
       p.line(right, top, right, bottom);
-      p.line(left, top, width * 0.4, top);
-      p.line(width * 0.62, top, right, top);
-      p.line(left, top, left, (top + bottom) / 2 - 16);
-      p.line(left, (top + bottom) / 2 + 16, left, bottom);
+      p.line(left, top, gapFrom, top);
+      p.line(gapTo, top, right, top);
+      p.line(left, top, left, mid - BATTERY_LEAD);
+      p.line(left, mid + BATTERY_LEAD, left, bottom);
       p.pop();
-      battery(p, left, (top + bottom) / 2, colors);
-      switchSym(p, width * 0.51, top, colors, closed, 130);
+      battery(p, left, mid, colors);
+      switchSym(p, (gapFrom + gapTo) / 2, top, colors, closed, gapTo - gapFrom);
       lamp(p, right, (top + bottom) / 2, colors, closed, 24);
       caption(p, closed ? 'Closed — current flows' : 'Open — nothing flows',
               width / 2, height * 0.88, colors);
