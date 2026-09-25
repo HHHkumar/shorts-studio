@@ -12,6 +12,7 @@ import { OverlayLayer } from './Overlays';
 import { RevealContext } from './ReadAlong';
 import { DoodlePicture, DoodleText } from './DoodleStage';
 import { HandFonts } from './fonts';
+import { DoodleFilters, DoodleInk } from './DoodleInk';
 import { wantsDoodle } from '../lib/doodle';
 
 /**
@@ -36,6 +37,8 @@ export const QuizVideo: React.FC<VideoProps> = ({ content, scenes, design }) => 
     <RevealContext.Provider value={design.textReveal || 'fade'}>
     <AbsoluteFill style={{ backgroundColor: theme.bg }}>
       {doodle ? <HandFonts /> : null}
+      {/* The line boil is movement, so it answers to the same dial as the rest. */}
+      {doodle ? <DoodleFilters boil={(design.motionStrength ?? 1) > 0} /> : null}
       <Backdrop theme={theme} />
 
       {/* Outside every Sequence on purpose: its frame counter is the whole
@@ -98,7 +101,10 @@ export const QuizVideo: React.FC<VideoProps> = ({ content, scenes, design }) => 
                     motion={design.motionStrength ?? 1}
                   />
                 );
-                return doodleHere ? <DoodleText>{body}</DoodleText> : body;
+                // Every scene of a Doodle video is inked by hand, drawing or
+                // not - a circuit scene with no mascot is still on the page.
+                const inked = doodle ? <DoodleInk>{body}</DoodleInk> : body;
+                return doodleHere ? <DoodleText>{inked}</DoodleText> : inked;
               })()}
             </SceneFade>
 

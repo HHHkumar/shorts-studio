@@ -1115,9 +1115,19 @@ AI-made imagery to be declared, and the line is short enough that it costs you n
 
 ### The Doodle look and the mascot
 
-**Doodle** is a look of its own: a hand-drawn stick-figure engineer — the channel's mascot — acting
-out every scene, on a notebook page, with the words in a handwritten marker font. Light is paper;
-dark is a chalkboard, with the drawings turned into chalk lines.
+**Doodle** is a look of its own, and **everything in it is drawn by hand** — not just a mascot
+pasted onto an ordinary video. A notebook page, words in a handwritten marker font, and pictures
+that are either the channel's stick-figure engineer or an illustration of the thing being
+explained. Light is paper; dark is a chalkboard, with the drawings turned into chalk lines.
+
+- **Diagrams, charts and icons** — the worked-out circuits, phasors and bar models, the explainer's
+  step cards and arrows — are inked with a marker wobble, so a wire wavers like a line drawn by
+  hand. The maths under them is untouched: they are still computed, only drawn differently. Their
+  lines gently **boil** — re-traced a few times a second, like hand-drawn animation. Turn *Motion*
+  down to 0 and they hold still.
+- **Formulas** are written out in the same marker, not typed in a code font.
+- **The answer is marked like a paper**: the right option circled in green marker, then the others
+  struck through one by one.
 
 It is built around **one character who never changes**. A recurring face is what makes a run of
 videos recognisable in a feed, and image models drift — by the sixth picture the hat is gone and
@@ -1136,8 +1146,11 @@ this again if you want a different mascot.
   It is a maximum, and **teaching scenes stay calm whatever it says** — a sparking wire beside the
   explanation tells the viewer something is dangerous when nothing is. Only the hook and the reveal
   can go fully chaotic. Each scene shows the energy it will actually be drawn at.
-- **Direct N scenes** — Gemini writes, for each scene, what the engineer is *doing*, *feeling*, what
-  they are *with*, and the *gag*. Text only, one request. Every field is yours to edit afterwards.
+- **Direct N scenes** — Gemini chooses, for each scene, **the engineer or an illustration**, then
+  writes it: for the engineer, what they are *doing*, *feeling*, what they are *with* and the *gag*;
+  for an illustration, what it *shows* — a transformer on a pole, electrons drifting through a wire —
+  with nobody in it. The engineer suits the hook, the question and the reveal; illustrations suit
+  the explaining. Text only, one request. Switch any scene's subject, or edit any field, afterwards.
 - **Draw N scenes** — draws every directed scene against the model sheet, three at a time, each
   appearing as it lands. The price is on the button before you press it. *Stop after these* stops it
   part way.

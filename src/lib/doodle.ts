@@ -85,16 +85,45 @@ export function doodleScenes(script: ScriptLine[] | null | undefined, showVisual
     .filter((i) => i >= 0);
 }
 
-/** One scene, directed: what the engineer does, feels and holds, and the joke. */
+/**
+ * What a scene's drawing is OF.
+ *
+ *   mascot       - the engineer, reacting or doing something. For the beats
+ *                  that need a face: the hook, the question, the reveal.
+ *   illustration - the thing itself, with nobody in it: a transformer on a
+ *                  pole, electrons drifting through a wire. For the beats that
+ *                  explain, where a face would only be in the way.
+ *
+ * A video that is nothing but the engineer is a video about the engineer.
+ */
+export type DoodleSubject = 'mascot' | 'illustration';
+
+export const DOODLE_SUBJECTS: { id: DoodleSubject; label: string }[] = [
+  { id: 'mascot', label: 'The engineer' },
+  { id: 'illustration', label: 'An illustration' },
+];
+
+/** One scene, directed: what is drawn, what it does or shows, and the joke. */
 export interface DoodleDirection {
+  /** Optional because directions written before illustrations existed lack it - they were all the engineer. */
+  subject?: DoodleSubject;
+  /** The engineer: what they are doing. An illustration: what the picture shows. */
   action: string;
+  /** The engineer: how they feel. An illustration: its mood, or empty. */
   emotion: string;
   props: string;
   /** 'none' for a scene with no joke in it. */
   gag: string;
 }
 
-export const DOODLE_FIELD_LIMITS: Record<keyof DoodleDirection, number> = {
+/** The field labels change with the subject, so the boxes always say what goes in them. */
+export function fieldLabels(subject: DoodleSubject | undefined): Record<keyof Omit<DoodleDirection, 'subject'>, string> {
+  return subject === 'illustration'
+    ? { action: 'Shows', emotion: 'Mood', props: 'Also in it', gag: 'Gag' }
+    : { action: 'Doing', emotion: 'Feeling', props: 'With', gag: 'Gag' };
+}
+
+export const DOODLE_FIELD_LIMITS: Record<keyof Omit<DoodleDirection, 'subject'>, number> = {
   action: 160,
   emotion: 70,
   props: 200,
@@ -112,9 +141,12 @@ export function tidyDirection(raw: unknown): DoodleDirection | null {
   const r = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>;
   const action = clean(r.action, DOODLE_FIELD_LIMITS.action);
   if (!action) return null;
+  const subject: DoodleSubject = r.subject === 'illustration' ? 'illustration' : 'mascot';
   return {
+    subject,
     action,
-    emotion: clean(r.emotion, DOODLE_FIELD_LIMITS.emotion) || 'friendly',
+    // An illustration has no face to feel anything; an empty mood is allowed.
+    emotion: clean(r.emotion, DOODLE_FIELD_LIMITS.emotion) || (subject === 'mascot' ? 'friendly' : ''),
     props: clean(r.props, DOODLE_FIELD_LIMITS.props),
     gag: clean(r.gag, DOODLE_FIELD_LIMITS.gag) || 'none',
   };

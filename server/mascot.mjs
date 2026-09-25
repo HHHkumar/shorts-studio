@@ -134,6 +134,17 @@ export const CHARACTER_MATCH_LINE = [
   'Take only the character from the reference. Do not copy its pose or its background.',
 ].join(' ');
 
+/**
+ * The same sheet, used the other way: for an illustration it is a STYLE
+ * reference, so a drawing of a transformer has the engineer's line and red
+ * and paper - and must not have the engineer in it.
+ */
+export const ILLUSTRATION_MATCH_LINE = [
+  'The attached image shows the drawing style to match: the same black marker line, the same',
+  'single red, the same white paper. Draw the subject described above in exactly that style.',
+  'Do not draw the character from the reference, or any person, face or figure.',
+].join(' ');
+
 /** The picture that becomes the model sheet, if it is chosen. */
 export function mascotDesignPrompt(variantId) {
   return [
@@ -236,11 +247,34 @@ export const TEST_BEATS = [
  */
 export function doodleScenePrompt(beat, variantId, { energy, framing = 'tall' } = {}) {
   const say = (s) => String(s || '').trim().replace(/[.\s]+$/, '');
+  const gag = beat.gag && !/^none/i.test(beat.gag) ? 'Gag: ' + say(beat.gag) + '.' : '';
+
+  // An illustration: the thing itself, drawn the way a teacher sketches on a
+  // whiteboard - no character, so no bible, and nothing about a face.
+  if (beat.subject === 'illustration') {
+    return [
+      DOODLE_LOOK,
+      energyLine(energy || beat.energy),
+      [
+        'THE PICTURE: ' + say(beat.action) + '.',
+        beat.emotion ? 'Mood: ' + say(beat.emotion) + '.' : '',
+        beat.props ? 'Also in it: ' + say(beat.props) + '.' : '',
+        gag,
+      ].filter(Boolean).join(' '),
+      'No people, faces, hands or characters anywhere in this picture - only the things named.',
+      [
+        'Square picture. The subject drawn large and clear in the middle, simple enough to read at a',
+        'glance on a phone, like a teacher\'s quick sketch on a whiteboard. Everything else is plain',
+        'white paper. Keep a margin of empty paper all round - nothing touches the edges.',
+      ].join(' '),
+    ].join('\n\n');
+  }
+
   const direction = [
     'THE SCENE: the engineer ' + say(beat.action) + '.',
     'Emotion: ' + say(beat.emotion) + '.',
     beat.props ? 'Props: ' + say(beat.props) + '.' : '',
-    beat.gag && !/^none/i.test(beat.gag) ? 'Gag: ' + say(beat.gag) + '.' : '',
+    gag,
   ].filter(Boolean).join(' ');
 
   const composition = framing === 'square'

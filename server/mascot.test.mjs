@@ -9,7 +9,8 @@ import os from 'node:os';
 import path from 'node:path';
 import {
   adoptMascot, bibleFor, CHARACTER_MATCH_LINE, DEFAULT_VARIANT, DOODLE_LOOK, doodleScenePrompt,
-  ENERGY_LINES, MASCOT_VARIANTS, mascotDesignPrompt, readMascot, readMascotImage, TEST_BEATS,
+  ENERGY_LINES, ILLUSTRATION_MATCH_LINE, MASCOT_VARIANTS, mascotDesignPrompt, readMascot,
+  readMascotImage, TEST_BEATS,
 } from './mascot.mjs';
 import { saveImageBuffer } from './stock.mjs';
 
@@ -159,6 +160,46 @@ test('a direction ending in a full stop does not get two', () => {
 
 test('a direction with no props says nothing about props', () => {
   assert(!/Props:/.test(doodleScenePrompt({ action: 'waves', emotion: 'happy', props: '', gag: 'none' }, DEFAULT_VARIANT)));
+});
+
+console.log('\nillustrations - the thing itself, nobody in it');
+
+const transformer = {
+  subject: 'illustration', action: 'a step-down transformer on a pole, thick wires in, thin wires out',
+  emotion: '', props: 'a street lamp', gag: 'none',
+};
+
+test('an illustration carries the look but not the character', () => {
+  const p = doodleScenePrompt(transformer, DEFAULT_VARIANT, { energy: 'calm', framing: 'square' });
+  assert(p.includes(DOODLE_LOOK) && p.includes(ENERGY_LINES.calm), 'lost the look or the energy');
+  assert(!p.includes(bibleFor(DEFAULT_VARIANT)), 'described the engineer in a picture with no engineer');
+  assert(!/the engineer/i.test(p.replace(DOODLE_LOOK, '')), 'mentioned the engineer');
+});
+
+test('an illustration forbids people outright', () => {
+  assert(/No people, faces, hands or characters/.test(doodleScenePrompt(transformer, DEFAULT_VARIANT)));
+});
+
+test('an illustration says what it shows, and an empty mood says nothing', () => {
+  const p = doodleScenePrompt(transformer, DEFAULT_VARIANT);
+  assert(/THE PICTURE: a step-down transformer/.test(p) && /Also in it: a street lamp/.test(p));
+  assert(!/Mood:/.test(p), 'wrote an empty mood into the prompt');
+});
+
+test('an illustration is always square and kept off the edges', () => {
+  const p = doodleScenePrompt(transformer, DEFAULT_VARIANT);
+  assert(/Square picture/.test(p) && /nothing touches the edges/.test(p));
+});
+
+test('its reference line borrows the style and forbids the character', () => {
+  assert(/drawing style to match/.test(ILLUSTRATION_MATCH_LINE));
+  assert(/Do not draw the character from the reference/.test(ILLUSTRATION_MATCH_LINE));
+  assert(!/exact same engineer/.test(ILLUSTRATION_MATCH_LINE), 'would put the engineer in the transformer scene');
+});
+
+test('a direction with no subject is the engineer, as every older one was', () => {
+  const p = doodleScenePrompt({ action: 'waves', emotion: 'happy', props: '', gag: 'none' }, DEFAULT_VARIANT);
+  assert(p.includes(bibleFor(DEFAULT_VARIANT)));
 });
 
 console.log('\nthe reference line');

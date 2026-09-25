@@ -41,8 +41,8 @@ import { generateSeo } from './seo.mjs';
 import { buildArtPrompt, generateThumbnailBrief } from './thumbnail-brief.mjs';
 import { generateScenePrompts } from './scene-prompts.mjs';
 import {
-  adoptMascot, CHARACTER_MATCH_LINE, doodleScenePrompt, MASCOT_VARIANTS, mascotDesignPrompt,
-  readMascot, readMascotImage, TEST_BEATS,
+  adoptMascot, CHARACTER_MATCH_LINE, doodleScenePrompt, ILLUSTRATION_MATCH_LINE, MASCOT_VARIANTS,
+  mascotDesignPrompt, readMascot, readMascotImage, TEST_BEATS,
 } from './mascot.mjs';
 import { generateDoodleDirections } from './doodle-directions.mjs';
 import { energyFor, tidyDirection } from '../src/lib/doodle.ts';
@@ -516,15 +516,20 @@ app.post('/api/doodle/draw', ok(async (req, res) => {
   // than replacing a file the preview may still be showing.
   const fileId = 's' + index + '-' + randomUUID().slice(0, 6);
 
+  // The model sheet goes with every drawing. For the engineer it says who to
+  // draw; for an illustration it says only how to draw - same ink, same red -
+  // and the line says so, or the engineer turns up in the transformer scene.
   const { base64, mimeType, referenced } = await generateGoogleImage({
     apiKey, prompt, orientation, modelId: model, aspectRatio: '1:1',
-    reference: sheet, matchLine: CHARACTER_MATCH_LINE,
+    reference: sheet,
+    matchLine: directed.subject === 'illustration' ? ILLUSTRATION_MATCH_LINE : CHARACTER_MATCH_LINE,
   });
   const saved = saveImageBuffer({
     buffer: Buffer.from(base64, 'base64'), mimeType, id: fileId, jobId: safeJob,
     publicDir: paths.PUBLIC_DIR, folder: 'doodle',
   });
-  console.log('[doodle] scene ' + index + ' (' + level + ') ' + (referenced ? '' : 'WITHOUT the model sheet ') + '-> ' + saved.src);
+  console.log('[doodle] scene ' + index + ' (' + directed.subject + ', ' + level + ') '
+    + (referenced ? '' : 'WITHOUT the model sheet ') + '-> ' + saved.src);
   res.json({ src: saved.src, referenced, energy: level, prompt, cents: centsOf(model) });
 }));
 

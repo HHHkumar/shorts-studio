@@ -644,3 +644,7 @@ ul.issues .sev-low .sev { background: rgba(108,140,255,.16); color: var(--accent
   .doodle-row { grid-template-columns: 1fr; }
   .doodle-fields { grid-template-columns: 1fr; }
 }
+.doodle-head .subject-pick {
+  font-size: 12px; padding: 3px 6px; border-radius: 8px; width: auto;
+  background: var(--panel-2, transparent); color: var(--text); border: 1px solid var(--line);
+}

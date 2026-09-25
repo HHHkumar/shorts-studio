@@ -126,6 +126,16 @@ test('markdown and quotes are stripped from every field', () => {
   assert(out.directions[0].action === 'points at the meter' && out.directions[0].emotion === 'puzzled');
 });
 
+test('the subject Gemini chose comes through', () => {
+  const out = normalizeDirections({ directions: [direction(3, { subject: 'illustration', action: 'a meter disc with a small magnet', emotion: '' })] }, quiz, [3]);
+  assert(out.directions[3].subject === 'illustration' && out.directions[3].emotion === '');
+});
+
+test('the model is told to mix the engineer with illustrations', () => {
+  assert(/"illustration": the thing itself/.test(DIRECTION_SYSTEM));
+  assert(/never choose the\s+same subject for more than three scenes in a row/.test(DIRECTION_SYSTEM));
+});
+
 test('a reply with no directions array gives nothing, not a crash', () => {
   assert(Object.keys(normalizeDirections(null, quiz, [0]).directions).length === 0);
   assert(Object.keys(normalizeDirections({ directions: 'nope' }, quiz, [0]).directions).length === 0);

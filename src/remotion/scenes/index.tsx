@@ -11,6 +11,7 @@ import { Visual } from '../Visual';
 import { PANEL_COMPONENTS, type PanelName } from '../Panel';
 import { EffectLayer, useNarrationEffects, useSlowPush } from '../Effects';
 import { activeIndex, anchorFor } from '../../lib/panel-anchor';
+import { DoodleMark } from '../DoodleInk';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
 
@@ -96,8 +97,11 @@ const OptionRow: React.FC<{
   const pop = revealed && isCorrect
     ? interpolate(revealFrame, [0, 10, 18], [1, 1.07, 1.03], { extrapolateRight: 'clamp' })
     : isSpeaking ? 1.035 : 1;
+  // In Doodle a wrong answer is scribbled out rather than faded away, so it
+  // stays readable enough for the scribble to mean something.
+  const doodle = theme.layout === 'doodle';
   const dim = revealed && !isCorrect
-    ? interpolate(revealFrame, [0, 12], [1, 0.32], { extrapolateRight: 'clamp' })
+    ? interpolate(revealFrame, [0, 12], [1, doodle ? 0.62 : 0.32], { extrapolateRight: 'clamp' })
     : 1;
 
   const highlighted = revealed ? isCorrect : isSpeaking;
@@ -125,6 +129,7 @@ const OptionRow: React.FC<{
         transform:
           'translateX(' + (phase === 'read' ? (1 - entry) * -50 : 0) + 'px) scale(' + pop + ')',
         textAlign: 'left',
+        position: doodle ? 'relative' : undefined,
       }}
     >
       <div
@@ -157,6 +162,18 @@ const OptionRow: React.FC<{
       >
         {text}
       </div>
+      {doodle && revealed ? (
+        // The right answer is circled, then the rest are struck through one
+        // by one - the order a person marking a paper would do it in.
+        <DoodleMark
+          kind={isCorrect ? 'circle' : 'strike'}
+          color={isCorrect ? theme.correct : theme.text}
+          width={isCorrect ? 7 : 5}
+          progress={isCorrect
+            ? interpolate(revealFrame, [4, 18], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })
+            : interpolate(revealFrame, [16 + index * 4, 26 + index * 4], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })}
+        />
+      ) : null}
     </div>
   );
 };

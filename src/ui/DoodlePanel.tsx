@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { api } from '../lib/api';
 import type { QuizContent } from '../lib/types';
 import {
-  DOODLE_ENERGIES, doodleScenes, energyFor, tidyDirection, type DoodleDirection,
+  DOODLE_ENERGIES, DOODLE_SUBJECTS, doodleScenes, energyFor, fieldLabels, tidyDirection,
+  type DoodleDirection, type DoodleSubject,
 } from '../lib/doodle';
 import { ErrorNote, Note, Select, Spinner, TextInput } from './controls';
 
@@ -159,7 +160,7 @@ export const DoodlePanel: React.FC<Props> = ({
   };
 
   const editField = (i: number, key: keyof DoodleDirection, value: string) => {
-    const current = script[i].doodle || { action: '', emotion: '', props: '', gag: 'none' };
+    const current = script[i].doodle || { subject: 'mascot' as DoodleSubject, action: '', emotion: '', props: '', gag: 'none' };
     updateLine(i, { doodle: { ...current, [key]: value } });
   };
 
@@ -175,9 +176,11 @@ export const DoodlePanel: React.FC<Props> = ({
   return (
     <div className="doodle-panel">
       <p className="hint">
-        In the Doodle look the drawings fill the frame, so backdrop photos, the animated backdrop and
-        the drifting symbols are switched off. Scenes that already show their own diagram keep it
-        instead of a doodle.
+        Everything in the Doodle look is drawn by hand: the diagrams, charts, formulas, cards and
+        icons are inked with a marker wobble, and the answer gets circled. Gemini chooses, scene by
+        scene, between the engineer and an illustration of the thing itself — switch any you
+        disagree with. Scenes that show their own worked-out diagram keep it rather than a doodle.
+        Backdrop photos, the moving backdrop and the drifting symbols are off in this look.
       </p>
 
       <div className="grid">
@@ -249,6 +252,19 @@ export const DoodlePanel: React.FC<Props> = ({
                   <b>Scene {i + 1}</b>
                   <span className="kind">{line.kind}</span>
                   <span className={'energy ' + level}>{level}</span>
+                  {d ? (
+                    // Gemini chooses, but it is the creator's picture: switching
+                    // keeps the words and redraws as the other kind next time.
+                    <select
+                      className="subject-pick"
+                      value={d.subject || 'mascot'}
+                      disabled={busy}
+                      onChange={(e) => editField(i, 'subject', e.target.value)}
+                      title="What this scene's drawing is of"
+                    >
+                      {DOODLE_SUBJECTS.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
+                    </select>
+                  ) : null}
                   {noSheet.has(i) ? <span className="warn-tag" title="The model refused the model sheet; the mascot may not match.">no model sheet</span> : null}
                   <span className="spacer" />
                   <button
@@ -262,10 +278,14 @@ export const DoodlePanel: React.FC<Props> = ({
                 <p className="doodle-said">{line.narration}</p>
                 {d ? (
                   <div className="doodle-fields">
-                    <TextInput label="Doing" value={d.action} onChange={(v) => editField(i, 'action', v)} />
-                    <TextInput label="Feeling" value={d.emotion} onChange={(v) => editField(i, 'emotion', v)} />
-                    <TextInput label="With" value={d.props} onChange={(v) => editField(i, 'props', v)} />
-                    <TextInput label="Gag" value={d.gag} onChange={(v) => editField(i, 'gag', v)} />
+                    {(['action', 'emotion', 'props', 'gag'] as const).map((key) => (
+                      <TextInput
+                        key={key}
+                        label={fieldLabels(d.subject)[key]}
+                        value={d[key]}
+                        onChange={(v) => editField(i, key, v)}
+                      />
+                    ))}
                   </div>
                 ) : null}
               </div>

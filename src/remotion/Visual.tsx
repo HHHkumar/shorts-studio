@@ -131,7 +131,11 @@ const Formula: React.FC<{ theme: Theme; text: string }> = ({ theme, text }) => {
   const { width } = useVideoConfig();
   const m = useMetrics();
 
-  const mono = theme.layout !== 'elegant';
+  // Monospace keeps an equation's symbols lined up - except in Elegant, which
+  // has its own serif, and in Doodle, where a typed formula on a hand-drawn
+  // page is the one thing that would look pasted in. There it is written out
+  // in the same marker as everything else.
+  const mono = theme.layout !== 'elegant' && theme.layout !== 'doodle';
   // Room inside the box: the stage margins, then this card's own padding and
   // border. The serif display face runs narrower than the monospace one.
   const available = width - m.padX * 2 - 46 * 2 - 6;

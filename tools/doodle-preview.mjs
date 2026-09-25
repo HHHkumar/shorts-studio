@@ -22,6 +22,7 @@ import { ensureBrowser, renderStill, selectComposition } from '@remotion/rendere
 import { normalizePanel } from '../server/explainer.mjs';
 import { attachIcons } from '../server/icons.mjs';
 import { DEFAULT_DESIGN } from '../src/lib/theme.ts';
+import { normalizeCircuit } from '../src/lib/figures/circuit.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PUBLIC = path.join(ROOT, 'public');
@@ -94,6 +95,39 @@ const EXPLAINER = {
   ],
 };
 
+// A question with a worked-out circuit: no mascot in the diagram scenes - the
+// diagram is the picture - so these show the diagrams, formula and answer
+// marks inked by hand.
+const node = (id, col, row) => ({ id, col, row });
+const part = (id, kind, from, to, value, unit) => ({ id, kind, from, to, value, unit });
+const series = normalizeCircuit({
+  type: 'circuit',
+  nodes: [node('A', 0, 0), node('B', 2, 0), node('C', 2, 2), node('D', 0, 2)],
+  elements: [
+    part('V1', 'voltage', 'D', 'A', 12, 'V'), part('R1', 'resistor', 'A', 'B', 2, 'Ω'),
+    part('R2', 'resistor', 'B', 'C', 4, 'Ω'), { id: 'W1', kind: 'wire', from: 'C', to: 'D' },
+  ],
+  ask: { quantity: 'current', element: 'R2' },
+}).circuit;
+if (!series) throw new Error('the sample circuit was refused');
+
+const CIRCUIT = {
+  videoKind: 'mcq',
+  subject: 'Basic Electrical Engineering', topic: 'Series circuits', difficulty: 'easy',
+  hook: 'Two resistors, one battery.',
+  question: 'A 12 V source drives 2 Ω and 4 Ω in series. What current flows?',
+  options: ['1 A', '2 A', '3 A', '6 A'],
+  correctIndex: 1,
+  figure: series,
+  answerLine: 'Two amps.', explanation: [], funFact: '', outro: '', hashtags: [], motifSymbols: ['⚡'],
+  script: [
+    { kind: 'question', narration: 'A 12 volt source drives two ohms and four ohms in series. What current flows?', visual: { kind: 'figure', reveal: false } },
+    { kind: 'answer', narration: 'The answer is two amps.', doodleSrc: art('answer') },
+    { kind: 'explain', narration: 'In series the resistances add, so the current is twelve over six.', visual: { kind: 'formula', formula: 'I = V / (R1 + R2) = 12 / 6 = 2 A' } },
+    { kind: 'explain', narration: 'And here it is on the circuit: two amps all the way round.', visual: { kind: 'figure', reveal: true } },
+  ],
+};
+
 /** Even word timings, standing in for ElevenLabs. */
 const timed = (line) => line.narration.split(/\s+/).filter(Boolean).map((word, i, all) => {
   const per = (SCENE_SECONDS - 0.4) / all.length;
@@ -136,7 +170,9 @@ const serveUrl = await bundle({
   onProgress: () => undefined,
 });
 
-for (const [name, content] of [['quiz', QUIZ], ['explainer', EXPLAINER]]) {
+const ONLY = process.argv[4] || '';
+const SETS = [['quiz', QUIZ], ['explainer', EXPLAINER], ['circuit', CIRCUIT]].filter(([n]) => !ONLY || n === ONLY);
+for (const [name, content] of SETS) {
   const props = propsFor(content);
   const composition = await selectComposition({ serveUrl, id: 'QuizVideo', inputProps: props });
   for (const scene of props.scenes) {

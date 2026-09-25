@@ -35,9 +35,13 @@ const RESPONSE_SCHEMA = {
       type: 'ARRAY',
       items: {
         type: 'OBJECT',
-        properties: { scene: { type: 'INTEGER' }, action: FIELD, emotion: FIELD, props: FIELD, gag: FIELD },
-        required: ['scene', 'action', 'emotion', 'props', 'gag'],
-        propertyOrdering: ['scene', 'action', 'emotion', 'props', 'gag'],
+        properties: {
+          scene: { type: 'INTEGER' },
+          subject: { type: 'STRING', enum: ['mascot', 'illustration'] },
+          action: FIELD, emotion: FIELD, props: FIELD, gag: FIELD,
+        },
+        required: ['scene', 'subject', 'action', 'emotion', 'props', 'gag'],
+        propertyOrdering: ['scene', 'subject', 'action', 'emotion', 'props', 'gag'],
       },
     },
   },
@@ -45,18 +49,30 @@ const RESPONSE_SCHEMA = {
 };
 
 export const DIRECTION_SYSTEM = [
-  'You direct a hand-drawn stick-figure cartoon that illustrates a short educational video about',
-  'electrical engineering. One character appears in every scene: a stick-figure electrical engineer.',
-  'The character is drawn separately, from a fixed model sheet - never describe what the engineer',
-  'looks like, only what they do.',
+  'You direct the hand-drawn doodle pictures for a short educational video about electrical',
+  'engineering - black marker on white paper, like a teacher sketching on a whiteboard. The video',
+  'has a mascot: a stick-figure electrical engineer, drawn separately from a fixed model sheet -',
+  'never describe what the engineer looks like, only what they do.',
   '',
-  'For each scene you are asked about, write:',
-  '- action: what the engineer is doing, one clause starting with a verb, e.g. "points at a',
-  '  transformer on a pole". Tie it to what that scene says.',
-  '- emotion: a few words, e.g. "puzzled", "delighted, huge grin".',
-  '- props: the objects in the picture with the engineer - concrete, drawable, few. Name only',
-  '  real things: a meter, a motor, a coil of wire, a light bulb, a battery.',
-  '- gag: one small visual joke that suits the scene, or "none".',
+  'For each scene you are asked about, first choose its subject:',
+  '- "mascot": the engineer, reacting or doing something. Best for moments that need a face -',
+  '  the hook, the question, the moment of doubt, the reveal, the sign-off.',
+  '- "illustration": the thing itself, with no person in it - a transformer on a pole, electrons',
+  '  drifting through a wire, the inside of a meter, water in pipes as a picture of current. Best',
+  '  for scenes that explain, compare or describe how something works.',
+  'Mix them. A video that is only the engineer is a video about the engineer; never choose the',
+  'same subject for more than three scenes in a row.',
+  '',
+  'Then write:',
+  '- action: for the mascot, what the engineer is doing, starting with a verb, e.g. "points at a',
+  '  transformer on a pole". For an illustration, what the picture shows, e.g. "a step-down',
+  '  transformer on a pole with thick wires in and thin wires out". Tie it to what the scene says.',
+  '- emotion: for the mascot, a few words, e.g. "puzzled", "delighted, huge grin". For an',
+  '  illustration, a mood such as "busy" or "calm", or an empty string.',
+  '- props: anything else in the picture - concrete, drawable, few. Name only real things: a meter,',
+  '  a motor, a coil of wire, a light bulb, a battery.',
+  '- gag: one small visual joke that suits the scene, or "none". An illustration can have one',
+  '  too - a light bulb wearing sunglasses, a tired battery with sweat drops.',
   '',
   'Rules:',
   '- Each scene is marked with an energy. calm: a relaxed pose and gag "none" or something gentle.',
@@ -68,8 +84,8 @@ export const DIRECTION_SYSTEM = [
   '- Scenes marked BEFORE THE ANSWER must not show or hint at which option is correct. Keep them',
   '  about the situation in the question, never its resolution.',
   '',
-  'Reply with the JSON object only: {"directions": [{"scene": <number>, "action": "...",',
-  '"emotion": "...", "props": "...", "gag": "..."}]}.',
+  'Reply with the JSON object only: {"directions": [{"scene": <number>, "subject": "mascot" or',
+  '"illustration", "action": "...", "emotion": "...", "props": "...", "gag": "..."}]}.',
 ].join('\n');
 
 /**
@@ -118,6 +134,7 @@ export function normalizeDirections(raw, content, scenes) {
     const scene = Number(item && item.scene);
     if (!Number.isInteger(scene) || !wanted.has(scene) || directions[scene] !== undefined) continue;
     const direction = tidyDirection({
+      subject: item.subject,
       action: scrub(item.action),
       emotion: scrub(item.emotion),
       props: scrub(item.props),

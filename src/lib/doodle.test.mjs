@@ -3,7 +3,7 @@
 // Which scenes get a drawing of the mascot, and how wild each may be.
 
 import {
-  DEFAULT_DOODLE_ENERGY, DOODLE_FIELD_LIMITS, doodleScenes, energyFor, tidyDirection, wantsDoodle,
+  DEFAULT_DOODLE_ENERGY, DOODLE_FIELD_LIMITS, doodleScenes, energyFor, fieldLabels, tidyDirection, wantsDoodle,
 } from './doodle.ts';
 
 let passed = 0;
@@ -107,6 +107,27 @@ test('every field is held to its length, cut at a word', () => {
 
 test('whitespace is tidied', () => {
   assert(tidyDirection({ action: '  points   at\n the meter ' }).action === 'points at the meter');
+});
+
+console.log('\nsubjects');
+
+test('an illustration stays an illustration', () => {
+  assert(tidyDirection({ subject: 'illustration', action: 'a coil of wire' }).subject === 'illustration');
+});
+
+test('no subject, or one nobody knows, is the engineer', () => {
+  assert(tidyDirection({ action: 'waves' }).subject === 'mascot');
+  assert(tidyDirection({ subject: 'robot', action: 'waves' }).subject === 'mascot');
+});
+
+test('an illustration may have no mood; the engineer always has a feeling', () => {
+  assert(tidyDirection({ subject: 'illustration', action: 'a coil' }).emotion === '');
+  assert(tidyDirection({ subject: 'mascot', action: 'waves' }).emotion === 'friendly');
+});
+
+test('the boxes are labelled for what goes in them', () => {
+  assert(fieldLabels('illustration').action === 'Shows' && fieldLabels('mascot').action === 'Doing');
+  assert(fieldLabels(undefined).emotion === 'Feeling', 'an older direction is the engineer');
 });
 
 console.log('\n' + passed + ' checks passed');
