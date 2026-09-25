@@ -47,7 +47,12 @@ import {
 import { generateDoodleDirections } from './doodle-directions.mjs';
 import { energyFor, tidyDirection } from '../src/lib/doodle.ts';
 
-const PORT = Number(process.env.PORT || 3030);
+// Its own variable, deliberately not PORT. Anything that launches the studio
+// through a tool that sets PORT for the web app - as a preview panel does -
+// used to hand the helper the web app's port, so the two landed on one port
+// and every request the app made came back 502. The app's proxy reads the same
+// variable, so the two can never disagree.
+const PORT = Number(process.env.HELPER_PORT || 3030);
 const GENERATED_DIR = path.join(paths.PUBLIC_DIR, 'generated');
 
 const app = express();

@@ -1613,9 +1613,24 @@ To stretch ElevenLabs credits: shorter targets, and the **Flash** voice model.
 5173 — and closing the window they were launched from does not always take them with it. They keep
 running, invisibly, still holding both ports. The next `npm start` then fails on 5173 before it has
 done anything, and because the two halves are deliberately tied together, the helper is stopped too.
-That is why you get two red exits for one problem.
+That used to show up as a Vite stack trace and two red exits for one problem.
 
-Find out what is actually holding the ports:
+**`npm start` now checks first.** Before it launches anything it looks at both ports, and if one is
+taken it stops and says so plainly — which port, and whether it is **an older Shorts Studio that is
+still running** or **another program** — with the command that fixes it. For the usual case, a
+leftover studio:
+
+```bash
+npm run free-ports
+npm start
+```
+
+`free-ports` stops **only Shorts Studio's own** leftovers — the web app and the helper, recognised by
+their command lines — and names each one it stops. If another program is on the port it is left
+alone and named instead, because stopping it is your call, not the tool's.
+
+To see or stop things by hand — for that other program, or if you are curious — find what is
+holding the ports:
 
 ```bash
 netstat -ano | findstr "5173 3030"

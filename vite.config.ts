@@ -14,7 +14,10 @@ import react from '@vitejs/plugin-react-swc';
 // Re-check when Remotion moves to Babel 8. Until then the warning is cosmetic.
 
 // The browser app talks to the small local helper server (server/index.mjs)
-// through these proxies, so everything looks like one origin to you.
+// through these proxies, so everything looks like one origin to you. The
+// helper's port comes from HELPER_PORT, which server/index.mjs reads too.
+const HELPER = 'http://localhost:' + (process.env.HELPER_PORT || 3030);
+
 export default defineConfig({
   plugins: [react()],
   server: {
@@ -28,8 +31,8 @@ export default defineConfig({
     // server that did not exist yet and greeted people with connection errors.
     open: false,
     proxy: {
-      '/api': 'http://localhost:3030',
-      '/out': 'http://localhost:3030',
+      '/api': HELPER,
+      '/out': HELPER,
     },
   },
 });
