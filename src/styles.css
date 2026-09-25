@@ -581,3 +581,27 @@ ul.issues .sev-low .sev { background: rgba(108,140,255,.16); color: var(--accent
 .no-photo-head span { font-size: 13.5px; color: var(--dim); line-height: 1.5; }
 .no-photo-prompt { color: var(--text); line-height: 1.5; margin-bottom: 6px; }
 .stock-empty .link-btn { margin-left: 4px; }
+
+/* --- mascot lab ------------------------------------------------------------
+   Reuses the comparison grid, with one important difference: those cells crop
+   to a square, which would cut the engineer's head and feet off - and the
+   whole figure is exactly what is being judged here. So the drawings are shown
+   whole, portrait, on the white paper they were drawn on. */
+.mascot-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.mascot-row { display: flex; align-items: flex-end; gap: 14px; flex-wrap: wrap; margin: 6px 0 12px; }
+.mascot-row .field { flex: 1 1 280px; margin: 0; }
+.mascot-row .btn { flex: 0 0 auto; }
+.mascot-grid { margin: 8px 0 18px; }
+.mascot-grid.six { grid-template-columns: repeat(3, 1fr); }
+.mascot-grid .compare-shot { background: #fff; }
+.mascot-grid .compare-shot img { aspect-ratio: 9 / 16; object-fit: contain; }
+.mascot-current { display: flex; gap: 16px; align-items: center; margin: 6px 0 12px; }
+.mascot-current img {
+  width: 110px; aspect-ratio: 9 / 16; object-fit: contain; flex: 0 0 auto;
+  background: #fff; border: 2px solid var(--good); border-radius: 8px;
+}
+.mascot-current p { margin: 4px 0 0; }
+.step-chip.mascot-chip { border-style: dashed; }
+@media (max-width: 900px) {
+  .compare-grid.mascot-grid { grid-template-columns: repeat(2, 1fr); }
+}

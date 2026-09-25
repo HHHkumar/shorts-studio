@@ -40,6 +40,10 @@ import {
 import { generateSeo } from './seo.mjs';
 import { buildArtPrompt, generateThumbnailBrief } from './thumbnail-brief.mjs';
 import { generateScenePrompts } from './scene-prompts.mjs';
+import {
+  adoptMascot, CHARACTER_MATCH_LINE, doodleScenePrompt, MASCOT_VARIANTS, mascotDesignPrompt,
+  readMascot, readMascotImage, TEST_BEATS,
+} from './mascot.mjs';
 
 const PORT = Number(process.env.PORT || 3030);
 const GENERATED_DIR = path.join(paths.PUBLIC_DIR, 'generated');
@@ -360,6 +364,117 @@ app.post('/api/image/compare', ok(async (req, res) => {
 
   console.log('[compare] done - ' + drew + ' of ' + results.length + ' drew');
   res.json({ prompt, results });
+}));
+
+// --- the mascot -----------------------------------------------------------------
+//
+// Design the doodle engineer once, adopt one drawing as the model sheet, then
+// test whether scenes drawn against it keep the same character. See
+// mascot.mjs for why each piece exists.
+//
+// Every drawing here spends the creator's image credits, so each route draws
+// only what was asked for by name, one picture at a time, and one failure
+// never costs the others.
+
+/** Draw a list of pictures in turn, keeping going past any that fail. */
+async function drawEach(items, draw) {
+  const results = [];
+  for (const item of items) {
+    const started = Date.now();
+    try {
+      const out = await draw(item);
+      results.push({ ...out, seconds: Math.round((Date.now() - started) / 100) / 10 });
+    } catch (err) {
+      results.push({
+        id: item.id,
+        label: item.label,
+        error: err instanceof Error ? err.message : String(err),
+        seconds: Math.round((Date.now() - started) / 100) / 10,
+      });
+    }
+  }
+  return results;
+}
+
+const modelOr = (id, fallback) => (GOOGLE_IMAGE_MODELS.some((m) => m.id === id) ? id : fallback);
+const centsOf = (id) => (GOOGLE_IMAGE_MODELS.find((m) => m.id === id) || { cents: 0 }).cents;
+
+app.get('/api/mascot', (_req, res) => {
+  res.json({
+    mascot: readMascot(paths.PUBLIC_DIR),
+    variants: MASCOT_VARIANTS.map(({ id, label }) => ({ id, label })),
+    beats: TEST_BEATS.map(({ id, label }) => ({ id, label })),
+    models: GOOGLE_IMAGE_MODELS.map(({ id, label, cents }) => ({ id, label, cents })),
+  });
+});
+
+/** One drawing per design direction - the creator picks the one that becomes the mascot. */
+app.post('/api/mascot/design', ok(async (req, res) => {
+  const { apiKey, modelId } = req.body || {};
+  if (!apiKey) throw new Error('No Gemini API key was sent. Add it on the Keys step.');
+  // The model sheet is drawn once and used forever, so it defaults to the best
+  // model rather than the cheapest.
+  const model = modelOr(modelId, 'gemini-3-pro-image');
+  const job = 'design-' + Date.now().toString(36);
+
+  console.log('[mascot] drawing ' + MASCOT_VARIANTS.length + ' designs with ' + model + '...');
+  const results = await drawEach(MASCOT_VARIANTS, async (variant) => {
+    const { base64, mimeType } = await generateGoogleImage({
+      apiKey, prompt: mascotDesignPrompt(variant.id), orientation: 'portrait', modelId: model,
+    });
+    const saved = saveImageBuffer({
+      buffer: Buffer.from(base64, 'base64'), mimeType, id: variant.id, jobId: job,
+      publicDir: paths.PUBLIC_DIR, folder: 'mascot',
+    });
+    console.log('  ok    ' + variant.id);
+    return { id: variant.id, label: variant.label, src: saved.src };
+  });
+
+  if (!results.some((r) => r.src)) throw new Error('No design was drawn. ' + (results[0] && results[0].error));
+  res.json({ model, cents: centsOf(model) * MASCOT_VARIANTS.length, results });
+}));
+
+/** Make one design THE mascot. Writes public/mascot/, which is committed. */
+app.post('/api/mascot/adopt', ok(async (req, res) => {
+  const { src, variant, modelId } = req.body || {};
+  const mascot = adoptMascot({ src, variant, model: modelId, publicDir: paths.PUBLIC_DIR });
+  console.log('[mascot] adopted ' + mascot.variant + ' from ' + src);
+  res.json({ mascot });
+}));
+
+/** The six test beats, each drawn against the model sheet. */
+app.post('/api/mascot/test', ok(async (req, res) => {
+  const { apiKey, modelId } = req.body || {};
+  if (!apiKey) throw new Error('No Gemini API key was sent. Add it on the Keys step.');
+  const mascot = readMascot(paths.PUBLIC_DIR);
+  const sheet = readMascotImage(paths.PUBLIC_DIR);
+  if (!mascot || !sheet) throw new Error('Adopt a mascot design first - the test draws against it.');
+
+  // Flash is documented as the best of the four at matching a reference,
+  // which is the one thing this test measures.
+  const model = modelOr(modelId, 'gemini-3.1-flash-image');
+  const job = 'test-' + Date.now().toString(36);
+
+  console.log('[mascot] drawing ' + TEST_BEATS.length + ' test scenes with ' + model + '...');
+  const results = await drawEach(TEST_BEATS, async (beat) => {
+    const { base64, mimeType, referenced } = await generateGoogleImage({
+      apiKey,
+      prompt: doodleScenePrompt(beat, mascot.variant),
+      orientation: 'portrait',
+      modelId: model,
+      reference: sheet,
+      matchLine: CHARACTER_MATCH_LINE,
+    });
+    const saved = saveImageBuffer({
+      buffer: Buffer.from(base64, 'base64'), mimeType, id: beat.id, jobId: job,
+      publicDir: paths.PUBLIC_DIR, folder: 'mascot',
+    });
+    console.log('  ' + (referenced ? 'ok   ' : 'NOREF') + ' ' + beat.id);
+    return { id: beat.id, label: beat.label, src: saved.src, referenced };
+  });
+
+  if (!results.some((r) => r.src)) throw new Error('No scene was drawn. ' + (results[0] && results[0].error));
+  res.json({ model, cents: centsOf(model) * TEST_BEATS.length, results });
 }));
 
 // --- what the model is actually going to be asked --------------------------

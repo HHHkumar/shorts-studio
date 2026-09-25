@@ -52,7 +52,15 @@ export const aspectFor = (orientation) => (orientation === 'landscape' ? '16:9' 
  * this video. When present the model is asked to match its look, which is the
  * difference between a set and a scrapbook.
  *
- * Returns { base64, mimeType }.
+ * `matchLine` is what the model is told to take from that reference. The
+ * default asks for the same style and a different subject, which is right for
+ * a backdrop and exactly wrong for a recurring character - the mascot passes
+ * its own.
+ *
+ * Returns { base64, mimeType, referenced } - `referenced` is false when a
+ * reference was sent but the model refused it and the picture was drawn
+ * without one. For a backdrop that is a shrug; for a character it is the whole
+ * test, so it is reported rather than swallowed.
  */
 export async function generateGoogleImage({
   apiKey,
@@ -60,6 +68,7 @@ export async function generateGoogleImage({
   orientation = 'portrait',
   modelId = DEFAULT_GOOGLE_IMAGE_MODEL,
   reference = null,
+  matchLine = MATCH_LINE,
 } = {}) {
   if (!apiKey) throw new Error('No Gemini API key was sent. Add it on the Keys step.');
   const text = String(prompt || '').trim();
@@ -68,7 +77,7 @@ export async function generateGoogleImage({
   const model = GOOGLE_IMAGE_MODELS.some((m) => m.id === modelId) ? modelId : DEFAULT_GOOGLE_IMAGE_MODEL;
 
   const build = (withReference) => {
-    const input = [{ type: 'text', text: withReference ? text + '\n\n' + MATCH_LINE : text }];
+    const input = [{ type: 'text', text: withReference ? text + '\n\n' + matchLine : text }];
     if (withReference && reference && reference.base64) {
       input.push({
         type: 'image',
@@ -95,6 +104,7 @@ export async function generateGoogleImage({
   }, { timeoutMs: 120000 });
 
   const wanted = Boolean(reference && reference.base64);
+  let referenced = wanted;
   let res = await send(wanted);
   let raw = await res.text();
 
@@ -104,6 +114,7 @@ export async function generateGoogleImage({
   if (!res.ok && wanted && res.status >= 400 && res.status < 500) {
     res = await send(false);
     raw = await res.text();
+    referenced = false;
   }
 
   if (!res.ok) throw new Error(explainError(res.status, raw));
@@ -122,7 +133,7 @@ export async function generateGoogleImage({
       + 'prompt; try different words for that scene.',
     );
   }
-  return found;
+  return { ...found, referenced };
 }
 
 /**

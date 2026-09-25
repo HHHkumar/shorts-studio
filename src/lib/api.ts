@@ -132,6 +132,33 @@ export interface ImageComparison {
   error?: string;
 }
 
+/** The adopted doodle engineer. `src` is under public/mascot/, which is committed. */
+export interface Mascot {
+  src: string;
+  variant: string;
+  label: string;
+  model: string;
+  adoptedAt: string;
+}
+
+/** One drawing from the mascot lab - a design or a test scene. */
+export interface MascotDrawing {
+  id: string;
+  label: string;
+  seconds: number;
+  src?: string;
+  /** Test scenes only: false when the model drew without the model sheet. */
+  referenced?: boolean;
+  error?: string;
+}
+
+export interface MascotLabInfo {
+  mascot: Mascot | null;
+  variants: { id: string; label: string }[];
+  beats: { id: string; label: string }[];
+  models: { id: string; label: string; cents: number }[];
+}
+
 export interface StockImage {
   id: string;
   provider: 'pexels' | 'nasa' | 'ai';
@@ -379,6 +406,26 @@ export const api = {
     imagePrompt?: string;
   }) {
     return post<{ prompt: string; results: ImageComparison[] }>('/api/image/compare', body);
+  },
+
+  async mascotLab(): Promise<MascotLabInfo> {
+    const res = await fetch('/api/mascot');
+    if (!res.ok) throw new Error('Could not reach the mascot lab (' + res.status + ')');
+    return res.json();
+  },
+
+  /** One drawing per design direction. Spends image credits - one picture each. */
+  mascotDesign(body: { apiKey: string; modelId: string }) {
+    return post<{ model: string; cents: number; results: MascotDrawing[] }>('/api/mascot/design', body);
+  },
+
+  mascotAdopt(body: { src: string; variant: string; modelId: string }) {
+    return post<{ mascot: Mascot }>('/api/mascot/adopt', body);
+  },
+
+  /** The six test beats, drawn against the model sheet. Six pictures of credits. */
+  mascotTest(body: { apiKey: string; modelId: string }) {
+    return post<{ model: string; cents: number; results: MascotDrawing[] }>('/api/mascot/test', body);
   },
 
   seo(

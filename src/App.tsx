@@ -21,12 +21,16 @@ import { StepScript } from './ui/StepScript';
 import { StepStyle } from './ui/StepStyle';
 import { StepTopic } from './ui/StepTopic';
 import { StepVoice } from './ui/StepVoice';
+import { MascotLab } from './ui/MascotLab';
 import { Note } from './ui/controls';
 
 const STEPS = ['Keys', 'Topic', 'Script', 'Voice', 'Look', 'Export', 'Publish'];
 
 export const App: React.FC = () => {
   const [step, setStep] = useState(0);
+  // The mascot lab sits outside the steps: the character is designed once for
+  // the channel, not per video, so it must be reachable with no video open.
+  const [lab, setLab] = useState(false);
 
   const [geminiKey, setGeminiKey] = useStoredState('geminiKey', '');
   const [elevenKey, setElevenKey] = useStoredState('elevenKey', '');
@@ -204,6 +208,13 @@ export const App: React.FC = () => {
               {label}
             </button>
           ))}
+          <button
+            className={'step-chip mascot-chip' + (lab ? ' active' : '')}
+            onClick={() => setLab((on) => !on)}
+            title="Design and test the doodle mascot"
+          >
+            Mascot
+          </button>
         </nav>
       </header>
 
@@ -221,6 +232,11 @@ export const App: React.FC = () => {
             </Note>
           ) : null}
 
+          {lab ? <MascotLab geminiKey={geminiKey} onClose={() => setLab(false)} /> : null}
+
+          {/* Hidden rather than unmounted while the lab is open, so anything
+              half-done on a step is still there on the way back. */}
+          <div hidden={lab}>
           {step === 0 ? (
             <StepKeys
               geminiKey={geminiKey}
@@ -347,6 +363,7 @@ export const App: React.FC = () => {
               onBack={() => go(5)}
             />
           ) : null}
+          </div>
         </div>
 
         <Preview props={step >= 2 ? videoProps : null} hasAudio={hasAudio} />
