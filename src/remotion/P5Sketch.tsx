@@ -44,7 +44,13 @@ export const P5Sketch: React.FC<{
    * swapping the draw function underneath the running one - see below.
    */
   id?: string;
-}> = ({ draw, width, height, style, id }) => {
+  /**
+   * Something the drawing needs before it is right - the Doodle look's font.
+   * The render is held until it resolves, then the sketch draws again: a
+   * canvas bakes in whatever font it had, and never updates on its own.
+   */
+  ready?: () => Promise<void>;
+}> = ({ draw, width, height, style, id, ready }) => {
   const container = useRef<HTMLDivElement>(null);
   const instance = useRef<p5 | null>(null);
   const frame = useCurrentFrame();
@@ -147,6 +153,19 @@ export const P5Sketch: React.FC<{
   useLayoutEffect(() => {
     instance.current?.redraw();
   }, [frame, draw]);
+
+  // Hold the render for anything the drawing needs, then draw once more with
+  // it in place. Without this a still rendered straight to its frame drew the
+  // labels before the handwritten font arrived, and kept the fallback.
+  useEffect(() => {
+    if (!ready) return undefined;
+    const handle = delayRender('Waiting for what the sketch needs');
+    let live = true;
+    ready()
+      .then(() => { if (live) instance.current?.redraw(); })
+      .finally(() => continueRender(handle));
+    return () => { live = false; };
+  }, [ready, width, height, id]);
 
   return <div ref={container} style={{ width, height, ...style }} />;
 };

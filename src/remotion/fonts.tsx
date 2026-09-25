@@ -38,6 +38,18 @@ function loadHandFont(): Promise<void> {
   return loading;
 }
 
+/**
+ * Resolves once the handwritten font is usable - starting the load if nothing
+ * has yet, so a caller never depends on which component asked first.
+ *
+ * For canvases. Text on the page re-renders by itself when a font arrives; a
+ * canvas does not - whatever it drew with is baked in - so a sketch drawn a
+ * moment too early kept its labels in the fallback for good.
+ */
+export function handFontReady(): Promise<void> {
+  return loadHandFont().catch(() => undefined);
+}
+
 /** Mount once in a Doodle video. Renders nothing; holds the render until the font is in. */
 export const HandFonts: React.FC = () => {
   const [handle] = useState(() => delayRender('Loading the handwritten font'));

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { api, type TopicForm } from '../lib/api';
 import { getTheme, LAYOUT_INFO } from '../lib/theme';
 import type { DesignSettings, LayoutName, MusicMood, QuizContent, ThemeMode } from '../lib/types';
@@ -47,6 +47,12 @@ export const StepStyle: React.FC<{
   const set = <K extends keyof DesignSettings>(key: K, value: DesignSettings[K]) =>
     setDesign((prev) => ({ ...prev, [key]: value }));
 
+  // Whether the channel has a mascot - the Doodle look is offered up front if so.
+  const [hasMascot, setHasMascot] = useState(false);
+  useEffect(() => {
+    api.mascotLab().then((info) => setHasMascot(Boolean(info.mascot))).catch(() => setHasMascot(false));
+  }, []);
+
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [uploading, setUploading] = useState(false);
   const [trackName, setTrackName] = useState('');
@@ -79,6 +85,26 @@ export const StepStyle: React.FC<{
         Change anything here as often as you like — it is instant, it costs nothing, and it never
         touches the voiceover. Watch the phone preview on the right.
       </p>
+
+      {hasMascot && design.layout !== 'doodle' ? (
+        // The channel has a mascot, and this video is not using it. Doodle is
+        // one tile of six below, which is exactly how a video meant to be hand-
+        // drawn came out in Nerdy. One click puts it in the look you approved:
+        // paper, because Doodle on the dark setting is the chalkboard, and a
+        // chalkboard is not what "doodle" has meant so far.
+        <div className="doodle-nudge">
+          <div>
+            <b>✏️ Make this a Doodle video</b>
+            <span>Your engineer in the scenes, and everything else hand-drawn on paper to match.</span>
+          </div>
+          <button
+            className="btn primary"
+            onClick={() => setDesign((prev) => ({ ...prev, layout: 'doodle', mode: 'light' }))}
+          >
+            Use the Doodle look
+          </button>
+        </div>
+      ) : null}
 
       <div className="section-title">Dark or light</div>
       <div className="tiles" style={{ gridTemplateColumns: '1fr 1fr' }}>

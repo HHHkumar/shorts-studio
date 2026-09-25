@@ -6,6 +6,7 @@ import type { Figure } from '../lib/figures/index.ts';
 import type { SceneVisual } from '../lib/types';
 import { FigureView } from './Figure';
 import { P5Sketch, type SketchArgs } from './P5Sketch';
+import { handFontReady } from './fonts';
 import { SKETCHES, type SketchParams } from './sketches';
 import { useEnter, useMetrics } from './ui';
 
@@ -82,6 +83,14 @@ const Sketch: React.FC<{
     (a: SketchArgs) => {
       const def = SKETCHES[name];
       if (!def) return;
+      // A sketch draws its own labels on a canvas, which inherits nothing from
+      // the page - so in the Doodle look "Closed - current flows" came out in
+      // the plain sans under a hand-drawn circuit. Doodle only: Kalam runs
+      // narrower than the sans the labels were sized for, so nothing can
+      // overflow, where a monospace look's wider face could.
+      // p5 takes one family name, not a CSS stack - given the whole stack it
+      // quietly kept its default - so it is handed the first family alone.
+      if (theme.layout === 'doodle') a.p.textFont(theme.fontBody.split(',')[0].replace(/['"]/g, '').trim());
       def.draw({
         ...a,
         params,
@@ -96,7 +105,7 @@ const Sketch: React.FC<{
       });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [name, paramKey, itemKey, theme.accent, theme.text, theme.textDim, theme.correct, theme.bg],
+    [name, paramKey, itemKey, theme.accent, theme.text, theme.textDim, theme.correct, theme.bg, theme.layout, theme.fontBody],
   );
 
   const def = SKETCHES[name];
@@ -113,7 +122,15 @@ const Sketch: React.FC<{
   // Round diagrams get a square box so they are not lost in a wide, short band.
   const canvasWidth = def.shape === 'square' ? Math.min(full, tall) : full;
 
-  return <P5Sketch id={name} draw={draw} width={canvasWidth} height={tall} />;
+  return (
+    <P5Sketch
+      id={name}
+      draw={draw}
+      width={canvasWidth}
+      height={tall}
+      ready={theme.layout === 'doodle' ? handFontReady : undefined}
+    />
+  );
 };
 
 /**
