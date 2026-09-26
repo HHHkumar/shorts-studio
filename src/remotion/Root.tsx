@@ -8,6 +8,7 @@ import { QuizVideo } from './QuizVideo';
 import { Thumbnail, THUMBNAIL_ID, thumbSizeFor, type ThumbnailProps } from './Thumbnail';
 import { CarouselSlide, CAROUSEL_FRAMES, CAROUSEL_ID } from './Carousel';
 import { planCarousel, SLIDE_SIZE } from '../lib/carousel';
+import { EngineerReel, ENGINEER_REEL_ID, REEL_POSES, REEL_SECONDS } from './EngineerReel';
 
 export const COMPOSITION_ID = 'QuizVideo';
 
@@ -76,6 +77,16 @@ export const RemotionRoot: React.FC = () => {
         total: planCarousel(makeDemoProps().content).slides.length,
         channelName: '',
       }}
+    />
+    {/* A test reel for the animated engineer; not part of any video yet. */}
+    <Composition
+      id={ENGINEER_REEL_ID}
+      component={EngineerReel}
+      width={PORTRAIT.width}
+      height={PORTRAIT.height}
+      fps={FPS}
+      durationInFrames={Math.round(REEL_POSES.length * REEL_SECONDS * FPS)}
+      defaultProps={{ mode: 'light' as const }}
     />
     </>
   );
