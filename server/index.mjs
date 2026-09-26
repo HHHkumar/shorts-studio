@@ -45,6 +45,7 @@ import {
   mascotDesignPrompt, readMascot, readMascotImage, TEST_BEATS, thumbnailDoodlePrompt,
 } from './mascot.mjs';
 import { generateDoodleDirections } from './doodle-directions.mjs';
+import { scenesToRecord } from './voiceover-plan.mjs';
 import { energyFor, tidyDirection } from '../src/lib/doodle.ts';
 
 // Its own variable, deliberately not PORT. Anything that launches the studio
@@ -805,16 +806,20 @@ app.get('/api/voices', ok(async (req, res) => {
 const ttsJobs = new Map();
 
 app.post('/api/voiceover', ok(async (req, res) => {
-  const { apiKey, settings, script } = req.body || {};
+  const { apiKey, settings, script, only } = req.body || {};
   if (!apiKey) throw new Error('No ElevenLabs API key was sent. Add it on the Keys step.');
   if (!settings || !settings.voiceId) throw new Error('Pick a voice first.');
   if (!Array.isArray(script) || !script.length) throw new Error('There is no script to read out.');
+
+  // `only`: record just these scenes - see voiceover-plan.mjs.
+  const targets = scenesToRecord(script, only);
+  const wants = (i) => targets.includes(i);
 
   const jobId = 'vo-' + randomUUID().slice(0, 8);
   const dir = path.join(GENERATED_DIR, jobId);
   fs.mkdirSync(dir, { recursive: true });
 
-  const speakable = script.filter((line) => (line.narration || '').trim());
+  const speakable = targets.map((i) => script[i]);
   const job = {
     status: 'running',
     done: 0,
@@ -831,6 +836,7 @@ app.post('/api/voiceover', ok(async (req, res) => {
   (async () => {
     try {
       for (let i = 0; i < script.length; i++) {
+        if (!wants(i)) continue;
         const line = script[i];
         const text = (line.narration || '').trim();
         if (!text) continue;

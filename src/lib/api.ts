@@ -492,8 +492,9 @@ export const api = {
     return data.voices as VoiceOption[];
   },
 
-  startVoiceover(apiKey: string, settings: VoiceSettings, script: ScriptLine[]) {
-    return post<{ jobId: string; total: number }>('/api/voiceover', { apiKey, settings, script });
+  /** `only`: record just these scene numbers, keeping the rest of the voiceover. */
+  startVoiceover(apiKey: string, settings: VoiceSettings, script: ScriptLine[], only?: number[]) {
+    return post<{ jobId: string; total: number }>('/api/voiceover', { apiKey, settings, script, only });
   },
 
   async voiceoverStatus(jobId: string) {

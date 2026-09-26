@@ -284,6 +284,13 @@ export const App: React.FC = () => {
               setContent={(fn) => setContent((prev) => (prev ? fn(prev) : prev))}
               hasAudio={hasAudio}
               onEdited={() => setAudio({})}
+              // Only the edited scene's clip goes; the Voice step records just that one.
+              onSceneEdited={(index) => setAudio((prev) => {
+                if (!(index in prev)) return prev;
+                const next = { ...prev };
+                delete next[index];
+                return next;
+              })}
               deepseekKey={deepseekKey}
               deepseekModel={deepseekModel}
               setDeepseekModel={setDeepseekModel}

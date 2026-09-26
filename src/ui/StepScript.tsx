@@ -10,6 +10,7 @@ import type { FigureCheck } from '../lib/figures/index.ts';
 import { missingLabels } from '../lib/options-timing';
 import { motionWordsIn } from '../lib/motion-lexicon';
 import { scriptSeconds } from '../lib/blank-script';
+import { closingScene, factIsSpoken, speakFunFact, withFunFact } from '../lib/fun-fact';
 import { ErrorNote, Note, Select, Spinner } from './controls';
 
 const LETTERS = ['A', 'B', 'C', 'D'];
@@ -297,7 +298,13 @@ export const StepScript: React.FC<{
   content: QuizContent;
   setContent: (updater: (prev: QuizContent) => QuizContent) => void;
   hasAudio: boolean;
+  /** Every clip is out of date - scenes were added, removed or reordered. */
   onEdited: () => void;
+  /**
+   * One scene's words changed, so only its clip is out of date. The rest keep
+   * their voiceover, and the Voice step records just the missing one.
+   */
+  onSceneEdited: (index: number) => void;
   deepseekKey: string;
   deepseekModel: string;
   setDeepseekModel: (v: string) => void;
@@ -312,6 +319,7 @@ export const StepScript: React.FC<{
   setContent,
   hasAudio,
   onEdited,
+  onSceneEdited,
   deepseekKey,
   deepseekModel,
   setDeepseekModel,
@@ -407,14 +415,28 @@ export const StepScript: React.FC<{
   };
 
   const setScriptLine = (index: number, changes: Partial<ScriptLine>, touchesNarration: boolean) => {
-    patch(
-      (prev) => ({
-        ...prev,
-        script: prev.script.map((line, i) => (i === index ? { ...line, ...changes } : line)),
-      }),
-      touchesNarration,
-    );
+    setContent((prev) => ({
+      ...prev,
+      script: prev.script.map((line, i) => (i === index ? { ...line, ...changes } : line)),
+    }));
+    // One scene changed, so one clip is out of date - not the whole voiceover.
+    if (touchesNarration && hasAudio) onSceneEdited(index);
   };
+
+  // The fact box and the closing scene that says it, kept in step. See
+  // src/lib/fun-fact.ts for when they are linked and why "linked" is strict.
+  const setFunFact = (value: string) => {
+    const { scene } = withFunFact(content, value);
+    setContent((prev) => withFunFact(prev, value).content);
+    if (scene >= 0 && hasAudio) onSceneEdited(scene);
+  };
+  const useFunFactInVideo = () => {
+    const { scene } = speakFunFact(content);
+    setContent((prev) => speakFunFact(prev).content);
+    if (scene >= 0 && hasAudio) onSceneEdited(scene);
+  };
+  const closing = closingScene(content);
+  const spoken = factIsSpoken(content);
 
   return (
     <div className="panel">
@@ -475,8 +497,9 @@ export const StepScript: React.FC<{
 
       {hasAudio ? (
         <Note kind="warn" title="You already made a voiceover">
-          Changing any <b>spoken narration</b> below means the voiceover has to be recorded again. On-screen
-          text and options can be changed freely.
+          Changing a scene&rsquo;s <b>spoken words</b> means that scene is recorded again &mdash; only that one;
+          the rest keep their voice. Adding, removing or reordering scenes needs the whole voiceover again.
+          On-screen text and options can be changed freely.
         </Note>
       ) : null}
 
@@ -521,8 +544,22 @@ export const StepScript: React.FC<{
           <textarea
             rows={2}
             value={content.funFact}
-            onChange={(e) => patch((p) => ({ ...p, funFact: e.target.value }), false)}
+            onChange={(e) => setFunFact(e.target.value)}
           />
+          {closing >= 0 && spoken ? (
+            <div className="hint">
+              The last scene says this — change it here and the video changes with it.
+              {hasAudio ? ' Only that scene needs recording again.' : ''}
+            </div>
+          ) : closing >= 0 && content.funFact.trim() ? (
+            // Gemini told the fact in its own words, so there is nothing safe
+            // to swap. Say so, rather than let an edit silently go nowhere.
+            <Note kind="warn" title="The video says a different fact">
+              The last scene says: <em>“{content.script[closing].narration}”</em>. It does not use this box
+              word for word, so changing the box alone will not change the video.{' '}
+              <button className="link-btn" onClick={useFunFactInVideo}>Use my fun fact there</button>
+            </Note>
+          ) : null}
         </div>
       </div>
 

@@ -28,6 +28,12 @@ export const StepVoice: React.FC<{
   const spokenLines = content.script.filter((s) => s.narration.trim()).length;
   const characters = content.script.reduce((n, s) => n + s.narration.trim().length, 0);
   const haveAudio = Object.keys(audio).length > 0;
+  // Scenes with words but no clip: their words were edited after the voiceover.
+  // Recording just these is a scene's worth of credits, not the whole video's.
+  const missing = content.script
+    .map((line, i) => ((line.narration || '').trim() && !audio[i] ? i : -1))
+    .filter((i) => i >= 0);
+  const partial = haveAudio && missing.length > 0;
 
   useEffect(() => {
     let cancelled = false;
@@ -63,13 +69,14 @@ export const StepVoice: React.FC<{
     el.play().catch(() => setError('Your browser blocked the preview sound. Click anywhere on the page and try again.'));
   };
 
-  const record = async () => {
+  /** `only`: the scene numbers to record; the clips already made are kept. */
+  const record = async (only?: number[]) => {
     setBusy(true);
     setError(null);
     setDone(0);
     setStage('Sending the script to ElevenLabs…');
     try {
-      const { jobId, total: t } = await api.startVoiceover(elevenKey.trim(), settings, content.script);
+      const { jobId, total: t } = await api.startVoiceover(elevenKey.trim(), settings, content.script, only);
       setTotal(t);
 
       // Poll until every line is recorded.
@@ -101,7 +108,8 @@ export const StepVoice: React.FC<{
             }),
           );
 
-          onAudio(tracks);
+          // A partial recording drops its clips in beside the ones kept.
+          onAudio(only ? { ...audio, ...tracks } : tracks);
           break;
         }
       }
@@ -304,13 +312,26 @@ export const StepVoice: React.FC<{
               ← Back to the script
             </button>
             <div className="spacer" />
-            <button className="btn" onClick={record} disabled={busy || !settings.voiceId}>
-              {busy ? <Spinner /> : '🎙️'} {haveAudio ? 'Record again' : 'Make the voiceover'}
+            {partial ? (
+              <button className="btn primary" onClick={() => record(missing)} disabled={busy || !settings.voiceId}>
+                {busy ? <Spinner /> : '🎙️'} Record the {missing.length === 1 ? 'changed scene' : missing.length + ' changed scenes'}
+              </button>
+            ) : null}
+            <button className={partial ? 'btn ghost' : 'btn'} onClick={() => record()} disabled={busy || !settings.voiceId}>
+              {busy && !partial ? <Spinner /> : '🎙️'} {partial ? 'Record everything again' : haveAudio ? 'Record again' : 'Make the voiceover'}
             </button>
-            <button className="btn primary" onClick={onNext} disabled={busy || !haveAudio}>
+            <button className="btn primary" onClick={onNext} disabled={busy || !haveAudio || partial}>
               Continue →
             </button>
           </div>
+
+          {partial && !busy ? (
+            <div className="hint" style={{ marginTop: 10, color: 'var(--dim)' }}>
+              {missing.length === 1 ? 'One scene' : missing.length + ' scenes'} changed since the voiceover
+              ({missing.map((i) => content.script[i].kind + ' ' + (i + 1)).join(', ')}). Record
+              {missing.length === 1 ? ' it' : ' them'} to continue &mdash; the rest keep their voice.
+            </div>
+          ) : null}
 
           {!haveAudio && !busy ? (
             <div className="hint" style={{ marginTop: 10, color: 'var(--dim)' }}>
