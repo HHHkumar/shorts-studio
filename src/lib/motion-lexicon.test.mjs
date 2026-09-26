@@ -7,7 +7,7 @@
 
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { detectEffects, effectForWord, envelope, motionWordsIn } from './motion-lexicon.ts';
+import { detectEffects, doodleMarks, effectForWord, envelope, motionWordsIn } from './motion-lexicon.ts';
 
 let passed = 0;
 const test = (name, fn) => {
@@ -153,6 +153,42 @@ test('the editor sees the same words the renderer will act on', () => {
 
 test('a calm sentence reports nothing to the editor either', () => {
   assert.deepEqual(motionWordsIn('Why do people believe this?'), []);
+});
+
+console.log('\nwhich words get a hand-drawn mark');
+
+const words = (text) => text.split(/\s+/);
+
+test('the action words of a question are marked, the rest left plain', () => {
+  assert.deepEqual(
+    doodleMarks(words('Why does the steam flow before the turbine spins?')),
+    [null, null, null, null, 'flow', null, null, 'spin', null],
+  );
+});
+
+test('two of one kind on a line is one mark, not two bolts', () => {
+  assert.deepEqual(
+    doodleMarks(words('The current in this circuit')),
+    [null, 'spark', null, null, null],
+  );
+});
+
+test('never more than two marks on a phrase', () => {
+  const marks = doodleMarks(words('It heats, rises, spins and falls'));
+  assert.deepEqual(marks, [null, 'heat', 'rise', null, null, null]);
+});
+
+test('a calm phrase has no marks at all', () => {
+  assert.ok(doodleMarks(words('Which of these is true?')).every((m) => m === null));
+});
+
+test('punctuation stuck to the word does not hide it', () => {
+  assert.deepEqual(doodleMarks(['boils!']), ['heat']);
+});
+
+test('nothing to read, nothing marked', () => {
+  assert.deepEqual(doodleMarks([]), []);
+  assert.deepEqual(doodleMarks(null), []);
 });
 
 console.log('\nthe manual and the vocabulary agree');

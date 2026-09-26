@@ -1,6 +1,9 @@
 // Render the Doodle look as stills, to see it rather than imagine it.
 //
-//   node --import ./tools/ts-resolve.mjs tools/doodle-preview.mjs [portrait|landscape] [light|dark]
+//   node --import ./tools/ts-resolve.mjs tools/doodle-preview.mjs [portrait|landscape] [light|dark] [quiz|explainer|circuit|actions|post] [action]
+//
+// With `action`, each still is taken just after the scene's last action word
+// is spoken instead of late in the scene, to see the hand-drawn marks on it.
 //
 // One still per scene, taken after the entrance has settled, for a quiz and an
 // explainer. What to look at:
@@ -24,6 +27,7 @@ import { attachIcons } from '../server/icons.mjs';
 import { DEFAULT_DESIGN } from '../src/lib/theme.ts';
 import { normalizeCircuit } from '../src/lib/figures/circuit.ts';
 import { planCarousel } from '../src/lib/carousel.ts';
+import { effectForWord } from '../src/lib/motion-lexicon.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PUBLIC = path.join(ROOT, 'public');
@@ -129,6 +133,23 @@ const CIRCUIT = {
   ],
 };
 
+// Every hand-drawn action mark, two to a line: see ActionDoodle.tsx. With
+// `action`, each still lands just after the line's last action word.
+const ACTIONS = {
+  videoKind: 'mcq',
+  subject: 'Physics', topic: 'Action words', difficulty: 'easy',
+  hook: '', question: '', options: [], correctIndex: 0,
+  answerLine: '', explanation: [], funFact: '', outro: '', hashtags: [], motifSymbols: ['⚡'],
+  script: [
+    'Steam flows; the rotor spins.',
+    'Water heats, vapour rises.',
+    'Pressure falls, the coil cools.',
+    'Contacts vibrate, sparks fly.',
+    'It collides, then bursts.',
+    'Filament glows, water drips.',
+  ].map((narration) => ({ kind: 'hook', narration, doodleSrc: art('hook') })),
+};
+
 /** Even word timings, standing in for ElevenLabs. */
 const timed = (line) => line.narration.split(/\s+/).filter(Boolean).map((word, i, all) => {
   const per = (SCENE_SECONDS - 0.4) / all.length;
@@ -172,14 +193,22 @@ const serveUrl = await bundle({
 });
 
 const ONLY = process.argv[4] || '';
-const SETS = [['quiz', QUIZ], ['explainer', EXPLAINER], ['circuit', CIRCUIT]].filter(([n]) => !ONLY || n === ONLY);
+const AT_ACTION = process.argv[5] === 'action';
+
+/** Just after the last action word, or late in the scene when there is none. */
+function stillFrame(scene) {
+  const word = AT_ACTION ? scene.words.filter((w) => effectForWord(w.word)).pop() : null;
+  if (word) return scene.startFrame + Math.min(scene.durationInFrames - 1, Math.round((word.start + 0.7) * FPS));
+  // Late in the scene: the entrance has settled and most words are read.
+  return scene.startFrame + Math.round(scene.durationInFrames * 0.8);
+}
+const SETS = [['quiz', QUIZ], ['explainer', EXPLAINER], ['circuit', CIRCUIT], ['actions', ACTIONS]].filter(([n]) => !ONLY || n === ONLY);
 for (const [name, content] of SETS) {
   const props = propsFor(content);
   const composition = await selectComposition({ serveUrl, id: 'QuizVideo', inputProps: props });
   for (const scene of props.scenes) {
-    // Late in the scene: the entrance has settled and most words are read.
-    const frame = scene.startFrame + Math.round(scene.durationInFrames * 0.8);
-    const file = path.join(OUT, 'doodle-' + ORIENTATION + '-' + MODE + '-' + name + '-' + scene.id + '-' + scene.kind + '.png');
+    const frame = stillFrame(scene);
+    const file = path.join(OUT, 'doodle-' + (AT_ACTION ? 'action-' : '') + ORIENTATION + '-' + MODE + '-' + name + '-' + scene.id + '-' + scene.kind + '.png');
     await renderStill({ composition, serveUrl, output: file, frame, inputProps: props, overwrite: true });
     console.log('  ' + path.basename(file));
   }

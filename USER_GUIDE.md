@@ -368,7 +368,16 @@ still free.
 | **+ Add a scene** | Adds an explanation scene before the outro. |
 
 Changing any of these means the voiceover has to be recorded again, and the page tells you so if you
-have already made one.
+have already made one. **Editing the words of a scene is cheaper:** only that scene loses its
+recording, and step 4 records just that one — the rest keep their voice.
+
+**The fun fact.** The fact is not shown on a card of its own — the last scene *says* it, and the
+narration is what appears on screen. So the box and the last scene are linked: while that scene
+begins with the fact, typing in the box changes the scene with it, and the hint under the box says
+*"The last scene says this"*. If the last scene says something else — Gemini sometimes words the
+closing line itself, or you rewrote it — the box warns you, quotes what the scene actually says, and
+offers **Use my fun fact there**, which puts your fact at the start of that scene. Without that,
+changing the box alone would never reach the video.
 
 **On an explainer**, a scene that draws a layout shows a **🖼️ Drawn on screen** row listing every
 label in it — and on a [motion scene](#scenes-that-move), every cue that fires an animation. A label marked **⚠** is one your narration never says — the reveals are timed by
@@ -387,6 +396,11 @@ The cost is shown before you spend anything. Press **Make the voiceover**.
 > always rounding *up*, so a line can never be cut off. The subtitles are nudged by the few
 > milliseconds of silence every MP3 carries at its start, which lands the highlight on the right
 > syllable.
+
+**Changed a line after recording?** Step 4 notices which scenes have lost their recording and puts
+**Record the changed scene** first — it records only those, for only their characters, and drops the
+new clips in beside the ones you kept. *Continue* waits until they are done, because a scene with no
+voice has no length. **Record everything again** is still there if you want a fresh take throughout.
 
 **The options light up as they are read**, because the narration reads them in order.
 
@@ -875,6 +889,17 @@ passes through the row the active box is on; a bloom, a burst and a heat wash al
 That is most of the difference between an effect that explains something and one that is just
 decoration laid over the top.
 
+**In the Doodle look, the verbs are drawn on the words instead.** Blurred particles are the wrong
+medium for a notebook page, so there the same words get a pen mark of their own, in the marker red,
+drawn on as the word is spoken — on every scene, the question and the hook included, not only the
+explainer layouts. *Flows* gets a wavy arrow underneath, *heats* gets steam over it, *spins* a turning
+arrow at its shoulder, *rises* and *falls* an arrow beside them, *sparks* a lightning bolt,
+*escapes* a burst of lines, *glows* a sparkle, *drips* falling drops, *cools* a snowflake,
+*collides* impact lines, and *vibrates* shake lines on both sides. The word itself moves a little
+with its mark: a rising word lifts, a shaken one shakes. At most two marks on a line, and never two
+of the same kind — an electrical question says *current* and *circuit* in one breath, and two bolts
+on one line would be decoration, not meaning.
+
 **Scenes now cross into each other.** Each scene is held on screen a third of a second past its
 narration, so the outgoing and incoming ones overlap: one fades and slides out as the next fades and
 slides in, moving the same direction through the join. It used to be a hard cut with a five-frame
@@ -1128,6 +1153,10 @@ explained. Light is paper; dark is a chalkboard, with the drawings turned into c
 - **Formulas** are written out in the same marker, not typed in a code font.
 - **The answer is marked like a paper**: the right option circled in green marker, then the others
   struck through one by one.
+- **Action words are drawn on** — steam over *heats*, a wavy arrow under *flows*, a bolt beside
+  *sparks* — as each is spoken. See [Animation comes from your verbs](#animation-comes-from-your-verbs).
+- **The handwriting is set a size larger** than the other looks. Lowercase marker reads smaller than
+  a typed font at the same size, so the words, options and captions are all scaled up to match.
 
 It is built around **one character who never changes**. A recurring face is what makes a run of
 videos recognisable in a feed, and image models drift — by the sixth picture the hat is gone and
@@ -1189,7 +1218,8 @@ never show it — a direction that gives it away is dropped, and a note names th
 English only — Kannada and other Indian scripts use the regular font.
 
 To see the look without spending anything, `npm run doodle:preview` renders stills of every kind of
-scene into `stills/` from the mascot test drawings.
+scene into `stills/` from the mascot test drawings. `npm run doodle:preview -- portrait light actions action`
+renders one still for every kind of action mark, each taken just after its word is spoken.
 
 ---
 

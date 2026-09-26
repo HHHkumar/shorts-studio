@@ -184,6 +184,34 @@ export function envelope(t: number): number {
   return 1;
 }
 
+/** At most this many hand-drawn marks on one phrase of on-screen text. */
+const MARKS_PER_PHRASE = 2;
+
+/**
+ * Which words of one on-screen phrase get a hand-drawn action mark, in the
+ * Doodle look: the flow under "flows", the steam over "heats".
+ *
+ * The same vocabulary as the effects, so a word the editor lists as a motion
+ * word is a word that gets drawn on. Two rules of its own:
+ *
+ *   * One mark per kind. An electrical quiz says "current" and "circuit" in
+ *     the same breath, and two lightning bolts on one line is decoration, not
+ *     meaning.
+ *   * Two marks a phrase. The words are still the thing being read.
+ *
+ * Returns one entry per word, null where the word is left plain.
+ */
+export function doodleMarks(words: string[], max = MARKS_PER_PHRASE): (EffectKind | null)[] {
+  const used = new Set<EffectKind>();
+  return (Array.isArray(words) ? words : []).map((word) => {
+    if (used.size >= max) return null;
+    const kind = effectForWord(word);
+    if (!kind || used.has(kind)) return null;
+    used.add(kind);
+    return kind;
+  });
+}
+
 /**
  * Which motion words this narration contains, for the editor.
  *

@@ -396,6 +396,13 @@ export const EffectLayer: React.FC<{
 
   if (!live.length || strength <= 0) return null;
 
+  // On paper, blurred particles are the wrong medium, and the verb is already
+  // drawn in pen on its own word in the caption (ActionDoodle.tsx). The same
+  // mark drawn again over the panel was tried: with no word to sit around it
+  // floated over card edges, half hidden under them, and read as a glitch.
+  // Only the impact shove, which the scene applies itself, is kept.
+  if (theme.layout === 'doodle') return null;
+
   return (
     <AbsoluteFill style={{ pointerEvents: 'none', overflow: 'hidden', opacity: strength }}>
       {live.map(({ effect, t }, i) => {

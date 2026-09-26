@@ -5,6 +5,8 @@ import { hexToRgba } from '../lib/theme';
 import { flexAlignFor, textAlignFor } from '../lib/align';
 import type { WordTiming } from '../lib/types';
 import { wordStyle } from '../lib/text-reveal';
+import { doodleMarks } from '../lib/motion-lexicon';
+import { ActionDoodle, MARK_DRAW, actionWordMotion } from './ActionDoodle';
 
 /**
  * The spoken line, shown as the main text on screen, one phrase at a time,
@@ -111,7 +113,9 @@ export const ReadAlong: React.FC<{
     justifyContent: flexAlignFor(theme.align),
     alignItems: 'baseline',
     // Wide enough that the 1.06x scale on the current word cannot close it up.
-    gap: '0.14em 0.34em',
+    // Doodle lines sit further apart: the steam over one word and the wave
+    // under another need the space between lines to draw in.
+    gap: (theme.layout === 'doodle' ? '0.3em' : '0.14em') + ' 0.34em',
     fontFamily: theme.fontDisplay,
     fontWeight: theme.displayWeight,
     letterSpacing: complex ? 0 : theme.displayTracking,
@@ -122,10 +126,32 @@ export const ReadAlong: React.FC<{
     width: '100%',
   };
 
+  // The Doodle look draws the action words: steam over "heats", a wavy arrow
+  // under "flows". See ActionDoodle.tsx.
+  const doodle = theme.layout === 'doodle';
+  const mark = (kind: ReturnType<typeof doodleMarks>[number], since: number, px: number) => (
+    kind ? <ActionDoodle kind={kind} since={since} px={px} color={theme.accent} ink={color || theme.text} /> : null
+  );
+
   // No timings yet: show the whole line so the preview still reads correctly.
   if (!phrases.length) {
     const text = fallbackText.trim();
     if (!text) return null;
+    if (doodle) {
+      // Marks already drawn, so the preview shows which words will get one.
+      const split = text.split(/\s+/);
+      const kinds = doodleMarks(split);
+      return (
+        <div style={{ ...base, fontSize: minSize, color: color || theme.text }}>
+          {split.map((word, i) => (
+            <span key={i} style={{ display: 'inline-block', position: 'relative' }}>
+              {word}
+              {mark(kinds[i], MARK_DRAW, minSize)}
+            </span>
+          ))}
+        </div>
+      );
+    }
     return (
       <div style={{ ...base, fontSize: minSize, color: color || theme.text }}>
         {text}
@@ -143,6 +169,8 @@ export const ReadAlong: React.FC<{
     extrapolateRight: 'clamp',
   });
   const size = sizeFor(phrase, maxSize, minSize);
+
+  const kinds = doodle ? doodleMarks(phrase.words.map((w) => w.word)) : [];
 
   let currentIndex = -1;
   for (let i = 0; i < phrase.words.length; i++) {
@@ -176,14 +204,20 @@ export const ReadAlong: React.FC<{
           ghost: hexToRgba(color || theme.text, 1),
         });
 
+        const kind = kinds[i] || null;
+        const since = time - w.start;
+        const moved = kind ? actionWordMotion(kind, since) : undefined;
+
         return (
           <span
             key={i}
             style={{
               display: 'inline-block',
+              // The mark is placed against the word it belongs to.
+              position: kind ? 'relative' : undefined,
               opacity: ws.opacity,
               color: ws.color,
-              transform: ws.transform,
+              transform: [ws.transform, moved].filter(Boolean).join(' ') || undefined,
               filter: ws.filter,
               textShadow: current && theme.glow !== 'none' && !ws.marker ? theme.glow : undefined,
               // The highlighter sits behind the word rather than replacing its
@@ -196,6 +230,7 @@ export const ReadAlong: React.FC<{
             }}
           >
             {w.word}
+            {mark(kind, since, size)}
           </span>
         );
       })}
