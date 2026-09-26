@@ -302,4 +302,5 @@ export const DEFAULT_DESIGN: DesignSettings = {
   sfxVolume: 0.5,
   orientation: 'portrait',
   doodleEnergy: 'lively',
+  animatedEngineer: true,
 };

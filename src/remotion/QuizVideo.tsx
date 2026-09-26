@@ -14,7 +14,8 @@ import { DoodlePicture, DoodleText } from './DoodleStage';
 import { DoodleZoneContext } from './doodle-zone';
 import { HandFonts } from './fonts';
 import { DoodleFilters, DoodleInk } from './DoodleInk';
-import { wantsDoodle } from '../lib/doodle';
+import { stagingFor } from '../lib/doodle';
+import { EngineerLayer } from './EngineerLayer';
 
 /**
  * The whole video. Every scene is a <Sequence> that starts at the exact frame
@@ -33,6 +34,8 @@ export const QuizVideo: React.FC<VideoProps> = ({ content, scenes, design }) => 
   // picture of its own; every doodle scene has one, and they would only be
   // clutter around it.
   const doodle = theme.layout === 'doodle';
+  // Missing on settings saved before he was animated: on.
+  const animated = design.animatedEngineer !== false;
 
   return (
     <RevealContext.Provider value={design.textReveal || 'fade'}>
@@ -62,7 +65,11 @@ export const QuizVideo: React.FC<VideoProps> = ({ content, scenes, design }) => 
         const stepIndex = scene.kind === 'explain' ? explainScenes.indexOf(scene) : 0;
         // Checked here, not only when drawing: a scene drawn before its
         // diagram was switched on must give the frame back to the diagram.
-        const doodleHere = doodle && Boolean(scene.doodleSrc) && wantsDoodle(scene, design.showVisuals);
+        // The words move up into their band whenever the picture half has
+        // anything in it - a drawing, the animated engineer, or both.
+        const staged = doodle ? stagingFor(scene, design.showVisuals, animated) : null;
+        const picture = staged && (staged.still || staged.beside) ? scene.doodleSrc : undefined;
+        const doodleHere = Boolean(staged && (staged.still || staged.beside || staged.engineer));
         return (
           <Sequence
             key={scene.id}
@@ -78,7 +85,9 @@ export const QuizVideo: React.FC<VideoProps> = ({ content, scenes, design }) => 
             ) : null}
 
             {/* Outside SceneFade on purpose - see DoodleStage.tsx. */}
-            {doodleHere ? <DoodlePicture theme={theme} src={scene.doodleSrc!} hold={scene.durationInFrames} /> : null}
+            {picture ? (
+              <DoodlePicture theme={theme} src={picture} hold={scene.durationInFrames} beside={Boolean(staged && staged.beside)} />
+            ) : null}
 
             <SceneFade
               theme={theme}
@@ -123,6 +132,10 @@ export const QuizVideo: React.FC<VideoProps> = ({ content, scenes, design }) => 
           </Sequence>
         );
       })}
+
+      {/* Outside every scene, so he is one character through the cuts
+          rather than two cross-fading. See EngineerLayer.tsx. */}
+      {doodle && animated ? <EngineerLayer theme={theme} scenes={scenes} design={design} /> : null}
 
       <Soundtrack scenes={scenes} design={design} content={content} />
 

@@ -4,8 +4,9 @@
 // taken back out of the answers before anything is drawn.
 
 import {
-  buildDirectionRequest, DIRECTION_SYSTEM, MAX_DIRECTED, normalizeDirections,
+  ANIMATED_LINES, buildDirectionRequest, DIRECTION_SYSTEM, directionSystem, MAX_DIRECTED, normalizeDirections,
 } from './doodle-directions.mjs';
+import { ENGINEER_POSES } from '../src/lib/doodle.ts';
 
 let passed = 0;
 const test = (name, fn) => {
@@ -139,6 +140,27 @@ test('the model is told to mix the engineer with illustrations', () => {
 test('a reply with no directions array gives nothing, not a crash', () => {
   assert(Object.keys(normalizeDirections(null, quiz, [0]).directions).length === 0);
   assert(Object.keys(normalizeDirections({ directions: 'nope' }, quiz, [0]).directions).length === 0);
+});
+
+console.log('\nthe animated engineer');
+
+test('his pose is kept from the reply, and a made-up one is dropped', () => {
+  const out = normalizeDirections({
+    directions: [
+      direction(0, { subject: 'mascot', pose: 'shock' }),
+      direction(3, { subject: 'mascot', pose: 'breakdance' }),
+    ],
+  }, quiz, [0, 3]);
+  assert(out.directions[0].pose === 'shock', 'lost the pose');
+  assert(out.directions[3] && out.directions[3].pose === undefined, 'kept a pose that does not exist');
+});
+
+test('animated, the model is told he holds nothing and poses from the list', () => {
+  const system = directionSystem(true);
+  assert(system.startsWith(DIRECTION_SYSTEM) && system.includes(ANIMATED_LINES), 'the animated rules are missing');
+  assert(/cannot hold/i.test(ANIMATED_LINES), 'does not say he holds nothing');
+  for (const pose of ENGINEER_POSES) assert(ANIMATED_LINES.includes(pose + ' ('), 'the list does not explain ' + pose);
+  assert(directionSystem(false) === DIRECTION_SYSTEM, 'the still engineer got the animated rules');
 });
 
 console.log('\n' + passed + ' checks passed');

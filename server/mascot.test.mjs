@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {
-  adoptMascot, bibleFor, CHARACTER_MATCH_LINE, DEFAULT_VARIANT, DOODLE_LOOK, doodleScenePrompt,
+  adoptMascot, bibleFor, CHARACTER_MATCH_LINE, DEFAULT_VARIANT, DOODLE_LOOK, doodlePropsPrompt, doodleScenePrompt,
   ENERGY_LINES, ILLUSTRATION_MATCH_LINE, MASCOT_VARIANTS, mascotDesignPrompt, readMascot,
   readMascotImage, TEST_BEATS, thumbnailDoodlePrompt,
 } from './mascot.mjs';
@@ -287,6 +287,20 @@ test('a hand-edited mascot.json pointing elsewhere is ignored', () => {
   fs.mkdirSync(path.join(dir, 'mascot'), { recursive: true });
   fs.writeFileSync(path.join(dir, 'mascot', 'mascot.json'), JSON.stringify({ file: '../../etc/passwd', variant: 'classic' }));
   assert(readMascot(dir) === null && readMascotImage(dir) === null);
+});
+
+console.log('\nbeside the animated engineer');
+
+test('the picture beside him is only the things named - never a second engineer', () => {
+  const prompt = doodlePropsPrompt({ subject: 'mascot', action: 'x', emotion: 'x', props: 'an energy meter', gag: 'none' }, { energy: 'calm' });
+  assert(prompt.includes('an energy meter'), 'the props are missing');
+  assert(/no engineer, no people/i.test(prompt), 'does not forbid drawing him');
+  assert(!prompt.includes(bibleFor(DEFAULT_VARIANT)), 'describes the engineer, which invites drawing him');
+  assert(prompt.includes(ENERGY_LINES.calm), 'lost the energy');
+});
+
+test('with nothing beside him there is nothing to draw', () => {
+  assert(doodlePropsPrompt({ subject: 'mascot', action: 'x', emotion: 'x', props: '  ', gag: 'none' }) === null);
 });
 
 console.log('\n' + passed + ' checks passed');

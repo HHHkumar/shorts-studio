@@ -41,7 +41,7 @@ import { generateSeo } from './seo.mjs';
 import { buildArtPrompt, generateThumbnailBrief } from './thumbnail-brief.mjs';
 import { generateScenePrompts } from './scene-prompts.mjs';
 import {
-  adoptMascot, CHARACTER_MATCH_LINE, doodleScenePrompt, ILLUSTRATION_MATCH_LINE, MASCOT_VARIANTS,
+  adoptMascot, CHARACTER_MATCH_LINE, doodlePropsPrompt, doodleScenePrompt, ILLUSTRATION_MATCH_LINE, MASCOT_VARIANTS,
   mascotDesignPrompt, readMascot, readMascotImage, TEST_BEATS, thumbnailDoodlePrompt,
 } from './mascot.mjs';
 import { generateDoodleDirections } from './doodle-directions.mjs';
@@ -493,16 +493,18 @@ app.post('/api/mascot/test', ok(async (req, res) => {
 // way, and uses the same route for a single Redraw.
 
 app.post('/api/doodle/directions', ok(async (req, res) => {
-  const { apiKey, model, content, scenes, energy } = req.body || {};
+  const { apiKey, model, content, scenes, energy, animated } = req.body || {};
   if (!content || !Array.isArray(content.script)) throw new Error('Generate a script before directing the doodles.');
-  const out = await generateDoodleDirections({ apiKey, model: model || 'gemini-2.5-flash', content, scenes, energy });
+  const out = await generateDoodleDirections({
+    apiKey, model: model || 'gemini-2.5-flash', content, scenes, energy, animated: animated !== false,
+  });
   console.log('[doodle] directed ' + Object.keys(out.directions).length + ' scenes'
     + (out.notes.length ? ' (' + out.notes.length + ' notes)' : ''));
   res.json(out);
 }));
 
 app.post('/api/doodle/draw', ok(async (req, res) => {
-  const { apiKey, modelId, jobId, direction, kind, energy, orientation, scene } = req.body || {};
+  const { apiKey, modelId, jobId, direction, kind, energy, orientation, scene, animated } = req.body || {};
   if (!apiKey) throw new Error('No Gemini API key was sent. Add it on the Keys step.');
   const mascot = readMascot(paths.PUBLIC_DIR);
   const sheet = readMascotImage(paths.PUBLIC_DIR);
@@ -514,7 +516,13 @@ app.post('/api/doodle/draw', ok(async (req, res) => {
   if (!directed) throw new Error('Say what the engineer is doing in this scene, then draw it.');
 
   const level = energyFor(String(kind || ''), energy);
-  const prompt = doodleScenePrompt(directed, mascot.variant, { energy: level, framing: 'square' });
+  // The animated engineer is drawn by the renderer; the picture is only what
+  // stands beside him, with no engineer in it.
+  const beside = animated !== false && directed.subject !== 'illustration';
+  const prompt = beside
+    ? doodlePropsPrompt(directed, { energy: level })
+    : doodleScenePrompt(directed, mascot.variant, { energy: level, framing: 'square' });
+  if (!prompt) throw new Error('Nothing is named beside the engineer in this scene, so there is nothing to draw - he is animated on his own.');
   const model = modelOr(modelId, 'gemini-3.1-flash-image');
   const safeJob = String(jobId || 'default').replace(/[^a-zA-Z0-9_-]+/g, '-').slice(0, 40) || 'default';
   const index = Number.isInteger(Number(scene)) ? Number(scene) : 0;
@@ -528,15 +536,15 @@ app.post('/api/doodle/draw', ok(async (req, res) => {
   const { base64, mimeType, referenced } = await generateGoogleImage({
     apiKey, prompt, orientation, modelId: model, aspectRatio: '1:1',
     reference: sheet,
-    matchLine: directed.subject === 'illustration' ? ILLUSTRATION_MATCH_LINE : CHARACTER_MATCH_LINE,
+    matchLine: directed.subject === 'illustration' || beside ? ILLUSTRATION_MATCH_LINE : CHARACTER_MATCH_LINE,
   });
   const saved = saveImageBuffer({
     buffer: Buffer.from(base64, 'base64'), mimeType, id: fileId, jobId: safeJob,
     publicDir: paths.PUBLIC_DIR, folder: 'doodle',
   });
-  console.log('[doodle] scene ' + index + ' (' + directed.subject + ', ' + level + ') '
+  console.log('[doodle] scene ' + index + ' (' + (beside ? 'beside the engineer' : directed.subject) + ', ' + level + ') '
     + (referenced ? '' : 'WITHOUT the model sheet ') + '-> ' + saved.src);
-  res.json({ src: saved.src, referenced, energy: level, prompt, cents: centsOf(model) });
+  res.json({ src: saved.src, referenced, energy: level, prompt, cents: centsOf(model), props: beside });
 }));
 
 // --- what the model is actually going to be asked --------------------------

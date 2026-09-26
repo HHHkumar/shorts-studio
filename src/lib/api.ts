@@ -431,7 +431,9 @@ export const api = {
   },
 
   /** Gemini directs the mascot for the listed scenes. Text only - one request for the whole script. */
-  doodleDirections(body: { apiKey: string; model: string; content: QuizContent; scenes: number[]; energy: string }) {
+  doodleDirections(body: {
+    apiKey: string; model: string; content: QuizContent; scenes: number[]; energy: string; animated: boolean;
+  }) {
     return post<{ directions: Record<string, DoodleDirection>; notes: string[] }>('/api/doodle/directions', body);
   },
 
@@ -445,8 +447,12 @@ export const api = {
     direction: DoodleDirection;
     energy: string;
     orientation: string;
+    /** Draw only what stands beside the animated engineer, not him. */
+    animated: boolean;
   }) {
-    return post<{ src: string; referenced: boolean; energy: string; prompt: string; cents: number }>('/api/doodle/draw', body);
+    return post<{ src: string; referenced: boolean; energy: string; prompt: string; cents: number; props: boolean }>(
+      '/api/doodle/draw', body,
+    );
   },
 
   seo(

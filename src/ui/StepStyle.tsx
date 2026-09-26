@@ -353,6 +353,8 @@ export const StepStyle: React.FC<{
               orientation={design.orientation}
               showVisuals={design.showVisuals}
               onOpenMascot={onOpenMascot}
+              animated={design.animatedEngineer !== false}
+              setAnimated={(v) => set('animatedEngineer', v)}
             />
           ) : null}
         </>

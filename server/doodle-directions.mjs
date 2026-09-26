@@ -20,7 +20,7 @@
 import { fetchRetrying } from './retry.mjs';
 import { givesAnswerAway, stripLettering } from './thumbnail-brief.mjs';
 import { answerSceneIndex } from './scene-prompts.mjs';
-import { energyFor, tidyDirection } from '../src/lib/doodle.ts';
+import { ENGINEER_POSES, energyFor, tidyDirection } from '../src/lib/doodle.ts';
 
 const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models';
 
@@ -38,10 +38,11 @@ const RESPONSE_SCHEMA = {
         properties: {
           scene: { type: 'INTEGER' },
           subject: { type: 'STRING', enum: ['mascot', 'illustration'] },
+          pose: { type: 'STRING', enum: [...ENGINEER_POSES] },
           action: FIELD, emotion: FIELD, props: FIELD, gag: FIELD,
         },
-        required: ['scene', 'subject', 'action', 'emotion', 'props', 'gag'],
-        propertyOrdering: ['scene', 'subject', 'action', 'emotion', 'props', 'gag'],
+        required: ['scene', 'subject', 'pose', 'action', 'emotion', 'props', 'gag'],
+        propertyOrdering: ['scene', 'subject', 'pose', 'action', 'emotion', 'props', 'gag'],
       },
     },
   },
@@ -85,8 +86,30 @@ export const DIRECTION_SYSTEM = [
   '  about the situation in the question, never its resolution.',
   '',
   'Reply with the JSON object only: {"directions": [{"scene": <number>, "subject": "mascot" or',
-  '"illustration", "action": "...", "emotion": "...", "props": "...", "gag": "..."}]}.',
+  '"illustration", "pose": "...", "action": "...", "emotion": "...", "props": "...", "gag": "..."}]}.',
 ].join('\n');
+
+/**
+ * Added when the engineer is animated: he is no longer drawn into the
+ * pictures but stands beside them, moving, so the model has to know that he
+ * holds nothing and that his pose comes from a fixed list.
+ */
+export const ANIMATED_LINES = [
+  '',
+  'THE ENGINEER IS ANIMATED. In "mascot" scenes he is not drawn into the picture: he stands beside it',
+  'and moves. So for "mascot" scenes:',
+  '- pose: the one of these that suits the moment: wave (a greeting or sign-off), point (at the thing',
+  '  being talked about), idea (a realisation), think (puzzled, working it out), shock (a surprise or',
+  '  alarm), cheer (the reveal, a win), teach (explaining), worried (something is wrong),',
+  '  shrug (nobody knows), stand (nothing special). Vary them; never the same pose twice in a row.',
+  '- props: the things drawn on the page BESIDE him - he cannot hold or touch anything. Name one or',
+  '  two concrete things, or leave it an empty string when the moment is only his reaction.',
+  '- gag: only something that can be drawn in those props, never on him.',
+  'For "illustration" scenes, set pose to "stand"; it is not used.',
+].join('\n');
+
+/** The system prompt, with the animated engineer's rules when he is animated. */
+export const directionSystem = (animated = true) => (animated ? DIRECTION_SYSTEM + '\n' + ANIMATED_LINES : DIRECTION_SYSTEM);
 
 /**
  * The script as the model sees it: every scene for context, the ones to
@@ -135,6 +158,7 @@ export function normalizeDirections(raw, content, scenes) {
     if (!Number.isInteger(scene) || !wanted.has(scene) || directions[scene] !== undefined) continue;
     const direction = tidyDirection({
       subject: item.subject,
+      pose: item.pose,
       action: scrub(item.action),
       emotion: scrub(item.emotion),
       props: scrub(item.props),
@@ -157,7 +181,7 @@ export function normalizeDirections(raw, content, scenes) {
   return { directions, notes };
 }
 
-export async function generateDoodleDirections({ apiKey, model, content, scenes, energy }) {
+export async function generateDoodleDirections({ apiKey, model, content, scenes, energy, animated = true }) {
   if (!apiKey) throw new Error('No Gemini API key was sent. Add it on the Keys step.');
   const script = Array.isArray(content && content.script) ? content.script : [];
   const valid = [...new Set((Array.isArray(scenes) ? scenes : []).map(Number))]
@@ -166,7 +190,7 @@ export async function generateDoodleDirections({ apiKey, model, content, scenes,
   if (!valid.length) throw new Error('There are no scenes to direct.');
 
   const body = {
-    systemInstruction: { parts: [{ text: DIRECTION_SYSTEM }] },
+    systemInstruction: { parts: [{ text: directionSystem(animated) }] },
     contents: [{ role: 'user', parts: [{ text: buildDirectionRequest(content, valid, energy) }] }],
     generationConfig: { temperature: 0.9, responseMimeType: 'application/json', responseSchema: RESPONSE_SCHEMA },
   };

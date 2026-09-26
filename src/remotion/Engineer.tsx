@@ -1,7 +1,7 @@
 import React from 'react';
 import { useCurrentFrame, useVideoConfig } from 'remotion';
 import type { Theme } from '../lib/theme';
-import type { WordTiming } from '../lib/types';
+import type { TimedEffect } from '../lib/motion-lexicon';
 import { figureAt, rotate, SHEET, type Beat, type Figure, type Pt } from '../lib/engineer-rig';
 
 // ---------------------------------------------------------------------------
@@ -190,24 +190,24 @@ const PropMark: React.FC<{ prop: Figure['prop']; time: number; ink: string; pape
 /**
  * The engineer, at the current frame.
  *
- * `beats` choose his poses over the scene; `words` are the narration's word
- * timings, whose action words he mimes. Sized by its box: he fills its
+ * `beats` choose his poses; `mimes` are the action words he acts out, timed
+ * (engineer-rig's mimesIn). Sized by its box: he fills its
  * height, keeping his proportions.
  */
 export const Engineer: React.FC<{
   theme: Theme;
   beats: Beat[];
-  words?: WordTiming[];
-  /** Seconds to subtract from the frame's time: the caption offset. */
+  mimes?: TimedEffect[];
+  /** Seconds to subtract from the frame's time. */
   offset?: number;
   /** Mirror him, so he faces the other way. */
   flip?: boolean;
   style?: React.CSSProperties;
-}> = ({ theme, beats, words = [], offset = 0, flip = false, style }) => {
+}> = ({ theme, beats, mimes = [], offset = 0, flip = false, style }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const time = frame / fps - offset;
-  const f = figureAt(beats, words, time);
+  const f = figureAt(beats, mimes, time);
 
   const ink = theme.text;
   const paper = theme.bg;

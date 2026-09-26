@@ -361,9 +361,12 @@ export const ThumbnailMaker: React.FC<{
  * The best drawing of the engineer the video already has, for the cover. The
  * reveal and the hook come first - they are the big faces - then any scene
  * with the engineer in it. An illustration is never used: a cover needs a face.
+ * Nor is a drawing made for the animated engineer, which is only the things
+ * beside him - he is not in it.
  */
 function coverDoodle(content: QuizContent): string {
-  const drawn = (content.script || []).filter((l) => l.doodleSrc && (!l.doodle || l.doodle.subject !== 'illustration'));
+  const drawn = (content.script || []).filter((l) => l.doodleSrc && !l.doodleProps
+    && (!l.doodle || l.doodle.subject !== 'illustration'));
   const pick = drawn.find((l) => l.kind === 'answer') || drawn.find((l) => l.kind === 'hook') || drawn[0];
   return pick ? pick.doodleSrc || '' : '';
 }

@@ -2,10 +2,10 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { api } from '../lib/api';
 import type { QuizContent } from '../lib/types';
 import {
-  DOODLE_ENERGIES, DOODLE_SUBJECTS, doodleScenes, energyFor, fieldLabels, tidyDirection,
-  type DoodleDirection, type DoodleSubject,
+  DOODLE_ENERGIES, DOODLE_SUBJECTS, doodleScenes, ENGINEER_POSES, energyFor, fieldLabels, needsDrawing, POSE_LABELS,
+  poseFor, stagingFor, tidyDirection, type DoodleDirection, type DoodleSubject, type TextField,
 } from '../lib/doodle';
-import { ErrorNote, Note, Select, Spinner, TextInput } from './controls';
+import { Check, ErrorNote, Note, Select, Spinner, TextInput } from './controls';
 
 // ---------------------------------------------------------------------------
 // Doodles: the mascot, directed and drawn for every scene of this video.
@@ -34,6 +34,9 @@ type Props = {
   orientation: string;
   showVisuals: boolean;
   onOpenMascot?: () => void;
+  /** The engineer is animated beside the pictures rather than drawn into them. */
+  animated: boolean;
+  setAnimated: (v: boolean) => void;
 };
 
 /** Enough to be quick, few enough that a rate limit is unlikely. */
@@ -47,6 +50,7 @@ const hash = (s: string) => {
 
 export const DoodlePanel: React.FC<Props> = ({
   content, setContent, geminiKey, geminiModel, energy, setEnergy, orientation, showVisuals, onOpenMascot,
+  animated, setAnimated,
 }) => {
   const [models, setModels] = useState<{ id: string; label: string; cents: number }[]>([]);
   const [hasMascot, setHasMascot] = useState<boolean | null>(null);
@@ -68,7 +72,10 @@ export const DoodlePanel: React.FC<Props> = ({
   const script = content.script || [];
   const eligible = useMemo(() => doodleScenes(script, showVisuals), [script, showVisuals]);
   const directed = eligible.filter((i) => script[i] && script[i].doodle);
-  const undrawn = directed.filter((i) => !script[i].doodleSrc);
+  // What still needs a picture. An animated engineer with nothing beside him
+  // needs none; one drawn into an old picture needs it drawn again.
+  const undrawn = directed.filter((i) => needsDrawing(script[i], animated));
+  const drawable = directed.filter((i) => needsDrawing({ ...script[i], doodleSrc: undefined }, animated));
   const skipped = script.map((_, i) => i).filter((i) => !eligible.includes(i));
   const jobId = 'doodle-' + hash(content.question || content.topic || 'video');
 
@@ -77,7 +84,7 @@ export const DoodlePanel: React.FC<Props> = ({
   const noKey = geminiKey.trim().length < 6;
   const busy = directing || drawing !== null;
 
-  const updateLine = (i: number, patch: Partial<{ doodle: DoodleDirection; doodleSrc: string }>) =>
+  const updateLine = (i: number, patch: Partial<{ doodle: DoodleDirection; doodleSrc: string; doodleProps: boolean }>) =>
     setContent((prev) => ({
       ...prev,
       script: prev.script.map((line, j) => (j === i ? { ...line, ...patch } : line)),
@@ -89,7 +96,7 @@ export const DoodlePanel: React.FC<Props> = ({
     setNotes([]);
     try {
       const out = await api.doodleDirections({
-        apiKey: geminiKey, model: geminiModel || 'gemini-2.5-flash', content, scenes: eligible, energy,
+        apiKey: geminiKey, model: geminiModel || 'gemini-2.5-flash', content, scenes: eligible, energy, animated,
       });
       setContent((prev) => ({
         ...prev,
@@ -112,9 +119,9 @@ export const DoodlePanel: React.FC<Props> = ({
     const direction = line && tidyDirection(line.doodle);
     if (!direction) throw new Error('Scene ' + i + ' has no direction yet.');
     const out = await api.doodleDraw({
-      apiKey: geminiKey, modelId, jobId, scene: i, kind: line.kind, direction, energy, orientation,
+      apiKey: geminiKey, modelId, jobId, scene: i, kind: line.kind, direction, energy, orientation, animated,
     });
-    updateLine(i, { doodleSrc: out.src });
+    updateLine(i, { doodleSrc: out.src, doodleProps: out.props === true });
     setNoSheet((prev) => {
       const next = new Set(prev);
       if (out.referenced) next.delete(i); else next.add(i);
@@ -159,7 +166,7 @@ export const DoodlePanel: React.FC<Props> = ({
     }
   };
 
-  const editField = (i: number, key: keyof DoodleDirection, value: string) => {
+  const editField = (i: number, key: TextField | 'subject' | 'pose', value: string) => {
     const current = script[i].doodle || { subject: 'mascot' as DoodleSubject, action: '', emotion: '', props: '', gag: 'none' };
     updateLine(i, { doodle: { ...current, [key]: value } });
   };
@@ -182,6 +189,18 @@ export const DoodlePanel: React.FC<Props> = ({
         disagree with. Scenes that show their own worked-out diagram keep it rather than a doodle.
         Backdrop photos, the moving backdrop and the drifting symbols are off in this look.
       </p>
+
+      <Check
+        label="Animated engineer"
+        hint={
+          'He stands beside the pictures and moves: takes up a pose for each scene, blinks, and acts '
+          + 'out the action words as they are said. Directing is enough for him to appear — only the '
+          + 'things beside him are drawn, so a scene that is just his reaction costs nothing. Off, he '
+          + 'is drawn into each picture as a still.'
+        }
+        checked={animated}
+        onChange={setAnimated}
+      />
 
       <div className="grid">
         <Select
@@ -224,9 +243,9 @@ export const DoodlePanel: React.FC<Props> = ({
             <button className="btn primary" disabled={noKey || busy || !undrawn.length} onClick={() => drawMany(undrawn)}>
               {'Draw ' + (undrawn.length || '') + ' scene' + (undrawn.length === 1 ? '' : 's') + price(undrawn.length)}
             </button>
-            {directed.length && !undrawn.length ? (
-              <button className="btn ghost" disabled={noKey || busy} onClick={() => drawMany(directed)}>
-                {'Redraw all ' + directed.length + price(directed.length)}
+            {drawable.length && !undrawn.length ? (
+              <button className="btn ghost" disabled={noKey || busy} onClick={() => drawMany(drawable)}>
+                {'Redraw all ' + drawable.length + price(drawable.length)}
               </button>
             ) : null}
           </>
@@ -234,7 +253,11 @@ export const DoodlePanel: React.FC<Props> = ({
       </div>
 
       {!directed.length && eligible.length ? (
-        <p className="hint">Press Direct first: Gemini writes what the engineer does in each scene, then you draw them.</p>
+        <p className="hint">
+          {animated
+            ? 'Press Direct first: Gemini chooses the engineer\'s pose in each scene, and what stands beside him. He appears as soon as it is done; then draw what is beside him.'
+            : 'Press Direct first: Gemini writes what the engineer does in each scene, then you draw them.'}
+        </p>
       ) : null}
 
       <div className="doodle-list">
@@ -242,10 +265,19 @@ export const DoodlePanel: React.FC<Props> = ({
           const line = script[i];
           const d = line.doodle;
           const level = energyFor(line.kind, energy);
+          const staged = stagingFor(line, showVisuals, animated);
+          // Animated and an engineer scene: his pose and what is beside him
+          // are what matter; "doing" and "feeling" only feed the still.
+          const moving = animated && Boolean(d) && (d!.subject || 'mascot') === 'mascot';
+          const nothingBeside = moving && !d!.props.trim();
+          const stale = moving && Boolean(line.doodleSrc) && !line.doodleProps;
+          const fields: TextField[] = moving ? ['props', 'gag'] : ['action', 'emotion', 'props', 'gag'];
           return (
             <div className="doodle-row" key={i}>
               <div className="doodle-thumb">
-                {line.doodleSrc ? <img src={'/' + line.doodleSrc} alt={'Scene ' + i} /> : <span>{d ? 'Not drawn' : '—'}</span>}
+                {line.doodleSrc ? <img src={'/' + line.doodleSrc} alt={'Scene ' + i} /> : (
+                  <span>{!d ? '—' : staged.engineer ? '🕺 ' + POSE_LABELS[poseFor(d, line.kind)] : 'Not drawn'}</span>
+                )}
               </div>
               <div className="doodle-body">
                 <div className="doodle-head">
@@ -265,23 +297,39 @@ export const DoodlePanel: React.FC<Props> = ({
                       {DOODLE_SUBJECTS.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
                     </select>
                   ) : null}
+                  {moving ? (
+                    <select
+                      className="subject-pick"
+                      value={poseFor(d, line.kind)}
+                      disabled={busy}
+                      onChange={(e) => editField(i, 'pose', e.target.value)}
+                      title="The engineer's pose in this scene"
+                    >
+                      {ENGINEER_POSES.map((p) => <option key={p} value={p}>{POSE_LABELS[p]}</option>)}
+                    </select>
+                  ) : null}
+                  {stale ? <span className="warn-tag" title="Drawn before he was animated: he is in the picture, so it shows as a still until redrawn.">has him in it</span> : null}
                   {noSheet.has(i) ? <span className="warn-tag" title="The model refused the model sheet; the mascot may not match.">no model sheet</span> : null}
                   <span className="spacer" />
-                  <button
-                    className="btn small"
-                    disabled={noKey || busy || redrawing.has(i) || !(d && d.action)}
-                    onClick={() => redraw(i)}
-                  >
-                    {redrawing.has(i) ? <Spinner /> : line.doodleSrc ? 'Redraw' : 'Draw'}{price(1)}
-                  </button>
+                  {nothingBeside ? (
+                    <span className="hint" title="Name something in 'Beside him' to draw it next to him.">Nothing to draw</span>
+                  ) : (
+                    <button
+                      className="btn small"
+                      disabled={noKey || busy || redrawing.has(i) || !(d && d.action)}
+                      onClick={() => redraw(i)}
+                    >
+                      {redrawing.has(i) ? <Spinner /> : line.doodleSrc && !stale ? 'Redraw' : 'Draw'}{price(1)}
+                    </button>
+                  )}
                 </div>
                 <p className="doodle-said">{line.narration}</p>
                 {d ? (
                   <div className="doodle-fields">
-                    {(['action', 'emotion', 'props', 'gag'] as const).map((key) => (
+                    {fields.map((key) => (
                       <TextInput
                         key={key}
-                        label={fieldLabels(d.subject)[key]}
+                        label={moving && key === 'props' ? 'Beside him' : fieldLabels(d.subject)[key]}
                         value={d[key]}
                         onChange={(v) => editField(i, key, v)}
                       />

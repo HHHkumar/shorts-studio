@@ -1186,6 +1186,35 @@ this again if you want a different mascot.
 - **Redraw** on any one scene draws just that scene again, for one picture's price. No rule stops an
   image model misbehaving every time, so the fix for one bad drawing is one more drawing.
 
+**The animated engineer** (the *Animated engineer* switch, on by default). The engineer is no longer
+drawn into each picture: he stands beside it and **moves**. He is the model sheet rebuilt from lines,
+so he is exactly the same engineer in every video, and he costs nothing.
+
+- **Directing is enough for him to appear.** Each engineer scene gets a **pose** — *Waving,
+  Pointing, Has an idea, Thinking, Shocked, Cheering, Explaining, Worried, Shrugging* or *Standing* —
+  chosen by Gemini and changeable from the drop-down on the scene. He appears in the preview the
+  moment directing is done; nothing has to be drawn.
+- **Only what stands beside him is drawn.** The *Beside him* field names the things on the page next
+  to him — a meter, a lamp, a tired battery — and *Draw* draws just those, with no engineer in the
+  picture. A scene that is only his reaction has nothing beside him, says *Nothing to draw*, and
+  costs nothing. A typical short now needs two or three pictures instead of eight.
+- **He is one character through the whole video.** He does not fade out and back in at every cut:
+  he changes pose, slides aside when a scene has something beside him, and steps back to the middle
+  when it does not. He leaves only for scenes that are an illustration, or show their own diagram.
+- **He blinks and acts out the action words** as they are said — a hand swept across for *flows*, a
+  finger circling for *spins*, fanning his face for *heats*, a hug for *cools*, a clap for
+  *collides*, arms flung open for *bursts*. He does not talk: a moving mouth on a stick figure looked
+  awkward, so his face holds the scene's expression. Everyday electrical words (*voltage*,
+  *current*, *circuit*) get a mark on the word but do not make him jump — only *sparks* and
+  *lightning* do.
+- **Scenes drawn before he was animated** have him in the picture, so they are shown as that still,
+  never with a second engineer beside them, and are tagged *has him in it*. *Draw* redraws them as
+  the things beside him.
+- **Turn the switch off** for the old way: the engineer drawn into every picture, as a still.
+
+To watch him on his own, `npm run engineer:preview -- light --video` renders his test reel — every
+pose, then every mime — into `stills/`.
+
 **The thumbnail and the carousel match.** Choose Doodle and both come out on the same notebook page,
 in the same marker, inked by hand like the video:
 
@@ -1220,6 +1249,8 @@ English only — Kannada and other Indian scripts use the regular font.
 To see the look without spending anything, `npm run doodle:preview` renders stills of every kind of
 scene into `stills/` from the mascot test drawings. `npm run doodle:preview -- portrait light actions action`
 renders one still for every kind of action mark, each taken just after its word is spoken.
+`npm run doodle:preview -- portrait light engineer x --video` renders a short quiz with the animated
+engineer, as stills and as a clip, to see him move through the cuts.
 
 ---
 
@@ -1565,7 +1596,7 @@ step.
 | **DeepSeek** *(optional)* | Pay as you go, no free tier | A fraction of a cent per check. |
 | **Pexels / NASA** *(optional)* | Free | Nothing. |
 | **Drawn pictures** *(optional)* — scene backdrops and thumbnail art | **None.** Needs **billing on the Gemini key**, or an **ElevenLabs Pro plan** | One press, one picture: about **3c–13c** on Gemini depending on the model, or ElevenLabs credits from the voice balance. *Draw and attach* on a video with five no-photo scenes is five pictures. |
-| **Doodle scenes** *(optional)* | **None.** Needs **billing on the Gemini key** | One picture per scene: about **4c** on Flash. A short of 8–10 scenes is **30–40c**; a 90-second explainer of 15 scenes about **60c**. Directing them is text — free tier. The mascot itself is a one-off: about 52c to design, 24c to test. |
+| **Doodle scenes** *(optional)* | **None.** Needs **billing on the Gemini key** | One picture per scene: about **4c** on Flash. A short of 8–10 scenes is **30–40c**; a 90-second explainer of 15 scenes about **60c**. With the **animated engineer**, his scenes are free unless something is drawn beside him, so a short is more like **8–12c**. Directing them is text — free tier. The mascot itself is a one-off: about 52c to design, 24c to test. |
 | **Gemini text extras** — metadata for three platforms, thumbnail design, drawing prompts, doodle directions | The same free tier | One request each. |
 | **Rendering** — videos, thumbnails, carousel slides | Unlimited | Your own computer. Costs electricity. |
 

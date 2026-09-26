@@ -3,7 +3,8 @@
 // Which scenes get a drawing of the mascot, and how wild each may be.
 
 import {
-  DEFAULT_DOODLE_ENERGY, DOODLE_FIELD_LIMITS, doodleScenes, energyFor, fieldLabels, tidyDirection, wantsDoodle,
+  DEFAULT_DOODLE_ENERGY, DOODLE_FIELD_LIMITS, doodleScenes, energyFor, fieldLabels, needsDrawing, poseFor, stagingFor,
+  tidyDirection, wantsDoodle,
 } from './doodle.ts';
 
 let passed = 0;
@@ -128,6 +129,66 @@ test('an illustration may have no mood; the engineer always has a feeling', () =
 test('the boxes are labelled for what goes in them', () => {
   assert(fieldLabels('illustration').action === 'Shows' && fieldLabels('mascot').action === 'Doing');
   assert(fieldLabels(undefined).emotion === 'Feeling', 'an older direction is the engineer');
+});
+
+console.log('\nthe animated engineer');
+
+const mascot = (extra = {}) => ({ subject: 'mascot', action: 'stands by a meter', emotion: 'calm', props: '', gag: 'none', ...extra });
+const art = (extra = {}) => ({ subject: 'illustration', action: 'a transformer on a pole', emotion: '', props: '', gag: 'none', ...extra });
+
+test('a pose Gemini chose is kept; one it made up is dropped', () => {
+  assert(tidyDirection(mascot({ pose: 'cheer' })).pose === 'cheer', 'lost the pose');
+  assert(tidyDirection(mascot({ pose: 'moonwalk' })).pose === undefined, 'kept a pose that does not exist');
+  assert(tidyDirection(art({ pose: 'cheer' })).pose === undefined, 'an illustration has no pose');
+});
+
+test('the pose comes from the direction, then its words, then the kind of scene', () => {
+  assert(poseFor(mascot({ pose: 'shrug' }), 'hook') === 'shrug', 'ignored the chosen pose');
+  assert(poseFor(mascot({ emotion: 'puzzled, scratching his head' }), 'answer') === 'think', 'missed "puzzled"');
+  assert(poseFor(mascot({ emotion: 'delighted', action: 'punches the air' }), 'hook') === 'cheer', 'missed "delighted"');
+  assert(poseFor(mascot({ emotion: 'alarmed' }), 'outro') === 'shock', 'missed "alarmed"');
+  assert(poseFor(mascot({ emotion: 'calm', action: 'points at the transformer' }), 'hook') === 'point', 'missed "points"');
+  assert(poseFor(mascot({ emotion: 'calm', action: 'stands by a meter' }), 'answer') === 'cheer', 'the reveal cheers');
+  assert(poseFor(null, 'question') === 'think', 'an undirected question thinks');
+  assert(poseFor(undefined, 'somethingnew') === 'stand');
+});
+
+test('directing an engineer scene is enough for him to appear - nothing drawn', () => {
+  const st = stagingFor({ kind: 'hook', narration: '', doodle: mascot() }, true, true);
+  assert(st.engineer && !st.beside && !st.still, JSON.stringify(st));
+});
+
+test('what is drawn for him is placed beside him', () => {
+  const st = stagingFor({ kind: 'hook', narration: '', doodle: mascot({ props: 'a meter' }), doodleSrc: 'a.png', doodleProps: true }, true, true);
+  assert(st.engineer && st.beside && !st.still, JSON.stringify(st));
+});
+
+test('an old drawing with him in it is shown as a still, never with a second engineer', () => {
+  const st = stagingFor({ kind: 'hook', narration: '', doodle: mascot(), doodleSrc: 'old.png' }, true, true);
+  assert(!st.engineer && st.still, JSON.stringify(st));
+});
+
+test('with the animation off, it is the drawings as before', () => {
+  assert(!stagingFor({ kind: 'hook', narration: '', doodle: mascot() }, true, false).engineer);
+  assert(stagingFor({ kind: 'hook', narration: '', doodle: mascot(), doodleSrc: 'x.png' }, true, false).still);
+});
+
+test('an illustration never brings the engineer, and a scene with its own diagram gets nothing', () => {
+  assert(!stagingFor({ kind: 'explain', narration: '', doodle: art(), doodleSrc: 'x.png' }, true, true).engineer);
+  const own = stagingFor({ kind: 'explain', narration: '', doodle: mascot(), visual: { kind: 'figure' } }, true, true);
+  assert(!own.engineer && !own.still, JSON.stringify(own));
+});
+
+test('he costs nothing on his own; only what stands beside him is drawn', () => {
+  assert(!needsDrawing({ kind: 'hook', narration: '', doodle: mascot() }, true), 'charged for an empty page');
+  assert(needsDrawing({ kind: 'hook', narration: '', doodle: mascot({ props: 'a meter' }) }, true));
+  assert(!needsDrawing({ kind: 'hook', narration: '', doodle: mascot({ props: 'a meter' }), doodleSrc: 'm.png', doodleProps: true }, true));
+  assert(needsDrawing({ kind: 'hook', narration: '', doodle: mascot({ props: 'a meter' }), doodleSrc: 'old.png' }, true),
+    'an old drawing with him in it should be redrawn');
+  assert(needsDrawing({ kind: 'hook', narration: '', doodle: mascot() }, false), 'still mode draws him');
+  assert(needsDrawing({ kind: 'hook', narration: '', doodle: mascot({ props: 'a meter' }), doodleSrc: 'm.png', doodleProps: true }, false),
+    'with the animation off, a picture drawn to stand beside him has no engineer in it');
+  assert(needsDrawing({ kind: 'explain', narration: '', doodle: art() }, true));
 });
 
 console.log('\n' + passed + ' checks passed');

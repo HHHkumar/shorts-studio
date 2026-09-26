@@ -340,6 +340,12 @@ export interface ScriptLine {
    * public/. Kept apart from stockSrc so switching looks never loses a pick.
    */
   doodleSrc?: string;
+  /**
+   * True when doodleSrc was drawn for the animated engineer: only the things
+   * beside him, with no engineer in it. An engineer scene drawn before the
+   * engineer was animated has him in the picture, and is shown as a still.
+   */
+  doodleProps?: boolean;
 }
 
 /** A ScriptLine after we know how long its audio actually is. */
@@ -431,6 +437,12 @@ export interface DesignSettings {
    * settings saved before the doodle look lack it.
    */
   doodleEnergy?: string;
+  /**
+   * Doodle look only: the engineer is animated - posed, blinking, miming the
+   * narration - rather than drawn into each picture. Optional because settings
+   * saved before he was animated lack it; missing means on.
+   */
+  animatedEngineer?: boolean;
 }
 
 /**

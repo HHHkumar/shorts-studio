@@ -195,6 +195,23 @@ const doodled = (content) => ({
 const DOODLE = { layout: 'doodle', mode: 'light' };
 const CHALK = { layout: 'doodle', mode: 'dark' };
 
+/**
+ * The animated engineer: every scene that takes a doodle is directed as his,
+ * with a pose, and every third has a drawing to stand beside - the sheet
+ * again, standing in, since it is the staging under test and not the picture.
+ */
+const POSES = ['shock', 'think', 'point', 'cheer', 'teach', 'wave'];
+const withEngineer = (content) => ({
+  ...content,
+  script: content.script.map((line, i) => (wantsDoodle(line, true)
+    ? {
+      ...line,
+      doodle: { subject: 'mascot', pose: POSES[i % POSES.length], action: 'reacts', emotion: '', props: '', gag: 'none' },
+      ...(i % 3 === 1 ? { doodleSrc: SHEET, doodleProps: true } : {}),
+    }
+    : line)),
+});
+
 console.log('\nfetching the artwork');
 const art = await attachIcons(EXPLAINER, { root: ROOT });
 console.log('  ' + art.resolved + ' icons resolved'
@@ -226,6 +243,9 @@ const COMBOS = [
   { name: 'doodle-explainer-landscape', content: doodled(EXPLAINER), orientation: 'landscape', look: DOODLE },
   { name: 'chalk-quiz-landscape', content: doodled(DEMO_CONTENT), orientation: 'landscape', look: CHALK },
   { name: 'chalk-explainer-portrait', content: doodled(EXPLAINER), orientation: 'portrait', look: CHALK },
+  // The animated engineer, through the cuts, in both shapes.
+  { name: 'engineer-quiz-portrait', content: withEngineer(DEMO_CONTENT), orientation: 'portrait', look: DOODLE },
+  { name: 'engineer-explainer-landscape', content: withEngineer(EXPLAINER), orientation: 'landscape', look: CHALK },
 ];
 
 for (const combo of COMBOS) {

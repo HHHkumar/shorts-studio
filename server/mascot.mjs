@@ -299,6 +299,39 @@ export function doodleScenePrompt(beat, variantId, { energy, framing = 'tall' } 
 }
 
 /**
+ * For the animated engineer: the picture that stands BESIDE him.
+ *
+ * He is drawn and moved by the renderer, so the image model draws only what
+ * is with him - the meter, the lamp on its side, the tired battery - on the
+ * same paper, in the same ink, with nobody in it. A second engineer in the
+ * picture beside the moving one is the one mistake this prompt exists to
+ * prevent, so it says so twice, and the model sheet goes with it only as a
+ * style reference (ILLUSTRATION_MATCH_LINE).
+ *
+ * Null when nothing is named beside him: there is nothing to draw.
+ */
+export function doodlePropsPrompt(direction, { energy } = {}) {
+  const say = (s) => String(s || '').trim().replace(/[.\s]+$/, '');
+  const props = say(direction && direction.props);
+  if (!props) return null;
+  const gag = direction.gag && !/^none/i.test(direction.gag) ? 'Gag: ' + say(direction.gag) + '.' : '';
+  // A calm scene has no sparks; the energy line says so for the engineer, and
+  // says it just as well for the things beside him.
+  return [
+    DOODLE_LOOK,
+    energyLine(energy),
+    ['THE PICTURE: ' + props + '.', gag].filter(Boolean).join(' '),
+    'These things stand on the page beside a cartoon engineer who is drawn separately. Draw only',
+    'the things named - no engineer, no people, no faces, no hands, no characters of any kind.',
+    [
+      'Square picture. The things drawn large and clear, resting on the ground line in the lower',
+      'part of the picture, simple enough to read at a glance on a phone. Everything else is plain',
+      'white paper. Keep a margin of empty paper all round - nothing touches the edges.',
+    ].join(' '),
+  ].join('\n\n');
+}
+
+/**
  * The thumbnail's drawing: the engineer at full volume beside the thing the
  * video is about. A face with a big reaction is what stops a thumb in a feed,
  * so this is always the mascot, always at the top energy, whatever the dial

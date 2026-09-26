@@ -1,6 +1,6 @@
 // Render the Doodle look as stills, to see it rather than imagine it.
 //
-//   node --import ./tools/ts-resolve.mjs tools/doodle-preview.mjs [portrait|landscape] [light|dark] [quiz|explainer|circuit|actions|post] [action]
+//   node --import ./tools/ts-resolve.mjs tools/doodle-preview.mjs [portrait|landscape] [light|dark] [quiz|explainer|circuit|actions|engineer|post] [action] [--video]
 //
 // With `action`, each still is taken just after the scene's last action word
 // is spoken instead of late in the scene, to see the hand-drawn marks on it.
@@ -21,7 +21,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { bundle } from '@remotion/bundler';
-import { ensureBrowser, renderStill, selectComposition } from '@remotion/renderer';
+import { ensureBrowser, renderMedia, renderStill, selectComposition } from '@remotion/renderer';
 import { normalizePanel } from '../server/explainer.mjs';
 import { attachIcons } from '../server/icons.mjs';
 import { DEFAULT_DESIGN } from '../src/lib/theme.ts';
@@ -150,6 +150,42 @@ const ACTIONS = {
   ].map((narration) => ({ kind: 'hook', narration, doodleSrc: art('hook') })),
 };
 
+// The animated engineer in a quiz: directed scenes, most with nothing beside
+// him (free), one with a drawing beside him, one illustration, and two in a
+// row with the same pose. Uses a drawing from this machine's own doodle runs
+// as the "beside him" picture when there is one; they are not committed.
+const besideArt = (() => {
+  const root = path.join(PUBLIC, 'generated', 'doodle');
+  const want = ['doodle-5u73pd/s1-ece5dd.jpg', 'doodle-be3790/s1-270a49.jpg'];
+  const found = want.find((f) => fs.existsSync(path.join(root, f)));
+  return found ? 'generated/doodle/' + found : '';
+})();
+const him = (pose, extra = {}) => ({
+  subject: 'mascot', pose, action: 'reacts', emotion: '', props: '', gag: 'none', ...extra,
+});
+const ENGINEER = {
+  videoKind: 'mcq',
+  subject: 'Electrical Measurements', topic: 'Energy meters', difficulty: 'medium',
+  hook: '', question: 'Why does the bulb stay dim?', options: ['Loose neutral', 'Low voltage', 'Wrong bulb', 'Bad switch'],
+  correctIndex: 1, answerLine: 'Low voltage.', explanation: [], funFact: '', outro: '', hashtags: [], motifSymbols: ['⚡'],
+  script: [
+    { kind: 'hook', narration: 'Sparks fly when you flick this switch.', doodle: him('shock') },
+    {
+      kind: 'question', narration: 'Why does the bulb stay dim when the current flows?',
+      doodle: him('think', { props: 'a light switch and a dim bulb' }),
+      ...(besideArt ? { doodleSrc: besideArt, doodleProps: true } : {}),
+    },
+    { kind: 'options', narration: 'Loose neutral, low voltage, wrong bulb, or bad switch?', doodle: him('think') },
+    { kind: 'answer', narration: 'The answer is low voltage.', doodle: him('cheer') },
+    {
+      kind: 'explain', narration: 'The voltage falls along a long thin cable.',
+      doodle: { subject: 'illustration', action: 'a long cable', emotion: '', props: '', gag: 'none' },
+      ...(besideArt ? { doodleSrc: besideArt } : {}),
+    },
+    { kind: 'outro', narration: 'Follow for one electrical question a day.', doodle: him('wave') },
+  ],
+};
+
 /** Even word timings, standing in for ElevenLabs. */
 const timed = (line) => line.narration.split(/\s+/).filter(Boolean).map((word, i, all) => {
   const per = (SCENE_SECONDS - 0.4) / all.length;
@@ -202,7 +238,7 @@ function stillFrame(scene) {
   // Late in the scene: the entrance has settled and most words are read.
   return scene.startFrame + Math.round(scene.durationInFrames * 0.8);
 }
-const SETS = [['quiz', QUIZ], ['explainer', EXPLAINER], ['circuit', CIRCUIT], ['actions', ACTIONS]].filter(([n]) => !ONLY || n === ONLY);
+const SETS = [['quiz', QUIZ], ['explainer', EXPLAINER], ['circuit', CIRCUIT], ['actions', ACTIONS], ['engineer', ENGINEER]].filter(([n]) => !ONLY || n === ONLY);
 for (const [name, content] of SETS) {
   const props = propsFor(content);
   const composition = await selectComposition({ serveUrl, id: 'QuizVideo', inputProps: props });
@@ -210,6 +246,12 @@ for (const [name, content] of SETS) {
     const frame = stillFrame(scene);
     const file = path.join(OUT, 'doodle-' + (AT_ACTION ? 'action-' : '') + ORIENTATION + '-' + MODE + '-' + name + '-' + scene.id + '-' + scene.kind + '.png');
     await renderStill({ composition, serveUrl, output: file, frame, inputProps: props, overwrite: true });
+    console.log('  ' + path.basename(file));
+  }
+  // --video: the whole set as a clip too, to see it move across the cuts.
+  if (process.argv.includes('--video')) {
+    const file = path.join(OUT, 'doodle-' + ORIENTATION + '-' + MODE + '-' + name + '.mp4');
+    await renderMedia({ composition, serveUrl, codec: 'h264', outputLocation: file, inputProps: props, overwrite: true });
     console.log('  ' + path.basename(file));
   }
 }

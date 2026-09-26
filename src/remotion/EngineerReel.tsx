@@ -7,6 +7,7 @@ import { HandFonts } from './fonts';
 import { DoodleFilters, DoodleInk } from './DoodleInk';
 import { ReadAlong } from './ReadAlong';
 import { Engineer } from './Engineer';
+import { mimesIn } from '../lib/engineer-rig';
 
 // ---------------------------------------------------------------------------
 // A test reel for the animated engineer: every pose in turn, then every mime,
@@ -27,6 +28,7 @@ export const EngineerReel: React.FC<{ mode: 'light' | 'dark' }> = ({ mode }) => 
   const landscape = width > height;
   const beats = React.useMemo(() => reelBeats(), []);
   const perSegment = React.useMemo(() => REEL.map((_, i) => segmentWords(i)), []);
+  const perSegmentMimes = React.useMemo(() => perSegment.map((w) => mimesIn(w)), [perSegment]);
   const allWords = React.useMemo(() => perSegment.flat(), [perSegment]);
 
   // He is given only the current line's words, as he would be in a real
@@ -55,7 +57,7 @@ export const EngineerReel: React.FC<{ mode: 'light' | 'dark' }> = ({ mode }) => 
           <div style={{ width: landscape ? '50%' : '100%', minHeight: 260, display: 'flex', alignItems: 'center' }}>
             <ReadAlong theme={theme} words={allWords} fallbackText="" maxSize={88} minSize={64} />
           </div>
-          <Engineer theme={theme} beats={beats} words={perSegment[current]} style={{ height: landscape ? '86%' : '62%' }} />
+          <Engineer theme={theme} beats={beats} mimes={perSegmentMimes[current]} style={{ height: landscape ? '86%' : '62%' }} />
         </AbsoluteFill>
       </DoodleInk>
     </AbsoluteFill>

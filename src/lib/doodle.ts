@@ -103,8 +103,38 @@ export const DOODLE_SUBJECTS: { id: DoodleSubject; label: string }[] = [
   { id: 'illustration', label: 'An illustration' },
 ];
 
+/**
+ * The animated engineer's poses, by name. The joints are in engineer-rig.ts;
+ * the names live here too because the server loads this file without a
+ * bundler, and a test holds the two lists together.
+ */
+export const ENGINEER_POSES = [
+  'stand', 'wave', 'point', 'idea', 'think', 'shock', 'cheer', 'teach', 'worried', 'shrug',
+] as const;
+
+export type EngineerPose = (typeof ENGINEER_POSES)[number];
+
+export const POSE_LABELS: Record<EngineerPose, string> = {
+  stand: 'Standing',
+  wave: 'Waving',
+  point: 'Pointing',
+  idea: 'Has an idea',
+  think: 'Thinking',
+  shock: 'Shocked',
+  cheer: 'Cheering',
+  teach: 'Explaining',
+  worried: 'Worried',
+  shrug: 'Shrugging',
+};
+
 /** One scene, directed: what is drawn, what it does or shows, and the joke. */
 export interface DoodleDirection {
+  /**
+   * The engineer only: his pose when he is animated. Optional because
+   * directions written before he was animated lack it - poseFor() reads one
+   * out of the words instead.
+   */
+  pose?: EngineerPose;
   /** Optional because directions written before illustrations existed lack it - they were all the engineer. */
   subject?: DoodleSubject;
   /** The engineer: what they are doing. An illustration: what the picture shows. */
@@ -116,14 +146,17 @@ export interface DoodleDirection {
   gag: string;
 }
 
+/** The written fields of a direction. */
+export type TextField = 'action' | 'emotion' | 'props' | 'gag';
+
 /** The field labels change with the subject, so the boxes always say what goes in them. */
-export function fieldLabels(subject: DoodleSubject | undefined): Record<keyof Omit<DoodleDirection, 'subject'>, string> {
+export function fieldLabels(subject: DoodleSubject | undefined): Record<TextField, string> {
   return subject === 'illustration'
     ? { action: 'Shows', emotion: 'Mood', props: 'Also in it', gag: 'Gag' }
     : { action: 'Doing', emotion: 'Feeling', props: 'With', gag: 'Gag' };
 }
 
-export const DOODLE_FIELD_LIMITS: Record<keyof Omit<DoodleDirection, 'subject'>, number> = {
+export const DOODLE_FIELD_LIMITS: Record<TextField, number> = {
   action: 160,
   emotion: 70,
   props: 200,
@@ -142,12 +175,115 @@ export function tidyDirection(raw: unknown): DoodleDirection | null {
   const action = clean(r.action, DOODLE_FIELD_LIMITS.action);
   if (!action) return null;
   const subject: DoodleSubject = r.subject === 'illustration' ? 'illustration' : 'mascot';
+  const pose = ENGINEER_POSES.includes(r.pose as EngineerPose) ? (r.pose as EngineerPose) : undefined;
   return {
     subject,
+    ...(subject === 'mascot' && pose ? { pose } : {}),
     action,
     // An illustration has no face to feel anything; an empty mood is allowed.
     emotion: clean(r.emotion, DOODLE_FIELD_LIMITS.emotion) || (subject === 'mascot' ? 'friendly' : ''),
     props: clean(r.props, DOODLE_FIELD_LIMITS.props),
     gag: clean(r.gag, DOODLE_FIELD_LIMITS.gag) || 'none',
   };
+}
+
+// --- the animated engineer ----------------------------------------------------
+
+/** Words in a direction that say which pose it means, most telling first. */
+const POSE_WORDS: [RegExp, EngineerPose][] = [
+  // Before 'idea', which "no idea" would otherwise match.
+  [/\b(shrug|who knows|no idea|dunno)/i, 'shrug'],
+  [/\b(idea|eureka|realis|realiz|light ?bulb)/i, 'idea'],
+  [/\b(shock|alarm|surpris|startl|stunned|jump(s|ed)? back|gasp|horrif|whoa)/i, 'shock'],
+  [/\b(cheer|celebrat|triumph|delight|thrill|overjoy|victor|punch(es)? the air|arms? up)/i, 'cheer'],
+  [/\b(worr|nervous|anxious|scared|afraid|sweat|uneasy|dread)/i, 'worried'],
+  [/\b(puzzl|confus|curious|wonder|ponder|think|scratch|unsure|doubt|hmm)/i, 'think'],
+  [/\b(wav(e|es|ing)\b|greet|hello|goodbye|bye\b|sign(s|ing)? off)/i, 'wave'],
+  [/\b(point|gestur|look(s|ing)? at|indicat)/i, 'point'],
+  [/\b(explain|teach|present|demonstrat|show(s|ing)?)/i, 'teach'],
+];
+
+/** The pose a scene of this kind takes when nothing else says. */
+const POSE_BY_KIND: Partial<Record<SceneKind, EngineerPose>> = {
+  intro: 'wave',
+  hook: 'shock',
+  question: 'think',
+  options: 'think',
+  countdown: 'think',
+  answer: 'cheer',
+  explain: 'teach',
+  outro: 'wave',
+  title: 'wave',
+  recap: 'teach',
+  metaphor: 'idea',
+};
+
+/**
+ * The engineer's pose for a scene: the one Gemini chose, or failing that the
+ * one its words describe - feeling first, then what he is doing - or failing
+ * that the usual one for the kind of scene.
+ */
+export function poseFor(direction: DoodleDirection | null | undefined, kind: SceneKind | string): EngineerPose {
+  if (direction && direction.pose && ENGINEER_POSES.includes(direction.pose)) return direction.pose;
+  for (const text of [direction && direction.emotion, direction && direction.action]) {
+    if (!text) continue;
+    for (const [pattern, pose] of POSE_WORDS) if (pattern.test(text)) return pose;
+  }
+  return POSE_BY_KIND[kind as SceneKind] || 'stand';
+}
+
+/** How one doodle scene is staged. */
+export interface DoodleStaging {
+  /** The animated engineer is in it. */
+  engineer: boolean;
+  /** Its drawing is the things beside him, placed beside him. */
+  beside: boolean;
+  /** Its drawing fills the picture on its own: an illustration, or a still of the engineer. */
+  still: boolean;
+}
+
+const NOTHING: DoodleStaging = { engineer: false, beside: false, still: false };
+
+/**
+ * What a scene shows, in one place, so the video, the preview and the panel
+ * never disagree.
+ *
+ *   An engineer scene, animated: the engineer, and beside him the drawing of
+ *   whatever is with him, if there is one. Directing is enough for him to be
+ *   there; nothing has to be drawn.
+ *
+ *   An engineer scene drawn before he was animated has him in the picture, so
+ *   it is shown as that still, with no second engineer beside it - until it
+ *   is redrawn.
+ *
+ *   Everything else: the drawing, if there is one.
+ */
+export function stagingFor(line: ScriptLine | null | undefined, showVisuals = true, animated = true): DoodleStaging {
+  if (!line || !wantsDoodle(line, showVisuals)) return NOTHING;
+  const d = line.doodle;
+  const engineerScene = Boolean(d) && (d!.subject || 'mascot') === 'mascot';
+  if (animated && engineerScene) {
+    if (line.doodleSrc && !line.doodleProps) return { engineer: false, beside: false, still: true };
+    return { engineer: true, beside: Boolean(line.doodleSrc), still: false };
+  }
+  return { engineer: false, beside: false, still: Boolean(line.doodleSrc) };
+}
+
+/**
+ * Whether a directed scene has a picture still to draw. An animated engineer
+ * with nothing named beside him has none: he is the picture, for free.
+ */
+export function needsDrawing(line: ScriptLine | null | undefined, animated = true): boolean {
+  const d = line && line.doodle;
+  if (!d) return false;
+  if (animated && (d.subject || 'mascot') === 'mascot') {
+    if (!d.props.trim()) return false;
+    // Drawn with the engineer in it, before he was animated: draw it again,
+    // as the things beside him.
+    return !line!.doodleSrc || !line!.doodleProps;
+  }
+  // With the animation off, an engineer scene drawn for him to stand beside
+  // has no engineer in it at all: draw it again, with him.
+  if ((d.subject || 'mascot') === 'mascot' && line!.doodleProps) return true;
+  return !line!.doodleSrc;
 }

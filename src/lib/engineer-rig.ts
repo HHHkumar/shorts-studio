@@ -1,5 +1,5 @@
 import type { WordTiming } from './types';
-import { detectEffects, type EffectKind } from './motion-lexicon';
+import { detectEffects, effectForWord, type EffectKind, type TimedEffect } from './motion-lexicon';
 
 // ---------------------------------------------------------------------------
 // The channel's engineer, as a puppet.
@@ -457,10 +457,33 @@ export function mimeFor(kind: EffectKind, since: number): Mime {
   }
 }
 
+/**
+ * The mimes in one run of narration: the effects' own pacing - a mime needs
+ * room, and four a scene is plenty. A video works this out scene by scene and
+ * joins the lists; one list for the whole video would stop at four.
+ */
+export function mimesIn(words: WordTiming[], seconds = Infinity): TimedEffect[] {
+  // Only among the words he would really act out. See JOLT_WORDS.
+  const actable = words.filter((w) => {
+    const kind = effectForWord(w.word);
+    return kind !== 'spark' || JOLT_WORDS.test(String(w.word || ''));
+  });
+  return detectEffects(actable, seconds);
+}
+
+/**
+ * The spark words he jolts for. The effects count "voltage", "current",
+ * "circuit" and "electrical" as sparks, and on an electrical channel those
+ * are in nearly every line - he jumped out of his skin at "the answer is low
+ * voltage" instead of cheering, and again at "follow for one electrical
+ * question" instead of waving. A mark on the word is fine for those; a whole
+ * body jolt is for something that actually goes bang.
+ */
+const JOLT_WORDS = /^(spark|lightning|arc(s|ing|ed)?\b|discharg|zap|shock)/i;
+
 /** The mime running at `time`, and how far it is blended in (0 to 1). */
-export function mimeAt(words: WordTiming[], time: number): { mime: Mime; weight: number; kind: EffectKind | null; since: number } {
-  // The effects' own pacing: a mime needs room, and four a scene is plenty.
-  for (const e of detectEffects(words, Infinity).reverse()) {
+export function mimeAt(mimes: TimedEffect[], time: number): { mime: Mime; weight: number; kind: EffectKind | null; since: number } {
+  for (const e of [...mimes].sort((a, b) => b.at - a.at)) {
     const since = time - e.at;
     if (since < 0 || since > MIME_SECONDS) continue;
     return { mime: mimeFor(e.kind, since), weight: envelope(since, MIME_SECONDS, MIME_IN, 0.5), kind: e.kind, since };
@@ -491,11 +514,11 @@ export interface Figure {
  * Every joint at `time`, in sheet coordinates. Upper-body points are already
  * moved by the lean and the bob, so the drawing only has to join them up.
  */
-export function figureAt(beats: Beat[], words: WordTiming[], time: number): Figure {
+export function figureAt(beats: Beat[], mimes: TimedEffect[], time: number): Figure {
   const p = poseAt(beats, time);
   const head = poseAt(beats, time - HEAD_LAG);
   const change = changeAt(beats, time - HAND_LAG);
-  const acting = mimeAt(words, time);
+  const acting = mimeAt(mimes, time);
   const { mime, weight: w } = acting;
   const face = w > 0.5;
 

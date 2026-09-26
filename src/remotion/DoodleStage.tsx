@@ -43,6 +43,19 @@ const LANDSCAPE = {
   picture: { top: '7%', bottom: '7%', left: '57%', right: '3%' },
 };
 
+/**
+ * A drawing that stands beside the animated engineer (EngineerLayer.tsx): the
+ * rest of the picture half, next to where he stands, and sat on the same
+ * ground line as his feet. Square, like the drawing: the soft edge is centred
+ * on the box, and in a tall box it faded out the ground the things stand on.
+ */
+const BESIDE: Record<'portrait' | 'landscape', Box> = {
+  // 51% of 1080 wide is 551px; 551px tall above a 6.5% floor.
+  portrait: { top: '64.8%', bottom: '6.5%', left: '46%', right: '3%' },
+  // 22% of 1920 wide is 422px; 422px tall above a 9% floor.
+  landscape: { top: '52%', bottom: '9%', left: '76%', right: '2%' },
+};
+
 const place = (box: Box): React.CSSProperties => ({ position: 'absolute', ...box });
 
 /** Solid in the middle, clear at the edges, in case the image's paper was not quite white. */
@@ -81,10 +94,18 @@ const FADE = 10;
  * `hold` is the scene's own length: the moment the next scene starts, and
  * therefore when this one starts to leave.
  */
-export const DoodlePicture: React.FC<{ theme: Theme; src: string; hold: number }> = ({ theme, src, hold }) => {
+export const DoodlePicture: React.FC<{
+  theme: Theme;
+  src: string;
+  hold: number;
+  /** Beside the animated engineer, rather than filling the picture half. */
+  beside?: boolean;
+}> = ({ theme, src, hold, beside = false }) => {
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
-  const zones = width > height ? LANDSCAPE : PORTRAIT;
+  const landscape = width > height;
+  const zones = landscape ? LANDSCAPE : PORTRAIT;
+  const box = beside ? BESIDE[landscape ? 'landscape' : 'portrait'] : zones.picture;
 
   // A little pop on the way in, then the faintest breathing - a still drawing
   // held for fifteen seconds reads as a frozen frame. A pure function of the
@@ -101,13 +122,15 @@ export const DoodlePicture: React.FC<{ theme: Theme; src: string; hold: number }
 
   return (
     <AbsoluteFill style={{ pointerEvents: 'none' }}>
-      <div style={place(zones.picture)}>
+      <div style={place(box)}>
         <Img
           src={resolve(src)}
           style={{
             width: '100%',
             height: '100%',
             objectFit: 'contain',
+            // Beside him, the things stand on his ground line, not mid-air.
+            objectPosition: beside ? '50% 100%' : '50% 50%',
             // Everything that moves or fades is on the image itself, never on
             // a parent - see the note at the top about blend groups.
             opacity,

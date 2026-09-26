@@ -7,8 +7,13 @@
 
 import assert from 'node:assert/strict';
 import {
-  blink, ease, figureAt, MIME_SECONDS, mimeAt, POSE_NAMES, POSE_SECONDS, POSES, poseAt, pt, reach, reachOut, SHEET,
+  blink, ease, figureAt as figureAtMimes, MIME_SECONDS, mimeAt as mimeAtMimes, mimesIn, POSE_NAMES, POSE_SECONDS, POSES, poseAt, pt, reach, reachOut, SHEET,
 } from './engineer-rig.ts';
+import { ENGINEER_POSES } from './doodle.ts';
+
+// The tests speak in words; the rig takes timed mimes, as a video gives it.
+const figureAt = (beats, words, time) => figureAtMimes(beats, mimesIn(words), time);
+const mimeAt = (words, time) => mimeAtMimes(mimesIn(words), time);
 
 let passed = 0;
 const test = (name, fn) => {
@@ -69,6 +74,10 @@ test('at rest he stands on both feet, legs nearly straight like the sheet', () =
 });
 
 console.log('\nposes');
+
+test('the pose names the server knows are exactly the rig poses', () => {
+  assert.deepEqual([...ENGINEER_POSES].sort(), [...POSE_NAMES].sort());
+});
 
 test('every pose is complete', () => {
   for (const name of POSE_NAMES) {
@@ -159,6 +168,15 @@ test('a spark knocks his hat up and widens his eyes, then he settles', () => {
   assert.ok(hit.hatLift > 15, 'hat ' + hit.hatLift);
   assert.equal(hit.eyes, 'wide');
   assert.equal(figureAt(beats, words, at + MIME_SECONDS + 0.2).hatLift, 0);
+});
+
+test('everyday electrical words do not make him jump - only things that go bang', () => {
+  assert.equal(mimesIn(say('the answer is low voltage')).length, 0, 'jolted at "voltage"');
+  assert.equal(mimesIn(say('follow for one electrical question a day')).length, 0, 'jolted at "electrical"');
+  assert.equal(mimesIn(say('the current in the circuit')).length, 0, 'jolted at "current"');
+  assert.equal(mimesIn(say('then sparks fly'))[0].kind, 'spark');
+  assert.equal(mimesIn(say('a lightning strike'))[0].kind, 'spark');
+  assert.equal(mimesIn(say('the current flows'))[0].kind, 'flow', 'the flow was lost with the spark');
 });
 
 test('"heats" brings out the sweat, "rises" turns his eyes up', () => {
