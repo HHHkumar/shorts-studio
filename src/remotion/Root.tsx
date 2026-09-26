@@ -8,7 +8,7 @@ import { QuizVideo } from './QuizVideo';
 import { Thumbnail, THUMBNAIL_ID, thumbSizeFor, type ThumbnailProps } from './Thumbnail';
 import { CarouselSlide, CAROUSEL_FRAMES, CAROUSEL_ID } from './Carousel';
 import { planCarousel, SLIDE_SIZE } from '../lib/carousel';
-import { EngineerReel, ENGINEER_REEL_ID, REEL_POSES, REEL_SECONDS } from './EngineerReel';
+import { EngineerReel, ENGINEER_REEL_ID, reelSeconds } from './EngineerReel';
 
 export const COMPOSITION_ID = 'QuizVideo';
 
@@ -85,7 +85,7 @@ export const RemotionRoot: React.FC = () => {
       width={PORTRAIT.width}
       height={PORTRAIT.height}
       fps={FPS}
-      durationInFrames={Math.round(REEL_POSES.length * REEL_SECONDS * FPS)}
+      durationInFrames={Math.round(reelSeconds() * FPS)}
       defaultProps={{ mode: 'light' as const }}
     />
     </>

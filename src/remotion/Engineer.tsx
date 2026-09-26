@@ -22,6 +22,12 @@ const INK = 8;
 
 const P = (p: Pt) => p.x.toFixed(1) + ' ' + p.y.toFixed(1);
 
+/** The point `d` along the line from a to b. */
+const along = (a: Pt, b: Pt, d: number): Pt => {
+  const len = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+  return { x: a.x + ((b.x - a.x) * d) / len, y: a.y + ((b.y - a.y) * d) / len };
+};
+
 /** A limb: root, joint, end, as one bent marker line. */
 const limb = (a: Pt, b: Pt, c: Pt) => 'M ' + P(a) + ' L ' + P(b) + ' L ' + P(c);
 
@@ -82,16 +88,15 @@ const Face: React.FC<{ f: Figure; ink: string; paper: string }> = ({ f, ink, pap
   };
 
   const mouth = () => {
-    // Talking opens whatever shape he holds into a flapping mouth; an 'o'
-    // stays an 'o' and only stretches.
+    // An expression, held: he mimes, he does not talk. A flapping mouth on a
+    // stick figure read as awkward.
     if (f.mouth === 'o') {
-      return <ellipse cx={382} cy={548} rx={16} ry={20 + f.talk * 8} fill={ink} />;
+      return <ellipse cx={382} cy={548} rx={16} ry={20} fill={ink} />;
     }
-    if (f.talk > 0.06 || f.mouth === 'grin') {
-      const open = f.mouth === 'grin' ? Math.max(0.55, f.talk) : f.talk;
+    if (f.mouth === 'grin') {
       return (
         <path
-          d={'M 338 532 Q 384 ' + (536 - 4 * open).toFixed(1) + ' 430 530 Q 384 ' + (544 + 46 * open).toFixed(1) + ' 338 532 Z'}
+          d="M 338 532 Q 384 534 430 530 Q 384 570 338 532 Z"
           fill={ink}
           stroke={ink}
           strokeWidth={INK * 0.8}
@@ -186,7 +191,7 @@ const PropMark: React.FC<{ prop: Figure['prop']; time: number; ink: string; pape
  * The engineer, at the current frame.
  *
  * `beats` choose his poses over the scene; `words` are the narration's word
- * timings, which make him talk and react. Sized by its box: he fills its
+ * timings, whose action words he mimes. Sized by its box: he fills its
  * height, keeping his proportions.
  */
 export const Engineer: React.FC<{
@@ -218,6 +223,9 @@ export const Engineer: React.FC<{
   return (
     <svg
       viewBox={VIEW.x + ' ' + VIEW.y + ' ' + VIEW.w + ' ' + VIEW.h}
+      // Out of the line boil the diagrams get: re-tracing him a few times a
+      // second made every movement shimmer. The page's steady wobble stays.
+      className="doodle-steady"
       style={{ overflow: 'visible', ...style }}
       aria-hidden="true"
     >
@@ -242,6 +250,25 @@ export const Engineer: React.FC<{
             strokeLinejoin="round"
           />
           <path d="M 352 612 Q 372 646 394 612 Z" fill={paper} />
+        </g>
+
+        {/* The arms again, over the shirt, edged in the page colour - an arm
+            crossing his chest for a mime is otherwise black on black and
+            vanishes. Started a little way down the arm so the edge does not
+            cut into the sleeve it comes out of. Over the page the edge is
+            invisible. */}
+        {[f.arms.l, f.arms.r].map((a, i) => {
+          const from = along(a.shoulder, a.elbow, 26);
+          const d = limb(from, a.elbow, a.hand);
+          return (
+            <g key={i}>
+              <path d={d} fill="none" stroke={paper} strokeWidth={INK * 2.6} strokeLinecap="butt" strokeLinejoin="round" />
+              <path d={d} {...line} />
+            </g>
+          );
+        })}
+
+        <g transform={body}>
 
           <g transform={head}>
             <circle cx={SHEET.head.x} cy={SHEET.head.y} r={SHEET.headR} fill={paper} stroke={ink} strokeWidth={INK} />

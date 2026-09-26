@@ -71,7 +71,7 @@ export const DoodleFilters: React.FC<{ boil: boolean }> = ({ boil }) => {
           <feDisplacementMap in="SourceGraphic" in2="noise" scale={4.5} xChannelSelector="R" yChannelSelector="G" />
         </filter>
       </defs>
-      <style>{'.doodle-ink svg { filter: url(#doodle-boil); }'}</style>
+      <style>{'.doodle-ink svg { filter: url(#doodle-boil); } .doodle-ink svg.doodle-steady { filter: none; }'}</style>
     </svg>
   );
 };
