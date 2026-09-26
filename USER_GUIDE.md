@@ -560,6 +560,29 @@ nobody mentioned.
 
 Topics without one of the nine kinds still get the illustrated diagrams and animations from step 5.
 
+**Circuits come alive at the answer.** Once the answer is out, a circuit diagram switches on: current
+flows round every wire as a train of beads in the look's accent colour, and every lamp lights up.
+Both come from the same solved circuit as the answer, so they are exact:
+
+- **Faster beads mean more current.** Each wire runs at its share of the biggest current in the
+  circuit — in two parallel branches of 6 Ω and 3 Ω, the 3 Ω branch visibly runs twice as fast.
+  Speeds are relative rather than so many per ampere, so a milliamp circuit still moves and a
+  twenty-amp one never runs so fast it seems to go backwards.
+- **Brighter lamps take more power.** A lamp on 48 W shines more than one on 24 W beside it. A lamp
+  shorted out, or in a branch carrying nothing, stays dark.
+- **The beads follow conventional current**, out of the + terminal and round — the same way the
+  question's arrows and every textbook draw it.
+- **AC rocks back and forth** instead of drifting, each branch in its own phase, so a capacitor's
+  current visibly leads a resistor's.
+
+**Nothing moves before the answer.** In the question scene the circuit is the still drawing it always
+was: how fast the current runs and how bright each lamp is are exactly what these questions ask,
+and showing them would answer the question before the countdown.
+
+To see it without making a video, `node --import ./tools/ts-resolve.mjs tools/circuit-preview.mjs`
+renders a lamp circuit and an AC circuit, in several looks and both shapes, into `stills/` — add
+`--video` for clips.
+
 ---
 
 ### Instagram and Facebook

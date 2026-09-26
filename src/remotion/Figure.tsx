@@ -3,8 +3,10 @@ import { useCurrentFrame, useVideoConfig } from 'remotion';
 import type { Theme } from '../lib/theme';
 import { answerFigure, formatAnswer, formatQuantity, type Figure } from '../lib/figures/index.ts';
 import {
-  ASK_UNIT, elementText, layoutCircuit, type Circuit, type CircuitElement, type PlacedElement,
+  ASK_UNIT, elementText, layoutCircuit, solveCircuit, type Circuit, type CircuitElement, type PlacedElement,
 } from '../lib/figures/circuit.ts';
+import { circuitFlow, type PartFlow } from '../lib/figures/circuit-flow.ts';
+import { AnimatedWirePath, GlowingLampSymbol } from './figures/CircuitFlow';
 import { branchText, layoutJunction, type Junction } from '../lib/figures/junction.ts';
 import { useEnter, useMetrics } from './ui';
 import { AcArt } from './figures/AcArt';
@@ -19,10 +21,11 @@ import { BarsArt } from './figures/BarsArt';
  * The figure of the question itself - the junction, the circuit - drawn from
  * its netlist.
  *
- * Plain SVG rather than p5: a figure is still, apart from its entrance, so
- * there is no canvas to keep in step with the frame, and text stays crisp at
- * any size. Every value shown comes from the figure's own data, and the
- * unknown stays a "?" until the scene is allowed to reveal it.
+ * Plain SVG rather than p5: what moves - the entrance, and a revealed
+ * circuit's current and lamps - is a pure function of the frame, so there is
+ * no canvas to keep in step, and text stays crisp at any size. Every value
+ * shown comes from the figure's own data, and the unknown stays a "?" until
+ * the scene is allowed to reveal it.
  */
 export const FigureView: React.FC<{
   theme: Theme;
@@ -166,9 +169,23 @@ const CircuitArt: React.FC<ArtProps & { circuit: Circuit; highlight?: string }> 
   theme, circuit, reveal, highlight, w, h, font,
 }) => {
   const at = useStagger();
+  const frame = useCurrentFrame();
   const footer = circuit.ask ? font * 2.2 : 0;
   const layout = layoutCircuit(circuit, w, h - footer, font);
   const asked = circuit.ask?.element;
+
+  // The circuit comes alive only once the answer is out. How fast each wire's
+  // current runs and how bright each lamp shines are the very numbers these
+  // questions ask for - "which lamp is brightest", "what current flows" - so
+  // animating them in the question scene would answer it before the
+  // countdown. Until the reveal it is the still drawing it always was; at the
+  // reveal it switches on, just after its parts have drawn themselves in.
+  const flow = React.useMemo(
+    () => (reveal ? circuitFlow(circuit, solveCircuit(circuit)) : null),
+    [circuit, reveal],
+  );
+  const drawn = 6 + layout.elements.length * 3 + 8;
+  const on = flow ? Math.max(0, Math.min(1, (frame - drawn) / 15)) : 0;
   // The question line sits under the drawing, not at the foot of the box: in a
   // tall frame a small circuit otherwise floats far above its own caption.
   const drawnBottom = Math.max(
@@ -185,7 +202,16 @@ const CircuitArt: React.FC<ArtProps & { circuit: Circuit; highlight?: string }> 
         const colour = hot ? theme.accent : theme.text;
         return (
           <g key={p.element.id} opacity={at(i)}>
-            <Part p={p} colour={colour} bg={theme.bg} ac={circuit.frequency > 0} />
+            <Part
+              p={p}
+              colour={colour}
+              bg={theme.bg}
+              ac={circuit.frequency > 0}
+              accent={theme.accent}
+              flow={flow ? flow.parts[p.element.id] || null : null}
+              brightness={flow ? flow.lamps[p.element.id] ?? 0 : 0}
+              on={on}
+            />
             <PartLabel p={p} theme={theme} font={font} reveal={reveal} colour={p.element.unknown && !reveal ? theme.accent : colour} />
           </g>
         );
@@ -219,11 +245,34 @@ const CircuitArt: React.FC<ArtProps & { circuit: Circuit; highlight?: string }> 
   );
 };
 
-/** One part: the wire up to its symbol, the symbol, and the wire on from it. */
-const Part: React.FC<{ p: PlacedElement; colour: string; bg: string; ac: boolean }> = ({ p, colour, bg, ac }) => {
+/**
+ * One part: the wire up to its symbol, the symbol, and the wire on from it.
+ * Once the circuit is switched on, its current flows along both wires and a
+ * lamp lights by its power (see figures/CircuitFlow.tsx).
+ */
+const Part: React.FC<{
+  p: PlacedElement;
+  colour: string;
+  bg: string;
+  ac: boolean;
+  accent: string;
+  /** This part's current, or null for none - or not switched on yet. */
+  flow: PartFlow | null;
+  /** A lamp's brightness, 0 to 1. */
+  brightness: number;
+  /** 0 to 1: how far the circuit has switched on. */
+  on: number;
+}> = ({ p, colour, bg, ac, accent, flow, brightness, on }) => {
   const e = p.element;
   const common = { stroke: colour, strokeWidth: STROKE, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, fill: 'none' };
-  if (e.kind === 'wire' || p.length === 0) return <line x1={p.x1} y1={p.y1} x2={p.x2} y2={p.y2} {...common} />;
+  const wire = (x1: number, y1: number, x2: number, y2: number) => (
+    <AnimatedWirePath
+      x1={x1} y1={y1} x2={x2} y2={y2}
+      colour={colour} flowColour={accent} bg={bg}
+      flow={flow} ac={ac} on={on} strokeWidth={STROKE}
+    />
+  );
+  if (e.kind === 'wire' || p.length === 0) return wire(p.x1, p.y1, p.x2, p.y2);
 
   const len = Math.hypot(p.x2 - p.x1, p.y2 - p.y1);
   const dx = (p.x2 - p.x1) / len;
@@ -233,11 +282,15 @@ const Part: React.FC<{ p: PlacedElement; colour: string; bg: string; ac: boolean
 
   return (
     <g>
-      <line x1={p.x1} y1={p.y1} x2={p.mx - dx * half} y2={p.my - dy * half} {...common} />
-      <line x1={p.mx + dx * half} y1={p.my + dy * half} x2={p.x2} y2={p.y2} {...common} />
+      {wire(p.x1, p.y1, p.mx - dx * half, p.my - dy * half)}
+      {wire(p.mx + dx * half, p.my + dy * half, p.x2, p.y2)}
       {/* Drawn along +x from `from` to `to`, then turned into place. */}
       <g transform={'translate(' + p.mx + ' ' + p.my + ') rotate(' + angle + ')'}>
-        <Symbol kind={e.kind} half={half} common={common} colour={colour} bg={bg} ac={ac} />
+        {e.kind === 'lamp' ? (
+          <GlowingLampSymbol half={half} colour={colour} bg={bg} glow={accent} brightness={brightness} on={on} strokeWidth={STROKE} />
+        ) : (
+          <Symbol kind={e.kind} half={half} common={common} colour={colour} bg={bg} ac={ac} />
+        )}
       </g>
     </g>
   );
