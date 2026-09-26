@@ -11,6 +11,7 @@ import { StockLayer } from './StockLayer';
 import { OverlayLayer } from './Overlays';
 import { RevealContext } from './ReadAlong';
 import { DoodlePicture, DoodleText } from './DoodleStage';
+import { DoodleZoneContext } from './doodle-zone';
 import { HandFonts } from './fonts';
 import { DoodleFilters, DoodleInk } from './DoodleInk';
 import { wantsDoodle } from '../lib/doodle';
@@ -103,7 +104,16 @@ export const QuizVideo: React.FC<VideoProps> = ({ content, scenes, design }) => 
                 );
                 // Every scene of a Doodle video is inked by hand, drawing or
                 // not - a circuit scene with no mascot is still on the page.
-                const inked = doodle ? <DoodleInk>{body}</DoodleInk> : body;
+                // A Doodle scene without a drawing still uses the Doodle
+                // look's larger handwriting ('page'); one with a drawing gets
+                // its band from DoodleText instead.
+                const inked = doodle
+                  ? (
+                    <DoodleInk>
+                      {doodleHere ? body : <DoodleZoneContext.Provider value="page">{body}</DoodleZoneContext.Provider>}
+                    </DoodleInk>
+                  )
+                  : body;
                 return doodleHere ? <DoodleText>{inked}</DoodleText> : inked;
               })()}
             </SceneFade>

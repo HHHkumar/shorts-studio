@@ -35,6 +35,13 @@ export function useMetrics(): Metrics {
   // portrait frame, the left of a landscape one - with the drawing beside it.
   // Same components, smaller room: the padding that keeps text clear of the
   // phone's own buttons is only needed at the edge the band actually touches.
+  // The Doodle look's words are handwriting in lowercase, which reads much
+  // smaller than the heavy capitals the other looks set at the same size -
+  // only the x-height is doing the work. They were also first sized DOWN to fit
+  // beside the drawing, to 86 against 112, when the band beside it has far more
+  // room than one line needs: a caption used 70 pixels of an 880-pixel band.
+  // So beside a drawing they are now larger than the other looks, and on a
+  // page with no drawing, a notch larger than standard.
   const zone = React.useContext(DoodleZoneContext);
   if (zone === 'text-top') {
     return {
@@ -42,13 +49,13 @@ export function useMetrics(): Metrics {
       padTop: 120,
       padX: 70,
       padBottom: 20,
-      gap: 26,
-      headlineMax: 86,
-      headlineMin: 46,
+      gap: 28,
+      headlineMax: 120,
+      headlineMin: 64,
       optionColumns: 1,
-      optionMax: 40,
-      optionMin: 28,
-      ring: 160,
+      optionMax: 48,
+      optionMin: 34,
+      ring: 170,
     };
   }
   if (zone === 'text-left') {
@@ -57,15 +64,16 @@ export function useMetrics(): Metrics {
       padTop: 100,
       padX: 90,
       padBottom: 90,
-      gap: 24,
-      headlineMax: 74,
-      headlineMin: 42,
+      gap: 26,
+      headlineMax: 96,
+      headlineMin: 54,
       optionColumns: 1,
-      optionMax: 36,
-      optionMin: 26,
-      ring: 160,
+      optionMax: 42,
+      optionMin: 30,
+      ring: 170,
     };
   }
+  const handwritten = zone === 'page' ? 1.12 : 1;
 
   if (landscape) {
     return {
@@ -75,12 +83,12 @@ export function useMetrics(): Metrics {
       padBottom: 110,
       gap: 34,
       // Wider measure means the type can stay large without wrapping badly.
-      headlineMax: 96,
-      headlineMin: 52,
+      headlineMax: Math.round(96 * handwritten),
+      headlineMin: Math.round(52 * handwritten),
       // Two columns of options: four stacked rows would waste a 16:9 frame.
       optionColumns: 2,
-      optionMax: 46,
-      optionMin: 30,
+      optionMax: Math.round(46 * handwritten),
+      optionMin: Math.round(30 * handwritten),
       ring: 200,
     };
   }
@@ -91,11 +99,11 @@ export function useMetrics(): Metrics {
     padX: 70,
     padBottom: 200,
     gap: 46,
-    headlineMax: 112,
-    headlineMin: 58,
+    headlineMax: Math.round(112 * handwritten),
+    headlineMin: Math.round(58 * handwritten),
     optionColumns: 1,
-    optionMax: 52,
-    optionMin: 32,
+    optionMax: Math.round(52 * handwritten),
+    optionMin: Math.round(32 * handwritten),
     ring: 240,
   };
 }
