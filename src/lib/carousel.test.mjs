@@ -45,6 +45,14 @@ test('a plain quiz: question with options, answer, why, outro', () => {
   assert(plan.slides[3].handle === '@physics.daily', JSON.stringify(plan.slides[3]));
 });
 
+test('a formula card is the last slide before the follow, and only when there is one', () => {
+  const sheet = { title: 'AC - Important Formulas', cards: [{ name: 'RMS', formula: 'V_{rms} = V_0', notes: [], graph: { kind: 'none', x: '', y: '', label: '', label2: '' }, icon: '' }] };
+  const plan = planCarousel({ ...DEMO_CONTENT, formulas: sheet });
+  assert(kinds(plan) === 'question answer why formulas outro', kinds(plan));
+  assert(plan.slides[3].title === 'AC - Important Formulas');
+  assert(!kinds(planCarousel({ ...DEMO_CONTENT, formulas: { title: 'x', cards: [] } })).includes('formulas'), 'an empty card got a slide');
+});
+
 test('the question and options really fit the body together', () => {
   const q = planCarousel(DEMO_CONTENT).slides[0];
   const h = textHeight(q.question, q.questionSize, CONTENT_WIDTH, 1.12, 0.6) + QUESTION_GAP + optionsHeight(q.options, q.optionSize);

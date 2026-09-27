@@ -46,6 +46,8 @@ import {
 } from './mascot.mjs';
 import { generateDoodleDirections } from './doodle-directions.mjs';
 import { scenesToRecord } from './voiceover-plan.mjs';
+import { attachFormulaIcons, generateFormulaSheet } from './formulas.mjs';
+import { tidySheet } from '../src/lib/formula-card.ts';
 import { energyFor, tidyDirection } from '../src/lib/doodle.ts';
 
 // Its own variable, deliberately not PORT. Anything that launches the studio
@@ -501,6 +503,23 @@ app.post('/api/doodle/directions', ok(async (req, res) => {
   console.log('[doodle] directed ' + Object.keys(out.directions).length + ' scenes'
     + (out.notes.length ? ' (' + out.notes.length + ' notes)' : ''));
   res.json(out);
+}));
+
+// --- the formula card -------------------------------------------------------
+
+app.post('/api/formulas', ok(async (req, res) => {
+  const { apiKey, model, content } = req.body || {};
+  const sheet = await generateFormulaSheet({ apiKey, model: model || 'gemini-2.5-flash', content, root: paths.ROOT });
+  console.log('[formulas] ' + sheet.cards.length + ' cards: ' + sheet.cards.map((c) => c.name).join(', '));
+  res.json({ sheet });
+}));
+
+/** Icons for a sheet the creator has edited: only cards without a drawing are looked up. */
+app.post('/api/formulas/icons', ok(async (req, res) => {
+  const sheet = tidySheet(req.body && req.body.sheet);
+  if (!sheet) throw new Error('There is no formula card to find icons for.');
+  await attachFormulaIcons(sheet, { root: paths.ROOT });
+  res.json({ sheet });
 }));
 
 app.post('/api/doodle/draw', ok(async (req, res) => {

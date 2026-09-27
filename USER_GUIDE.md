@@ -379,6 +379,35 @@ closing line itself, or you rewrote it — the box warns you, quotes what the sc
 offers **Use my fun fact there**, which puts your fact at the start of that scene. Without that,
 changing the box alone would never reach the video.
 
+#### The formula card
+
+A revision sheet of **every formula the question uses** — shown near the end of the video and as a
+slide in the carousel, the card a student screenshots before an exam. Each formula gets its own card:
+an icon, its number and name, the formula **typeset as in a textbook** (fractions stacked, √ with its
+bar, V<sub>rms</sub>, ω, φ), a line saying what the symbols mean, and a **small graph** of what it says.
+
+- **Write the formula card** has Gemini write it from the question, its answer and its working — text
+  only, free tier. The first time, it also puts the sheet into the video. **Start one by hand** makes
+  an empty card instead.
+- **Every card is editable**, and the formula is typeset beside its box as you type. Formulas are
+  written in LaTeX, the notation Gemini writes most reliably: `V_{rms} = \frac{V_0}{\sqrt{2}}`,
+  `P = V_{rms} I_{rms} \cos\phi`, `\omega = 2\pi f`. Anything it does not know is shown as written,
+  never dropped.
+- **The graphs**: a sine wave, a sine with its RMS level, a rotating phasor, voltage and current out
+  of phase, the power triangle, a straight line, a 1/x curve, and charging and discharging curves.
+  In the video each one **draws itself in** as its card arrives and then keeps moving — a dot runs
+  along the wave, the phasor turns, the triangle's sides draw in turn. Choose *No graph* for a formula
+  a picture would not help.
+- **Icons** are found by name (*light bulb, ammeter, gear*). Change a name and press *Find the icons*.
+- **Show it at the end of the video** adds one scene just before the outro, held long enough to read
+  every card however short its spoken line. The other scenes **keep their voiceover** — only the new
+  line needs recording, and step 4 offers to record just that one.
+
+Up to six cards. In a portrait video they stack in one column; in landscape, and on a crowded
+carousel slide, two. The Doodle look writes the whole sheet in its marker. To see a sample without
+spending anything, `node --import ./tools/ts-resolve.mjs tools/formula-preview.mjs` renders the six
+AC formulas in several looks, both shapes and as the slide — add `--video` for clips.
+
 **On an explainer**, a scene that draws a layout shows a **🖼️ Drawn on screen** row listing every
 label in it — and on a [motion scene](#scenes-that-move), every cue that fires an animation. A label marked **⚠** is one your narration never says — the reveals are timed by
 matching the spoken words against those labels, so an unmentioned label can only appear on a guess.
@@ -698,6 +727,7 @@ Press **🗂️ Make the carousel**. The slides come in the order a reader wants
 | **Answer** | All the options — the right one in green with a ✓, the others struck through — and the answer line. |
 | **Worked out** | The question's diagram with every value filled in, when it has one. |
 | **Why** | The explanation as numbered steps, over as many slides as it needs (*Why · 1 of 2*). |
+| **Formulas** | The [formula card](#the-formula-card) — every formula the question used, typeset, with its graph — when you have written one. |
 | **Did you know?** | The fun fact, *Save this for revision · Follow for one every day*, and your channel name. |
 
 Every slide carries a counter (*2 / 5*) and your channel along the bottom, so the post reads as one

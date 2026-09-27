@@ -8,7 +8,8 @@
 //   2. the answer                    - all four options, the right one marked
 //   3. the worked figure, if any     - every value on it now shown
 //   4. why, one step at a time       - as many slides as the steps need
-//   5. the fun fact and a follow     - the reason to save it
+//   5. the formula card, if written  - every formula it used, on one sheet
+//   6. the fun fact and a follow     - the reason to save it
 //
 // Nothing here draws. This plans the slides and sizes their text so nothing
 // overflows a 1080 square - the renderer in src/remotion/Carousel.tsx just
@@ -18,6 +19,7 @@
 
 import type { QuizContent } from './types.ts';
 import { isSetupSafe } from './figures/index.ts';
+import { tidySheet } from './formula-card.ts';
 
 export const SLIDE_SIZE = 1080;
 /** Instagram's own ceiling for one carousel. */
@@ -40,6 +42,8 @@ export type Slide =
   | { kind: 'answer'; options: string[]; correctIndex: number; optionSize: number; answerLine: string; answerSize: number }
   | { kind: 'worked'; caption: string }
   | { kind: 'why'; steps: { number: number; text: string }[]; size: number; part: number; parts: number }
+  /** The formula card (src/lib/formula-card.ts); the sheet itself is read from the content. */
+  | { kind: 'formulas'; title: string }
   /** `picture`: height kept at the foot of the body for the mascot, in the Doodle look. 0 for none. */
   | { kind: 'outro'; fact: string; factSize: number; cta: string; handle: string; picture: number };
 
@@ -197,6 +201,12 @@ export function planCarousel(content: QuizContent, opts: { channelName?: string;
     });
     pages.forEach((page, i) => slides.push({ kind: 'why', steps: page, size, part: i + 1, parts: pages.length }));
   }
+
+  // --- the formula card ------------------------------------------------------------------------
+  // The slide most worth saving, so it goes last before the follow - and it
+  // is the whole sheet on one slide, as a student would screenshot it.
+  const sheet = tidySheet(content.formulas);
+  if (sheet) slides.push({ kind: 'formulas', title: sheet.title });
 
   // --- the fun fact and the follow ----------------------------------------------------------
   const fact = String(content.funFact || '').trim();

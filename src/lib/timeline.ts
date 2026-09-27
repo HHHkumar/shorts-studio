@@ -1,5 +1,6 @@
 import type { DesignSettings, Scene, ScriptLine, WordTiming } from './types';
 import { FPS } from './types';
+import { formulaHoldSeconds } from './formula-card';
 
 /** What the voiceover step gives us back for one script line. */
 export interface AudioResult {
@@ -32,6 +33,8 @@ export function buildScenes(
   audio: Record<number, AudioResult>,
   design: DesignSettings,
   fps: number = FPS,
+  /** Cards on the formula sheet, which decides how long its scene holds. */
+  formulaCards = 0,
 ): { scenes: Scene[]; totalDurationInFrames: number } {
   let cursor = 0;
   const scenes: Scene[] = [];
@@ -49,6 +52,10 @@ export function buildScenes(
       seconds = Math.max(design.countdownSeconds, padded);
       // Thinking time turned all the way down means: no countdown at all.
       if (seconds <= 0) return;
+    } else if (line.kind === 'formulas') {
+      // The sheet is read, not heard: it holds long enough to read every card
+      // however short its narration, and longer if the narration is.
+      seconds = Math.max(formulaHoldSeconds(formulaCards), padded, spoken > 0 ? 0 : minSecondsFor(line));
     } else if (spoken > 0) {
       // Real audio beats any guess: the scene is exactly its narration plus a
       // breath. The floor only guards against a freakishly short clip.

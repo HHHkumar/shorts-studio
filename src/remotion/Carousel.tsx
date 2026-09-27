@@ -11,6 +11,8 @@ import { HandFonts } from './fonts';
 import { DoodleFilters, DoodleInk, DoodleMark } from './DoodleInk';
 import { doodleBlend, FADE_EDGES } from './DoodleStage';
 import { Img, staticFile } from 'remotion';
+import { FormulaSheetView } from './FormulaSheet';
+import { tidySheet } from '../lib/formula-card';
 
 // ---------------------------------------------------------------------------
 // One square carousel slide.
@@ -49,6 +51,7 @@ const LABELS: Record<Slide['kind'], string> = {
   answer: 'Answer',
   worked: 'Worked out',
   why: 'Why',
+  formulas: 'Formulas',
   outro: 'Did you know?',
 };
 
@@ -199,6 +202,12 @@ const Body: React.FC<{ slide: Slide; theme: Theme; content: QuizContent; channel
           <FigureView theme={theme} figure={content.figure} reveal box={{ w: CONTENT_WIDTH, h: BODY_HEIGHT, font: 30 }} />
         </div>
       ) : null;
+    case 'formulas': {
+      const sheet = tidySheet(content.formulas);
+      return sheet ? (
+        <FormulaSheetView theme={theme} sheet={sheet} width={CONTENT_WIDTH} height={BODY_HEIGHT} frame={0} fps={30} still />
+      ) : null;
+    }
     case 'why':
       return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 34 }}>

@@ -17,7 +17,7 @@ import type { QuizContent, ScriptLine } from './types';
 // ---------------------------------------------------------------------------
 
 /** Beats whose words are aimed at the viewer rather than at the subject. */
-const RHETORICAL = new Set(['hook', 'outro', 'intro', 'countdown', 'options', 'title', 'recap']);
+const RHETORICAL = new Set(['hook', 'outro', 'intro', 'countdown', 'options', 'title', 'recap', 'formulas']);
 
 /** Discourse markers that open a spoken line and describe nothing. */
 const OPENERS = /^(so|now|and|but|then|well|okay|right|look|see|here)\b[,\s]*/i;

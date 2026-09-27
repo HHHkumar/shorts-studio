@@ -9,6 +9,7 @@ export type ThemeMode = 'dark' | 'light';
 import type { DesignLookSlug } from './design-looks';
 import type { Figure, FigureCheck } from './figures/index.ts';
 import type { DoodleDirection } from './doodle.ts';
+import type { FormulaSheet } from './formula-card.ts';
 
 export type BuiltInLayout = 'simple' | 'elegant' | 'nerdy' | 'flashy' | 'doodle';
 /** The built-in layouts plus every look imported from Claude Design (design-kits/). */
@@ -45,7 +46,9 @@ export type SceneKind =
   | 'timeline'
   | 'grid'
   | 'motion'
-  | 'recap';
+  | 'recap'
+  // The formula card, at the end: see src/lib/formula-card.ts
+  | 'formulas';
 
 /** The explainer scene kinds, in the order they normally appear. */
 export const EXPLAINER_KINDS: SceneKind[] = [
@@ -100,6 +103,12 @@ export interface QuizContent {
   motifSymbols: string[];
   /** Narration written by Gemini, one entry per scene, in play order. */
   script: ScriptLine[];
+  /**
+   * The formulas the question uses, as a revision sheet - shown by a
+   * 'formulas' scene near the end of the video, and as a carousel slide.
+   * Optional: written on request, and absent on older videos.
+   */
+  formulas?: FormulaSheet;
 }
 
 /** The kinds of picture a scene can carry alongside its text. */

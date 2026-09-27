@@ -1,6 +1,7 @@
 import type { DesignSettings, QuizContent, Scene, ScriptLine, VideoKind, VideoProps } from './types';
 import type { AudioResult } from './timeline';
 import type { DoodleDirection } from './doodle';
+import type { FormulaSheet } from './formula-card';
 
 export type ContentType = 'general' | 'electrical' | 'aptitude';
 
@@ -428,6 +429,16 @@ export const api = {
   /** The six test beats, drawn against the model sheet. Six pictures of credits. */
   mascotTest(body: { apiKey: string; modelId: string }) {
     return post<{ model: string; cents: number; results: MascotDrawing[] }>('/api/mascot/test', body);
+  },
+
+  /** Gemini writes the formula card for this question. Text only - free tier. */
+  formulas(body: { apiKey: string; model: string; content: QuizContent }) {
+    return post<{ sheet: FormulaSheet }>('/api/formulas', body);
+  },
+
+  /** Icons for an edited formula card: cards that already have one keep it. */
+  formulaIcons(sheet: FormulaSheet) {
+    return post<{ sheet: FormulaSheet }>('/api/formulas/icons', { sheet });
   },
 
   /** Gemini directs the mascot for the listed scenes. Text only - one request for the whole script. */

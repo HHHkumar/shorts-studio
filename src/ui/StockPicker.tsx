@@ -24,7 +24,7 @@ import { Check, ErrorNote, Note, Select, Slider, Spinner } from './controls';
 const AI_CREDIT = 'Generated with AI';
 
 /** Scenes where a photo would collide with what is already on screen. */
-const SKIP_KINDS = new Set(['options', 'countdown']);
+const SKIP_KINDS = new Set(['options', 'countdown', 'formulas']);
 
 interface SceneCandidates {
   [sceneIndex: number]: StockImage[];

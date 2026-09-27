@@ -23,6 +23,8 @@ import { StepTopic } from './ui/StepTopic';
 import { StepVoice } from './ui/StepVoice';
 import { MascotLab } from './ui/MascotLab';
 import { Note } from './ui/controls';
+import { tidySheet } from './lib/formula-card';
+import { shiftAudio } from './lib/script-edit';
 
 const STEPS = ['Keys', 'Topic', 'Script', 'Voice', 'Look', 'Export', 'Publish'];
 
@@ -157,7 +159,7 @@ export const App: React.FC = () => {
   // The single source of truth for both the preview and the render.
   const videoProps: VideoProps | null = useMemo(() => {
     if (!content) return null;
-    const { scenes, totalDurationInFrames } = buildScenes(content.script, audio, design, FPS);
+    const { scenes, totalDurationInFrames } = buildScenes(content.script, audio, design, FPS, tidySheet(content.formulas)?.cards.length ?? 0);
     return { content, scenes, design, fps: FPS, totalDurationInFrames };
   }, [content, audio, design]);
 
@@ -291,6 +293,11 @@ export const App: React.FC = () => {
                 delete next[index];
                 return next;
               })}
+              // One scene in or out: the others keep their clips, moved to their new places.
+              onSceneInserted={(at) => setAudio((prev) => shiftAudio(prev, at, 1))}
+              onSceneRemoved={(at) => setAudio((prev) => shiftAudio(prev, at, -1))}
+              geminiKey={geminiKey}
+              geminiModel={geminiModel}
               deepseekKey={deepseekKey}
               deepseekModel={deepseekModel}
               setDeepseekModel={setDeepseekModel}

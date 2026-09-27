@@ -8,6 +8,7 @@ import {
 import type { QuizContent, ScenePanel, SceneKind, ScriptLine } from '../lib/types';
 import type { FigureCheck } from '../lib/figures/index.ts';
 import { missingLabels } from '../lib/options-timing';
+import { FormulaCardPanel } from './FormulaCardPanel';
 import { motionWordsIn } from '../lib/motion-lexicon';
 import { scriptSeconds } from '../lib/blank-script';
 import { closingScene, factIsSpoken, speakFunFact, withFunFact } from '../lib/fun-fact';
@@ -305,6 +306,11 @@ export const StepScript: React.FC<{
    * their voiceover, and the Voice step records just the missing one.
    */
   onSceneEdited: (index: number) => void;
+  /** One scene put in, or taken out, at this position: the others keep their clips. */
+  onSceneInserted: (at: number) => void;
+  onSceneRemoved: (at: number) => void;
+  geminiKey: string;
+  geminiModel: string;
   deepseekKey: string;
   deepseekModel: string;
   setDeepseekModel: (v: string) => void;
@@ -320,6 +326,10 @@ export const StepScript: React.FC<{
   hasAudio,
   onEdited,
   onSceneEdited,
+  onSceneInserted,
+  onSceneRemoved,
+  geminiKey,
+  geminiModel,
   deepseekKey,
   deepseekModel,
   setDeepseekModel,
@@ -341,7 +351,7 @@ export const StepScript: React.FC<{
    */
   const KINDS_FOR_HAND: SceneKind[] = explainer
     ? ['intro', 'title', 'explain', 'outro']
-    : ['intro', 'hook', 'question', 'options', 'countdown', 'answer', 'explain', 'outro'];
+    : ['intro', 'hook', 'question', 'options', 'countdown', 'answer', 'explain', 'formulas', 'outro'];
 
   const kindOptions = (current: SceneKind) => {
     const ids = KINDS_FOR_HAND.includes(current) ? KINDS_FOR_HAND : [current, ...KINDS_FOR_HAND];
@@ -562,6 +572,16 @@ export const StepScript: React.FC<{
           ) : null}
         </div>
       </div>
+
+      <div className="section-title">The formula card</div>
+      <FormulaCardPanel
+        content={content}
+        setContent={setContent}
+        geminiKey={geminiKey}
+        geminiModel={geminiModel}
+        onSceneInserted={onSceneInserted}
+        onSceneRemoved={onSceneRemoved}
+      />
 
       <div className="section-title">
         The script — {content.script.length} scenes, about {Math.round(totalSeconds)} seconds of speech

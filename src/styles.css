@@ -658,3 +658,17 @@ ul.issues .sev-low .sev { background: rgba(108,140,255,.16); color: var(--accent
 }
 .doodle-nudge b { display: block; font-size: 15px; margin-bottom: 3px; }
 .doodle-nudge span { color: var(--dim); font-size: 13.5px; }
+
+/* --- the formula card, on the Script step (FormulaCardPanel.tsx) --- */
+.formula-cards { display: grid; gap: 12px; margin: 12px 0; }
+.formula-card-edit { padding: 12px; border: 1px solid var(--line); border-radius: 12px; }
+.formula-card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; min-height: 44px; }
+.formula-card-head .spacer { flex: 1; }
+.formula-preview { overflow-x: auto; max-width: 100%; }
+.formula-preview em { color: var(--dim); font-size: 13px; }
+.formula-card-edit .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
+.formula-card-edit .field > label { font-size: 12px; }
+.formula-card-edit input, .formula-card-edit select { padding: 8px 10px; font-size: 13.5px; }
+@media (max-width: 900px) {
+  .formula-card-edit .grid { grid-template-columns: 1fr; }
+}

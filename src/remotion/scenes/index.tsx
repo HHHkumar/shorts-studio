@@ -1,5 +1,5 @@
 import React from 'react';
-import { interpolate, useCurrentFrame, useVideoConfig } from 'remotion';
+import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from 'remotion';
 import { activeOption, alignOptions } from '../../lib/options-timing';
 import type { Theme } from '../../lib/theme';
 import { hexToRgba } from '../../lib/theme';
@@ -12,6 +12,8 @@ import { PANEL_COMPONENTS, type PanelName } from '../Panel';
 import { EffectLayer, useNarrationEffects, useSlowPush } from '../Effects';
 import { activeIndex, anchorFor } from '../../lib/panel-anchor';
 import { DoodleMark } from '../DoodleInk';
+import { FormulaSheetView } from '../FormulaSheet';
+import { tidySheet } from '../../lib/formula-card';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
 
@@ -397,6 +399,45 @@ export const OutroScene: React.FC<SceneProps> = ({ theme, scene, content, showVi
 };
 
 
+/**
+ * The formula card, near the end: every formula the question used, as a
+ * revision sheet (FormulaSheet.tsx). Its narration plays underneath, but the
+ * sheet is the screen - the scene holds long enough to read it (see
+ * timeline.ts). Without a sheet it falls back to the spoken line.
+ */
+export const FormulasScene: React.FC<SceneProps> = ({ theme, scene, content, showText }) => {
+  const frame = useCurrentFrame();
+  const { fps, width, height } = useVideoConfig();
+  const m = useMetrics();
+  // Tidied as drawn: a card still being typed, with no formula yet, is left out.
+  const sheet = React.useMemo(() => tidySheet(content.formulas), [content.formulas]);
+  if (!sheet) {
+    return (
+      <Stage theme={theme}>
+        {showText ? (
+          <ReadAlong theme={theme} words={scene.words} offset={scene.captionOffset} fallbackText={scene.narration}
+            maxSize={m.headlineMax} minSize={m.headlineMin} />
+        ) : null}
+      </Stage>
+    );
+  }
+  const padX = m.landscape ? 72 : 44;
+  const padTop = m.landscape ? 44 : 96;
+  const padBottom = m.landscape ? 36 : 80;
+  return (
+    <AbsoluteFill style={{ padding: padTop + 'px ' + padX + 'px ' + padBottom + 'px', alignItems: 'center', justifyContent: 'center' }}>
+      <FormulaSheetView
+        theme={theme}
+        sheet={sheet}
+        width={width - padX * 2}
+        height={height - padTop - padBottom}
+        frame={frame}
+        fps={fps}
+      />
+    </AbsoluteFill>
+  );
+};
+
 // ---------------------------------------------------------------------------
 // The explainer scenes
 //
@@ -523,6 +564,7 @@ export const SCENE_COMPONENTS: Record<Scene['kind'], React.FC<SceneProps>> = {
   answer: AnswerScene,
   explain: ExplainScene,
   outro: OutroScene,
+  formulas: FormulasScene,
   title: TitleScene,
   metaphor: MetaphorScene,
   diagram: DiagramScene,

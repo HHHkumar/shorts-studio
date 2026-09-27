@@ -62,7 +62,7 @@ export function energyFor(kind: SceneKind | string, requested: DoodleEnergy | st
  * Explainer layouts that are a picture in their own right. A doodle beside a
  * diagram is two pictures competing for one frame.
  */
-const SELF_ILLUSTRATED: SceneKind[] = ['diagram', 'motion'];
+const SELF_ILLUSTRATED: SceneKind[] = ['diagram', 'motion', 'formulas'];
 
 /**
  * Does this scene get a drawing of the engineer?
