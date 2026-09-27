@@ -5,7 +5,11 @@ import { DEFAULT_DESIGN, getTheme } from '../lib/theme';
 import {
   GRAPH_KINDS, GRAPH_LABELS, MAX_CARDS, tidySheet, type FormulaCard, type FormulaSheet, type GraphKind,
 } from '../lib/formula-card';
-import { formulaSceneAt, withFormulaScene, withoutFormulaScene } from '../lib/script-edit';
+import {
+  formulaSceneAt, specialSceneAt, withFormulaScene, withoutFormulaScene, withoutSpecial, withoutWorking, withSpecial,
+  withWorking, workingSceneAt,
+} from '../lib/script-edit';
+import { ohms, reductionFor } from '../lib/figures/reduce';
 import { MathText } from '../remotion/MathText';
 import { Check, ErrorNote, Select, Spinner, TextInput } from './controls';
 
@@ -44,6 +48,11 @@ export const FormulaCardPanel: React.FC<{
   const [error, setError] = useState<string | null>(null);
   const sheet = content.formulas;
   const inVideo = formulaSceneAt(content.script) >= 0;
+  const workingAt = workingSceneAt(content.script);
+  const explainAt = content.script.findIndex((l) => l.kind === 'explain');
+  // Series or parallel loads only; see src/lib/figures/reduce.ts.
+  const reduction = content.figure && content.figure.type === 'circuit' ? reductionFor(content.figure) : null;
+  const reduceAt = specialSceneAt(content.script, 'reduce');
   const noKey = geminiKey.trim().length < 6;
 
   const setSheet = (next: FormulaSheet | undefined) => setContent((prev) => ({ ...prev, formulas: next }));
@@ -68,8 +77,12 @@ export const FormulaCardPanel: React.FC<{
     try {
       const out = await api.formulas({ apiKey: geminiKey, model: geminiModel || 'gemini-2.5-flash', content });
       setSheet(out.sheet);
-      // The first card written goes straight into the video: that is what it is for.
+      // The first card written goes straight into the video: that is what it
+      // is for - and so does its worked solution, if the question has one.
       if (!sheet && !inVideo) showInVideo(true);
+      if (!sheet && workingAt < 0 && out.sheet.working && out.sheet.working.length) {
+        setContent((prev) => ({ ...prev, script: withWorking(prev.script) }));
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -142,6 +155,22 @@ export const FormulaCardPanel: React.FC<{
         ) : null}
       </div>
 
+      {reduction ? (
+        <Check
+          label={'Show the resistances combining (' + reduction.mode + ')'}
+          hint={
+            'The question’s ' + reduction.loads.length + ' resistances slide together into one — Req = '
+            + ohms(reduction.result) + ' Ω — with the formula and the numbers. '
+            + (reduceAt >= 0 ? 'Shown in scene ' + (reduceAt + 1) + '; turn off to put its own picture back.'
+              : 'Takes the place of an explanation scene’s picture.')
+          }
+          checked={reduceAt >= 0}
+          onChange={(on) => setContent((prev) => ({
+            ...prev, script: on ? withSpecial(prev.script, 'reduce') : withoutSpecial(prev.script, 'reduce'),
+          }))}
+        />
+      ) : null}
+
       {sheet ? (
         <>
           <Check
@@ -208,6 +237,40 @@ export const FormulaCardPanel: React.FC<{
           {sheet.cards.length < MAX_CARDS ? (
             <button className="btn ghost small" onClick={addCard}>+ Add a formula</button>
           ) : null}
+
+          <div className="formula-card-edit" style={{ marginTop: 14 }}>
+            <b>Worked solution</b>
+            <p className="hint">
+              This question worked out, a line at a time: the formula, its numbers put in, each step, the answer
+              with its unit. Written in line by line in the explanation, the answer boxed at the end. One line per
+              line; every line after the first starts with “=”.
+            </p>
+            <textarea
+              rows={Math.max(3, (sheet.working || []).length + 1)}
+              value={(sheet.working || []).join('\n')}
+              placeholder={'V_{rms} = \\frac{V_0}{\\sqrt{2}}\n= \\frac{325}{\\sqrt{2}}\n= 230\\,V'}
+              onChange={(e) => setSheet({ ...sheet, working: e.target.value.split('\n') })}
+            />
+            {(sheet.working || []).filter((l) => l.trim()).length ? (
+              <div className="working-preview">
+                {(sheet.working || []).filter((l) => l.trim()).map((l, k) => (
+                  <div key={k}><MathText theme={PREVIEW_THEME} src={l} size={22} /></div>
+                ))}
+              </div>
+            ) : null}
+            <Check
+              label="Write it in, in the explanation"
+              hint={
+                workingAt >= 0
+                  ? 'Shown in scene ' + (workingAt + 1) + ', in place of its own picture - which comes back if you turn this off.'
+                  : explainAt >= 0
+                    ? 'Takes the place of the first explanation scene’s picture.'
+                    : 'This script has no explanation scene to show it in.'
+              }
+              checked={workingAt >= 0}
+              onChange={(on) => setContent((prev) => ({ ...prev, script: on ? withWorking(prev.script) : withoutWorking(prev.script) }))}
+            />
+          </div>
         </>
       ) : null}
     </div>

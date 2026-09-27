@@ -408,6 +408,24 @@ carousel slide, two. The Doodle look writes the whole sheet in its marker. To se
 spending anything, `node --import ./tools/ts-resolve.mjs tools/formula-preview.mjs` renders the six
 AC formulas in several looks, both shapes and as the slide — add `--video` for clips.
 
+**The worked solution.** The same Gemini request also writes the question's own working, as a
+teacher writes it on the board: the formula, the numbers put in, each step, the answer with its unit
+(`V_{rms} = \frac{V_0}{\sqrt{2}}`, `= \frac{325}{\sqrt{2}}`, `= 230\,V`). **Write it in, in the
+explanation** shows it in the first explanation scene — a line at a time across the scene, the
+newest in the accent colour, the answer boxed (ringed in marker in Doodle). It takes the place of
+that scene's own picture, which comes back if you turn it off. Edit the lines freely; a unit after
+`\,` is set upright, as in print.
+
+**Resistances combining.** When the question's circuit is plain series (one loop) or plain parallel
+(every load across the same two points), a switch here shows them **sliding together into one
+R<sub>eq</sub>** in an explanation scene, with the formula above and the numbers below. Anything
+more tangled — a ladder, a bridge, a capacitor — gets no animation rather than a wrong one.
+
+**Other hooks.** On the script's hook scene, **💡 Other hooks** has Gemini write four more opening
+lines in different styles (a doubt, a bold claim, a surprising consequence, a challenge). Press one
+to use it — only that scene then needs its voice again. None may give the answer away; one that does
+is dropped. The thumbnail maker has the same for its headline: **💡 Headline ideas**.
+
 **On an explainer**, a scene that draws a layout shows a **🖼️ Drawn on screen** row listing every
 label in it — and on a [motion scene](#scenes-that-move), every cue that fires an animation. A label marked **⚠** is one your narration never says — the reveals are timed by
 matching the spoken words against those labels, so an unmentioned label can only appear on a guess.
@@ -1286,6 +1304,13 @@ so he is exactly the same engineer in every video, and he costs nothing.
   awkward, so his face holds the scene's expression. Everyday electrical words (*voltage*,
   *current*, *circuit*) get a mark on the word but do not make him jump — only *sparks* and
   *lightning* do.
+- **He points at what is being explained.** On an explainer scene with a layout — steps, a diagram,
+  a comparison — he points at each part as the narration reaches it, with the arm on that side, and
+  looks where he points.
+- **Every action word has a sound**, quiet and under the voice: a whoosh for *flows*, a zap for
+  *sparks*, a hiss for *heats*, a whirr for *spins*, a drip, a thud, a shimmer. The formula cards pop
+  as they land. Made by the studio itself, so nothing is downloaded or licensed; *Sound effects* off
+  on the Look step silences them with the rest.
 - **Scenes drawn before he was animated** have him in the picture, so they are shown as that still,
   never with a second engineer beside them, and are tagged *has him in it*. *Draw* redraws them as
   the things beside him.

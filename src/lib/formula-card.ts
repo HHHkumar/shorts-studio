@@ -73,6 +73,23 @@ export interface FormulaSheet {
   /** "Alternating Current - Important Formulas". */
   title: string;
   cards: FormulaCard[];
+  /**
+   * This question's own worked solution, in the same notation: the formula,
+   * the numbers put in, each step, and the answer with its unit -
+   * "V_{rms} = \frac{V_0}{\sqrt{2}}", "= \frac{325}{\sqrt{2}}", "= 230\,V".
+   * Written in line by line by an explanation scene (WorkingView).
+   */
+  working?: string[];
+}
+
+export const MAX_WORKING_LINES = 6;
+
+/** The working lines kept: non-empty, each short enough to set, at most six. */
+export function tidyWorking(raw: unknown): string[] {
+  return (Array.isArray(raw) ? raw : [])
+    .map((l) => String(l == null ? '' : l).replace(/\s+/g, ' ').trim())
+    .filter((l) => l && l.length <= FORMULA_LIMITS.formula)
+    .slice(0, MAX_WORKING_LINES);
 }
 
 export const MAX_CARDS = 6;
@@ -130,7 +147,12 @@ export function tidySheet(raw: unknown): FormulaSheet | null {
     });
   }
   if (!cards.length) return null;
-  return { title: clean(r.title, FORMULA_LIMITS.title) || 'Important Formulas', cards };
+  const working = tidyWorking(r.working);
+  return {
+    title: clean(r.title, FORMULA_LIMITS.title) || 'Important Formulas',
+    cards,
+    ...(working.length ? { working } : {}),
+  };
 }
 
 // --- the maths ------------------------------------------------------------------
@@ -191,6 +213,8 @@ const EQUALITY = new Set(['=', '+', '−', '<', '>', '×', '·', '÷', '±', '�
 export function parseMath(src: string): MathNode[] {
   const s = String(src || '');
   let i = 0;
+  /** Set by a thin space (\,): the next run of letters is a unit. */
+  let unitNext = false;
 
   const text = (value: string, style: MathStyle): MathNode => ({ t: 'text', s: value, style });
 
@@ -231,7 +255,12 @@ export function parseMath(src: string): MathNode[] {
     if (!/[A-Za-z]/.test(s[i] || '')) {
       // \, \; \! \  are spaces; \{ \% and friends are the character itself.
       const ch = s[i++] || '';
-      if (ch === ',' || ch === ';' || ch === ':' || ch === ' ' || ch === '!') return null;
+      if (ch === ',' || ch === ';' || ch === ':' || ch === ' ' || ch === '!') {
+        // "230\,V": the thin space before a unit. The letters after it are
+        // the unit, upright, not a quantity in italic.
+        if (ch === ',') unitNext = true;
+        return null;
+      }
       return text(SYMBOLS[ch] || ch, 'sym');
     }
     let name = '';
@@ -281,7 +310,9 @@ export function parseMath(src: string): MathNode[] {
       while (/[A-Za-z]/.test(s[i] || '')) w += s[i++];
       // One letter is a quantity. A run is a word - "rms", "max", "eq" -
       // unless it is a function name, which is a word anyway.
-      return text(w, w.length === 1 ? 'var' : 'word');
+      const unit = unitNext;
+      unitNext = false;
+      return text(w, w.length === 1 && !unit ? 'var' : 'word');
     }
     i++;
     if (ch === '-') return text('−', 'op');

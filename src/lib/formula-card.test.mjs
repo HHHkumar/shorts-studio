@@ -52,6 +52,19 @@ test('text, operators, symbols and upright capital Greek', () => {
   assert.equal(show(parseMath('\\left( a \\right)')), 'sym:( a sym:)');
 });
 
+test('a unit after a thin space is upright, not a variable', () => {
+  assert.equal(show(parseMath('= 230\\,V')), 'op:= num:230 word:V');
+  assert.equal(show(parseMath('V = 2')), 'V op:= num:2', 'a plain V stays a quantity');
+});
+
+test('the worked solution keeps its lines, trimmed and at most six', () => {
+  const one = { name: 'x', formula: 'a = b', notes: [], graph: { kind: 'none' }, icon: '' };
+  const s = tidySheet({ cards: [one], working: [' a = b ', '', '= c', ...Array(8).fill('= d')] });
+  assert.equal(s.working[0], 'a = b');
+  assert.equal(s.working.length, 6);
+  assert.equal(tidySheet({ cards: [one] }).working, undefined, 'an empty working was kept');
+});
+
 test('nothing it does not know is ever dropped', () => {
   assert.equal(show(parseMath('\\mystery{x}')), 'word:mystery x');
   assert.equal(show(parseMath('a }} b')), 'a b');

@@ -51,6 +51,7 @@ import { generateDoodleDirections } from './doodle-directions.mjs';
 import { scenesToRecord } from './voiceover-plan.mjs';
 import { attachFormulaIcons, generateFormulaSheet } from './formulas.mjs';
 import { liveCheck } from './live-check.mjs';
+import { generateHooks } from './hooks.mjs';
 import { tidySheet } from '../src/lib/formula-card.ts';
 import { energyFor, tidyDirection } from '../src/lib/doodle.ts';
 
@@ -549,6 +550,11 @@ app.post('/api/formulas/icons', ok(async (req, res) => {
   if (!sheet) throw new Error('There is no formula card to find icons for.');
   await attachFormulaIcons(sheet, { root: paths.ROOT });
   res.json({ sheet });
+}));
+
+app.post('/api/hooks', ok(async (req, res) => {
+  const { apiKey, model, content } = req.body || {};
+  res.json(await generateHooks({ apiKey, model: model || 'gemini-2.5-flash', content }));
 }));
 
 /** One rehearsal against the live Gemini text features. Free tier; nothing drawn or voiced. */

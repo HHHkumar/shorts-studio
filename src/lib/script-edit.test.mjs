@@ -4,7 +4,10 @@
 // voiceover - on the right scene.
 
 import assert from 'node:assert/strict';
-import { formulaSceneAt, shiftAudio, withFormulaScene, withoutFormulaScene } from './script-edit.ts';
+import {
+  formulaSceneAt, shiftAudio, specialSceneAt, withFormulaScene, withoutFormulaScene, withoutSpecial, withoutWorking, withSpecial,
+  withWorking, workingSceneAt,
+} from './script-edit.ts';
 
 let passed = 0;
 const test = (name, fn) => {
@@ -54,6 +57,33 @@ test('adding a scene moves the later clips along and leaves the new one to recor
 test('removing a scene drops its clip and moves the later ones back', () => {
   const audio = { 0: 'hook', 6: 'formulas', 7: 'outro' };
   assert.deepEqual(shiftAudio(audio, 6, -1), { 0: 'hook', 6: 'outro' });
+});
+
+test('the worked solution takes the first explanation, and gives its visual back', () => {
+  const script = quiz.map((l) => (l.kind === 'explain' ? { ...l, visual: { kind: 'formula', formula: 'V = IR' } } : l));
+  const on = withWorking(script);
+  const at = workingSceneAt(on);
+  assert.equal(on[at].kind, 'explain');
+  assert.equal(on[at].visual.kind, 'working');
+  assert.deepEqual(withWorking(on), on, 'applied twice');
+  const off = withoutWorking(on);
+  assert.deepEqual(off[at].visual, { kind: 'formula', formula: 'V = IR' });
+  assert.equal(off[at].visualWas, undefined, 'left its memory behind');
+  assert.equal(workingSceneAt(off), -1);
+});
+
+test('the reduction takes the next explanation, never the one the solution is in', () => {
+  const two = [...quiz.slice(0, 5), { kind: 'explain', narration: 'a' }, { kind: 'explain', narration: 'b' }, quiz[6]];
+  const both = withSpecial(withWorking(two), 'reduce');
+  assert.equal(both[5].visual.kind, 'working');
+  assert.equal(both[6].visual.kind, 'reduce');
+  assert.equal(specialSceneAt(withoutSpecial(both, 'reduce'), 'reduce'), -1);
+  assert.equal(withoutSpecial(both, 'reduce')[5].visual.kind, 'working', 'took the wrong one out');
+});
+
+test('no explanation scene, no worked solution', () => {
+  const noExplain = quiz.filter((l) => l.kind !== 'explain');
+  assert.deepEqual(withWorking(noExplain), noExplain);
 });
 
 console.log('\n' + passed + ' checks passed\n');

@@ -2,7 +2,7 @@ import React from 'react';
 import { useCurrentFrame, useVideoConfig } from 'remotion';
 import type { Theme } from '../lib/theme';
 import type { TimedEffect } from '../lib/motion-lexicon';
-import { figureAt, rotate, SHEET, type Beat, type Figure, type Pt } from '../lib/engineer-rig';
+import { figureAt, rotate, SHEET, type Aim, type Beat, type Figure, type Pt } from '../lib/engineer-rig';
 
 // ---------------------------------------------------------------------------
 // The engineer, drawn from the rig in engineer-rig.ts.
@@ -198,16 +198,18 @@ export const Engineer: React.FC<{
   theme: Theme;
   beats: Beat[];
   mimes?: TimedEffect[];
+  /** Moments he points at something (engineer-rig's Aim). */
+  aims?: Aim[];
   /** Seconds to subtract from the frame's time. */
   offset?: number;
   /** Mirror him, so he faces the other way. */
   flip?: boolean;
   style?: React.CSSProperties;
-}> = ({ theme, beats, mimes = [], offset = 0, flip = false, style }) => {
+}> = ({ theme, beats, mimes = [], aims = [], offset = 0, flip = false, style }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const time = frame / fps - offset;
-  const f = figureAt(beats, mimes, time);
+  const f = figureAt(beats, mimes, time, aims);
 
   const ink = theme.text;
   const paper = theme.bg;

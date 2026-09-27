@@ -4,6 +4,7 @@ import { useStoredState } from '../lib/store';
 import { getTheme } from '../lib/theme';
 import type { DesignSettings, QuizContent } from '../lib/types';
 import { Check, ErrorNote, Note, Select, Spinner, TextArea, TextInput } from './controls';
+import { HookIdeas } from './HookIdeas';
 
 // ---------------------------------------------------------------------------
 // The thumbnail.
@@ -258,6 +259,7 @@ export const ThumbnailMaker: React.FC<{
             : words + ' words. Good.')
         }
       />
+      <HookIdeas content={content} geminiKey={geminiKey} geminiModel={geminiModel} want="headlines" onPick={setTitle} />
 
       <div className="grid">
         {layout === 'number' ? (

@@ -41,8 +41,9 @@ const RESPONSE_SCHEMA = {
         propertyOrdering: ['name', 'formula', 'notes', 'graph', 'icon'],
       },
     },
+    working: { type: 'ARRAY', items: STRING },
   },
-  required: ['title', 'cards'],
+  required: ['title', 'cards', 'working'],
 };
 
 export const FORMULA_SYSTEM = [
@@ -74,6 +75,13 @@ export const FORMULA_SYSTEM = [
   '  formula; "none" is better than a picture that does not fit.',
   '- icon: one plain noun for a small picture beside the card - a thing, never an idea: "light',
   '  bulb", "ammeter", "multimeter", "gear", "power button", "battery", "transformer", "magnet".',
+  '',
+  'Also write working: THIS question\'s solution, 2 to 5 lines in the same LaTeX, written out the',
+  'way a teacher does on the board - the formula, then the question\'s numbers put in, then each',
+  'simplification, ending with the answer and its unit. Every line after the first starts with "=".',
+  'e.g. "V_{rms} = \\frac{V_0}{\\sqrt{2}}", "= \\frac{325}{\\sqrt{2}}", "= \\frac{325}{1.414}", "= 230\\,V".',
+  'The numbers must be right and must reach the correct answer. For a question with no',
+  'calculation, an empty list.',
   '',
   'Reply with the JSON object only.',
 ].join('\n');

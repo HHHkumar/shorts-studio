@@ -3,7 +3,8 @@ import { AbsoluteFill, useCurrentFrame, useVideoConfig } from 'remotion';
 import type { Theme } from '../lib/theme';
 import type { DesignSettings, Scene } from '../lib/types';
 import { poseFor, stagingFor } from '../lib/doodle';
-import { ease, mimesIn, type Beat } from '../lib/engineer-rig';
+import { ease, mimesIn, type Aim, type Beat } from '../lib/engineer-rig';
+import { activeIndex, anchorFor } from '../lib/panel-anchor';
 import type { TimedEffect } from '../lib/motion-lexicon';
 import { Engineer } from './Engineer';
 import { DoodleInk } from './DoodleInk';
@@ -61,6 +62,7 @@ export const EngineerLayer: React.FC<{
     const staged = scenes.map((s) => stagingFor(s, design.showVisuals, true));
     const beats: Beat[] = [];
     const mimes: TimedEffect[] = [];
+    const aims: Aim[] = [];
     scenes.forEach((scene, i) => {
       if (!staged[i].engineer) return;
       const start = scene.startFrame / fps;
@@ -70,9 +72,34 @@ export const EngineerLayer: React.FC<{
       for (const m of mimesIn(scene.words || [], seconds)) {
         mimes.push({ ...m, at: m.at + start + (scene.captionOffset || 0) });
       }
+
+      // He points at each thing on the panel as the narration reaches it -
+      // the same moments, and the same places, the effects fire at.
+      if (scene.panel) {
+        const spot = staged[i].beside ? SPOTS[orientation].beside : SPOTS[orientation].alone;
+        const boxH = spot.height * height;
+        const scale = boxH / 1040;
+        // Between his shoulders, in frame pixels (the drawing's viewBox starts at 130, 100).
+        const sx = spot.x * width - boxH * 0.25 + (377 - 130) * scale;
+        const sy = spot.top * height + (690 - 100) * scale;
+        let last = -1;
+        let lastAt = -Infinity;
+        for (let t = 0; t <= seconds; t += 0.1) {
+          const k = activeIndex(scene.panel, scene.words || [], t, seconds);
+          if (k === last || k < 0) continue;
+          last = k;
+          if (t - lastAt < 2.2) continue;
+          lastAt = t;
+          const a = anchorFor(scene.kind, scene.panel, k, orientation === 'landscape');
+          // The panel sits in the words' band in a Doodle scene (DoodleStage).
+          const tx = orientation === 'landscape' ? a.x * width * 0.56 : a.x * width;
+          const ty = orientation === 'landscape' ? a.y * height : a.y * height * 0.46;
+          aims.push({ at: start + (scene.captionOffset || 0) + t, dx: tx - sx, dy: ty - sy });
+        }
+      }
     });
-    return { staged, beats, mimes };
-  }, [scenes, design.showVisuals, fps]);
+    return { staged, beats, mimes, aims };
+  }, [scenes, design.showVisuals, fps, width, height, orientation]);
 
   if (!plan.beats.length) return null;
 
@@ -116,6 +143,7 @@ export const EngineerLayer: React.FC<{
             theme={theme}
             beats={plan.beats}
             mimes={motion > 0 ? plan.mimes : []}
+            aims={motion > 0 ? plan.aims : []}
             style={{ width: '100%', height: '100%' }}
           />
         </div>

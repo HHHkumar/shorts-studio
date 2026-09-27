@@ -689,3 +689,14 @@ ul.issues .sev-low .sev { background: rgba(108,140,255,.16); color: var(--accent
 .live-check-list { display: grid; gap: 4px; margin-top: 10px; font-size: 14px; }
 .live-check-list .ok { color: var(--good, #3ddc97); }
 .live-check-list .bad { color: #ff8a7a; }
+
+/* --- other hooks and headlines (HookIdeas.tsx) --- */
+.hook-ideas { margin-top: 8px; }
+.hook-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.hook-chip {
+  text-align: left; font-size: 13.5px; padding: 7px 11px; border-radius: 10px; cursor: pointer;
+  background: var(--panel-2, transparent); color: var(--text); border: 1px solid var(--line);
+}
+.hook-chip:hover { border-color: var(--accent, #4c9aff); }
+.working-preview { display: grid; gap: 6px; margin: 8px 0; padding: 8px 12px; border-radius: 10px; background: rgba(255,255,255,0.03); }
+.formula-card-edit textarea { width: 100%; font-family: 'Cascadia Mono', Consolas, monospace; font-size: 13px; }

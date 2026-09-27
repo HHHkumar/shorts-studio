@@ -43,6 +43,41 @@ export function withFormulaScene(script: ScriptLine[], narration = FORMULA_NARRA
   return { script: [...script.slice(0, at), line, ...script.slice(at)], at };
 }
 
+/** The visuals the editor puts into an explanation scene, over Gemini's own choice. */
+type Special = 'working' | 'reduce';
+const SPECIAL = new Set<string>(['working', 'reduce']);
+
+/** Where this special visual is shown, or -1. */
+export const specialSceneAt = (script: ScriptLine[], kind: Special): number =>
+  script.findIndex((l) => l.visual && l.visual.kind === kind);
+
+/**
+ * A special visual shown in the first explanation scene not already showing
+ * one, in place of that scene's own visual - which is kept, to put back if
+ * it is taken out. Unchanged when there is no such scene, or it is shown.
+ */
+export function withSpecial(script: ScriptLine[], kind: Special): ScriptLine[] {
+  if (specialSceneAt(script, kind) >= 0) return script;
+  const at = script.findIndex((l) => l.kind === 'explain' && !(l.visual && SPECIAL.has(l.visual.kind)));
+  if (at < 0) return script;
+  return script.map((l, i) => (i === at
+    ? { ...l, visualWas: l.visual, visual: { kind } } as ScriptLine
+    : l));
+}
+
+/** A special visual taken out, and the scene's own visual put back. */
+export function withoutSpecial(script: ScriptLine[], kind: Special): ScriptLine[] {
+  return script.map((l) => {
+    if (!l.visual || l.visual.kind !== kind) return l;
+    const { visualWas, ...rest } = l;
+    return { ...rest, visual: visualWas || { kind: 'none' } } as ScriptLine;
+  });
+}
+
+export const workingSceneAt = (script: ScriptLine[]) => specialSceneAt(script, 'working');
+export const withWorking = (script: ScriptLine[]) => withSpecial(script, 'working');
+export const withoutWorking = (script: ScriptLine[]) => withoutSpecial(script, 'working');
+
 /** The script without the formula scene, and where it was (-1 if it was not there). */
 export function withoutFormulaScene(script: ScriptLine[]): { script: ScriptLine[]; at: number } {
   const at = formulaSceneAt(script);

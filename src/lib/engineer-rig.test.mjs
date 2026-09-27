@@ -7,7 +7,7 @@
 
 import assert from 'node:assert/strict';
 import {
-  blink, ease, figureAt as figureAtMimes, MIME_SECONDS, mimeAt as mimeAtMimes, mimesIn, POSE_NAMES, POSE_SECONDS, POSES, poseAt, pt, reach, reachOut, SHEET,
+  AIM_SECONDS, blink, ease, figureAt as figureAtMimes, MIME_SECONDS, mimeAt as mimeAtMimes, mimesIn, POSE_NAMES, POSE_SECONDS, POSES, poseAt, pt, reach, reachOut, SHEET,
 } from './engineer-rig.ts';
 import { ENGINEER_POSES } from './doodle.ts';
 
@@ -230,6 +230,47 @@ test('no hand or elbow jumps between frames - any change of pose, any mime', () 
   }
   assert.deepEqual(flips, [], 'flipped');
   assert.ok(worst.d < WHIP, 'whipped ' + worst.d.toFixed(1) + ' px in a frame at ' + worst.where);
+});
+
+console.log('\npointing');
+
+test('he points with the arm on the side of the thing, finger out, eyes on it', () => {
+  const beats = [{ at: 0, pose: 'stand' }];
+  const upLeft = figureAtMimes(beats, [], 1.0, [{ at: 0, dx: -300, dy: -400 }]);
+  assert.equal(upLeft.finger, 'l');
+  assert.ok(upLeft.arms.l.hand.y < SHEET.shoulderL.y - 80, 'the left hand did not go up: ' + upLeft.arms.l.hand.y);
+  assert.ok(upLeft.look.x < 0 && upLeft.look.y < 0, 'not looking at it');
+  const right = figureAtMimes(beats, [], 1.0, [{ at: 0, dx: 500, dy: 0 }]);
+  assert.equal(right.finger, 'r');
+  assert.ok(right.arms.r.hand.x > SHEET.shoulderR.x + 120, 'the right hand did not reach out');
+});
+
+test('a point comes and goes: nothing before it, nothing after', () => {
+  const beats = [{ at: 0, pose: 'stand' }];
+  const aims = [{ at: 1, dx: 0, dy: -1 }];
+  assert.deepEqual(figureAtMimes(beats, [], 0.9, aims), figureAtMimes(beats, [], 0.9, []));
+  assert.deepEqual(figureAtMimes(beats, [], 1 + AIM_SECONDS + 0.05, aims), figureAtMimes(beats, [], 1 + AIM_SECONDS + 0.05, []));
+});
+
+test('no flip or whip while pointing anywhere, from any pose', () => {
+  const directions = [[-1, -1], [0, -1], [1, -1], [1, 0], [-1, 0], [1, 0.4], [-0.3, -1]];
+  let worst = 0;
+  const flips = [];
+  for (const pose of POSE_NAMES) {
+    for (const [dx, dy] of directions) {
+      const frames = Array.from({ length: 76 }, (_, i) => figureAtMimes([{ at: 0, pose }], [], i / 30, [{ at: 0.2, dx, dy }]));
+      for (const side of ['l', 'r']) {
+        const moves = frames.slice(1).map((f, i) => dist(f.arms[side].hand, frames[i].arms[side].hand));
+        moves.forEach((d, i) => {
+          worst = Math.max(worst, d);
+          const around = Math.max(moves[i - 1] ?? 0, moves[i + 1] ?? 0);
+          if (d > 20 && d > 3 * around) flips.push(pose + ' ' + dx + ',' + dy + ' ' + side + ' frame ' + (i + 1));
+        });
+      }
+    }
+  }
+  assert.deepEqual(flips, [], 'flipped');
+  assert.ok(worst < 80, 'whipped ' + worst.toFixed(1) + ' px in a frame');
 });
 
 test('the whole figure is a function of the time alone', () => {

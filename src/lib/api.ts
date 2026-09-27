@@ -620,6 +620,11 @@ export const api = {
     return getJson<{ ok: boolean }>('/api/library/' + encodeURIComponent(id), 'DELETE');
   },
 
+  /** Other opening hooks and thumbnail headlines. Free tier; none gives the answer away. */
+  hooks(body: { apiKey: string; model: string; content: QuizContent }) {
+    return post<{ hooks: string[]; headlines: string[] }>('/api/hooks', body);
+  },
+
   /** One rehearsal of the Gemini text features against the live service. Free tier. */
   liveCheck(body: { apiKey: string; model: string }) {
     return post<{ checks: { name: string; ok: boolean; detail: string }[] }>('/api/live-check', body);

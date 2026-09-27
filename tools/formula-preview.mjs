@@ -28,6 +28,7 @@ const VIDEO = process.argv.includes('--video');
 const graph = (kind, x, y, label = '', label2 = '') => ({ kind, x, y, label, label2 });
 const SHEET = tidySheet({
   title: 'Alternating Current - Important Formulas',
+  working: ['V_{rms} = \\frac{V_0}{\\sqrt{2}}', '= \\frac{325}{\\sqrt{2}}', '= \\frac{325}{1.414}', '= 230\\,V'],
   cards: [
     { name: 'Instantaneous Voltage', formula: 'v = V_0 \\sin(\\omega t)', notes: [], graph: graph('sine', 't', 'v', 'V_0'), icon: 'light bulb' },
     { name: 'Instantaneous Current', formula: 'i = I_0 \\sin(\\omega t)', notes: [], graph: graph('phase-shift', 't', 'i', 'v', 'i'), icon: 'ammeter' },
@@ -84,6 +85,37 @@ for (const c of CASES) {
   console.log('  ' + path.basename(file));
   if (VIDEO) {
     const clip = path.join(OUT, 'formulas-' + c.name + '.mp4');
+    await renderMedia({ composition, serveUrl, codec: 'h264', outputLocation: clip, inputProps: props, overwrite: true });
+    console.log('  ' + path.basename(clip));
+  }
+}
+
+// The worked solution, written in over an explanation scene, in two looks.
+const WORK_SECONDS = 7;
+for (const look of [{ layout: 'simple', mode: 'light' }, { layout: 'doodle', mode: 'light' }]) {
+  const worked = {
+    ...content,
+    script: [{ kind: 'explain', narration: 'Divide the peak by root two: 325 over 1.414 is about 230 volts.', visual: { kind: 'working' } }],
+  };
+  const frames = WORK_SECONDS * FPS;
+  const props = {
+    content: worked,
+    design: { ...DEFAULT_DESIGN, ...look, orientation: 'portrait', music: 'none', sfx: false },
+    scenes: worked.script.map((line, i) => ({
+      ...line, id: 's' + i, startFrame: 0, durationInFrames: frames, words: [], captionOffset: 0,
+      audioSrc: '', audioDuration: 0, stockSrc: '', stockCredit: '',
+    })),
+    fps: FPS,
+    totalDurationInFrames: frames,
+  };
+  const composition = await selectComposition({ serveUrl, id: 'QuizVideo', inputProps: props });
+  for (const [label, frame] of [['mid', Math.round(frames * 0.4)], ['end', frames - 10]]) {
+    const file = path.join(OUT, 'working-' + look.layout + '-' + label + '.png');
+    await renderStill({ composition, serveUrl, output: file, frame, inputProps: props, overwrite: true });
+    console.log('  ' + path.basename(file));
+  }
+  if (VIDEO) {
+    const clip = path.join(OUT, 'working-' + look.layout + '.mp4');
     await renderMedia({ composition, serveUrl, codec: 'h264', outputLocation: clip, inputProps: props, overwrite: true });
     console.log('  ' + path.basename(clip));
   }

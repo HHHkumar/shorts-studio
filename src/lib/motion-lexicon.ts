@@ -92,6 +92,25 @@ export const EFFECT_SECONDS: Record<EffectKind, number> = {
   drip: 2.6,
 };
 
+/**
+ * The sound each action makes, on its word (Soundtrack.tsx). Synthesised at
+ * boot by server/audio-gen.mjs, so nothing is downloaded or licensed.
+ */
+export const EFFECT_SOUND: Record<EffectKind, string> = {
+  flow: 'whoosh',
+  rise: 'rise',
+  fall: 'fall',
+  spin: 'whirr',
+  heat: 'hiss',
+  cool: 'shimmer',
+  impact: 'thud',
+  wobble: 'wobble',
+  spark: 'zap',
+  burst: 'thud',
+  glow: 'shimmer',
+  drip: 'drip',
+};
+
 /** One effect, and the second of the scene it starts at. */
 export interface TimedEffect {
   kind: EffectKind;

@@ -5,6 +5,9 @@ import { hexToRgba } from '../lib/theme';
 import type { Figure } from '../lib/figures/index.ts';
 import type { SceneVisual } from '../lib/types';
 import { FigureView } from './Figure';
+import { WorkingView } from './WorkingView';
+import { ReduceView } from './ReduceView';
+import { reductionFor } from '../lib/figures/reduce';
 import { P5Sketch, type SketchArgs } from './P5Sketch';
 import { handFontReady } from './fonts';
 import { SKETCHES, type SketchParams } from './sketches';
@@ -15,11 +18,22 @@ import { useEnter, useMetrics } from './ui';
  * each kind is drawn here from theme tokens so it matches whatever layout the
  * user picked. Everything is sized to fit inside roughly 360px of height.
  */
-export const Visual: React.FC<{ theme: Theme; visual?: SceneVisual; figure?: Figure }> = ({ theme, visual, figure }) => {
+export const Visual: React.FC<{
+  theme: Theme;
+  visual?: SceneVisual;
+  figure?: Figure;
+  /** The question's worked solution (the formula card's working lines). */
+  working?: string[];
+}> = ({ theme, visual, figure, working }) => {
   if (!visual || visual.kind === 'none') return null;
 
   let body: React.ReactNode = null;
-  if (visual.kind === 'figure' && figure) {
+  if (visual.kind === 'working') {
+    body = working && working.length ? <WorkingView theme={theme} lines={working} /> : null;
+  } else if (visual.kind === 'reduce') {
+    const reduction = figure && figure.type === 'circuit' ? reductionFor(figure) : null;
+    body = reduction ? <ReduceView theme={theme} reduction={reduction} /> : null;
+  } else if (visual.kind === 'figure' && figure) {
     body = <FigureView theme={theme} figure={figure} reveal={visual.reveal !== false} highlight={visual.highlight} />;
   }
   else if (visual.kind === 'formula' && visual.formula) body = <Formula theme={theme} text={visual.formula} />;

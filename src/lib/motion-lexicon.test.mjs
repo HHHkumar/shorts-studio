@@ -7,7 +7,11 @@
 
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { detectEffects, doodleMarks, effectForWord, envelope, motionWordsIn } from './motion-lexicon.ts';
+import { detectEffects, doodleMarks, EFFECT_SOUND, effectForWord, envelope, motionWordsIn } from './motion-lexicon.ts';
+import { EFFECT_NAMES, ensureAudioAssets } from '../../server/audio-gen.mjs';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
 let passed = 0;
 const test = (name, fn) => {
@@ -189,6 +193,20 @@ test('punctuation stuck to the word does not hide it', () => {
 test('nothing to read, nothing marked', () => {
   assert.deepEqual(doodleMarks([]), []);
   assert.deepEqual(doodleMarks(null), []);
+});
+
+console.log('\nthe sound of each action');
+
+test('every action has a sound, and every sound is synthesised at boot', () => {
+  const kinds = ['flow', 'rise', 'fall', 'spin', 'heat', 'cool', 'impact', 'wobble', 'spark', 'burst', 'glow', 'drip'];
+  for (const k of kinds) assert.ok(EFFECT_NAMES.includes(EFFECT_SOUND[k]), k + ' has no synthesised sound: ' + EFFECT_SOUND[k]);
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'sfx-'));
+  ensureAudioAssets(dir);
+  for (const name of EFFECT_NAMES) {
+    const file = path.join(dir, 'audio', 'sfx-' + name + '.wav');
+    assert.ok(fs.existsSync(file) && fs.statSync(file).size > 1000, name + ' was not written');
+  }
+  fs.rmSync(dir, { recursive: true, force: true });
 });
 
 console.log('\nthe manual and the vocabulary agree');

@@ -2,6 +2,8 @@ import React, { useMemo } from 'react';
 import { Audio, Sequence, staticFile, useVideoConfig } from 'remotion';
 import { buildDuckCurve } from '../lib/mix';
 import type { DesignSettings, QuizContent, Scene } from '../lib/types';
+import { detectEffects, EFFECT_SOUND } from '../lib/motion-lexicon';
+import { CARD_STAGGER, tidySheet } from '../lib/formula-card';
 
 /**
  * Music bed and sound effects.
@@ -18,6 +20,17 @@ const SFX_GAIN: Record<string, number> = {
   chime: 0.9,
   whoosh: 1.6,
   transition: 1.8,
+  // The action words sit under the voice: felt, not announced.
+  zap: 0.8,
+  rise: 0.7,
+  fall: 0.7,
+  drip: 0.8,
+  hiss: 0.8,
+  wobble: 0.7,
+  whirr: 0.7,
+  shimmer: 0.8,
+  thud: 0.9,
+  pop: 0.7,
 };
 
 const sfxFile = (name: string) => staticFile('audio/sfx-' + name + '.wav');
@@ -99,6 +112,19 @@ function buildCues(scenes: Scene[], content: QuizContent, fps: number): Cue[] {
     if (scene.kind === 'answer') {
       // Lands with the row turning green, a few frames into the reveal.
       add('chime', scene.startFrame + 3, 1.2);
+    }
+
+    // The action words: each one's sound, on the word, as the effects and
+    // the engineer's mimes pace them - a few a scene, never crowded.
+    for (const effect of detectEffects(scene.words || [], scene.durationInFrames / fps)) {
+      const sound = EFFECT_SOUND[effect.kind];
+      if (sound) add(sound, scene.startFrame + (effect.at + (scene.captionOffset || 0)) * fps, 0.9);
+    }
+
+    if (scene.kind === 'formulas') {
+      // A pop as each card lands. The stagger is the sheet's own.
+      const cards = tidySheet(content.formulas)?.cards.length || 0;
+      for (let i = 0; i < cards; i++) add('pop', scene.startFrame + 6 + i * CARD_STAGGER, 0.2);
     }
   });
 

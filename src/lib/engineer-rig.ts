@@ -514,8 +514,36 @@ export interface Figure {
  * Every joint at `time`, in sheet coordinates. Upper-body points are already
  * moved by the lean and the bob, so the drawing only has to join them up.
  */
-export function figureAt(beats: Beat[], mimes: TimedEffect[], time: number): Figure {
+/**
+ * A moment he points: from `at` seconds, at something in the direction
+ * (dx, dy) from his shoulder - on screen, y down. The video works out the
+ * direction from where the narration's subject sits (EngineerLayer.tsx).
+ */
+export interface Aim {
+  at: number;
+  dx: number;
+  dy: number;
+}
+
+/** How long a point lasts, in seconds. */
+export const AIM_SECONDS = 1.8;
+
+/** The point under way at `time`, and how far it is blended in. */
+export function aimAt(aims: Aim[], time: number): { aim: Aim; since: number; weight: number } | null {
+  let best: Aim | null = null;
+  for (const a of aims) if (time >= a.at && time - a.at <= AIM_SECONDS && (!best || a.at > best.at)) best = a;
+  if (!best) return null;
+  const since = time - best.at;
+  return { aim: best, since, weight: envelope(since, AIM_SECONDS, 0.4, 0.5) };
+}
+
+export function figureAt(beats: Beat[], mimes: TimedEffect[], time: number, aims: Aim[] = []): Figure {
   const p = poseAt(beats, time);
+  const pointing = aimAt(aims, time);
+  const aimLength = pointing ? Math.hypot(pointing.aim.dx, pointing.aim.dy) || 1 : 1;
+  const aimDir = pointing ? pt(pointing.aim.dx / aimLength, pointing.aim.dy / aimLength) : pt(0, 0);
+  // The arm on the side of the thing: reaching across the body to point reads as awkward.
+  const aimSide: 1 | -1 = aimDir.x < 0 ? -1 : 1;
   const head = poseAt(beats, time - HEAD_LAG);
   const change = changeAt(beats, time - HAND_LAG);
   const acting = mimeAt(mimes, time);
@@ -578,6 +606,21 @@ export function figureAt(beats: Beat[], mimes: TimedEffect[], time: number): Fig
       const rise = Math.min(0.8, Math.max(MIME_IN, 0.3 + 0.1 * Math.min(g1, g2)));
       angles = blendAngles(angles, solve(mimed, fold), envelope(acting.since, MIME_SECONDS, rise, 0.5), side);
     }
+
+    // Pointing at what the narration has reached: the arm nearly straight,
+    // towards it. It blends over whatever the arm was doing, mime included,
+    // and the elbow keeps the nearer side for the same reason as a mime.
+    if (pointing && aimSide === side) {
+      const target = pt(shoulder.x + aimDir.x * 166, shoulder.y + aimDir.y * 166);
+      const was = posed(time - pointing.since);
+      const gap = (a: LimbAngles) => {
+        const b = blendAngles(was, a, 1, side);
+        const w0 = blendAngles(was, was, 0, side);
+        return Math.abs(b.upper - w0.upper) + Math.abs(b.bend - w0.bend);
+      };
+      const fold: 1 | -1 = gap(solve(target, 1)) <= gap(solve(target, -1)) ? 1 : -1;
+      angles = blendAngles(angles, solve(target, fold), pointing.weight, side);
+    }
     const { joint, end } = fromAngles(shoulder, angles, UA, FA);
     return { shoulder: move(shoulder), elbow: move(joint), hand: move(end) };
   };
@@ -594,14 +637,16 @@ export function figureAt(beats: Beat[], mimes: TimedEffect[], time: number): Fig
   return {
     body: { dx, dy, lean },
     headTilt: head.headTilt + (mime.headTilt || 0) * w,
-    look: mime.look ? lerpPt(head.look, mime.look, w) : head.look,
+    look: pointing
+      ? lerpPt(mime.look ? lerpPt(head.look, mime.look, w) : head.look, aimDir, pointing.weight)
+      : mime.look ? lerpPt(head.look, mime.look, w) : head.look,
     eyes: (face && mime.eyes) || p.eyes,
     eyesShut: (face && mime.eyes === 'happy') || p.eyes === 'happy' ? 0 : blink(time),
     mouth: (face && mime.mouth) || p.mouth,
     brows: (face && mime.brows) || p.brows,
     hatLift: Math.max(p.hatLift, (mime.hatLift || 0) * w),
     prop: (face && mime.prop) || p.prop,
-    finger: (face && mime.finger) || p.finger,
+    finger: pointing && pointing.weight > 0.5 ? (aimSide < 0 ? 'l' : 'r') : (face && mime.finger) || p.finger,
     arms: {
       l: armL,
       r: armR,

@@ -112,7 +112,11 @@ export interface QuizContent {
 }
 
 /** The kinds of picture a scene can carry alongside its text. */
-export type VisualKind = 'none' | 'formula' | 'bars' | 'compare' | 'icon' | 'sketch' | 'figure';
+export type VisualKind = 'none' | 'formula' | 'bars' | 'compare' | 'icon' | 'sketch' | 'figure'
+  // The question's worked solution, written in line by line (formula-card.ts).
+  | 'working'
+  // Its resistances combining into one, series or parallel (figures/reduce.ts).
+  | 'reduce';
 
 export interface VisualItem {
   label: string;
@@ -355,6 +359,8 @@ export interface ScriptLine {
    * engineer was animated has him in the picture, and is shown as a still.
    */
   doodleProps?: boolean;
+  /** The visual this scene had before the worked solution took its place, to put back. */
+  visualWas?: SceneVisual;
 }
 
 /** A ScriptLine after we know how long its audio actually is. */

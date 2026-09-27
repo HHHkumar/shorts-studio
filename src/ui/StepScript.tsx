@@ -9,6 +9,7 @@ import type { QuizContent, ScenePanel, SceneKind, ScriptLine } from '../lib/type
 import type { FigureCheck } from '../lib/figures/index.ts';
 import { missingLabels } from '../lib/options-timing';
 import { FormulaCardPanel } from './FormulaCardPanel';
+import { HookIdeas } from './HookIdeas';
 import { motionWordsIn } from '../lib/motion-lexicon';
 import { scriptSeconds } from '../lib/blank-script';
 import { closingScene, factIsSpoken, speakFunFact, withFunFact } from '../lib/fun-fact';
@@ -642,6 +643,18 @@ export const StepScript: React.FC<{
                 onChange={(e) => setScriptLine(i, { narration: e.target.value }, true)}
               />
               <div className="hint">Write it exactly as it should sound. No symbols like ^ or *.</div>
+              {line.kind === 'hook' ? (
+                <HookIdeas
+                  content={content}
+                  geminiKey={geminiKey}
+                  geminiModel={geminiModel}
+                  want="hooks"
+                  onPick={(h) => {
+                    setScriptLine(i, { narration: h }, true);
+                    setContent((prev) => ({ ...prev, hook: h }));
+                  }}
+                />
+              ) : null}
             </div>
             {/* Every explainer scene animates from its own narration, layout or
                 not, so this sits outside the panel branch. */}

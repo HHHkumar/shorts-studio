@@ -110,4 +110,40 @@ for (const c of CASES) {
     console.log('  ' + path.basename(file));
   }
 }
+// Resistances combining (the 'reduce' visual): the parallel lamps, and a
+// series pair, at the start, mid-slide and merged.
+const SERIES = made({
+  nodes: [node('A', 0, 0), node('B', 2, 0), node('C', 2, 2), node('D', 0, 2)],
+  elements: [
+    part('V1', 'voltage', 'D', 'A', 12, 'V'), part('R1', 'resistor', 'A', 'B', 2, 'Ω'),
+    part('R2', 'resistor', 'B', 'C', 4, 'Ω'), { id: 'W1', kind: 'wire', from: 'C', to: 'D' },
+  ],
+  ask: { quantity: 'current', element: 'R2' },
+});
+const REDUCE_SECONDS = 6;
+for (const [name, figure, look] of [['parallel', LAMPS, { layout: 'simple', mode: 'light' }], ['series', SERIES, { layout: 'doodle', mode: 'light' }]]) {
+  const quiz = { ...content(figure), script: [{ kind: 'explain', narration: 'Combine the resistances into one.', visual: { kind: 'reduce' } }] };
+  const frames = REDUCE_SECONDS * FPS;
+  const props = {
+    content: quiz,
+    design: { ...DEFAULT_DESIGN, ...look, orientation: 'portrait', music: 'none', sfx: false },
+    scenes: quiz.script.map((line, i) => ({
+      ...line, id: 's' + i, startFrame: 0, durationInFrames: frames, words: [], captionOffset: 0,
+      audioSrc: '', audioDuration: 0, stockSrc: '', stockCredit: '',
+    })),
+    fps: FPS,
+    totalDurationInFrames: frames,
+  };
+  const composition = await selectComposition({ serveUrl, id: 'QuizVideo', inputProps: props });
+  for (const [label, at] of [['a', 0.22], ['b', 0.45], ['c', 0.9]]) {
+    const file = path.join(OUT, 'reduce-' + name + '-' + label + '.png');
+    await renderStill({ composition, serveUrl, output: file, frame: Math.round(frames * at), inputProps: props, overwrite: true });
+    console.log('  ' + path.basename(file));
+  }
+  if (VIDEO) {
+    const file = path.join(OUT, 'reduce-' + name + '.mp4');
+    await renderMedia({ composition, serveUrl, codec: 'h264', outputLocation: file, inputProps: props, overwrite: true });
+    console.log('  ' + path.basename(file));
+  }
+}
 console.log('wrote ' + OUT);

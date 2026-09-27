@@ -191,10 +191,75 @@ function renderEffect(name) {
     });
   }
 
+  // --- the action words (src/lib/motion-lexicon.ts EFFECT_SOUND) ---
+  // Quiet and short: under the voice, on the word, never over it.
+  const hash = (i, k) => (((Math.sin(i * k) * 43758.5453) % 1) + 1) % 1 * 2 - 1;
+
+  if (name === 'zap') {
+    // A crackle: noise gated in quick irregular bursts, with a buzzy edge.
+    return build(0.32, (t, i) => {
+      const gate = Math.sin(t * 190) > 0.2 ? 1 : 0.15;
+      const buzz = Math.sign(Math.sin(2 * Math.PI * 120 * t)) * 0.3;
+      return (hash(i, 12.9898) * 0.6 + buzz) * gate * Math.exp(-t * 9) * 0.32;
+    });
+  }
+
+  if (name === 'rise') {
+    // A pitch gliding up.
+    return build(0.5, (t) => Math.sin(2 * Math.PI * (320 + 520 * t) * t) * Math.sin(Math.PI * t / 0.5) * 0.22);
+  }
+
+  if (name === 'fall') {
+    // The same, gliding down.
+    return build(0.5, (t) => Math.sin(2 * Math.PI * (760 - 520 * t) * t) * Math.sin(Math.PI * t / 0.5) * 0.22);
+  }
+
+  if (name === 'drip') {
+    // A water drop: a quick upward "bloop".
+    return build(0.22, (t) => Math.sin(2 * Math.PI * (500 + 2600 * t) * t) * Math.exp(-t * 22) * 0.45);
+  }
+
+  if (name === 'hiss') {
+    // Steam: soft noise swelling and fading.
+    return build(0.7, (t, i) => hash(i, 7.3319) * Math.sin(Math.PI * t / 0.7) * 0.16);
+  }
+
+  if (name === 'wobble') {
+    // A hum with a fast tremolo - something vibrating.
+    return build(0.6, (t) => Math.sin(2 * Math.PI * 150 * t) * (0.55 + 0.45 * Math.sin(2 * Math.PI * 16 * t))
+      * Math.sin(Math.PI * t / 0.6) * 0.24);
+  }
+
+  if (name === 'whirr') {
+    // Something turning: a tone wavering round and round.
+    return build(0.7, (t) => Math.sin(2 * Math.PI * (260 + 40 * Math.sin(2 * Math.PI * 9 * t)) * t)
+      * Math.sin(Math.PI * t / 0.7) * 0.2);
+  }
+
+  if (name === 'shimmer') {
+    // Light, or cold: high bell partials, gently.
+    return build(0.9, (t) => [note(24), note(28), note(31)]
+      .reduce((s, f, n) => s + Math.sin(2 * Math.PI * f * t + n), 0) * pluck(t, 3.2) * 0.1);
+  }
+
+  if (name === 'thud') {
+    // A hit: a low thump with a click on top.
+    return build(0.3, (t, i) => (Math.sin(2 * Math.PI * (110 - 60 * t) * t) * 0.8 + hash(i, 3.1) * Math.exp(-t * 60) * 0.4)
+      * Math.exp(-t * 14) * 0.5);
+  }
+
+  if (name === 'pop') {
+    // A card landing: a short, round pop.
+    return build(0.14, (t) => Math.sin(2 * Math.PI * (900 - 1800 * t) * t) * Math.exp(-t * 34) * 0.4);
+  }
+
   return null;
 }
 
-export const EFFECT_NAMES = ['tick', 'chime', 'whoosh', 'transition'];
+export const EFFECT_NAMES = [
+  'tick', 'chime', 'whoosh', 'transition',
+  'zap', 'rise', 'fall', 'drip', 'hiss', 'wobble', 'whirr', 'shimmer', 'thud', 'pop',
+];
 
 // --- caching ----------------------------------------------------------------
 
