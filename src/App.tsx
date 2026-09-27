@@ -3,6 +3,8 @@ import {
   api,
   DEFAULT_TOPIC_FORM,
   DEFAULT_VOICE_SETTINGS,
+  onSpend,
+  type Spend,
   type TopicForm,
   type SeoPack,
   type ValidationReport,
@@ -22,6 +24,7 @@ import { StepStyle } from './ui/StepStyle';
 import { StepTopic } from './ui/StepTopic';
 import { StepVoice } from './ui/StepVoice';
 import { MascotLab } from './ui/MascotLab';
+import { LibraryView } from './ui/LibraryView';
 import { Note } from './ui/controls';
 import { tidySheet } from './lib/formula-card';
 import { shiftAudio } from './lib/script-edit';
@@ -50,6 +53,55 @@ export const App: React.FC = () => {
   const [report, setReport] = useStoredState<ValidationReport | null>('validation', null);
   const [seo, setSeo] = useStoredState<SeoPack | null>('seo', null);
   const [channelName, setChannelName] = useStoredState('channelName', '');
+  // The video being worked on, in the library (server/library.mjs), and what it has cost.
+  const [videoId, setVideoId] = useStoredState('videoId', '');
+  const [ledger, setLedger] = useStoredState<Spend[]>('ledger', []);
+  const [libraryOpen, setLibraryOpen] = useState(false);
+  const [libraryNotes, setLibraryNotes] = useState<string[]>([]);
+
+  // Every paid call reports here (lib/api.ts), so no screen can forget to count.
+  useEffect(() => {
+    onSpend((s) => setLedger((prev) => [...prev, s]));
+    return () => onSpend(null);
+  }, [setLedger]);
+
+  // A video with no library id yet - one made before the library existed, or
+  // just generated - gets one.
+  useEffect(() => {
+    if (content && !videoId) {
+      api.libraryNewId().then((r) => setVideoId(r.id)).catch(() => undefined);
+    }
+  }, [content, videoId, setVideoId]);
+
+  // Saved as it changes, a moment after the last edit rather than on every keystroke.
+  useEffect(() => {
+    if (!content || !videoId) return;
+    const t = setTimeout(() => {
+      api.librarySave({ id: videoId, content, design, audio, seo, ledger }).catch(() => undefined);
+    }, 1200);
+    return () => clearTimeout(t);
+  }, [content, design, audio, seo, ledger, videoId]);
+
+  /** A fresh video: a new library entry, an empty ledger. The old one is already saved. */
+  const startFresh = () => {
+    setVideoId('');
+    setLedger([]);
+    setLibraryNotes([]);
+  };
+
+  const openVideo = async (id: string) => {
+    const { video } = await api.libraryOpen(id);
+    setVideoId(video.id);
+    setContent(video.content);
+    setAudio(video.audio || {});
+    if (video.design) setDesign(video.design);
+    setSeo((video.seo as SeoPack | null) ?? null);
+    setLedger(video.ledger || []);
+    setReport(null);
+    setLibraryNotes(video.notes || []);
+    setLibraryOpen(false);
+    go(2);
+  };
 
   const [models, setModels] = useState<{ id: string; label: string }[]>([]);
   const [claudeModels, setClaudeModels] = useState<{ id: string; label: string }[]>([]);
@@ -188,6 +240,7 @@ export const App: React.FC = () => {
     setChannelName('');
     setDeepseekKey('');
     setPexelsKey('');
+    startFresh();
     go(0);
   };
 
@@ -211,8 +264,15 @@ export const App: React.FC = () => {
             </button>
           ))}
           <button
+            className={'step-chip mascot-chip' + (libraryOpen ? ' active' : '')}
+            onClick={() => { setLab(false); setLibraryOpen((on) => !on); }}
+            title="Every video you have made"
+          >
+            Library
+          </button>
+          <button
             className={'step-chip mascot-chip' + (lab ? ' active' : '')}
-            onClick={() => setLab((on) => !on)}
+            onClick={() => { setLibraryOpen(false); setLab((on) => !on); }}
             title="Design and test the doodle mascot"
           >
             Mascot
@@ -236,12 +296,36 @@ export const App: React.FC = () => {
 
           {lab ? <MascotLab geminiKey={geminiKey} onClose={() => setLab(false)} /> : null}
 
+          {libraryOpen ? (
+            <LibraryView
+              currentId={content ? videoId : ''}
+              onOpen={(id) => { openVideo(id).catch((e) => alert(e instanceof Error ? e.message : String(e))); }}
+              onNew={() => {
+                setLibraryOpen(false);
+                startFresh();
+                setContent(null);
+                setAudio({});
+                setReport(null);
+                setSeo(null);
+                go(1);
+              }}
+              onClose={() => setLibraryOpen(false)}
+            />
+          ) : null}
+
+          {libraryNotes.length && !libraryOpen && !lab ? (
+            <Note kind="warn" title="Opened from the library">
+              {libraryNotes.map((n) => <div key={n}>{n}</div>)}
+            </Note>
+          ) : null}
+
           {/* Hidden rather than unmounted while the lab is open, so anything
               half-done on a step is still there on the way back. */}
-          <div hidden={lab}>
+          <div hidden={lab || libraryOpen}>
           {step === 0 ? (
             <StepKeys
               geminiKey={geminiKey}
+              geminiModel={geminiModel}
               elevenKey={elevenKey}
               deepseekKey={deepseekKey}
               claudeKey={claudeKey}
@@ -271,6 +355,7 @@ export const App: React.FC = () => {
               setDesign={setDesign}
               onBack={() => go(0)}
               onGenerated={(c) => {
+                startFresh(); // a new question is a new video in the library
                 setContent(c);
                 setAudio({}); // a new question means the old voiceover is meaningless
                 setReport(null); // and the old fact-check is about a different question
@@ -350,7 +435,9 @@ export const App: React.FC = () => {
               props={videoProps}
               hasAudio={hasAudio}
               onBack={() => go(4)}
+              videoId={videoId}
               onNewQuestion={() => {
+                startFresh();
                 setContent(null);
                 setAudio({});
                 setReport(null);

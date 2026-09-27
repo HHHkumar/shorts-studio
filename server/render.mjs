@@ -64,7 +64,80 @@ function syncAudioIntoBundle(bundleDir) {
   }
 }
 
-export function startRender(jobId, inputProps, quality) {
+// --- surviving a restart ------------------------------------------------------
+//
+// A render is written to out/<job>.job.json as it starts and again when it
+// ends, with everything needed to run it again. Closing the helper mid-render
+// used to lose the job outright - the browser was left polling a job id the
+// new helper had never heard of. Now a restart finds it marked "interrupted",
+// and one press runs it again.
+
+const jobFile = (jobId) => path.join(OUT_DIR, jobId + '.job.json');
+const JOB_ID = /^video-[0-9T-]{10,24}(-r[0-9]+)?$/;
+
+function saveJob(jobId, job, extra) {
+  try {
+    const before = fs.existsSync(jobFile(jobId)) ? JSON.parse(fs.readFileSync(jobFile(jobId), 'utf8')) : {};
+    fs.writeFileSync(jobFile(jobId), JSON.stringify({ ...before, ...extra, jobId, status: job.status, url: job.url, error: job.error, at: new Date().toISOString() }));
+  } catch {
+    // Bookkeeping must never stop a render.
+  }
+}
+
+/** At boot: any render that was running when the helper stopped is marked interrupted. */
+export function recoverJobs() {
+  if (!fs.existsSync(OUT_DIR)) return 0;
+  let n = 0;
+  for (const f of fs.readdirSync(OUT_DIR)) {
+    if (!f.endsWith('.job.json')) continue;
+    try {
+      const saved = JSON.parse(fs.readFileSync(path.join(OUT_DIR, f), 'utf8'));
+      if (saved.status === 'running') {
+        saved.status = 'interrupted';
+        fs.writeFileSync(path.join(OUT_DIR, f), JSON.stringify(saved));
+        n++;
+      }
+      jobs.set(saved.jobId, {
+        status: saved.status, progress: saved.status === 'done' ? 1 : 0,
+        stage: saved.status === 'interrupted' ? 'Interrupted when the helper stopped' : saved.status,
+        url: saved.url || '', error: saved.error || '',
+      });
+    } catch {
+      // An unreadable file is somebody else's.
+    }
+  }
+  return n;
+}
+
+/** The latest renders, newest first, without their (large) props. */
+export function recentRenders(limit = 10) {
+  if (!fs.existsSync(OUT_DIR)) return [];
+  return fs.readdirSync(OUT_DIR)
+    .filter((f) => f.endsWith('.job.json'))
+    .map((f) => { try { return JSON.parse(fs.readFileSync(path.join(OUT_DIR, f), 'utf8')); } catch { return null; } })
+    .filter(Boolean)
+    .sort((a, b) => String(b.at).localeCompare(String(a.at)))
+    .slice(0, limit)
+    .map(({ props, ...rest }) => ({ ...rest, title: props?.content?.question || props?.content?.topic || '' }));
+}
+
+/** Run an earlier render again with exactly the props it had. Returns the new job id. */
+export function retryRender(jobId, onDone) {
+  if (!JOB_ID.test(String(jobId || ''))) throw new Error('That is not a render this app made.');
+  if (!fs.existsSync(jobFile(jobId))) throw new Error('That render is not on this computer any more.');
+  const saved = JSON.parse(fs.readFileSync(jobFile(jobId), 'utf8'));
+  if (!saved.props) throw new Error('That render was not saved with its settings, so it cannot be run again.');
+  const base = jobId.replace(/-r[0-9]+$/, '');
+  const tries = Number((/-r([0-9]+)$/.exec(jobId) || [])[1] || 0) + 1;
+  return startRender(base + '-r' + tries, saved.props, saved.quality || 'medium', { videoId: saved.videoId, onDone });
+}
+
+/**
+ * Render a video. `videoId` ties it to its library entry; `onDone` hears
+ * the finished file, so the library can record it even if the browser that
+ * asked has since been closed.
+ */
+export function startRender(jobId, inputProps, quality, { videoId = '', onDone } = {}) {
   fs.mkdirSync(OUT_DIR, { recursive: true });
   const fileName = jobId + '.mp4';
   const outputLocation = path.join(OUT_DIR, fileName);
@@ -77,6 +150,7 @@ export function startRender(jobId, inputProps, quality) {
     error: '',
   };
   jobs.set(jobId, job);
+  saveJob(jobId, job, { props: inputProps, quality, videoId });
 
   const setStage = (stage) => {
     job.stage = stage;
@@ -121,10 +195,15 @@ export function startRender(jobId, inputProps, quality) {
       job.stage = 'Done';
       job.status = 'done';
       job.url = '/out/' + fileName;
+      saveJob(jobId, job, {});
+      if (onDone) {
+        try { onDone({ jobId, videoId, url: job.url, quality }); } catch { /* bookkeeping only */ }
+      }
     } catch (err) {
       job.status = 'error';
       job.error = friendlyRenderError(err);
       job.stage = 'Failed';
+      saveJob(jobId, job, {});
     }
   })();
 

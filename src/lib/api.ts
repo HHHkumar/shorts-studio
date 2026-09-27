@@ -205,6 +205,57 @@ export interface VoiceOption {
   previewUrl: string;
 }
 
+// --- what each video costs ----------------------------------------------------
+//
+// Paid calls report here once they succeed, and the app adds each to the
+// current video's ledger in the library. One place, so no screen can forget
+// to count what it spent.
+
+export interface Spend {
+  what: string;
+  /** Pictures, in US cents. */
+  cents?: number;
+  /** Voice, in characters - ElevenLabs charges about a credit each. */
+  characters?: number;
+  at: string;
+}
+
+let spendListener: ((s: Spend) => void) | null = null;
+
+/** The app's ledger listens here. */
+export function onSpend(fn: ((s: Spend) => void) | null) {
+  spendListener = fn;
+}
+
+const spent = (s: Omit<Spend, 'at'>) => {
+  if (spendListener && ((s.cents || 0) > 0 || (s.characters || 0) > 0)) {
+    spendListener({ ...s, at: new Date().toISOString() });
+  }
+};
+
+/** A video in the library list. */
+export interface LibraryVideo {
+  id: string;
+  title: string;
+  videoKind: string;
+  subject: string;
+  topic: string;
+  createdAt: string;
+  updatedAt: string;
+  cents: number;
+  characters: number;
+  renders: number;
+  lastRender: { jobId: string; url: string; at: string } | null;
+  published: Record<string, string>;
+}
+
+async function getJson<T>(url: string, method = 'GET'): Promise<T> {
+  const res = await fetch(url, { method });
+  const data = await safeJson(res);
+  if (!res.ok) throw new Error(data.error || 'Request failed (' + res.status + ')');
+  return data as T;
+}
+
 async function post<T>(url: string, body: unknown): Promise<T> {
   const res = await fetch(url, {
     method: 'POST',
@@ -289,7 +340,8 @@ export const api = {
   /** Gemini's image model paints the picture behind the words. Needs billing on the key. */
   /** `doodle`: draw the mascot against its model sheet instead of painting a backdrop. */
   thumbnailArt(body: { apiKey: string; modelId: string; scene: string; shape: string; accent: string; doodle?: boolean }) {
-    return post<{ src: string; bytes: number; prompt: string }>('/api/thumbnail/art', body);
+    return post<{ src: string; bytes: number; prompt: string; cents: number }>('/api/thumbnail/art', body)
+      .then((r) => { spent({ what: 'Thumbnail picture', cents: r.cents }); return r; });
   },
 
   /**
@@ -379,10 +431,10 @@ export const api = {
     /** The creator's own words for this scene. Overrides the search words. */
     imagePrompt?: string;
   }) {
-    return post<{ src: string; bytes: number; id: string; prompt: string; matched: boolean }>(
+    return post<{ src: string; bytes: number; id: string; prompt: string; matched: boolean; cents?: number }>(
       '/api/image/generate',
       body,
-    );
+    ).then((r) => { spent({ what: 'Backdrop picture', cents: r.cents }); return r; });
   },
 
   /** Gemini writes a drawing prompt for each listed scene - for scenes no photo can honestly show. */
@@ -463,7 +515,7 @@ export const api = {
   }) {
     return post<{ src: string; referenced: boolean; energy: string; prompt: string; cents: number; props: boolean }>(
       '/api/doodle/draw', body,
-    );
+    ).then((r) => { spent({ what: 'Doodle drawing', cents: r.cents }); return r; });
   },
 
   seo(
@@ -511,7 +563,11 @@ export const api = {
 
   /** `only`: record just these scene numbers, keeping the rest of the voiceover. */
   startVoiceover(apiKey: string, settings: VoiceSettings, script: ScriptLine[], only?: number[]) {
-    return post<{ jobId: string; total: number }>('/api/voiceover', { apiKey, settings, script, only });
+    // Counted when the job is accepted: ElevenLabs charges per character sent.
+    const which = only && only.length ? only : script.map((_, i) => i);
+    const characters = which.reduce((n, i) => n + (script[i] ? script[i].narration.trim().length : 0), 0);
+    return post<{ jobId: string; total: number }>('/api/voiceover', { apiKey, settings, script, only })
+      .then((r) => { spent({ what: only && only.length ? 'Voiceover (' + only.length + ' scenes)' : 'Voiceover', characters }); return r; });
   },
 
   async voiceoverStatus(jobId: string) {
@@ -528,8 +584,45 @@ export const api = {
     };
   },
 
-  startRender(props: VideoProps, quality: string) {
-    return post<{ jobId: string }>('/api/render', { props, quality });
+  /** `videoId` ties the finished file to its video in the library. */
+  startRender(props: VideoProps, quality: string, videoId?: string) {
+    return post<{ jobId: string }>('/api/render', { props, quality, videoId });
+  },
+
+  /** The latest renders, including any a restart interrupted. */
+  renders() {
+    return getJson<{ renders: { jobId: string; status: string; url: string; error: string; at: string; title: string }[] }>('/api/renders');
+  },
+
+  /** Run an earlier render again, exactly as it was. */
+  retryRender(jobId: string) {
+    return post<{ jobId: string }>('/api/render/' + encodeURIComponent(jobId) + '/retry', {});
+  },
+
+  // --- the video library ---
+
+  library() {
+    return getJson<{ videos: LibraryVideo[] }>('/api/library');
+  },
+  libraryNewId() {
+    return post<{ id: string }>('/api/library/new', {});
+  },
+  librarySave(body: { id: string; content: QuizContent; design: DesignSettings; audio: Record<number, AudioResult>; seo: unknown; ledger: Spend[] }) {
+    return post<{ video: LibraryVideo }>('/api/library/save', body);
+  },
+  libraryOpen(id: string) {
+    return getJson<{ video: {
+      id: string; content: QuizContent; design: DesignSettings | null; audio: Record<number, AudioResult>;
+      seo: unknown; ledger: Spend[]; notes: string[];
+    } }>('/api/library/' + encodeURIComponent(id));
+  },
+  libraryDelete(id: string) {
+    return getJson<{ ok: boolean }>('/api/library/' + encodeURIComponent(id), 'DELETE');
+  },
+
+  /** One rehearsal of the Gemini text features against the live service. Free tier. */
+  liveCheck(body: { apiKey: string; model: string }) {
+    return post<{ checks: { name: string; ok: boolean; detail: string }[] }>('/api/live-check', body);
   },
 
   async renderStatus(jobId: string) {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { api } from '../lib/api';
 import { framesToClock } from '../lib/timeline';
 import type { VideoProps } from '../lib/types';
@@ -10,7 +10,9 @@ export const StepExport: React.FC<{
   onBack: () => void;
   onNewQuestion: () => void;
   onReset: () => void;
-}> = ({ props, hasAudio, onBack, onNewQuestion, onReset }) => {
+  /** Ties the finished file to this video in the library. */
+  videoId: string;
+}> = ({ props, hasAudio, onBack, onNewQuestion, onReset, videoId }) => {
   const [quality, setQuality] = useState('medium');
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -18,17 +20,26 @@ export const StepExport: React.FC<{
   const [videoUrl, setVideoUrl] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  // Renders the helper was in the middle of when it stopped: one press runs them again.
+  const [interrupted, setInterrupted] = useState<{ jobId: string; title: string; at: string }[]>([]);
+
+  useEffect(() => {
+    api.renders()
+      .then((r) => setInterrupted(r.renders.filter((j) => j.status === 'interrupted')))
+      .catch(() => setInterrupted([]));
+  }, []);
 
   const { content, totalDurationInFrames, fps } = props;
 
-  const render = async () => {
+  /** Start a render (or re-run an interrupted one) and follow it to the end. */
+  const run = async (start: () => Promise<{ jobId: string }>) => {
     setBusy(true);
     setError(null);
     setVideoUrl('');
     setProgress(0);
     setStage('Starting…');
     try {
-      const { jobId } = await api.startRender(props, quality);
+      const { jobId } = await start();
       for (;;) {
         await new Promise((r) => setTimeout(r, 900));
         const status = await api.renderStatus(jobId);
@@ -46,6 +57,12 @@ export const StepExport: React.FC<{
     } finally {
       setBusy(false);
     }
+  };
+
+  const render = () => run(() => api.startRender(props, quality, videoId));
+  const retry = (jobId: string) => {
+    setInterrupted((list) => list.filter((j) => j.jobId !== jobId));
+    return run(() => api.retryRender(jobId));
   };
 
   // Pexels and NASA do not require attribution, but crediting them is good
@@ -110,6 +127,18 @@ export const StepExport: React.FC<{
         The very first time you render, the tool downloads and prepares its rendering browser. That can
         take a few minutes. Every render after that starts in seconds. Keep this tab open while it works.
       </Note>
+
+      {interrupted.length && !busy ? (
+        <Note kind="warn" title={interrupted.length === 1 ? 'A render was interrupted' : interrupted.length + ' renders were interrupted'}>
+          The helper stopped part way through. Each can be run again exactly as it was.
+          {interrupted.map((j) => (
+            <div key={j.jobId} style={{ marginTop: 6 }}>
+              <button className="link-btn" onClick={() => retry(j.jobId)}>Render again</button>{' '}
+              {j.title ? '“' + j.title.slice(0, 70) + '”' : j.jobId}
+            </div>
+          ))}
+        </Note>
+      ) : null}
 
       <ErrorNote error={error} />
 

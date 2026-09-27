@@ -27,8 +27,11 @@ import { planCarousel } from '../src/lib/carousel.ts';
 import { CLAUDE_MODELS, DEFAULT_CLAUDE_MODEL, listClaudeModels } from './claude.mjs';
 import { listVoices, speak, VOICE_MODELS } from './tts.mjs';
 import {
-  jobs as renderJobs, readCarousel, renderCarousel, renderThumbnail, startRender, paths,
+  jobs as renderJobs, readCarousel, recentRenders, recoverJobs, renderCarousel, renderThumbnail, retryRender, startRender, paths,
 } from './render.mjs';
+import {
+  deleteVideo, listVideos, mediaInUse, newVideoId, openVideo, recordOnVideo, saveVideo, VIDEO_ID,
+} from './library.mjs';
 import { ensureAudioAssets, MUSIC_MOODS } from './audio-gen.mjs';
 import { validateContent, DEEPSEEK_MODELS } from './deepseek.mjs';
 import { findTrending } from './trends.mjs';
@@ -47,6 +50,7 @@ import {
 import { generateDoodleDirections } from './doodle-directions.mjs';
 import { scenesToRecord } from './voiceover-plan.mjs';
 import { attachFormulaIcons, generateFormulaSheet } from './formulas.mjs';
+import { liveCheck } from './live-check.mjs';
 import { tidySheet } from '../src/lib/formula-card.ts';
 import { energyFor, tidyDirection } from '../src/lib/doodle.ts';
 
@@ -57,6 +61,8 @@ import { energyFor, tidyDirection } from '../src/lib/doodle.ts';
 // variable, so the two can never disagree.
 const PORT = Number(process.env.HELPER_PORT || 3030);
 const GENERATED_DIR = path.join(paths.PUBLIC_DIR, 'generated');
+/** The video library: one JSON file per video, committed with the code (server/library.mjs). */
+const LIBRARY_DIR = path.join(paths.ROOT, 'library');
 
 const app = express();
 app.use(cors({ origin: true }));
@@ -282,7 +288,7 @@ app.post('/api/image/generate', ok(async (req, res) => {
 
     console.log('[image] drew ' + saved.src + ' (' + Math.round(saved.bytes / 1024) + ' KB'
       + (reference ? ', matched to a reference' : '') + ')');
-    res.json({ ...saved, id: fileId, prompt, matched: Boolean(reference) });
+    res.json({ ...saved, id: fileId, prompt, matched: Boolean(reference), cents: centsOf(modelId || DEFAULT_GOOGLE_IMAGE_MODEL) });
     return;
   }
 
@@ -505,6 +511,29 @@ app.post('/api/doodle/directions', ok(async (req, res) => {
   res.json(out);
 }));
 
+// --- the video library ------------------------------------------------------
+
+app.get('/api/library', (_req, res) => {
+  res.json({ videos: listVideos(LIBRARY_DIR) });
+});
+
+app.post('/api/library/new', (_req, res) => {
+  res.json({ id: newVideoId() });
+});
+
+app.post('/api/library/save', ok(async (req, res) => {
+  res.json({ video: saveVideo(LIBRARY_DIR, req.body || {}) });
+}));
+
+app.get('/api/library/:id', ok(async (req, res) => {
+  res.json({ video: openVideo(LIBRARY_DIR, req.params.id, paths.PUBLIC_DIR) });
+}));
+
+app.delete('/api/library/:id', ok(async (req, res) => {
+  deleteVideo(LIBRARY_DIR, req.params.id);
+  res.json({ ok: true });
+}));
+
 // --- the formula card -------------------------------------------------------
 
 app.post('/api/formulas', ok(async (req, res) => {
@@ -520,6 +549,15 @@ app.post('/api/formulas/icons', ok(async (req, res) => {
   if (!sheet) throw new Error('There is no formula card to find icons for.');
   await attachFormulaIcons(sheet, { root: paths.ROOT });
   res.json({ sheet });
+}));
+
+/** One rehearsal against the live Gemini text features. Free tier; nothing drawn or voiced. */
+app.post('/api/live-check', ok(async (req, res) => {
+  const { apiKey, model } = req.body || {};
+  if (!apiKey) throw new Error('No Gemini API key was sent. Add it on the Keys step.');
+  const checks = await liveCheck({ apiKey, model: model || 'gemini-2.5-flash', root: paths.ROOT });
+  console.log('[live-check] ' + checks.filter((c) => c.ok).length + ' of ' + checks.length + ' passed');
+  res.json({ checks });
 }));
 
 app.post('/api/doodle/draw', ok(async (req, res) => {
@@ -806,7 +844,7 @@ app.post('/api/thumbnail/art', ok(async (req, res) => {
   });
   console.log('[thumbnail] drew ' + saved.src + ' in ' + Math.round((Date.now() - started) / 1000) + 's ('
     + Math.round(saved.bytes / 1024) + ' KB)');
-  res.json({ ...saved, prompt });
+  res.json({ ...saved, prompt, cents: centsOf(modelId || DEFAULT_GOOGLE_IMAGE_MODEL) });
 }));
 
 // --- title, tags and description for the upload form ------------------------
@@ -899,8 +937,22 @@ app.get('/api/voiceover/:id', (req, res) => {
 
 // --- step 4: render ---------------------------------------------------------
 
+/** A finished render is written against its video in the library, even if the browser has gone. */
+const recordRender = ({ jobId, videoId, url, quality }) => {
+  if (videoId) recordOnVideo(LIBRARY_DIR, videoId, { render: { jobId, url, quality, at: new Date().toISOString() } });
+};
+
+app.get('/api/renders', (_req, res) => {
+  res.json({ renders: recentRenders(10) });
+});
+
+app.post('/api/render/:id/retry', ok(async (req, res) => {
+  const jobId = retryRender(req.params.id, recordRender);
+  res.json({ jobId });
+}));
+
 app.post('/api/render', ok(async (req, res) => {
-  const { props, quality } = req.body || {};
+  const { props, quality, videoId } = req.body || {};
   if (!props || !Array.isArray(props.scenes) || !props.scenes.length) {
     throw new Error('There is nothing to render yet. Generate a question first.');
   }
@@ -910,7 +962,7 @@ app.post('/api/render', ok(async (req, res) => {
   await attachIcons(props, { root: paths.ROOT });
 
   const jobId = 'video-' + new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-  startRender(jobId, props, quality || 'medium');
+  startRender(jobId, props, quality || 'medium', { videoId: VIDEO_ID.test(String(videoId || '')) ? videoId : '', onDone: recordRender });
   res.json({ jobId });
 }));
 
@@ -939,7 +991,10 @@ function cleanOldAudio() {
     // Voiceover jobs sit directly under generated/; stock images are one level
     // deeper, so only the individual job folders inside it may be removed -
     // never the "stock" folder itself, which would take today's work with it.
-    dropOldChildren(GENERATED_DIR, (e) => e.startsWith('vo-'));
+    // ...except the voice of any video kept in the library, which must still
+    // play when it is reopened next week.
+    const kept = mediaInUse(LIBRARY_DIR);
+    dropOldChildren(GENERATED_DIR, (e) => e.startsWith('vo-') && !kept.has(e));
     dropOldChildren(path.join(GENERATED_DIR, 'stock'), () => true);
     // generated/ai is deliberately NOT swept. A stock photo is free and can be
     // fetched again; a drawn one was paid for in ElevenLabs credits and cannot.
@@ -1016,6 +1071,8 @@ const server = app.listen(PORT, '127.0.0.1', () => {
     // Deliberately after listening. Neither of these is needed to answer a
     // request, and doing them first meant the port stayed shut while they ran.
     step('tidy up old voiceovers', cleanOldAudio);
+    const interrupted = step('find interrupted renders', recoverJobs);
+    if (interrupted) console.log('  ' + interrupted + ' render' + (interrupted > 1 ? 's were' : ' was') + ' interrupted last time - Render again on the Export step.');
     const audio = step('prepare the music and effects', () => ensureAudioAssets(paths.PUBLIC_DIR));
     if (audio && audio.written.length) {
       console.log('  Generated ' + audio.written.length + ' audio assets.');

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ErrorNote, Note, Spinner, TextInput } from './controls';
+import { LiveCheck } from './LiveCheck';
 
 interface CheckResult {
   gemini: string;
@@ -20,6 +21,8 @@ export const StepKeys: React.FC<{
   setDeepseekKey: (v: string) => void;
   setClaudeKey: (v: string) => void;
   setPexelsKey: (v: string) => void;
+  /** For the live rehearsal: the same text model the rest of the app uses. */
+  geminiModel?: string;
   onNext: () => void;
 }> = ({
   geminiKey,
@@ -32,6 +35,7 @@ export const StepKeys: React.FC<{
   setDeepseekKey,
   setClaudeKey,
   setPexelsKey,
+  geminiModel,
   onNext,
 }) => {
   const [checking, setChecking] = useState(false);
@@ -217,6 +221,8 @@ export const StepKeys: React.FC<{
           Paste the Gemini and ElevenLabs keys to continue.
         </div>
       ) : null}
+
+      <LiveCheck geminiKey={geminiKey} geminiModel={geminiModel || 'gemini-2.5-flash'} />
     </div>
   );
 };

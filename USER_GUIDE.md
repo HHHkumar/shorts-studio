@@ -522,6 +522,32 @@ Choose a quality (**Normal** is right almost always) and press **Render the vide
 A 45-second video takes one to three minutes. You get a player, a download button, and the file is
 saved into the `out` folder automatically.
 
+**A render cut short by closing the helper is not lost.** Next time, step 6 lists it under *A render
+was interrupted* with **Render again**, which runs it exactly as it was — same script, same voice,
+same look — even if you have changed the video since.
+
+### The video library
+
+Press **Library** in the top bar. Every video you make is there, newest first, **saved as you work** —
+nothing to press. Each shows its question, when it was last touched, **what it cost** (pictures in
+dollars, voice in characters), how often it was rendered, a link to the last render, and where it
+was published.
+
+- **Open** brings a video back — its script, look, formula card, drawings and voice — onto the Script
+  step, to fix, render again or publish. What you were working on is already saved.
+- **Start a new video** begins a fresh one. So does generating a new question.
+- **Search** by question or topic; **✕** deletes a video from the list (its MP4 files are kept).
+
+The list lives in the `library` folder and is **committed with the code**, so after a `git pull` your
+other computer has it too. The voice clips and drawings are not committed — they are large — so a
+video opened there tells you what is missing, and it is simply made again: the Voice step records
+only the missing scenes, and the Look step draws only the missing pictures.
+
+**Rehearse the Gemini features** (on step 1) runs a sample question through the formula card and
+the doodle directing and checks every reply has the shape the video needs — poses from the list,
+formulas that typeset, graphs that exist. Free tier; nothing is drawn or voiced. Worth a press after
+any update, before a real video depends on it.
+
 ### Step 7 — Publish
 
 Fill in **Channel or site** first — it goes into the description and onto every carousel slide.
@@ -1821,8 +1847,13 @@ Inside `C:\Projects\shorts-studio`:
   automatically, and nothing here goes to GitHub. Beside the videos: thumbnails (`thumbnail-….png`),
   upload kits (`…-upload-kit.zip`), and one `carousel-…\` folder per carousel, holding its slides and
   its zip.
+- **`library\`** — the [video library](#the-video-library): one small file per video you have made.
+  Committed with the code, so your other computer has the same list after a `git pull`.
+- `out\…job.json` — one note per render, so a render the helper was stopped in the middle of can be
+  run again (see [Step 6](#step-6--export)).
 - `public\generated\` — voiceover clips and pictures.
-  - `vo-…\` and `stock\` are **cleared automatically after a day**. Both are free to make again.
+  - `vo-…\` and `stock\` are **cleared automatically after a day** — except the voice of any video in
+    the library, which is kept so it still plays when you reopen it. Both are free to make again.
   - `ai\` (drawn backdrops) and `thumbs\` (painted thumbnail art) are **never cleared**, because
     those pictures cost money and deleting them on a timer would spend it twice. They grow until you
     empty them yourself.
