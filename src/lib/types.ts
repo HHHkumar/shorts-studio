@@ -109,6 +109,8 @@ export interface QuizContent {
    * Optional: written on request, and absent on older videos.
    */
   formulas?: FormulaSheet;
+  /** Set on a translated copy (server/translate.mjs): the language its words are in. */
+  language?: string;
 }
 
 /** The kinds of picture a scene can carry alongside its text. */

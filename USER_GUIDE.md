@@ -561,6 +561,40 @@ other computer has it too. The voice clips and drawings are not committed — th
 video opened there tells you what is missing, and it is simply made again: the Voice step records
 only the missing scenes, and the Look step draws only the missing pictures.
 
+**🌐 Translate** on any video makes a copy of it in Hindi, Kannada, Tamil, Telugu, Marathi, Bengali,
+Malayalam or Gujarati — the question, options, script and formula card translated as an Indian
+engineering teacher would say them; the maths, the circuit, the answer and the look unchanged. The
+copy is a new video in the library and opens on the Script step to check; then record its voice.
+**Choose an ElevenLabs model that speaks the language** on the Voice step — not every model covers
+every Indian language, so check ElevenLabs' list for Kannada in particular. In the Doodle look the
+Indian scripts are set in a regular font, not the handwriting, which covers English only.
+
+### The planner and batches
+
+Press **Planner** in the top bar.
+
+**Plan.** Choose an exam, optionally a focus (*Electrical Machines only*), and how many questions.
+Gemini lays out the exam's syllabus as units and picks a run of questions across it — each a topic
+and the angle it should test, spread so no unit takes more than three in a row. **Every topic already
+in your library is left out**, and checked again after Gemini answers. Free tier. *Plan more* adds to
+the same exam's list later; plans are saved in `library/plans` and travel with the library.
+
+**Make one by hand.** *Make by hand* fills the Topic step with that question — exam, subject, topic
+and the angle — and takes you there. When its question is generated, the item is ticked off and
+linked to its video.
+
+**Make several at once.** Tick questions (or *Select the next 5*) and press **Make N videos**. Each
+is written, **checked by DeepSeek** if you have a key, given its formula card and worked solution,
+directed for the engineer in the Doodle look — with the pictures beside him if you tick *Draw what
+stands beside the engineer* — voiced, measured and rendered, one after another, and saved to the
+library. It uses your current look, voice and topic settings; choose a voice on the Voice step first.
+
+- **A video DeepSeek disputes stops before its voice** and stays in the library, marked to check —
+  no batch should publish past a wrong answer. So does anything that fails; the rest carry on.
+- **It runs in this tab.** Keep it open and the computer awake until it finishes — overnight is fine.
+  *Stop after this video* ends it cleanly.
+- What each video cost is in its library entry, as for any other.
+
 **Rehearse the Gemini features** (on step 1) runs a sample question through the formula card and
 the doodle directing and checks every reply has the shape the video needs — poses from the list,
 formulas that typeset, graphs that exist. Free tier; nothing is drawn or voiced. Worth a press after

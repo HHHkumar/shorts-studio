@@ -30,8 +30,11 @@ import {
   jobs as renderJobs, readCarousel, recentRenders, recoverJobs, renderCarousel, renderThumbnail, retryRender, startRender, paths,
 } from './render.mjs';
 import {
-  deleteVideo, listVideos, mediaInUse, newVideoId, openVideo, recordOnVideo, saveVideo, VIDEO_ID,
+  allVideos, deleteVideo, listVideos, mediaInUse, newVideoId, openVideo, recordOnVideo, saveVideo, VIDEO_ID,
 } from './library.mjs';
+import {
+  coveredTopics, deletePlan, extendPlan, generatePlan, listPlans, planIdFor, readPlan, updateItem,
+} from './planner.mjs';
 import { ensureAudioAssets, MUSIC_MOODS } from './audio-gen.mjs';
 import { validateContent, DEEPSEEK_MODELS } from './deepseek.mjs';
 import { findTrending } from './trends.mjs';
@@ -52,6 +55,7 @@ import { scenesToRecord } from './voiceover-plan.mjs';
 import { attachFormulaIcons, generateFormulaSheet } from './formulas.mjs';
 import { liveCheck } from './live-check.mjs';
 import { generateHooks } from './hooks.mjs';
+import { LANGUAGES, translateContent } from './translate.mjs';
 import { tidySheet } from '../src/lib/formula-card.ts';
 import { energyFor, tidyDirection } from '../src/lib/doodle.ts';
 
@@ -535,6 +539,33 @@ app.delete('/api/library/:id', ok(async (req, res) => {
   res.json({ ok: true });
 }));
 
+// --- the syllabus planner ---------------------------------------------------
+
+const PLANS_DIR = path.join(LIBRARY_DIR, 'plans');
+
+app.get('/api/plans', (_req, res) => {
+  res.json({ plans: listPlans(PLANS_DIR) });
+});
+
+/** Plan (more of) a series for an exam, avoiding every topic already made or planned. */
+app.post('/api/plans', ok(async (req, res) => {
+  const { apiKey, model, exam, focus, count } = req.body || {};
+  const covered = coveredTopics(allVideos(LIBRARY_DIR), readPlan(PLANS_DIR, planIdFor(exam)));
+  const result = await generatePlan({ apiKey, model: model || 'gemini-2.5-flash', exam, focus, count, covered });
+  const plan = extendPlan(PLANS_DIR, exam, focus, result);
+  console.log('[planner] ' + exam + ': +' + result.items.length + ' questions (' + plan.items.length + ' in all)');
+  res.json({ plan });
+}));
+
+app.post('/api/plans/:id/items/:itemId', ok(async (req, res) => {
+  res.json({ plan: updateItem(PLANS_DIR, req.params.id, req.params.itemId, req.body || {}) });
+}));
+
+app.delete('/api/plans/:id', ok(async (req, res) => {
+  deletePlan(PLANS_DIR, req.params.id);
+  res.json({ ok: true });
+}));
+
 // --- the formula card -------------------------------------------------------
 
 app.post('/api/formulas', ok(async (req, res) => {
@@ -550,6 +581,16 @@ app.post('/api/formulas/icons', ok(async (req, res) => {
   if (!sheet) throw new Error('There is no formula card to find icons for.');
   await attachFormulaIcons(sheet, { root: paths.ROOT });
   res.json({ sheet });
+}));
+
+app.get('/api/languages', (_req, res) => res.json({ languages: LANGUAGES }));
+
+/** The video in another language. Free tier; a new video is made from it by the browser. */
+app.post('/api/translate', ok(async (req, res) => {
+  const { apiKey, model, content, language } = req.body || {};
+  const translated = await translateContent({ apiKey, model: model || 'gemini-2.5-flash', content, language });
+  console.log('[translate] ' + language + ': ' + (translated.question || '').slice(0, 60));
+  res.json({ content: translated });
 }));
 
 app.post('/api/hooks', ok(async (req, res) => {

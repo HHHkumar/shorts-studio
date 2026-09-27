@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { api, type LibraryVideo } from '../lib/api';
 import { ErrorNote, Note, Spinner } from './controls';
+import { LANGUAGES } from '../lib/languages';
 
 // ---------------------------------------------------------------------------
 // The library: every video made, newest first, with what it cost and where it
@@ -26,9 +27,12 @@ export const cost = (cents: number, characters: number) => [
 export const LibraryView: React.FC<{
   currentId: string;
   onOpen: (id: string) => void;
+  /** Make a copy of this video in another language, and open it. */
+  onTranslate: (id: string, language: string) => Promise<void>;
   onNew: () => void;
   onClose: () => void;
-}> = ({ currentId, onOpen, onNew, onClose }) => {
+}> = ({ currentId, onOpen, onTranslate, onNew, onClose }) => {
+  const [translating, setTranslating] = useState('');
   const [videos, setVideos] = useState<LibraryVideo[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState('');
@@ -106,6 +110,24 @@ export const LibraryView: React.FC<{
               {v.id === currentId ? <span className="tag">open now</span> : (
                 <button className="btn small" onClick={() => onOpen(v.id)}>Open</button>
               )}
+              <select
+                className="library-translate"
+                value=""
+                disabled={Boolean(translating)}
+                title="Make this video in another language"
+                onChange={(e) => {
+                  const language = e.target.value;
+                  if (!language) return;
+                  setTranslating(v.id);
+                  setError(null);
+                  onTranslate(v.id, language)
+                    .catch((err) => setError(err instanceof Error ? err.message : String(err)))
+                    .finally(() => setTranslating(''));
+                }}
+              >
+                <option value="">{translating === v.id ? 'Translating…' : '🌐 Translate'}</option>
+                {LANGUAGES.map((l) => <option key={l} value={l}>{l}</option>)}
+              </select>
               <button className="btn small ghost" onClick={() => remove(v)} title="Delete from the library">✕</button>
             </div>
           </div>

@@ -700,3 +700,21 @@ ul.issues .sev-low .sev { background: rgba(108,140,255,.16); color: var(--accent
 .hook-chip:hover { border-color: var(--accent, #4c9aff); }
 .working-preview { display: grid; gap: 6px; margin: 8px 0; padding: 8px 12px; border-radius: 10px; background: rgba(255,255,255,0.03); }
 .formula-card-edit textarea { width: 100%; font-family: 'Cascadia Mono', Consolas, monospace; font-size: 13px; }
+
+/* --- the planner (PlannerView.tsx) --- */
+.plan-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.plan-list { display: grid; gap: 8px; margin-top: 10px; }
+.plan-row {
+  display: flex; gap: 12px; align-items: flex-start; padding: 10px 12px;
+  border: 1px solid var(--line); border-radius: 12px;
+}
+.plan-row.done { opacity: 0.6; }
+.plan-row.skipped { opacity: 0.45; }
+.plan-row input[type="checkbox"] { margin-top: 4px; width: auto; }
+.plan-main { flex: 1; min-width: 0; }
+.plan-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.plan-result.done { color: var(--good, #3ddc97); }
+.plan-result.review { color: #ffc861; }
+.plan-result.failed { color: #ff8a7a; }
+
+.library-translate { width: auto; font-size: 12.5px; padding: 5px 8px; }

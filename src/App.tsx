@@ -25,6 +25,7 @@ import { StepTopic } from './ui/StepTopic';
 import { StepVoice } from './ui/StepVoice';
 import { MascotLab } from './ui/MascotLab';
 import { LibraryView } from './ui/LibraryView';
+import { PlannerView } from './ui/PlannerView';
 import { Note } from './ui/controls';
 import { tidySheet } from './lib/formula-card';
 import { shiftAudio } from './lib/script-edit';
@@ -57,6 +58,10 @@ export const App: React.FC = () => {
   const [videoId, setVideoId] = useStoredState('videoId', '');
   const [ledger, setLedger] = useStoredState<Spend[]>('ledger', []);
   const [libraryOpen, setLibraryOpen] = useState(false);
+  const [plannerOpen, setPlannerOpen] = useState(false);
+  // A planned question being made by hand: marked done once its video has an id.
+  // Armed only once its question is generated: before that, the video open is a different one.
+  const [pendingPlanItem, setPendingPlanItem] = useState<{ planId: string; itemId: string; armed: boolean } | null>(null);
   const [libraryNotes, setLibraryNotes] = useState<string[]>([]);
 
   // Every paid call reports here (lib/api.ts), so no screen can forget to count.
@@ -72,6 +77,14 @@ export const App: React.FC = () => {
       api.libraryNewId().then((r) => setVideoId(r.id)).catch(() => undefined);
     }
   }, [content, videoId, setVideoId]);
+
+  // The planned question just made by hand is done, and linked to its video.
+  useEffect(() => {
+    if (pendingPlanItem && pendingPlanItem.armed && content && videoId) {
+      api.updatePlanItem(pendingPlanItem.planId, pendingPlanItem.itemId, { status: 'done', videoId }).catch(() => undefined);
+      setPendingPlanItem(null);
+    }
+  }, [pendingPlanItem, content, videoId]);
 
   // Saved as it changes, a moment after the last edit rather than on every keystroke.
   useEffect(() => {
@@ -264,15 +277,22 @@ export const App: React.FC = () => {
             </button>
           ))}
           <button
+            className={'step-chip mascot-chip' + (plannerOpen ? ' active' : '')}
+            onClick={() => { setLab(false); setLibraryOpen(false); setPlannerOpen((on) => !on); }}
+            title="Plan a series across an exam's syllabus, and make several at once"
+          >
+            Planner
+          </button>
+          <button
             className={'step-chip mascot-chip' + (libraryOpen ? ' active' : '')}
-            onClick={() => { setLab(false); setLibraryOpen((on) => !on); }}
+            onClick={() => { setLab(false); setPlannerOpen(false); setLibraryOpen((on) => !on); }}
             title="Every video you have made"
           >
             Library
           </button>
           <button
             className={'step-chip mascot-chip' + (lab ? ' active' : '')}
-            onClick={() => { setLibraryOpen(false); setLab((on) => !on); }}
+            onClick={() => { setLibraryOpen(false); setPlannerOpen(false); setLab((on) => !on); }}
             title="Design and test the doodle mascot"
           >
             Mascot
@@ -300,6 +320,15 @@ export const App: React.FC = () => {
             <LibraryView
               currentId={content ? videoId : ''}
               onOpen={(id) => { openVideo(id).catch((e) => alert(e instanceof Error ? e.message : String(e))); }}
+              onTranslate={async (id, language) => {
+                // A copy in the new language becomes its own video: same look and
+                // formulas, no voice yet - the Voice step records it.
+                const { video } = await api.libraryOpen(id);
+                const { content: translated } = await api.translate({ apiKey: geminiKey, model: geminiModel, content: video.content, language });
+                const { id: newId } = await api.libraryNewId();
+                await api.librarySave({ id: newId, content: translated, design: video.design || design, audio: {}, seo: null, ledger: [] });
+                await openVideo(newId);
+              }}
               onNew={() => {
                 setLibraryOpen(false);
                 startFresh();
@@ -313,6 +342,29 @@ export const App: React.FC = () => {
             />
           ) : null}
 
+          {plannerOpen ? (
+            <PlannerView
+              geminiKey={geminiKey}
+              geminiModel={geminiModel}
+              elevenKey={elevenKey}
+              deepseekKey={deepseekKey}
+              deepseekModel={deepseekModel}
+              form={form}
+              design={design}
+              voice={voiceSettings}
+              onMakeByHand={(plan, item) => {
+                setForm({ ...form, contentType: 'electrical', videoKind: 'mcq', exam: plan.exam, subject: item.subject || form.subject,
+                  topic: item.topic, difficulty: item.difficulty || form.difficulty,
+                  extra: item.angle ? 'The question should test: ' + item.angle : form.extra });
+                setPendingPlanItem({ planId: plan.id, itemId: item.id, armed: false });
+                setPlannerOpen(false);
+                go(1);
+              }}
+              onOpenVideo={(id) => { openVideo(id).then(() => setPlannerOpen(false)).catch((e) => alert(e instanceof Error ? e.message : String(e))); }}
+              onClose={() => setPlannerOpen(false)}
+            />
+          ) : null}
+
           {libraryNotes.length && !libraryOpen && !lab ? (
             <Note kind="warn" title="Opened from the library">
               {libraryNotes.map((n) => <div key={n}>{n}</div>)}
@@ -321,7 +373,7 @@ export const App: React.FC = () => {
 
           {/* Hidden rather than unmounted while the lab is open, so anything
               half-done on a step is still there on the way back. */}
-          <div hidden={lab || libraryOpen}>
+          <div hidden={lab || libraryOpen || plannerOpen}>
           {step === 0 ? (
             <StepKeys
               geminiKey={geminiKey}
@@ -356,6 +408,7 @@ export const App: React.FC = () => {
               onBack={() => go(0)}
               onGenerated={(c) => {
                 startFresh(); // a new question is a new video in the library
+                setPendingPlanItem((p) => (p ? { ...p, armed: true } : p));
                 setContent(c);
                 setAudio({}); // a new question means the old voiceover is meaningless
                 setReport(null); // and the old fact-check is about a different question

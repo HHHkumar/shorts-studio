@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { api, type VoiceOption, type VoiceSettings } from '../lib/api';
-import { analyseClip, captionOffset } from '../lib/audio';
+import { recordVoice } from '../lib/voice-run';
 import { trueDuration, type AudioResult } from '../lib/timeline';
 import type { QuizContent } from '../lib/types';
 import { ErrorNote, Note, Select, Slider, Spinner } from './controls';
@@ -76,43 +76,14 @@ export const StepVoice: React.FC<{
     setDone(0);
     setStage('Sending the script to ElevenLabs…');
     try {
-      const { jobId, total: t } = await api.startVoiceover(elevenKey.trim(), settings, content.script, only);
-      setTotal(t);
-
-      // Poll until every line is recorded.
-      for (;;) {
-        await new Promise((r) => setTimeout(r, 700));
-        const status = await api.voiceoverStatus(jobId);
-        setDone(status.done);
-        setTotal(status.total);
-        setStage(status.stage);
-        if (status.status === 'error') throw new Error(status.error);
-        if (status.status === 'done') {
-          const tracks: Record<number, AudioResult> = {};
-          Object.entries(status.tracks).forEach(([k, v]) => {
-            tracks[Number(k)] = v;
-          });
-
-          // The server could only estimate each clip's length from its mp3
-          // header. Decode them for real so the timeline is built on measured
-          // audio rather than an estimate - this is what locks sync.
-          setStage('Measuring the clips for exact sync…');
-          await Promise.all(
-            Object.values(tracks).map(async (track) => {
-              const analysis = await analyseClip('/' + track.src);
-              if (!analysis) return;
-              track.measuredDuration = analysis.duration;
-              track.speechStart = analysis.speechStart;
-              track.speechEnd = analysis.speechEnd;
-              track.captionOffset = captionOffset(analysis, track.words[0]?.start);
-            }),
-          );
-
-          // A partial recording drops its clips in beside the ones kept.
-          onAudio(only ? { ...audio, ...tracks } : tracks);
-          break;
-        }
-      }
+      // Recorded and measured by the same code the batch runner uses (lib/voice-run.ts).
+      const tracks = await recordVoice(elevenKey, settings, content.script, only, (p) => {
+        setDone(p.done);
+        setTotal(p.total);
+        setStage(p.stage);
+      });
+      // A partial recording drops its clips in beside the ones kept.
+      onAudio(only ? { ...audio, ...tracks } : tracks);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {

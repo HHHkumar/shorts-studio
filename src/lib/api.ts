@@ -227,11 +227,44 @@ export function onSpend(fn: ((s: Spend) => void) | null) {
   spendListener = fn;
 }
 
+/**
+ * Send spending somewhere else for a while - the batch runner's ledger for
+ * the video it is making, not the one open in the editor. Returns the undo.
+ */
+export function divertSpending(fn: (s: Spend) => void): () => void {
+  const before = spendListener;
+  spendListener = fn;
+  return () => { spendListener = before; };
+}
+
 const spent = (s: Omit<Spend, 'at'>) => {
   if (spendListener && ((s.cents || 0) > 0 || (s.characters || 0) > 0)) {
     spendListener({ ...s, at: new Date().toISOString() });
   }
 };
+
+/** One planned question (server/planner.mjs). */
+export interface PlanItem {
+  id: string;
+  unit: string;
+  subject: string;
+  topic: string;
+  /** What the question should test. */
+  angle: string;
+  difficulty: string;
+  status: 'todo' | 'done' | 'skipped';
+  videoId: string;
+}
+
+export interface Plan {
+  id: string;
+  exam: string;
+  focus?: string;
+  createdAt: string;
+  updatedAt?: string;
+  syllabus: { unit: string; topics: string[] }[];
+  items: PlanItem[];
+}
 
 /** A video in the library list. */
 export interface LibraryVideo {
@@ -618,6 +651,27 @@ export const api = {
   },
   libraryDelete(id: string) {
     return getJson<{ ok: boolean }>('/api/library/' + encodeURIComponent(id), 'DELETE');
+  },
+
+  /** This video in another language: the words translated, everything else the same. Free tier. */
+  translate(body: { apiKey: string; model: string; content: QuizContent; language: string }) {
+    return post<{ content: QuizContent }>('/api/translate', body);
+  },
+
+  // --- the syllabus planner ---
+
+  plans() {
+    return getJson<{ plans: Plan[] }>('/api/plans');
+  },
+  /** Plan (more of) a series for an exam. Free tier; avoids every topic already made. */
+  makePlan(body: { apiKey: string; model: string; exam: string; focus: string; count: number }) {
+    return post<{ plan: Plan }>('/api/plans', body);
+  },
+  updatePlanItem(planId: string, itemId: string, patch: { status?: PlanItem['status']; videoId?: string }) {
+    return post<{ plan: Plan }>('/api/plans/' + encodeURIComponent(planId) + '/items/' + encodeURIComponent(itemId), patch);
+  },
+  deletePlan(planId: string) {
+    return getJson<{ ok: boolean }>('/api/plans/' + encodeURIComponent(planId), 'DELETE');
   },
 
   /** Other opening hooks and thumbnail headlines. Free tier; none gives the answer away. */
