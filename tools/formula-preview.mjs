@@ -132,4 +132,30 @@ for (const look of [{ layout: 'simple', mode: 'light' }, { layout: 'doodle', mod
   await renderStill({ composition, serveUrl, output: file, frame: composition.durationInFrames - 1, inputProps: props, overwrite: true });
   console.log('  ' + path.basename(file));
 }
+// A sheet of one card - a question that uses a single formula - in a
+// portrait video and on the slide: it must fill the frame, not huddle at the top.
+{
+  const one = tidySheet({ title: SHEET.title, cards: [SHEET.cards[3]], working: SHEET.working });
+  const single = { ...content, formulas: one };
+  const oneFrames = Math.ceil(formulaHoldSeconds(1) * FPS);
+  const props = {
+    content: single,
+    design: { ...DEFAULT_DESIGN, layout: 'simple', mode: 'light', orientation: 'portrait', music: 'none', sfx: false },
+    scenes: single.script.map((line, i) => ({
+      ...line, id: 's' + i, startFrame: 0, durationInFrames: oneFrames, words: [], captionOffset: 0,
+      audioSrc: '', audioDuration: 0, stockSrc: '', stockCredit: '',
+    })),
+    fps: FPS,
+    totalDurationInFrames: oneFrames,
+  };
+  const composition = await selectComposition({ serveUrl, id: 'QuizVideo', inputProps: props });
+  await renderStill({ composition, serveUrl, output: path.join(OUT, 'formulas-one-card.png'), frame: oneFrames - 10, inputProps: props, overwrite: true });
+  const plan = planCarousel(single, { channelName: 'Electrical MCQs' });
+  const index = plan.slides.findIndex((s) => s.kind === 'formulas');
+  const slideProps = { content: single, design: { ...DEFAULT_DESIGN, layout: 'simple', mode: 'light' }, slide: plan.slides[index], index, total: plan.slides.length, channelName: 'Electrical MCQs' };
+  const slideComp = await selectComposition({ serveUrl, id: 'CarouselSlide', inputProps: slideProps });
+  await renderStill({ composition: slideComp, serveUrl, output: path.join(OUT, 'formulas-one-card-slide.png'), frame: slideComp.durationInFrames - 1, inputProps: slideProps, overwrite: true });
+  console.log('  formulas-one-card.png, formulas-one-card-slide.png');
+}
+
 console.log('wrote ' + OUT);

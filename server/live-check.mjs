@@ -49,8 +49,16 @@ export function judgeSheet(sheet) {
   // A formula the parser read as nothing but words has lost its maths - usually
   // LaTeX commands written without their backslashes.
   const flat = cards.filter((c) => parseMath(c.formula).every((n) => n.t === 'text' && n.style === 'word'));
+  // The sample uses the working that the batch writes into its explanation:
+  // the formula, the numbers in, the steps, an answer with its unit.
+  const working = sheet.working || [];
+  const answered = working.length >= 2 && working.slice(1).every((l) => l.trim().startsWith('='));
   return [
-    check('Formula card written', cards.length >= 2, cards.length + ' cards'),
+    // One card is right when the question uses one formula - the sample's
+    // RMS question does, and the model is told never to pad the sheet.
+    check('Formula card written', cards.length >= 1, cards.length + (cards.length === 1 ? ' card' : ' cards')),
+    check('Worked solution written', answered,
+      working.length ? working.length + ' lines' + (answered ? '' : ' - every line after the first should start with "="') : 'none came back'),
     check('Every formula typesets', !flat.length, flat.length ? 'Read as plain words: ' + flat.map((c) => c.formula).join('; ') : ''),
     check('Graphs from the list', cards.every((c) => GRAPH_KINDS.includes(c.graph.kind)),
       cards.map((c) => c.graph.kind).join(', ')),

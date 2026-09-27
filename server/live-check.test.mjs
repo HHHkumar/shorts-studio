@@ -23,9 +23,23 @@ const card = (formula, kind = 'rms', icon = 'meter') => ({
   name: 'x', formula, notes: [], graph: { kind, x: '', y: '', label: '', label2: '' }, icon,
 });
 
+const working = ['V_{rms} = \\frac{V_0}{\\sqrt{2}}', '= \\frac{325}{\\sqrt{2}}', '= 230\\,V'];
+
 test('a good sheet passes', () => {
-  const r = judgeSheet({ title: 't', cards: [card('V_{rms} = \\frac{V_0}{\\sqrt{2}}'), card('\\omega = 2\\pi f', 'phasor')] });
+  const r = judgeSheet({ title: 't', cards: [card('V_{rms} = \\frac{V_0}{\\sqrt{2}}'), card('\\omega = 2\\pi f', 'phasor')], working });
   assert(!failed(r).length, failed(r).join());
+});
+
+test('one card passes: a question that uses one formula gets one card', () => {
+  const r = judgeSheet({ title: 't', cards: [card('V_{rms} = \\frac{V_0}{\\sqrt{2}}')], working });
+  assert(!failed(r).length, failed(r).join());
+});
+
+test('a missing or malformed worked solution is caught', () => {
+  const cards = [card('V_{rms} = \\frac{V_0}{\\sqrt{2}}')];
+  assert(failed(judgeSheet({ title: 't', cards })).includes('Worked solution written'), 'no working passed');
+  assert(failed(judgeSheet({ title: 't', cards, working: ['V = 1', 'V = 2'] })).includes('Worked solution written'),
+    'lines without "=" passed');
 });
 
 test('LaTeX that lost its backslashes is caught', () => {
@@ -33,9 +47,9 @@ test('LaTeX that lost its backslashes is caught', () => {
   assert(failed(r).includes('Every formula typesets'), failed(r).join());
 });
 
-test('no sheet, or one card, fails', () => {
+test('no sheet, or no cards, fails', () => {
   assert(failed(judgeSheet(null)).length === 1);
-  assert(failed(judgeSheet({ title: 't', cards: [card('a = b')] })).includes('Formula card written'));
+  assert(failed(judgeSheet({ title: 't', cards: [] })).includes('Formula card written'));
 });
 
 test('directions: every engineer scene needs a pose from the list, and poses vary', () => {

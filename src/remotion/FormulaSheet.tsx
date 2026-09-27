@@ -44,12 +44,15 @@ export const FormulaSheetView: React.FC<{
   const titleH = noTitle ? 0 : titleSize * 1.6;
   const gap = clamp(height * 0.014, 12, 24);
   const cardW = (width - gap * (cols - 1)) / cols;
-  const cardH = Math.min((height - titleH - gap * rows) / rows, cardW * 0.62);
+  // One or two cards may grow tall, and stack their graphs; a full sheet keeps
+  // every card the same modest shape.
+  const cardH = Math.min((height - titleH - gap * rows) / rows, cardW * (cards.length <= 2 ? 1.1 : 0.62));
 
   const titleIn = still ? 1 : spring({ frame, fps, config: { damping: 14, stiffness: 110 } });
 
   return (
-    <div style={{ width, height, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    // A short sheet sits in the middle of the frame, not stuck to its top.
+    <div style={{ width, height, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
       {noTitle ? null : (
         <div
           style={{
@@ -108,11 +111,16 @@ const Card: React.FC<{
 }> = ({ theme, card, number, w, h, enter, draw, time }) => {
   const pad = clamp(h * 0.08, 10, 22);
   const hasGraph = card.graph.kind !== 'none';
-  const graphW = hasGraph ? Math.min(w * 0.36, (h - pad * 2) * 1.6) : 0;
+  // A card taller than it is wide - a sheet of one or two - puts its graph
+  // underneath, large, rather than squeezed beside words in a big empty box.
+  const stacked = h > w * 0.45;
+  const graphW = !hasGraph ? 0 : stacked ? Math.min(w - pad * 2, h * 0.5 * 1.6) : Math.min(w * 0.36, (h - pad * 2) * 1.6);
   const graphH = graphW / 1.6;
   // A narrow card - two to a carousel row - gives the icon's room to the words.
-  const icon = card.art && card.art.body && w > 600 ? Math.min(h * 0.44, w * 0.13) : 0;
-  const textW = w - pad * 2 - graphW - (icon ? icon + pad : 0) - (hasGraph ? pad : 0);
+  const icon = card.art && card.art.body && w > 600 ? Math.min(stacked ? h * 0.16 : h * 0.44, w * 0.13) : 0;
+  const textW = w - pad * 2 - (stacked ? 0 : graphW + (hasGraph ? pad : 0)) - (icon ? icon + pad : 0);
+  // Sizes follow the card's height - but a stacked card shares it with its graph.
+  const room = stacked ? h * 0.42 : h;
 
   // Smaller before cut short: a name that ends in "..." is no use on a
   // revision sheet. Monospace looks set the widest letters.
@@ -120,13 +128,13 @@ const Card: React.FC<{
   const fitting = (text: string, size: number, min: number) =>
     Math.max(min, Math.min(size, textW / Math.max(1, text.length * perChar)));
   // Down to a readable floor, and past that onto a second line.
-  const nameSize = fitting(number + '. ' + card.name, clamp(h * 0.13, 16, 42), 18);
+  const nameSize = fitting(number + '. ' + card.name, clamp(room * 0.13, 16, 52), 18);
   const nameWraps = (number + '. ' + card.name).length * perChar * nameSize > textW;
-  const noteSize = Math.min(...card.notes.map((n) => fitting(n, clamp(h * 0.075, 13, 26), 12)), clamp(h * 0.075, 13, 26));
+  const noteSize = Math.min(...card.notes.map((n) => fitting(n, clamp(room * 0.075, 13, 30), 12)), clamp(room * 0.075, 13, 30));
   const nodes = React.useMemo(() => parseMath(card.formula), [card.formula]);
   const tall = isTall(nodes);
   // As big as the card allows, then down until it fits the width.
-  const byHeight = clamp(h * (tall ? 0.2 : 0.25), 18, 76);
+  const byHeight = clamp(room * (tall ? 0.2 : 0.25), 18, stacked ? 120 : 76);
   // The width estimate runs a little short of real italic type, so it is given
   // room: a fraction that reached into the graph was the first to show it.
   const formulaSize = Math.max(14, Math.min(byHeight, textW / Math.max(1, mathWidth(nodes) * 1.18)));
@@ -139,7 +147,9 @@ const Card: React.FC<{
         height: h,
         boxSizing: 'border-box',
         display: 'flex',
+        flexDirection: stacked ? 'column' : 'row',
         alignItems: 'center',
+        justifyContent: stacked ? 'center' : undefined,
         gap: pad,
         padding: pad,
         background: theme.surface,
@@ -151,6 +161,7 @@ const Card: React.FC<{
         overflow: 'hidden',
       }}
     >
+      <div style={{ display: 'flex', alignItems: 'center', gap: pad, width: stacked ? '100%' : undefined, justifyContent: stacked ? 'center' : undefined }}>
       {icon ? (
         <div
           style={{
@@ -174,7 +185,7 @@ const Card: React.FC<{
           />
         </div>
       ) : null}
-      <div style={{ width: textW, minWidth: 0, display: 'flex', flexDirection: 'column', gap: h * 0.035 }}>
+      <div style={{ width: stacked ? undefined : textW, maxWidth: textW, minWidth: 0, display: 'flex', flexDirection: 'column', gap: room * 0.035 }}>
         <div
           style={{
             fontFamily: theme.fontBody,
@@ -208,8 +219,9 @@ const Card: React.FC<{
           </div>
         ))}
       </div>
+      </div>
       {hasGraph ? (
-        <div style={{ flex: 'none', width: graphW, height: graphH, marginLeft: 'auto' }}>
+        <div style={{ flex: 'none', width: graphW, height: graphH, marginLeft: stacked ? undefined : 'auto' }}>
           <FormulaGraph theme={theme} graph={card.graph} draw={draw} time={time} width={graphW} height={graphH} />
         </div>
       ) : null}
