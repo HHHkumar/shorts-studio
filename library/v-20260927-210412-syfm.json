@@ -1,0 +1,1712 @@
+{
+ "id": "v-20260927-210412-syfm",
+ "createdAt": "2026-09-27T15:34:13.862Z",
+ "updatedAt": "2026-09-27T15:40:14.246Z",
+ "content": {
+  "subject": "Basic Electrical Engineering",
+  "topic": "Kirchhoff's Current Law",
+  "difficulty": "Medium",
+  "hook": "Can electric current ever vanish at a wire junction?",
+  "question": "In a node, currents entering are five amperes and three amperes, while two amperes leaves. What is the remaining branch current?",
+  "options": [
+   "Six amperes leaving",
+   "Ten amperes leaving",
+   "Six amperes entering",
+   "Four amperes leaving"
+  ],
+  "correctIndex": 0,
+  "answerLine": "The remaining branch current is six amperes leaving the node.",
+  "explanation": [
+   "Kirchhoff's current law states that total current entering any node equals total current leaving that same node.",
+   "This fundamental rule is a direct consequence of the physical law of conservation of electric charge.",
+   "Electric charge cannot accumulate at an ideal point or node, so net charge change remains zero.",
+   "First, we calculate the sum of currents entering the node, which is five plus three amperes."
+  ],
+  "funFact": "Kirchhoff formulated these network laws in 1845 while he was still an undergraduate student.",
+  "outro": "Remember that node current always balances to zero. Follow for more state engineering exam preparation tips!",
+  "hashtags": [
+   "ElectricalEngineering",
+   "KCL",
+   "CircuitTheory",
+   "GATEPrep",
+   "SSCJE"
+  ],
+  "motifSymbols": [
+   "⚡",
+   "🔌",
+   "⚙️",
+   "💡"
+  ],
+  "script": [
+   {
+    "kind": "intro",
+    "narration": "Ready for today’s question?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "wave",
+     "action": "waves enthusiastically to greet the viewer",
+     "emotion": "cheerful and eager",
+     "props": "a light bulb",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/doodle-czqsyu/s0-71509c.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "hook",
+    "narration": "Can electric current ever vanish inside a junction?",
+    "imageQuery": "electrical substation evening",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "a pipe junction with water rushing in from two sides and forming a swirl in the center",
+     "emotion": "mysterious",
+     "props": "water pipes, junction fitting",
+     "gag": "a tiny rubber duck caught spinning in the whirlpool"
+    },
+    "doodleSrc": "generated/doodle/doodle-czqsyu/s1-ecfaa8.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "question",
+    "narration": "In a node, currents entering are five amperes and three amperes, while two amperes leaves. What is the remaining branch current?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "figure",
+     "caption": "",
+     "reveal": false
+    }
+   },
+   {
+    "kind": "options",
+    "narration": "Is it Six amperes leaving, Ten amperes leaving, Six amperes entering, or Four amperes leaving?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "think",
+     "action": "taps chin and ponders beside four branching copper cables",
+     "emotion": "thoughtful",
+     "props": "four copper wires, junction box",
+     "gag": "one of the wires is twisted into a neat pretzel shape"
+    },
+    "doodleSrc": "generated/doodle/doodle-czqsyu/s3-b1a11a.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "countdown",
+    "narration": "",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "three stopwatches side by side vibrating with cartoon motion lines",
+     "emotion": "suspenseful",
+     "props": "three stopwatches",
+     "gag": "the winding key on the center stopwatch is spinning out of control"
+    },
+    "doodleSrc": "generated/doodle/doodle-czqsyu/s4-392edc.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "answer",
+    "narration": "The correct answer is Six amperes leaving.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "cheer",
+     "action": "throws both hands up in celebration beside a brightly glowing bulb",
+     "emotion": "triumphant and energetic",
+     "props": "a glowing light bulb, a battery",
+     "gag": "drawn confetti bursts outward around the light bulb"
+    },
+    "doodleSrc": "generated/doodle/doodle-czqsyu/s5-a47ed7.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "explain",
+    "narration": "Kirchhoff's current law states that total current entering any node equals total current leaving that same node.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "Σ Iin = Σ Iout",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "This fundamental rule is a direct consequence of the physical law of conservation of electric charge.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "icon",
+     "caption": "Charge Conservation",
+     "items": [
+      {
+       "label": "Charge",
+       "symbol": "⚡"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Electric charge cannot accumulate at an ideal point or node, so net charge change remains zero.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "kirchhoff",
+     "caption": "",
+     "params": {},
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "First, we calculate the sum of currents entering the node, which is five plus three amperes.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "figure",
+     "caption": "",
+     "reveal": true,
+     "highlight": "I1"
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "This gives a total inflow of eight amperes entering into the common junction point.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "bars",
+     "caption": "Current, A",
+     "items": [
+      {
+       "label": "Entering",
+       "value": 8
+      },
+      {
+       "label": "Leaving",
+       "value": 8
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "To satisfy the balance, the total current leaving the node must also equal eight amperes.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "Ileaving = 8 A",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "We already have one branch taking two amperes away from this central connection node.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "figure",
+     "caption": "",
+     "reveal": true,
+     "highlight": "I3"
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Subtracting two amperes from eight amperes leaves exactly six amperes for our unknown path.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "I4 = 8 A - 2 A = 6 A",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Therefore, the unknown branch must carry six amperes directed away from the node.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "figure",
+     "caption": "",
+     "reveal": true,
+     "highlight": "I4"
+    }
+   },
+   {
+    "kind": "formulas",
+    "narration": "Here are the formulas behind this one. Save it for your revision."
+   },
+   {
+    "kind": "outro",
+    "narration": "Kirchhoff formulated these network laws in 1845 while he was still an undergraduate student. Remember that node current always balances to zero. Follow for more state engineering exam preparation tips!",
+    "imageQuery": "university chalkboard classroom",
+    "visual": {
+     "kind": "icon",
+     "caption": "Exam Success",
+     "items": [
+      {
+       "label": "Pass",
+       "symbol": "🎯"
+      }
+     ]
+    }
+   }
+  ],
+  "figureCheck": {
+   "status": "match",
+   "computed": "6 A",
+   "option": "Six amperes leaving"
+  },
+  "figure": {
+   "type": "junction",
+   "title": "",
+   "branches": [
+    {
+     "label": "I1",
+     "value": 5,
+     "direction": "in",
+     "unknown": false
+    },
+    {
+     "label": "I2",
+     "value": 3,
+     "direction": "in",
+     "unknown": false
+    },
+    {
+     "label": "I3",
+     "value": 2,
+     "direction": "out",
+     "unknown": false
+    },
+    {
+     "label": "I4",
+     "value": 6,
+     "direction": "out",
+     "unknown": true
+    }
+   ]
+  },
+  "formulas": {
+   "title": "Kirchhoff's Current Law - Important Formulas",
+   "cards": [
+    {
+     "name": "Kirchhoff's Current Law",
+     "formula": "\\Sigma I_{\\text{in}} = \\Sigma I_{\\text{out}}",
+     "notes": [
+      "I_{\\text{in}} = Currents entering node (A)",
+      "I_{\\text{out}} = Currents leaving node (A)"
+     ],
+     "graph": {
+      "kind": "none",
+      "x": "",
+      "y": "",
+      "label": "",
+      "label2": ""
+     },
+     "icon": "ammeter",
+     "art": {
+      "body": "<g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"><path d=\"M5 12a7 7 0 1 0 14 0a7 7 0 1 0-14 0m0 0H2m17 0h3\"/><path d=\"M10 14v-3c0-1.036.895-2 2-2s2 .964 2 2v3m0-2h-4\"/></g>",
+      "width": 24,
+      "height": 24
+     }
+    },
+    {
+     "name": "Sum of Node Currents",
+     "formula": "\\Sigma I = 0",
+     "notes": [
+      "I = Branch current with sign convention (A)"
+     ],
+     "graph": {
+      "kind": "none",
+      "x": "",
+      "y": "",
+      "label": "",
+      "label2": ""
+     },
+     "icon": "multimeter",
+     "art": {
+      "body": "<path fill=\"currentColor\" d=\"M11 15H6l7-14v8h5l-7 14z\"/>",
+      "width": 24,
+      "height": 24
+     }
+    }
+   ]
+  }
+ },
+ "design": {
+  "mode": "light",
+  "layout": "doodle",
+  "accent": "#3ddc97",
+  "showCaptions": true,
+  "showProgressBar": true,
+  "countdownSeconds": 4,
+  "scenePaddingSeconds": 0.35,
+  "trimTrailingSilence": true,
+  "showVisuals": true,
+  "showMotif": true,
+  "ambient": "auto",
+  "ambientIntensity": 0.6,
+  "motionStrength": 1,
+  "transition": "auto",
+  "textReveal": "fade",
+  "overlay": "vignette",
+  "overlayIntensity": 0.5,
+  "align": "auto",
+  "showStock": true,
+  "stockOpacity": 0.45,
+  "music": "tense",
+  "musicVolume": 0.22,
+  "customMusicSrc": "",
+  "sfx": true,
+  "sfxVolume": 0.5,
+  "orientation": "portrait",
+  "doodleEnergy": "lively",
+  "animatedEngineer": true
+ },
+ "audio": {
+  "0": {
+   "src": "generated/vo-1a624a3c/s0.mp3",
+   "duration": 1.436734693877551,
+   "words": [
+    {
+     "word": "Ready",
+     "start": 0,
+     "end": 0.36
+    },
+    {
+     "word": "for",
+     "start": 0.395,
+     "end": 0.488
+    },
+    {
+     "word": "today’s",
+     "start": 0.522,
+     "end": 0.766
+    },
+    {
+     "word": "question?",
+     "start": 0.789,
+     "end": 1.393
+    }
+   ],
+   "measuredDuration": 1.3931972789115645,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 1.1145578231292517,
+   "captionOffset": 0.17414965986394557
+  },
+  "1": {
+   "src": "generated/vo-1a624a3c/s1.mp3",
+   "duration": 2.8212244897959184,
+   "words": [
+    {
+     "word": "Can",
+     "start": 0,
+     "end": 0.244
+    },
+    {
+     "word": "electric",
+     "start": 0.313,
+     "end": 0.65
+    },
+    {
+     "word": "current",
+     "start": 0.685,
+     "end": 0.964
+    },
+    {
+     "word": "ever",
+     "start": 1.022,
+     "end": 1.219
+    },
+    {
+     "word": "vanish",
+     "start": 1.289,
+     "end": 1.579
+    },
+    {
+     "word": "inside",
+     "start": 1.637,
+     "end": 1.95
+    },
+    {
+     "word": "a",
+     "start": 1.985,
+     "end": 2.009
+    },
+    {
+     "word": "junction?",
+     "start": 2.067,
+     "end": 2.786
+    }
+   ],
+   "measuredDuration": 2.786394557823129,
+   "speechStart": 0.13931972789115646,
+   "speechEnd": 2.5309750566893423,
+   "captionOffset": 0.13931972789115646
+  },
+  "2": {
+   "src": "generated/vo-1a624a3c/s2.mp3",
+   "duration": 7.053061224489796,
+   "words": [
+    {
+     "word": "In",
+     "start": 0,
+     "end": 0.29
+    },
+    {
+     "word": "a",
+     "start": 0.348,
+     "end": 0.372
+    },
+    {
+     "word": "node,",
+     "start": 0.441,
+     "end": 0.813
+    },
+    {
+     "word": "currents",
+     "start": 0.906,
+     "end": 1.289
+    },
+    {
+     "word": "entering",
+     "start": 1.358,
+     "end": 1.73
+    },
+    {
+     "word": "are",
+     "start": 1.811,
+     "end": 1.962
+    },
+    {
+     "word": "five",
+     "start": 2.02,
+     "end": 2.299
+    },
+    {
+     "word": "amperes",
+     "start": 2.345,
+     "end": 2.752
+    },
+    {
+     "word": "and",
+     "start": 2.798,
+     "end": 2.902
+    },
+    {
+     "word": "three",
+     "start": 2.937,
+     "end": 3.111
+    },
+    {
+     "word": "amperes,",
+     "start": 3.17,
+     "end": 3.611
+    },
+    {
+     "word": "while",
+     "start": 3.634,
+     "end": 3.843
+    },
+    {
+     "word": "two",
+     "start": 3.889,
+     "end": 4.052
+    },
+    {
+     "word": "amperes",
+     "start": 4.133,
+     "end": 4.551
+    },
+    {
+     "word": "leaves.",
+     "start": 4.632,
+     "end": 5.097
+    },
+    {
+     "word": "What",
+     "start": 5.213,
+     "end": 5.399
+    },
+    {
+     "word": "is",
+     "start": 5.445,
+     "end": 5.526
+    },
+    {
+     "word": "the",
+     "start": 5.561,
+     "end": 5.631
+    },
+    {
+     "word": "remaining",
+     "start": 5.677,
+     "end": 6.037
+    },
+    {
+     "word": "branch",
+     "start": 6.095,
+     "end": 6.362
+    },
+    {
+     "word": "current?",
+     "start": 6.409,
+     "end": 7.012
+    }
+   ],
+   "measuredDuration": 7.012426303854875,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 6.757006802721088,
+   "captionOffset": 0.16253968253968254
+  },
+  "3": {
+   "src": "generated/vo-1a624a3c/s3.mp3",
+   "duration": 5.015510204081632,
+   "words": [
+    {
+     "word": "Is",
+     "start": 0,
+     "end": 0.29
+    },
+    {
+     "word": "it",
+     "start": 0.337,
+     "end": 0.395
+    },
+    {
+     "word": "Six",
+     "start": 0.441,
+     "end": 0.627
+    },
+    {
+     "word": "amperes",
+     "start": 0.697,
+     "end": 1.057
+    },
+    {
+     "word": "leaving,",
+     "start": 1.115,
+     "end": 1.416
+    },
+    {
+     "word": "Ten",
+     "start": 1.451,
+     "end": 1.614
+    },
+    {
+     "word": "amperes",
+     "start": 1.695,
+     "end": 2.067
+    },
+    {
+     "word": "leaving,",
+     "start": 2.125,
+     "end": 2.415
+    },
+    {
+     "word": "Six",
+     "start": 2.438,
+     "end": 2.635
+    },
+    {
+     "word": "amperes",
+     "start": 2.705,
+     "end": 3.053
+    },
+    {
+     "word": "entering,",
+     "start": 3.111,
+     "end": 3.495
+    },
+    {
+     "word": "or",
+     "start": 3.564,
+     "end": 3.657
+    },
+    {
+     "word": "Four",
+     "start": 3.727,
+     "end": 3.924
+    },
+    {
+     "word": "amperes",
+     "start": 3.994,
+     "end": 4.377
+    },
+    {
+     "word": "leaving?",
+     "start": 4.447,
+     "end": 4.969
+    }
+   ],
+   "measuredDuration": 4.96907029478458,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 4.725260770975057,
+   "captionOffset": 0.17414965986394557
+  },
+  "5": {
+   "src": "generated/vo-1a624a3c/s5.mp3",
+   "duration": 2.27265306122449,
+   "words": [
+    {
+     "word": "The",
+     "start": 0,
+     "end": 0.221
+    },
+    {
+     "word": "correct",
+     "start": 0.279,
+     "end": 0.592
+    },
+    {
+     "word": "answer",
+     "start": 0.662,
+     "end": 0.929
+    },
+    {
+     "word": "is",
+     "start": 0.987,
+     "end": 1.045
+    },
+    {
+     "word": "Six",
+     "start": 1.08,
+     "end": 1.265
+    },
+    {
+     "word": "amperes",
+     "start": 1.335,
+     "end": 1.683
+    },
+    {
+     "word": "leaving.",
+     "start": 1.741,
+     "end": 2.229
+    }
+   ],
+   "measuredDuration": 2.2291156462585033,
+   "speechStart": 0.13931972789115646,
+   "speechEnd": 1.9969160997732427,
+   "captionOffset": 0.13931972789115646
+  },
+  "6": {
+   "src": "generated/vo-1a624a3c/s6.mp3",
+   "duration": 6.530612244897959,
+   "words": [
+    {
+     "word": "Kirchhoff's",
+     "start": 0,
+     "end": 0.627
+    },
+    {
+     "word": "current",
+     "start": 0.685,
+     "end": 0.975
+    },
+    {
+     "word": "law",
+     "start": 1.033,
+     "end": 1.196
+    },
+    {
+     "word": "states",
+     "start": 1.254,
+     "end": 1.625
+    },
+    {
+     "word": "that",
+     "start": 1.672,
+     "end": 1.846
+    },
+    {
+     "word": "total",
+     "start": 1.904,
+     "end": 2.264
+    },
+    {
+     "word": "current",
+     "start": 2.334,
+     "end": 2.67
+    },
+    {
+     "word": "entering",
+     "start": 2.752,
+     "end": 3.158
+    },
+    {
+     "word": "any",
+     "start": 3.228,
+     "end": 3.437
+    },
+    {
+     "word": "node",
+     "start": 3.495,
+     "end": 3.773
+    },
+    {
+     "word": "equals",
+     "start": 3.855,
+     "end": 4.249
+    },
+    {
+     "word": "total",
+     "start": 4.319,
+     "end": 4.644
+    },
+    {
+     "word": "current",
+     "start": 4.714,
+     "end": 5.016
+    },
+    {
+     "word": "leaving",
+     "start": 5.074,
+     "end": 5.399
+    },
+    {
+     "word": "that",
+     "start": 5.457,
+     "end": 5.608
+    },
+    {
+     "word": "same",
+     "start": 5.677,
+     "end": 5.956
+    },
+    {
+     "word": "node.",
+     "start": 6.014,
+     "end": 6.502
+    }
+   ],
+   "measuredDuration": 6.501587301587302,
+   "speechStart": 0.1509297052154195,
+   "speechEnd": 6.257777777777778,
+   "captionOffset": 0.1509297052154195
+  },
+  "7": {
+   "src": "generated/vo-1a624a3c/s7.mp3",
+   "duration": 5.015510204081632,
+   "words": [
+    {
+     "word": "This",
+     "start": 0,
+     "end": 0.36
+    },
+    {
+     "word": "fundamental",
+     "start": 0.406,
+     "end": 0.859
+    },
+    {
+     "word": "rule",
+     "start": 0.917,
+     "end": 1.126
+    },
+    {
+     "word": "is",
+     "start": 1.161,
+     "end": 1.231
+    },
+    {
+     "word": "a",
+     "start": 1.289,
+     "end": 1.312
+    },
+    {
+     "word": "direct",
+     "start": 1.393,
+     "end": 1.695
+    },
+    {
+     "word": "consequence",
+     "start": 1.753,
+     "end": 2.287
+    },
+    {
+     "word": "of",
+     "start": 2.322,
+     "end": 2.38
+    },
+    {
+     "word": "the",
+     "start": 2.426,
+     "end": 2.496
+    },
+    {
+     "word": "physical",
+     "start": 2.543,
+     "end": 2.891
+    },
+    {
+     "word": "law",
+     "start": 2.949,
+     "end": 3.088
+    },
+    {
+     "word": "of",
+     "start": 3.123,
+     "end": 3.181
+    },
+    {
+     "word": "conservation",
+     "start": 3.262,
+     "end": 3.808
+    },
+    {
+     "word": "of",
+     "start": 3.855,
+     "end": 3.924
+    },
+    {
+     "word": "electric",
+     "start": 3.982,
+     "end": 4.307
+    },
+    {
+     "word": "charge.",
+     "start": 4.354,
+     "end": 4.969
+    }
+   ],
+   "measuredDuration": 4.96907029478458,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 4.6788208616780045,
+   "captionOffset": 0.17414965986394557
+  },
+  "8": {
+   "src": "generated/vo-1a624a3c/s8.mp3",
+   "duration": 5.511836734693878,
+   "words": [
+    {
+     "word": "Electric",
+     "start": 0,
+     "end": 0.557
+    },
+    {
+     "word": "charge",
+     "start": 0.615,
+     "end": 0.952
+    },
+    {
+     "word": "cannot",
+     "start": 0.987,
+     "end": 1.231
+    },
+    {
+     "word": "accumulate",
+     "start": 1.277,
+     "end": 1.834
+    },
+    {
+     "word": "at",
+     "start": 1.881,
+     "end": 1.974
+    },
+    {
+     "word": "an",
+     "start": 2.02,
+     "end": 2.09
+    },
+    {
+     "word": "ideal",
+     "start": 2.159,
+     "end": 2.426
+    },
+    {
+     "word": "point",
+     "start": 2.496,
+     "end": 2.728
+    },
+    {
+     "word": "or",
+     "start": 2.798,
+     "end": 2.891
+    },
+    {
+     "word": "node,",
+     "start": 2.937,
+     "end": 3.216
+    },
+    {
+     "word": "so",
+     "start": 3.251,
+     "end": 3.425
+    },
+    {
+     "word": "net",
+     "start": 3.541,
+     "end": 3.75
+    },
+    {
+     "word": "charge",
+     "start": 3.831,
+     "end": 4.168
+    },
+    {
+     "word": "change",
+     "start": 4.214,
+     "end": 4.528
+    },
+    {
+     "word": "remains",
+     "start": 4.574,
+     "end": 4.899
+    },
+    {
+     "word": "zero.",
+     "start": 4.946,
+     "end": 5.48
+    }
+   ],
+   "measuredDuration": 5.479909297052155,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 5.23609977324263,
+   "captionOffset": 0.17414965986394557
+  },
+  "9": {
+   "src": "generated/vo-1a624a3c/s9.mp3",
+   "duration": 5.0416326530612245,
+   "words": [
+    {
+     "word": "First,",
+     "start": 0,
+     "end": 0.464
+    },
+    {
+     "word": "we",
+     "start": 0.499,
+     "end": 0.592
+    },
+    {
+     "word": "calculate",
+     "start": 0.662,
+     "end": 1.173
+    },
+    {
+     "word": "the",
+     "start": 1.207,
+     "end": 1.277
+    },
+    {
+     "word": "sum",
+     "start": 1.312,
+     "end": 1.463
+    },
+    {
+     "word": "of",
+     "start": 1.509,
+     "end": 1.579
+    },
+    {
+     "word": "currents",
+     "start": 1.66,
+     "end": 2.032
+    },
+    {
+     "word": "entering",
+     "start": 2.09,
+     "end": 2.438
+    },
+    {
+     "word": "the",
+     "start": 2.485,
+     "end": 2.554
+    },
+    {
+     "word": "node,",
+     "start": 2.601,
+     "end": 2.879
+    },
+    {
+     "word": "which",
+     "start": 2.902,
+     "end": 3.088
+    },
+    {
+     "word": "is",
+     "start": 3.135,
+     "end": 3.216
+    },
+    {
+     "word": "five",
+     "start": 3.309,
+     "end": 3.599
+    },
+    {
+     "word": "plus",
+     "start": 3.646,
+     "end": 3.878
+    },
+    {
+     "word": "three",
+     "start": 3.959,
+     "end": 4.168
+    },
+    {
+     "word": "amperes.",
+     "start": 4.238,
+     "end": 5.016
+    }
+   ],
+   "measuredDuration": 5.015510204081632,
+   "speechStart": 0.19736961451247165,
+   "speechEnd": 4.655600907029479,
+   "captionOffset": 0.19736961451247165
+  },
+  "10": {
+   "src": "generated/vo-1a624a3c/s10.mp3",
+   "duration": 4.728163265306122,
+   "words": [
+    {
+     "word": "This",
+     "start": 0,
+     "end": 0.313
+    },
+    {
+     "word": "gives",
+     "start": 0.395,
+     "end": 0.673
+    },
+    {
+     "word": "a",
+     "start": 0.743,
+     "end": 0.778
+    },
+    {
+     "word": "total",
+     "start": 0.859,
+     "end": 1.184
+    },
+    {
+     "word": "inflow",
+     "start": 1.254,
+     "end": 1.579
+    },
+    {
+     "word": "of",
+     "start": 1.614,
+     "end": 1.695
+    },
+    {
+     "word": "eight",
+     "start": 1.811,
+     "end": 2.067
+    },
+    {
+     "word": "amperes",
+     "start": 2.136,
+     "end": 2.635
+    },
+    {
+     "word": "entering",
+     "start": 2.705,
+     "end": 3.053
+    },
+    {
+     "word": "into",
+     "start": 3.1,
+     "end": 3.251
+    },
+    {
+     "word": "the",
+     "start": 3.309,
+     "end": 3.379
+    },
+    {
+     "word": "common",
+     "start": 3.413,
+     "end": 3.669
+    },
+    {
+     "word": "junction",
+     "start": 3.727,
+     "end": 4.063
+    },
+    {
+     "word": "point.",
+     "start": 4.122,
+     "end": 4.69
+    }
+   ],
+   "measuredDuration": 4.690430839002268,
+   "speechStart": 0.1509297052154195,
+   "speechEnd": 4.435011337868481,
+   "captionOffset": 0.1509297052154195
+  },
+  "11": {
+   "src": "generated/vo-1a624a3c/s11.mp3",
+   "duration": 5.328979591836735,
+   "words": [
+    {
+     "word": "To",
+     "start": 0,
+     "end": 0.221
+    },
+    {
+     "word": "satisfy",
+     "start": 0.29,
+     "end": 0.778
+    },
+    {
+     "word": "the",
+     "start": 0.836,
+     "end": 0.906
+    },
+    {
+     "word": "balance,",
+     "start": 0.952,
+     "end": 1.347
+    },
+    {
+     "word": "the",
+     "start": 1.37,
+     "end": 1.451
+    },
+    {
+     "word": "total",
+     "start": 1.509,
+     "end": 1.846
+    },
+    {
+     "word": "current",
+     "start": 1.916,
+     "end": 2.194
+    },
+    {
+     "word": "leaving",
+     "start": 2.252,
+     "end": 2.531
+    },
+    {
+     "word": "the",
+     "start": 2.589,
+     "end": 2.659
+    },
+    {
+     "word": "node",
+     "start": 2.728,
+     "end": 2.984
+    },
+    {
+     "word": "must",
+     "start": 3.03,
+     "end": 3.216
+    },
+    {
+     "word": "also",
+     "start": 3.286,
+     "end": 3.634
+    },
+    {
+     "word": "equal",
+     "start": 3.727,
+     "end": 4.029
+    },
+    {
+     "word": "eight",
+     "start": 4.145,
+     "end": 4.4
+    },
+    {
+     "word": "amperes.",
+     "start": 4.447,
+     "end": 5.294
+    }
+   ],
+   "measuredDuration": 5.294149659863946,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 4.876190476190477,
+   "captionOffset": 0.16253968253968254
+  },
+  "12": {
+   "src": "generated/vo-1a624a3c/s12.mp3",
+   "duration": 4.41469387755102,
+   "words": [
+    {
+     "word": "We",
+     "start": 0,
+     "end": 0.244
+    },
+    {
+     "word": "already",
+     "start": 0.29,
+     "end": 0.557
+    },
+    {
+     "word": "have",
+     "start": 0.615,
+     "end": 0.755
+    },
+    {
+     "word": "one",
+     "start": 0.801,
+     "end": 0.975
+    },
+    {
+     "word": "branch",
+     "start": 1.01,
+     "end": 1.335
+    },
+    {
+     "word": "taking",
+     "start": 1.37,
+     "end": 1.66
+    },
+    {
+     "word": "two",
+     "start": 1.718,
+     "end": 1.881
+    },
+    {
+     "word": "amperes",
+     "start": 1.95,
+     "end": 2.38
+    },
+    {
+     "word": "away",
+     "start": 2.426,
+     "end": 2.612
+    },
+    {
+     "word": "from",
+     "start": 2.659,
+     "end": 2.798
+    },
+    {
+     "word": "this",
+     "start": 2.844,
+     "end": 2.961
+    },
+    {
+     "word": "central",
+     "start": 2.995,
+     "end": 3.344
+    },
+    {
+     "word": "connection",
+     "start": 3.402,
+     "end": 3.808
+    },
+    {
+     "word": "node.",
+     "start": 3.866,
+     "end": 4.365
+    }
+   ],
+   "measuredDuration": 4.365351473922902,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 4.133151927437642,
+   "captionOffset": 0.17414965986394557
+  },
+  "13": {
+   "src": "generated/vo-1a624a3c/s13.mp3",
+   "duration": 5.0416326530612245,
+   "words": [
+    {
+     "word": "Subtracting",
+     "start": 0,
+     "end": 0.789
+    },
+    {
+     "word": "two",
+     "start": 0.836,
+     "end": 0.94
+    },
+    {
+     "word": "amperes",
+     "start": 1.01,
+     "end": 1.358
+    },
+    {
+     "word": "from",
+     "start": 1.393,
+     "end": 1.533
+    },
+    {
+     "word": "eight",
+     "start": 1.614,
+     "end": 1.834
+    },
+    {
+     "word": "amperes",
+     "start": 1.869,
+     "end": 2.206
+    },
+    {
+     "word": "leaves",
+     "start": 2.264,
+     "end": 2.485
+    },
+    {
+     "word": "exactly",
+     "start": 2.531,
+     "end": 2.914
+    },
+    {
+     "word": "six",
+     "start": 2.984,
+     "end": 3.274
+    },
+    {
+     "word": "amperes",
+     "start": 3.355,
+     "end": 3.738
+    },
+    {
+     "word": "for",
+     "start": 3.785,
+     "end": 3.889
+    },
+    {
+     "word": "our",
+     "start": 3.947,
+     "end": 4.063
+    },
+    {
+     "word": "unknown",
+     "start": 4.133,
+     "end": 4.458
+    },
+    {
+     "word": "path.",
+     "start": 4.516,
+     "end": 5.016
+    }
+   ],
+   "measuredDuration": 5.015510204081632,
+   "speechStart": 0.18575963718820862,
+   "speechEnd": 4.690430839002268,
+   "captionOffset": 0.18575963718820862
+  },
+  "14": {
+   "src": "generated/vo-1a624a3c/s14.mp3",
+   "duration": 4.597551020408163,
+   "words": [
+    {
+     "word": "Therefore,",
+     "start": 0,
+     "end": 0.534
+    },
+    {
+     "word": "the",
+     "start": 0.557,
+     "end": 0.639
+    },
+    {
+     "word": "unknown",
+     "start": 0.708,
+     "end": 1.068
+    },
+    {
+     "word": "branch",
+     "start": 1.115,
+     "end": 1.428
+    },
+    {
+     "word": "must",
+     "start": 1.498,
+     "end": 1.66
+    },
+    {
+     "word": "carry",
+     "start": 1.718,
+     "end": 2.009
+    },
+    {
+     "word": "six",
+     "start": 2.101,
+     "end": 2.357
+    },
+    {
+     "word": "amperes",
+     "start": 2.473,
+     "end": 2.949
+    },
+    {
+     "word": "directed",
+     "start": 3.007,
+     "end": 3.413
+    },
+    {
+     "word": "away",
+     "start": 3.448,
+     "end": 3.611
+    },
+    {
+     "word": "from",
+     "start": 3.646,
+     "end": 3.796
+    },
+    {
+     "word": "the",
+     "start": 3.843,
+     "end": 3.913
+    },
+    {
+     "word": "node.",
+     "start": 3.982,
+     "end": 4.551
+    }
+   ],
+   "measuredDuration": 4.551111111111111,
+   "speechStart": 0.1509297052154195,
+   "speechEnd": 4.307301587301588,
+   "captionOffset": 0.1509297052154195
+  },
+  "15": {
+   "src": "generated/vo-1a624a3c/s15.mp3",
+   "duration": 2.9257142857142857,
+   "words": [
+    {
+     "word": "Here",
+     "start": 0,
+     "end": 0.302
+    },
+    {
+     "word": "are",
+     "start": 0.337,
+     "end": 0.43
+    },
+    {
+     "word": "the",
+     "start": 0.453,
+     "end": 0.522
+    },
+    {
+     "word": "formulas",
+     "start": 0.557,
+     "end": 0.94
+    },
+    {
+     "word": "behind",
+     "start": 0.998,
+     "end": 1.265
+    },
+    {
+     "word": "this",
+     "start": 1.3,
+     "end": 1.44
+    },
+    {
+     "word": "one.",
+     "start": 1.498,
+     "end": 1.66
+    },
+    {
+     "word": "Save",
+     "start": 1.683,
+     "end": 1.892
+    },
+    {
+     "word": "it",
+     "start": 1.927,
+     "end": 1.985
+    },
+    {
+     "word": "for",
+     "start": 2.032,
+     "end": 2.125
+    },
+    {
+     "word": "your",
+     "start": 2.159,
+     "end": 2.252
+    },
+    {
+     "word": "revision.",
+     "start": 2.287,
+     "end": 2.879
+    }
+   ],
+   "measuredDuration": 2.8792743764172335,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 2.647074829931973,
+   "captionOffset": 0.17414965986394557
+  },
+  "16": {
+   "src": "generated/vo-6329a9ff/s16.mp3",
+   "duration": 13.374693877551021,
+   "words": [
+    {
+     "word": "Kirchhoff",
+     "start": 0,
+     "end": 0.58
+    },
+    {
+     "word": "formulated",
+     "start": 0.697,
+     "end": 1.393
+    },
+    {
+     "word": "these",
+     "start": 1.451,
+     "end": 1.672
+    },
+    {
+     "word": "network",
+     "start": 1.753,
+     "end": 2.218
+    },
+    {
+     "word": "laws",
+     "start": 2.287,
+     "end": 2.566
+    },
+    {
+     "word": "in",
+     "start": 2.635,
+     "end": 2.763
+    },
+    {
+     "word": "1845",
+     "start": 2.856,
+     "end": 3.959
+    },
+    {
+     "word": "while",
+     "start": 4.133,
+     "end": 4.4
+    },
+    {
+     "word": "he",
+     "start": 4.458,
+     "end": 4.528
+    },
+    {
+     "word": "was",
+     "start": 4.586,
+     "end": 4.714
+    },
+    {
+     "word": "still",
+     "start": 4.772,
+     "end": 4.981
+    },
+    {
+     "word": "an",
+     "start": 5.039,
+     "end": 5.097
+    },
+    {
+     "word": "undergraduate",
+     "start": 5.178,
+     "end": 5.851
+    },
+    {
+     "word": "student.",
+     "start": 5.886,
+     "end": 6.455
+    },
+    {
+     "word": "Remember",
+     "start": 6.664,
+     "end": 7.094
+    },
+    {
+     "word": "that",
+     "start": 7.175,
+     "end": 7.338
+    },
+    {
+     "word": "node",
+     "start": 7.419,
+     "end": 7.674
+    },
+    {
+     "word": "current",
+     "start": 7.709,
+     "end": 8.011
+    },
+    {
+     "word": "always",
+     "start": 8.092,
+     "end": 8.44
+    },
+    {
+     "word": "balances",
+     "start": 8.51,
+     "end": 9.044
+    },
+    {
+     "word": "to",
+     "start": 9.102,
+     "end": 9.195
+    },
+    {
+     "word": "zero.",
+     "start": 9.276,
+     "end": 9.764
+    },
+    {
+     "word": "Follow",
+     "start": 9.973,
+     "end": 10.309
+    },
+    {
+     "word": "for",
+     "start": 10.379,
+     "end": 10.53
+    },
+    {
+     "word": "more",
+     "start": 10.6,
+     "end": 10.878
+    },
+    {
+     "word": "state",
+     "start": 10.913,
+     "end": 11.203
+    },
+    {
+     "word": "engineering",
+     "start": 11.25,
+     "end": 11.726
+    },
+    {
+     "word": "exam",
+     "start": 11.795,
+     "end": 12.097
+    },
+    {
+     "word": "preparation",
+     "start": 12.155,
+     "end": 12.689
+    },
+    {
+     "word": "tips!",
+     "start": 12.747,
+     "end": 13.328
+    }
+   ],
+   "measuredDuration": 13.328253968253968,
+   "speechStart": 0.1509297052154195,
+   "speechEnd": 13.014784580498866,
+   "captionOffset": 0.1509297052154195
+  }
+ },
+ "seo": null,
+ "ledger": [
+  {
+   "what": "Voiceover (1 scenes)",
+   "characters": 201,
+   "at": "2026-09-27T15:40:10.852Z"
+  }
+ ],
+ "renders": [],
+ "published": {}
+}
