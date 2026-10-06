@@ -1,0 +1,392 @@
+{
+ "id": "v-20260927-220714-275c",
+ "createdAt": "2026-09-27T16:37:14.298Z",
+ "updatedAt": "2026-09-27T16:39:34.174Z",
+ "content": {
+  "subject": "Electrical Measurements",
+  "topic": "Two-Wattmeter Method for Three-Phase Power",
+  "difficulty": "Medium",
+  "hook": "Can a wattmeter really spin backwards in a balanced three-phase circuit?",
+  "question": "In a two-wattmeter method measuring balanced three-phase power, one wattmeter reads zero while the other reads positive. What is the load power factor?",
+  "options": [
+   "Unity",
+   "Zero point eight six six",
+   "Zero point five",
+   "Zero"
+  ],
+  "correctIndex": 2,
+  "answerLine": "The load power factor is exactly zero point five.",
+  "explanation": [
+   "Recall the standard two-wattmeter readings: wattmeter one equals V line I line cosine of thirty minus phi.",
+   "Wattmeter two equals V line I line cosine of thirty degrees plus the load phase angle phi.",
+   "For one wattmeter to read zero, cosine of thirty plus phi must equal zero at balanced conditions.",
+   "Setting thirty plus phi equal to ninety degrees reveals that the phase angle phi equals sixty degrees."
+  ],
+  "funFact": "When the power factor falls below zero point five, the meter deflects backwards and needs coil reversal.",
+  "outro": "Remember zero point five is the critical boundary. Subscribe for more electrical engineering exam prep!",
+  "hashtags": [
+   "ElectricalEngineering",
+   "Measurements",
+   "StateAEJE",
+   "ThreePhase",
+   "TwoWattmeterMethod"
+  ],
+  "motifSymbols": [
+   "⚡",
+   "📐",
+   "🔌",
+   "💡"
+  ],
+  "script": [
+   {
+    "kind": "intro",
+    "narration": "Ready for today’s question?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "wave",
+     "action": "waves both hands enthusiastically toward the viewer",
+     "emotion": "cheerful, welcoming",
+     "props": "a workbench, an analog wattmeter",
+     "gag": "none"
+    }
+   },
+   {
+    "kind": "hook",
+    "narration": "Can a wattmeter really spin backwards in a balanced three-phase circuit?",
+    "imageQuery": "high voltage substation transformers",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "an analog wattmeter dial with curved motion lines showing the indicator needle straining against the zero stop peg toward the reverse direction",
+     "emotion": "suspenseful",
+     "props": "an analog meter with a deflection needle",
+     "gag": "tiny sweat droplets springing off the straining meter needle"
+    }
+   },
+   {
+    "kind": "question",
+    "narration": "In a two-wattmeter method measuring balanced three-phase power, one wattmeter reads zero while the other reads positive. What is the load power factor?",
+    "imageQuery": "analog wattmeter dial meter",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "two wattmeters connected in parallel to three supply lines, one needle resting dead at zero while the other swings forward to a positive deflection",
+     "emotion": "inquisitive",
+     "props": "two wattmeters, three power cables",
+     "gag": "a tiny cobweb spun across the needle that remains stuck at zero"
+    }
+   },
+   {
+    "kind": "options",
+    "narration": "Is it Unity, Zero point eight six six, Zero point five, or Zero?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "think",
+     "action": "taps chin thoughtfully while gazing at four identical question-mark dials arranged beside him",
+     "emotion": "puzzled, weighing options",
+     "props": "four small indicator dials with question marks",
+     "gag": "none"
+    }
+   },
+   {
+    "kind": "countdown",
+    "narration": "",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "an hourglass with sand grains trickling down rapidly next to a mechanical metronome ticking back and forth",
+     "emotion": "tense",
+     "props": "an hourglass, a metronome",
+     "gag": "none"
+    }
+   },
+   {
+    "kind": "answer",
+    "narration": "The load power factor is exactly zero point five.",
+    "imageQuery": "switchboard instrumentation panel laboratory",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "cheer",
+     "action": "leaps up with raised arms next to a circular dial sliced precisely into two equal halves",
+     "emotion": "triumphant, excited",
+     "props": "a circular split disk, a glowing light bulb",
+     "gag": "the glowing light bulb wears tiny party sunglasses"
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Recall the standard two-wattmeter readings: wattmeter one equals V line I line cosine of thirty minus phi.",
+    "imageQuery": "analog multimeter pointer dial",
+    "visual": {
+     "kind": "working"
+    },
+    "visualWas": {
+     "kind": "formula",
+     "formula": "W₁ = VL IL cos(30° - φ)",
+     "caption": "Wattmeter 1 reading"
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Wattmeter two equals V line I line cosine of thirty degrees plus the load phase angle phi.",
+    "imageQuery": "electrical engineering testing workbench",
+    "visual": {
+     "kind": "formula",
+     "formula": "W₂ = VL IL cos(30° + φ)",
+     "caption": "Wattmeter 2 reading"
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "For one wattmeter to read zero, cosine of thirty plus phi must equal zero at balanced conditions.",
+    "imageQuery": "vintage power measurement laboratory",
+    "visual": {
+     "kind": "formula",
+     "formula": "cos(30° + φ) = 0",
+     "caption": "Condition for W₂ = 0"
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Setting thirty plus phi equal to ninety degrees reveals that the phase angle phi equals sixty degrees.",
+    "imageQuery": "vector phasor diagram blackboard",
+    "visual": {
+     "kind": "formula",
+     "formula": "30° + φ = 90° ⇒ φ = 60°",
+     "caption": "Load phase angle"
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Taking the cosine of sixty degrees yields a load power factor of exactly zero point five lagging.",
+    "imageQuery": "electrical equipment control panel",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "power-factor",
+     "caption": "",
+     "params": {
+      "angle": 60
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Alternatively, use the tangent phi formula: root three times W one minus W two over their sum.",
+    "imageQuery": "engineering notes formula calculation",
+    "visual": {
+     "kind": "formula",
+     "formula": "tan φ = √3 (W₁ - W₂) / (W₁ + W₂)",
+     "caption": "Standard tangent relation"
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Substituting W two as zero simplifies the expression to root three times W one divided by W one.",
+    "imageQuery": "technical calculation laboratory bench",
+    "visual": {
+     "kind": "formula",
+     "formula": "tan φ = √3 (W₁ - 0) / (W₁ + 0) = √3",
+     "caption": "Substitution with W₂ = 0"
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "This leaves tangent phi equal to root three, directly giving phi as sixty degrees and cosine phi as half.",
+    "imageQuery": "electrical testing meter readings",
+    "visual": {
+     "kind": "compare",
+     "caption": "Angle and power factor",
+     "items": [
+      {
+       "label": "φ = 60°",
+       "symbol": "📐"
+      },
+      {
+       "label": "cos φ = 0.5",
+       "symbol": "⚡"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Below zero point five, wattmeter two turns negative, requiring its current coil connections to be reversed.",
+    "imageQuery": "industrial electrical meter connections",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "phasor",
+     "caption": "",
+     "params": {
+      "angle": 60,
+      "labelA": "V",
+      "labelB": "I"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "formulas",
+    "narration": "Here are the formulas behind this one. Save it for your revision."
+   },
+   {
+    "kind": "outro",
+    "narration": "Remember zero point five is the critical boundary. Subscribe for more electrical engineering exam prep!",
+    "imageQuery": "high voltage power transmission lines",
+    "visual": {
+     "kind": "icon",
+     "caption": "State AE / JE Prep",
+     "items": [
+      {
+       "label": "Power Factor",
+       "symbol": "⚡"
+      }
+     ]
+    }
+   }
+  ],
+  "formulas": {
+   "title": "Two-Wattmeter Method - Important Formulas",
+   "cards": [
+    {
+     "name": "Wattmeter Reading",
+     "formula": "W_2 = V_L I_L \\cos(30^\\circ + \\phi)",
+     "notes": [
+      "V_L = Line voltage (V)",
+      "I_L = Line current (A)"
+     ],
+     "graph": {
+      "kind": "none",
+      "x": "",
+      "y": "",
+      "label": "",
+      "label2": ""
+     },
+     "icon": "ammeter",
+     "art": {
+      "body": "<g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"><path d=\"M5 12a7 7 0 1 0 14 0a7 7 0 1 0-14 0m0 0H2m17 0h3\"/><path d=\"M10 14v-3c0-1.036.895-2 2-2s2 .964 2 2v3m0-2h-4\"/></g>",
+      "width": 24,
+      "height": 24
+     }
+    },
+    {
+     "name": "Phase Angle From Readings",
+     "formula": "\\tan\\phi = \\sqrt{3}\\frac{W_1 - W_2}{W_1 + W_2}",
+     "notes": [
+      "W_1, W_2 = Wattmeter readings (W)",
+      "\\phi = Load phase angle"
+     ],
+     "graph": {
+      "kind": "none",
+      "x": "",
+      "y": "",
+      "label": "",
+      "label2": ""
+     },
+     "icon": "multimeter",
+     "art": {
+      "body": "<path fill=\"currentColor\" d=\"M11 15H6l7-14v8h5l-7 14z\"/>",
+      "width": 24,
+      "height": 24
+     }
+    },
+    {
+     "name": "Load Power Factor",
+     "formula": "\\text{pf} = \\cos\\phi",
+     "notes": [
+      "\\phi = Load phase angle"
+     ],
+     "graph": {
+      "kind": "power-triangle",
+      "x": "P",
+      "y": "Q",
+      "label": "\\phi",
+      "label2": "S"
+     },
+     "icon": "power button",
+     "art": {
+      "body": "<path fill=\"currentColor\" d=\"M228.576 26.213v207.32h54.848V26.214zm-28.518 45.744C108.44 96.58 41 180.215 41 279.605c0 118.74 96.258 215 215 215c118.74 0 215-96.26 215-215c0-99.39-67.44-183.025-159.057-207.647v50.47c64.6 22.994 110.85 84.684 110.85 157.177c0 92.117-74.676 166.794-166.793 166.794S89.206 371.721 89.206 279.604c0-72.494 46.25-134.183 110.852-157.178z\"/>",
+      "width": 512,
+      "height": 512
+     }
+    }
+   ],
+   "working": [
+    "\\text{pf} = \\cos\\left(\\arctan\\left(\\sqrt{3}\\frac{W_1 - W_2}{W_1 + W_2}\\right)\\right)",
+    "= \\cos\\left(\\arctan\\left(\\sqrt{3}\\frac{W_1 - 0}{W_1 + 0}\\right)\\right)",
+    "= \\cos(\\arctan(\\sqrt{3}))",
+    "= \\cos(60^\\circ)",
+    "= 0.5"
+   ]
+  }
+ },
+ "design": {
+  "mode": "light",
+  "layout": "doodle",
+  "accent": "#3ddc97",
+  "showCaptions": true,
+  "showProgressBar": true,
+  "countdownSeconds": 4,
+  "scenePaddingSeconds": 0.35,
+  "trimTrailingSilence": true,
+  "showVisuals": true,
+  "showMotif": true,
+  "ambient": "auto",
+  "ambientIntensity": 0.6,
+  "motionStrength": 1,
+  "transition": "auto",
+  "textReveal": "fade",
+  "overlay": "vignette",
+  "overlayIntensity": 0.5,
+  "align": "auto",
+  "showStock": true,
+  "stockOpacity": 0.45,
+  "music": "tense",
+  "musicVolume": 0.22,
+  "customMusicSrc": "",
+  "sfx": true,
+  "sfxVolume": 0.5,
+  "orientation": "portrait",
+  "doodleEnergy": "lively",
+  "animatedEngineer": true
+ },
+ "audio": {},
+ "seo": null,
+ "ledger": [
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-09-27T16:37:27.694Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-09-27T16:38:35.632Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-09-27T16:38:49.518Z"
+  }
+ ],
+ "renders": [],
+ "published": {}
+}

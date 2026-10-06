@@ -1,0 +1,395 @@
+{
+ "id": "v-20260927-215546-takc",
+ "createdAt": "2026-09-27T16:25:46.700Z",
+ "updatedAt": "2026-09-27T16:29:37.282Z",
+ "content": {
+  "subject": "Power Systems",
+  "topic": "Ferranti Effect",
+  "difficulty": "Easy",
+  "hook": "Can the receiving voltage exceed the sending voltage without a generator?",
+  "question": "In a long transmission line operating under no load or light load, what causes the receiving end voltage to exceed the sending end voltage?",
+  "options": [
+   "Line shunt capacitance drawing leading charging current",
+   "High line series resistance causing negative voltage drop",
+   "Line series inductive reactance drawing lagging current",
+   "Corona discharge increasing the effective conductor radius"
+  ],
+  "correctIndex": 0,
+  "answerLine": "Line shunt capacitance drawing leading charging current causes this phenomenon.",
+  "explanation": [
+   "Under no load or light load, a long line still draws a significant charging current from supply.",
+   "This current flows through the distributed shunt capacitance formed between the overhead conductors and the ground plane.",
+   "Because capacitive reactance dominates, this charging current leads the receiving end voltage by ninety degrees in phase.",
+   "As this leading current flows through the series inductance of the line, it creates a voltage drop."
+  ],
+  "funFact": "Ferranti first observed this unexpected voltage rise in eighteen ninety on his London underground cable system.",
+  "outro": "Follow for more state engineering exam electrical questions and detailed technical breakdowns every day.",
+  "hashtags": [
+   "ElectricalEngineering",
+   "PowerSystems",
+   "FerrantiEffect",
+   "AEJEExam",
+   "GateEE"
+  ],
+  "motifSymbols": [
+   "⚡",
+   "🔌",
+   "📈",
+   "⚙️"
+  ],
+  "script": [
+   {
+    "kind": "intro",
+    "narration": "Ready for today’s question?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "wave",
+     "action": "waves both hands enthusiastically toward the viewer",
+     "emotion": "cheerful, excited",
+     "props": "a light bulb outline",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/v-20260927-215546-takc/s0-cbbcd0.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "hook",
+    "narration": "Can receiving end voltage exceed sending voltage without any generator attached?",
+    "imageQuery": "power transmission lines sunset",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "two electrical transmission towers connected by overhead power lines with a voltmeter symbol at each end",
+     "emotion": "mysterious",
+     "props": "two transmission towers, overhead cables, two analog meters",
+     "gag": "one voltmeter dial needle spinning in circles wildly"
+    },
+    "doodleSrc": "generated/doodle/v-20260927-215546-takc/s1-1dd679.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "question",
+    "narration": "In a long transmission line operating under no load or light load, what causes the receiving end voltage to exceed the sending end voltage?",
+    "imageQuery": "high voltage electricity pylon",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "waveform",
+     "caption": "",
+     "params": {
+      "frequency": 2,
+      "mode": "phase",
+      "labelA": "Vs",
+      "labelB": "Vr"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "options",
+    "narration": "Is it line shunt capacitance drawing leading charging current, high line series resistance causing negative voltage drop, line series inductive reactance drawing lagging current, or corona discharge increasing the effective conductor radius?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "think",
+     "action": "scratches head and ponders four empty question-mark boxes floating nearby",
+     "emotion": "curious, puzzled",
+     "props": "four empty square frames with question marks",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/v-20260927-215546-takc/s3-d4a2d7.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "countdown",
+    "narration": "",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "a giant ticking hourglass with sand pouring down into a teetering mound",
+     "emotion": "suspenseful",
+     "props": "an hourglass",
+     "gag": "the hourglass has tiny running shoes on its base"
+    },
+    "doodleSrc": "generated/doodle/v-20260927-215546-takc/s4-d5d705.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "answer",
+    "narration": "Line shunt capacitance drawing leading charging current causes this phenomenon.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "cheer",
+     "action": "pumps fist in the air next to a diagram of transmission wires showing capacitance symbols to the earth",
+     "emotion": "triumphant, energetic",
+     "props": "a transmission line diagram, capacitor plates",
+     "gag": "none"
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Under no load or light load, a long line still draws a significant charging current from supply.",
+    "imageQuery": "substation electrical transformers",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "circuit",
+     "caption": "",
+     "params": {
+      "labelA": "Vs",
+      "network": "10 + (50 | 50)"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "This current flows through the distributed shunt capacitance formed between the overhead conductors and the ground plane.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "capacitor-field",
+     "caption": "",
+     "params": {
+      "labelA": "Air dielectric"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Because capacitive reactance dominates, this charging current leads the receiving end voltage by ninety degrees in phase.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "phasor",
+     "caption": "",
+     "params": {
+      "angle": -90,
+      "mode": "phasor",
+      "labelA": "Vr",
+      "labelB": "Ic"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "As this leading current flows through the series inductance of the line, it creates a voltage drop.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "ΔV = j · Ic · XL",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Multiplying leading current by inductive reactance produces a voltage drop that is in phase with sending voltage.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "vector-add",
+     "caption": "",
+     "params": {
+      "angle": 180,
+      "labelA": "Vr",
+      "labelB": "j·Ic·X"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Instead of subtracting, this drop adds to the sending end voltage as you move towards the load.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "compare",
+     "caption": "No-load voltages",
+     "items": [
+      {
+       "label": "Sending Vs",
+       "symbol": "📉"
+      },
+      {
+       "label": "Receiving Vr",
+       "symbol": "📈"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "The resulting rise makes the receiving end voltage strictly greater than the sending end terminal voltage.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "Vr > Vs",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "This phenomenon is universally known in electrical power engineering as the Ferranti effect on long transmission lines.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "icon",
+     "caption": "Ferranti Effect",
+     "items": [
+      {
+       "label": "Overvoltage",
+       "symbol": "⚡"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Engineers install shunt reactors at the receiving substation to absorb leading vars and hold voltage flat.",
+    "imageQuery": "high voltage reactor substation",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "circuit",
+     "caption": "",
+     "params": {
+      "labelA": "Reactor",
+      "network": "10 + (50 | 50 | 50)"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "formulas",
+    "narration": "Here are the formulas behind this one. Save it for your revision."
+   },
+   {
+    "kind": "outro",
+    "narration": "Ferranti first spotted this in eighteen ninety. Subscribe for more engineering exam prep questions.",
+    "imageQuery": "power grid control room",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "point",
+     "action": "points thumb toward a giant thumbs-up symbol drawn next to a heavy reactor coil",
+     "emotion": "friendly, proud",
+     "props": "an electrical coil, a giant thumbs-up icon",
+     "gag": "none"
+    }
+   }
+  ],
+  "formulas": {
+   "title": "Ferranti Effect - Important Formulas",
+   "cards": [
+    {
+     "name": "Line Charging Current",
+     "formula": "I_c = ω C V_r",
+     "notes": [
+      "C = Line shunt capacitance (F)",
+      "V_r = Receiving end voltage (V)"
+     ],
+     "graph": {
+      "kind": "phasor",
+      "x": "t",
+      "y": "i",
+      "label": "\\omega",
+      "label2": "90^\\circ"
+     },
+     "icon": "capacitor",
+     "art": {
+      "body": "<path fill=\"#4fc3f7\" d=\"m19.081 2.35l-4.795 4.795L9.62 2.482L7.05 5.05l4.664 4.665l2.57 2.57l4.705 4.705l2.57-2.57l-4.705-4.705l4.795-4.797zM5.052 7.05l-2.57 2.57l4.665 4.664L2.35 19.08l2.57 2.57l4.796-4.796l4.704 4.705l2.57-2.57l-7.274-7.274z\" paint-order=\"fill markers stroke\"/>",
+      "width": 24,
+      "height": 24
+     }
+    },
+    {
+     "name": "Ferranti Voltage Rise",
+     "formula": "\\Delta V = V_r - V_s \\approx \\frac{1}{2} \\omega^2 L C V_r",
+     "notes": [
+      "L = Total line inductance (H)",
+      "C = Total line capacitance (F)"
+     ],
+     "graph": {
+      "kind": "none",
+      "x": "",
+      "y": "",
+      "label": "",
+      "label2": ""
+     },
+     "icon": "voltmeter",
+     "art": {
+      "body": "<g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"><path d=\"M5 12a7 7 0 1 0 14 0a7 7 0 1 0-14 0m0 0H2m17 0h3\"/><path d=\"m10 10l2 4l2-4\"/></g>",
+      "width": 24,
+      "height": 24
+     }
+    }
+   ]
+  }
+ },
+ "design": {
+  "mode": "light",
+  "layout": "doodle",
+  "accent": "#3ddc97",
+  "showCaptions": true,
+  "showProgressBar": true,
+  "countdownSeconds": 4,
+  "scenePaddingSeconds": 0.35,
+  "trimTrailingSilence": true,
+  "showVisuals": true,
+  "showMotif": true,
+  "ambient": "auto",
+  "ambientIntensity": 0.6,
+  "motionStrength": 1,
+  "transition": "auto",
+  "textReveal": "fade",
+  "overlay": "vignette",
+  "overlayIntensity": 0.5,
+  "align": "auto",
+  "showStock": true,
+  "stockOpacity": 0.45,
+  "music": "tense",
+  "musicVolume": 0.22,
+  "customMusicSrc": "",
+  "sfx": true,
+  "sfxVolume": 0.5,
+  "orientation": "portrait",
+  "doodleEnergy": "lively",
+  "animatedEngineer": true
+ },
+ "audio": {},
+ "seo": null,
+ "ledger": [
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-09-27T16:26:20.881Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-09-27T16:26:40.843Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-09-27T16:27:14.331Z"
+  }
+ ],
+ "renders": [],
+ "published": {}
+}

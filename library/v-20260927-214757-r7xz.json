@@ -1,0 +1,1783 @@
+{
+ "id": "v-20260927-214757-r7xz",
+ "createdAt": "2026-09-27T16:17:57.041Z",
+ "updatedAt": "2026-09-27T16:20:56.683Z",
+ "content": {
+  "subject": "Measurements",
+  "topic": "Extension of Range of PMMC Instruments",
+  "difficulty": "Medium",
+  "hook": "Can a tiny milliamp meter safely measure a massive ten ampere line current?",
+  "question": "A PMMC galvanometer has a coil resistance of 99 ohms and gives a full scale deflection for 10 milliamperes. What shunt resistance is required to extend its range to 10 amperes?",
+  "options": [
+   "0.099 ohms",
+   "0.100 ohms",
+   "0.990 ohms",
+   "1.000 ohms"
+  ],
+  "correctIndex": 0,
+  "answerLine": "The required shunt resistance is 0.099 ohms.",
+  "explanation": [
+   "To measure a larger current without burning the delicate coil, we place a low resistance in parallel.",
+   "First, we calculate the multiplying power m, which is the total current divided by the meter current.",
+   "The total current is 10 amperes, while the meter full scale deflection current is 10 milliamperes.",
+   "Converting 10 amperes to milliamperes gives 10000 milliamperes, yielding a multiplying factor of exactly 1000."
+  ],
+  "funFact": "Shunts in high-precision ammeters are made of manganin because its resistance barely drifts with temperature changes.",
+  "outro": "Remember, always divide by m minus one, not m! Follow for more electrical engineering prep!",
+  "hashtags": [
+   "ElectricalEngineering",
+   "AEJEPrep",
+   "ElectricalMeasurements",
+   "PMMC",
+   "GateEE"
+  ],
+  "motifSymbols": [
+   "⚡",
+   "🎛️",
+   "Ω",
+   "A"
+  ],
+  "script": [
+   {
+    "kind": "intro",
+    "narration": "Ready for today’s question?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "wave",
+     "action": "waves enthusiastically toward the viewer to kick off the challenge",
+     "emotion": "excited, welcoming",
+     "props": "a galvanometer",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/v-20260927-214757-r7xz/s0-a9a76b.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "hook",
+    "narration": "Can a tiny milliamp meter safely measure a massive ten ampere line current?",
+    "imageQuery": "analog ammeter instrument dial",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "a massive thick power cable surging with current beside a tiny, delicate benchtop meter",
+     "emotion": "tense",
+     "props": "a giant electrical cable, a tiny meter",
+     "gag": "the tiny meter is trembling behind a tiny blast shield"
+    },
+    "doodleSrc": "generated/doodle/v-20260927-214757-r7xz/s1-516414.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "question",
+    "narration": "A PMMC galvanometer has a coil resistance of 99 ohms and gives a full scale deflection for 10 milliamperes. What shunt resistance is required to extend its range to 10 amperes?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "circuit",
+     "caption": "",
+     "params": {
+      "labelA": "10 A",
+      "network": "99 | 0.099"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "options",
+    "narration": "Is it 0.099 ohms, 0.100 ohms, 0.990 ohms, or 1.000 ohms?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "think",
+     "action": "strokes chin thoughtfully while pondering four identical-looking resistor coils",
+     "emotion": "curious, debating",
+     "props": "four small resistor coils",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/v-20260927-214757-r7xz/s3-664446.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "countdown",
+    "narration": "",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "an hourglass draining steadily while an analog meter needle ticks forward like a second hand",
+     "emotion": "suspenseful",
+     "props": "an hourglass, an analog meter",
+     "gag": "little sparks leap between the grains of sand"
+    },
+    "doodleSrc": "generated/doodle/v-20260927-214757-r7xz/s4-ba785e.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "answer",
+    "narration": "The required shunt resistance is 0.099 ohms.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "cheer",
+     "action": "leaps with both arms raised in celebration as the needle safely aligns within normal range",
+     "emotion": "triumphant, delighted",
+     "props": "a galvanometer, a sturdy shunt resistor",
+     "gag": "a tiny puff of confetti pops out of the meter terminal"
+    },
+    "doodleSrc": "generated/doodle/v-20260927-214757-r7xz/s5-ea6bd8.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "explain",
+    "narration": "To measure a larger current without burning the delicate coil, we place a low resistance in parallel.",
+    "imageQuery": "galvanometer movement coil vintage",
+    "visual": {
+     "kind": "working"
+    },
+    "visualWas": {
+     "kind": "sketch",
+     "sketch": "kirchhoff",
+     "caption": "",
+     "params": {
+      "labelA": "Itotal = 10 A"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "First, we calculate the multiplying power m, which is the total current divided by the meter current.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "m = I / Iₘ",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "The total current is 10 amperes, while the meter full scale deflection current is 10 milliamperes.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "compare",
+     "caption": "",
+     "items": [
+      {
+       "label": "Total I = 10 A",
+       "symbol": "⚡"
+      },
+      {
+       "label": "Meter Im = 10 mA",
+       "symbol": "🎛️"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Converting 10 amperes to milliamperes gives 10000 milliamperes, yielding a multiplying factor of exactly 1000.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "m = 10 A / 0.01 A = 1000",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "The standard shunt formula states that shunt resistance equals meter resistance divided by m minus one.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "Rₛₕ = Rₘ / (m - 1)",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Substitute the known values: coil resistance is 99 ohms and the multiplier minus one equals 999.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "Rₛₕ = 99 / (1000 - 1)",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Dividing 99 ohms by 999 yields 0.099099 ohms, which rounds neatly to 0.099 ohms.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "Rₛₕ = 99 / 999 ≈ 0.099 Ω",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Candidates frequently make the mistake of dividing by m directly, incorrectly arriving at 0.100 ohms.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "misconception",
+     "caption": "",
+     "params": {
+      "labelA": "Rm / m = 0.100 Ω",
+      "labelB": "Rm / (m-1) = 0.099 Ω"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "This low-resistance shunt bypasses almost all current, allowing the meter to read high currents safely.",
+    "imageQuery": "printed circuit board copper tracks",
+    "visual": {
+     "kind": "bars",
+     "caption": "Current division in mA",
+     "items": [
+      {
+       "label": "Shunt current",
+       "value": 9990
+      },
+      {
+       "label": "Meter current",
+       "value": 10
+      }
+     ]
+    }
+   },
+   {
+    "kind": "formulas",
+    "narration": "Here are the formulas behind this one. Save it for your revision."
+   },
+   {
+    "kind": "outro",
+    "narration": "Shunts use manganin because its resistance stays stable. Always divide by m minus one, not m! Follow for more tips!",
+    "imageQuery": "laboratory precision electrical bench",
+    "visual": {
+     "kind": "icon",
+     "caption": "Manganin Shunt",
+     "items": [
+      {
+       "label": "Stable Resistance",
+       "symbol": "🔬"
+      }
+     ]
+    }
+   }
+  ],
+  "formulas": {
+   "title": "PMMC Range Extension - Important Formulas",
+   "cards": [
+    {
+     "name": "Multiplying Factor",
+     "formula": "m = \\frac{I}{I_m}",
+     "notes": [
+      "I = Total current to be measured",
+      "I_m = Full-scale meter current"
+     ],
+     "graph": {
+      "kind": "linear",
+      "x": "I_m",
+      "y": "I",
+      "label": "m",
+      "label2": ""
+     },
+     "icon": "ammeter",
+     "art": {
+      "body": "<g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"><path d=\"M5 12a7 7 0 1 0 14 0a7 7 0 1 0-14 0m0 0H2m17 0h3\"/><path d=\"M10 14v-3c0-1.036.895-2 2-2s2 .964 2 2v3m0-2h-4\"/></g>",
+      "width": 24,
+      "height": 24
+     }
+    },
+    {
+     "name": "Ammeter Shunt Resistance",
+     "formula": "R_{sh} = \\frac{R_m}{m - 1}",
+     "notes": [
+      "R_{sh} = Shunt resistance (\\Omega)",
+      "R_m = Meter coil resistance (\\Omega)"
+     ],
+     "graph": {
+      "kind": "inverse",
+      "x": "m",
+      "y": "R_{sh}",
+      "label": "",
+      "label2": ""
+     },
+     "icon": "multimeter",
+     "art": {
+      "body": "<path fill=\"currentColor\" d=\"M11 15H6l7-14v8h5l-7 14z\"/>",
+      "width": 24,
+      "height": 24
+     }
+    }
+   ],
+   "working": [
+    "R_{sh} = \\frac{R_m}{\\frac{I}{I_m} - 1}",
+    "= \\frac{99}{\\frac{10}{0.01} - 1}",
+    "= \\frac{99}{1000 - 1}",
+    "= \\frac{99}{999}",
+    "\\approx 0.099\\,\\Omega"
+   ]
+  }
+ },
+ "design": {
+  "mode": "light",
+  "layout": "doodle",
+  "accent": "#3ddc97",
+  "showCaptions": true,
+  "showProgressBar": true,
+  "countdownSeconds": 4,
+  "scenePaddingSeconds": 0.35,
+  "trimTrailingSilence": true,
+  "showVisuals": true,
+  "showMotif": true,
+  "ambient": "auto",
+  "ambientIntensity": 0.6,
+  "motionStrength": 1,
+  "transition": "auto",
+  "textReveal": "fade",
+  "overlay": "vignette",
+  "overlayIntensity": 0.5,
+  "align": "auto",
+  "showStock": true,
+  "stockOpacity": 0.45,
+  "music": "tense",
+  "musicVolume": 0.22,
+  "customMusicSrc": "",
+  "sfx": true,
+  "sfxVolume": 0.5,
+  "orientation": "portrait",
+  "doodleEnergy": "lively",
+  "animatedEngineer": true
+ },
+ "audio": {
+  "0": {
+   "src": "generated/vo-2f1b489c/s0.mp3",
+   "duration": 1.4889795918367348,
+   "words": [
+    {
+     "word": "Ready",
+     "start": 0,
+     "end": 0.36
+    },
+    {
+     "word": "for",
+     "start": 0.395,
+     "end": 0.488
+    },
+    {
+     "word": "today’s",
+     "start": 0.546,
+     "end": 0.801
+    },
+    {
+     "word": "question?",
+     "start": 0.836,
+     "end": 1.44
+    }
+   ],
+   "measuredDuration": 1.4396371882086167,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 1.172607709750567,
+   "captionOffset": 0.17414965986394557
+  },
+  "1": {
+   "src": "generated/vo-2f1b489c/s1.mp3",
+   "duration": 4.728163265306122,
+   "words": [
+    {
+     "word": "Can",
+     "start": 0,
+     "end": 0.29
+    },
+    {
+     "word": "a",
+     "start": 0.348,
+     "end": 0.383
+    },
+    {
+     "word": "tiny",
+     "start": 0.453,
+     "end": 0.778
+    },
+    {
+     "word": "milliamp",
+     "start": 0.848,
+     "end": 1.277
+    },
+    {
+     "word": "meter",
+     "start": 1.37,
+     "end": 1.683
+    },
+    {
+     "word": "safely",
+     "start": 1.765,
+     "end": 2.125
+    },
+    {
+     "word": "measure",
+     "start": 2.183,
+     "end": 2.496
+    },
+    {
+     "word": "a",
+     "start": 2.554,
+     "end": 2.612
+    },
+    {
+     "word": "massive",
+     "start": 2.705,
+     "end": 3.111
+    },
+    {
+     "word": "ten",
+     "start": 3.17,
+     "end": 3.39
+    },
+    {
+     "word": "ampere",
+     "start": 3.506,
+     "end": 3.889
+    },
+    {
+     "word": "line",
+     "start": 3.913,
+     "end": 4.11
+    },
+    {
+     "word": "current?",
+     "start": 4.145,
+     "end": 4.69
+    }
+   ],
+   "measuredDuration": 4.690430839002268,
+   "speechStart": 0.1509297052154195,
+   "speechEnd": 4.46984126984127,
+   "captionOffset": 0.1509297052154195
+  },
+  "2": {
+   "src": "generated/vo-2f1b489c/s2.mp3",
+   "duration": 12.120816326530612,
+   "words": [
+    {
+     "word": "A",
+     "start": 0,
+     "end": 0.221
+    },
+    {
+     "word": "PMMC",
+     "start": 0.337,
+     "end": 0.964
+    },
+    {
+     "word": "galvanometer",
+     "start": 1.08,
+     "end": 1.765
+    },
+    {
+     "word": "has",
+     "start": 1.811,
+     "end": 1.927
+    },
+    {
+     "word": "a",
+     "start": 1.974,
+     "end": 2.009
+    },
+    {
+     "word": "coil",
+     "start": 2.078,
+     "end": 2.345
+    },
+    {
+     "word": "resistance",
+     "start": 2.415,
+     "end": 2.926
+    },
+    {
+     "word": "of",
+     "start": 2.949,
+     "end": 3.019
+    },
+    {
+     "word": "99",
+     "start": 3.111,
+     "end": 3.738
+    },
+    {
+     "word": "ohms",
+     "start": 3.831,
+     "end": 4.191
+    },
+    {
+     "word": "and",
+     "start": 4.261,
+     "end": 4.412
+    },
+    {
+     "word": "gives",
+     "start": 4.47,
+     "end": 4.667
+    },
+    {
+     "word": "a",
+     "start": 4.702,
+     "end": 4.725
+    },
+    {
+     "word": "full",
+     "start": 4.807,
+     "end": 5.039
+    },
+    {
+     "word": "scale",
+     "start": 5.097,
+     "end": 5.457
+    },
+    {
+     "word": "deflection",
+     "start": 5.503,
+     "end": 6.06
+    },
+    {
+     "word": "for",
+     "start": 6.142,
+     "end": 6.281
+    },
+    {
+     "word": "10",
+     "start": 6.374,
+     "end": 6.571
+    },
+    {
+     "word": "milliamperes.",
+     "start": 6.641,
+     "end": 7.407
+    },
+    {
+     "word": "What",
+     "start": 7.616,
+     "end": 7.837
+    },
+    {
+     "word": "shunt",
+     "start": 7.906,
+     "end": 8.197
+    },
+    {
+     "word": "resistance",
+     "start": 8.266,
+     "end": 8.858
+    },
+    {
+     "word": "is",
+     "start": 8.905,
+     "end": 9.021
+    },
+    {
+     "word": "required",
+     "start": 9.102,
+     "end": 9.601
+    },
+    {
+     "word": "to",
+     "start": 9.648,
+     "end": 9.729
+    },
+    {
+     "word": "extend",
+     "start": 9.822,
+     "end": 10.263
+    },
+    {
+     "word": "its",
+     "start": 10.333,
+     "end": 10.472
+    },
+    {
+     "word": "range",
+     "start": 10.542,
+     "end": 10.832
+    },
+    {
+     "word": "to",
+     "start": 10.867,
+     "end": 10.948
+    },
+    {
+     "word": "10",
+     "start": 11.029,
+     "end": 11.262
+    },
+    {
+     "word": "amperes?",
+     "start": 11.32,
+     "end": 12.074
+    }
+   ],
+   "measuredDuration": 12.07437641723356,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 11.644807256235827,
+   "captionOffset": 0.17414965986394557
+  },
+  "3": {
+   "src": "generated/vo-2f1b489c/s3.mp3",
+   "duration": 4.6236734693877555,
+   "words": [
+    {
+     "word": "Is",
+     "start": 0,
+     "end": 0.279
+    },
+    {
+     "word": "it",
+     "start": 0.325,
+     "end": 0.383
+    },
+    {
+     "word": "0.099",
+     "start": 0.499,
+     "end": 1.312
+    },
+    {
+     "word": "ohms,",
+     "start": 1.382,
+     "end": 1.683
+    },
+    {
+     "word": "0.100",
+     "start": 1.707,
+     "end": 2.334
+    },
+    {
+     "word": "ohms,",
+     "start": 2.392,
+     "end": 2.624
+    },
+    {
+     "word": "0.990",
+     "start": 2.659,
+     "end": 3.239
+    },
+    {
+     "word": "ohms,",
+     "start": 3.309,
+     "end": 3.553
+    },
+    {
+     "word": "or",
+     "start": 3.599,
+     "end": 3.68
+    },
+    {
+     "word": "1.000",
+     "start": 3.727,
+     "end": 4.133
+    },
+    {
+     "word": "ohms?",
+     "start": 4.191,
+     "end": 4.598
+    }
+   ],
+   "measuredDuration": 4.597551020408163,
+   "speechStart": 0.18575963718820862,
+   "speechEnd": 4.295691609977324,
+   "captionOffset": 0.18575963718820862
+  },
+  "5": {
+   "src": "generated/vo-2f1b489c/s5.mp3",
+   "duration": 3.1085714285714285,
+   "words": [
+    {
+     "word": "The",
+     "start": 0,
+     "end": 0.221
+    },
+    {
+     "word": "required",
+     "start": 0.267,
+     "end": 0.627
+    },
+    {
+     "word": "shunt",
+     "start": 0.662,
+     "end": 0.882
+    },
+    {
+     "word": "resistance",
+     "start": 0.929,
+     "end": 1.44
+    },
+    {
+     "word": "is",
+     "start": 1.474,
+     "end": 1.602
+    },
+    {
+     "word": "0.099",
+     "start": 1.683,
+     "end": 2.461
+    },
+    {
+     "word": "ohms.",
+     "start": 2.531,
+     "end": 3.065
+    }
+   ],
+   "measuredDuration": 3.0650340136054424,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 2.7747845804988662,
+   "captionOffset": 0.17414965986394557
+  },
+  "6": {
+   "src": "generated/vo-2f1b489c/s6.mp3",
+   "duration": 6.6873469387755105,
+   "words": [
+    {
+     "word": "To",
+     "start": 0,
+     "end": 0.232
+    },
+    {
+     "word": "measure",
+     "start": 0.348,
+     "end": 0.685
+    },
+    {
+     "word": "a",
+     "start": 0.731,
+     "end": 0.766
+    },
+    {
+     "word": "larger",
+     "start": 0.836,
+     "end": 1.196
+    },
+    {
+     "word": "current",
+     "start": 1.265,
+     "end": 1.614
+    },
+    {
+     "word": "without",
+     "start": 1.66,
+     "end": 1.974
+    },
+    {
+     "word": "burning",
+     "start": 2.032,
+     "end": 2.403
+    },
+    {
+     "word": "the",
+     "start": 2.461,
+     "end": 2.543
+    },
+    {
+     "word": "delicate",
+     "start": 2.601,
+     "end": 3.077
+    },
+    {
+     "word": "coil,",
+     "start": 3.146,
+     "end": 3.669
+    },
+    {
+     "word": "we",
+     "start": 3.843,
+     "end": 4.017
+    },
+    {
+     "word": "place",
+     "start": 4.087,
+     "end": 4.4
+    },
+    {
+     "word": "a",
+     "start": 4.458,
+     "end": 4.516
+    },
+    {
+     "word": "low",
+     "start": 4.598,
+     "end": 4.76
+    },
+    {
+     "word": "resistance",
+     "start": 4.83,
+     "end": 5.573
+    },
+    {
+     "word": "in",
+     "start": 5.619,
+     "end": 5.747
+    },
+    {
+     "word": "parallel.",
+     "start": 5.84,
+     "end": 6.641
+    }
+   ],
+   "measuredDuration": 6.640907029478458,
+   "speechStart": 0.1509297052154195,
+   "speechEnd": 6.362267573696145,
+   "captionOffset": 0.1509297052154195
+  },
+  "7": {
+   "src": "generated/vo-2f1b489c/s7.mp3",
+   "duration": 5.668571428571428,
+   "words": [
+    {
+     "word": "First,",
+     "start": 0,
+     "end": 0.43
+    },
+    {
+     "word": "we",
+     "start": 0.464,
+     "end": 0.569
+    },
+    {
+     "word": "calculate",
+     "start": 0.627,
+     "end": 1.126
+    },
+    {
+     "word": "the",
+     "start": 1.161,
+     "end": 1.231
+    },
+    {
+     "word": "multiplying",
+     "start": 1.3,
+     "end": 1.846
+    },
+    {
+     "word": "power",
+     "start": 1.904,
+     "end": 2.194
+    },
+    {
+     "word": "m,",
+     "start": 2.264,
+     "end": 2.624
+    },
+    {
+     "word": "which",
+     "start": 2.833,
+     "end": 3.007
+    },
+    {
+     "word": "is",
+     "start": 3.042,
+     "end": 3.1
+    },
+    {
+     "word": "the",
+     "start": 3.135,
+     "end": 3.204
+    },
+    {
+     "word": "total",
+     "start": 3.274,
+     "end": 3.611
+    },
+    {
+     "word": "current",
+     "start": 3.669,
+     "end": 3.913
+    },
+    {
+     "word": "divided",
+     "start": 3.947,
+     "end": 4.354
+    },
+    {
+     "word": "by",
+     "start": 4.4,
+     "end": 4.493
+    },
+    {
+     "word": "the",
+     "start": 4.528,
+     "end": 4.598
+    },
+    {
+     "word": "meter",
+     "start": 4.667,
+     "end": 4.946
+    },
+    {
+     "word": "current.",
+     "start": 5.004,
+     "end": 5.619
+    }
+   ],
+   "measuredDuration": 5.61922902494331,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 5.38702947845805,
+   "captionOffset": 0.16253968253968254
+  },
+  "8": {
+   "src": "generated/vo-2f1b489c/s8.mp3",
+   "duration": 6.452244897959184,
+   "words": [
+    {
+     "word": "The",
+     "start": 0,
+     "end": 0.221
+    },
+    {
+     "word": "total",
+     "start": 0.279,
+     "end": 0.58
+    },
+    {
+     "word": "current",
+     "start": 0.662,
+     "end": 0.964
+    },
+    {
+     "word": "is",
+     "start": 1.022,
+     "end": 1.138
+    },
+    {
+     "word": "10",
+     "start": 1.254,
+     "end": 1.533
+    },
+    {
+     "word": "amperes,",
+     "start": 1.649,
+     "end": 2.357
+    },
+    {
+     "word": "while",
+     "start": 2.473,
+     "end": 2.717
+    },
+    {
+     "word": "the",
+     "start": 2.74,
+     "end": 2.81
+    },
+    {
+     "word": "meter",
+     "start": 2.879,
+     "end": 3.17
+    },
+    {
+     "word": "full",
+     "start": 3.239,
+     "end": 3.425
+    },
+    {
+     "word": "scale",
+     "start": 3.483,
+     "end": 3.773
+    },
+    {
+     "word": "deflection",
+     "start": 3.808,
+     "end": 4.319
+    },
+    {
+     "word": "current",
+     "start": 4.4,
+     "end": 4.725
+    },
+    {
+     "word": "is",
+     "start": 4.795,
+     "end": 4.911
+    },
+    {
+     "word": "10",
+     "start": 5.004,
+     "end": 5.248
+    },
+    {
+     "word": "milliamperes.",
+     "start": 5.329,
+     "end": 6.409
+    }
+   ],
+   "measuredDuration": 6.408707482993197,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 6.1184580498866215,
+   "captionOffset": 0.16253968253968254
+  },
+  "9": {
+   "src": "generated/vo-2f1b489c/s9.mp3",
+   "duration": 7.523265306122449,
+   "words": [
+    {
+     "word": "Converting",
+     "start": 0,
+     "end": 0.65
+    },
+    {
+     "word": "10",
+     "start": 0.72,
+     "end": 0.952
+    },
+    {
+     "word": "amperes",
+     "start": 1.033,
+     "end": 1.591
+    },
+    {
+     "word": "to",
+     "start": 1.672,
+     "end": 1.776
+    },
+    {
+     "word": "milliamperes",
+     "start": 1.858,
+     "end": 2.554
+    },
+    {
+     "word": "gives",
+     "start": 2.612,
+     "end": 2.821
+    },
+    {
+     "word": "10000",
+     "start": 2.891,
+     "end": 3.599
+    },
+    {
+     "word": "milliamperes,",
+     "start": 3.657,
+     "end": 4.354
+    },
+    {
+     "word": "yielding",
+     "start": 4.412,
+     "end": 4.83
+    },
+    {
+     "word": "a",
+     "start": 4.888,
+     "end": 4.911
+    },
+    {
+     "word": "multiplying",
+     "start": 4.969,
+     "end": 5.515
+    },
+    {
+     "word": "factor",
+     "start": 5.584,
+     "end": 5.909
+    },
+    {
+     "word": "of",
+     "start": 5.956,
+     "end": 6.014
+    },
+    {
+     "word": "exactly",
+     "start": 6.084,
+     "end": 6.664
+    },
+    {
+     "word": "1000.",
+     "start": 6.757,
+     "end": 7.477
+    }
+   ],
+   "measuredDuration": 7.476825396825397,
+   "speechStart": 0.13931972789115646,
+   "speechEnd": 7.244625850340136,
+   "captionOffset": 0.13931972789115646
+  },
+  "10": {
+   "src": "generated/vo-2f1b489c/s10.mp3",
+   "duration": 6.452244897959184,
+   "words": [
+    {
+     "word": "The",
+     "start": 0,
+     "end": 0.221
+    },
+    {
+     "word": "standard",
+     "start": 0.255,
+     "end": 0.708
+    },
+    {
+     "word": "shunt",
+     "start": 0.778,
+     "end": 1.045
+    },
+    {
+     "word": "formula",
+     "start": 1.115,
+     "end": 1.474
+    },
+    {
+     "word": "states",
+     "start": 1.521,
+     "end": 1.858
+    },
+    {
+     "word": "that",
+     "start": 1.904,
+     "end": 2.043
+    },
+    {
+     "word": "shunt",
+     "start": 2.09,
+     "end": 2.368
+    },
+    {
+     "word": "resistance",
+     "start": 2.45,
+     "end": 3.042
+    },
+    {
+     "word": "equals",
+     "start": 3.111,
+     "end": 3.506
+    },
+    {
+     "word": "meter",
+     "start": 3.587,
+     "end": 3.889
+    },
+    {
+     "word": "resistance",
+     "start": 3.936,
+     "end": 4.516
+    },
+    {
+     "word": "divided",
+     "start": 4.563,
+     "end": 5.004
+    },
+    {
+     "word": "by",
+     "start": 5.05,
+     "end": 5.19
+    },
+    {
+     "word": "m",
+     "start": 5.306,
+     "end": 5.422
+    },
+    {
+     "word": "minus",
+     "start": 5.538,
+     "end": 5.851
+    },
+    {
+     "word": "one.",
+     "start": 5.944,
+     "end": 6.409
+    }
+   ],
+   "measuredDuration": 6.408707482993197,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 6.130068027210885,
+   "captionOffset": 0.17414965986394557
+  },
+  "11": {
+   "src": "generated/vo-2f1b489c/s11.mp3",
+   "duration": 7.000816326530612,
+   "words": [
+    {
+     "word": "Substitute",
+     "start": 0,
+     "end": 0.673
+    },
+    {
+     "word": "the",
+     "start": 0.697,
+     "end": 0.766
+    },
+    {
+     "word": "known",
+     "start": 0.813,
+     "end": 1.045
+    },
+    {
+     "word": "values:",
+     "start": 1.091,
+     "end": 1.602
+    },
+    {
+     "word": "coil",
+     "start": 1.811,
+     "end": 2.101
+    },
+    {
+     "word": "resistance",
+     "start": 2.171,
+     "end": 2.705
+    },
+    {
+     "word": "is",
+     "start": 2.763,
+     "end": 2.914
+    },
+    {
+     "word": "99",
+     "start": 3.065,
+     "end": 3.692
+    },
+    {
+     "word": "ohms",
+     "start": 3.75,
+     "end": 3.971
+    },
+    {
+     "word": "and",
+     "start": 4.063,
+     "end": 4.226
+    },
+    {
+     "word": "the",
+     "start": 4.272,
+     "end": 4.342
+    },
+    {
+     "word": "multiplier",
+     "start": 4.389,
+     "end": 4.876
+    },
+    {
+     "word": "minus",
+     "start": 4.934,
+     "end": 5.224
+    },
+    {
+     "word": "one",
+     "start": 5.294,
+     "end": 5.433
+    },
+    {
+     "word": "equals",
+     "start": 5.48,
+     "end": 5.828
+    },
+    {
+     "word": "999.",
+     "start": 5.898,
+     "end": 6.966
+    }
+   ],
+   "measuredDuration": 6.965986394557823,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 6.722176870748299,
+   "captionOffset": 0.17414965986394557
+  },
+  "12": {
+   "src": "generated/vo-2f1b489c/s12.mp3",
+   "duration": 5.799183673469388,
+   "words": [
+    {
+     "word": "Dividing",
+     "start": 0,
+     "end": 0.639
+    },
+    {
+     "word": "99",
+     "start": 0.72,
+     "end": 1.196
+    },
+    {
+     "word": "ohms",
+     "start": 1.277,
+     "end": 1.428
+    },
+    {
+     "word": "by",
+     "start": 1.474,
+     "end": 1.567
+    },
+    {
+     "word": "999",
+     "start": 1.649,
+     "end": 2.206
+    },
+    {
+     "word": "yields",
+     "start": 2.264,
+     "end": 2.519
+    },
+    {
+     "word": "0.099099",
+     "start": 2.601,
+     "end": 3.413
+    },
+    {
+     "word": "ohms,",
+     "start": 3.506,
+     "end": 3.715
+    },
+    {
+     "word": "which",
+     "start": 3.738,
+     "end": 3.889
+    },
+    {
+     "word": "rounds",
+     "start": 3.936,
+     "end": 4.18
+    },
+    {
+     "word": "neatly",
+     "start": 4.261,
+     "end": 4.574
+    },
+    {
+     "word": "to",
+     "start": 4.621,
+     "end": 4.702
+    },
+    {
+     "word": "0.099",
+     "start": 4.783,
+     "end": 5.294
+    },
+    {
+     "word": "ohms.",
+     "start": 5.375,
+     "end": 5.759
+    }
+   ],
+   "measuredDuration": 5.758548752834467,
+   "speechStart": 0.12770975056689343,
+   "speechEnd": 5.456689342403628,
+   "captionOffset": 0.12770975056689343
+  },
+  "13": {
+   "src": "generated/vo-2f1b489c/s13.mp3",
+   "duration": 7.758367346938775,
+   "words": [
+    {
+     "word": "Candidates",
+     "start": 0,
+     "end": 0.615
+    },
+    {
+     "word": "frequently",
+     "start": 0.673,
+     "end": 1.207
+    },
+    {
+     "word": "make",
+     "start": 1.265,
+     "end": 1.451
+    },
+    {
+     "word": "the",
+     "start": 1.486,
+     "end": 1.556
+    },
+    {
+     "word": "mistake",
+     "start": 1.602,
+     "end": 2.009
+    },
+    {
+     "word": "of",
+     "start": 2.055,
+     "end": 2.159
+    },
+    {
+     "word": "dividing",
+     "start": 2.287,
+     "end": 2.879
+    },
+    {
+     "word": "by",
+     "start": 2.961,
+     "end": 3.158
+    },
+    {
+     "word": "m",
+     "start": 3.309,
+     "end": 3.39
+    },
+    {
+     "word": "directly,",
+     "start": 3.46,
+     "end": 4.017
+    },
+    {
+     "word": "incorrectly",
+     "start": 4.098,
+     "end": 4.83
+    },
+    {
+     "word": "arriving",
+     "start": 4.899,
+     "end": 5.445
+    },
+    {
+     "word": "at",
+     "start": 5.561,
+     "end": 5.735
+    },
+    {
+     "word": "0.100",
+     "start": 5.851,
+     "end": 7.012
+    },
+    {
+     "word": "ohms.",
+     "start": 7.105,
+     "end": 7.709
+    }
+   ],
+   "measuredDuration": 7.7090249433106575,
+   "speechStart": 0.1509297052154195,
+   "speechEnd": 7.441995464852607,
+   "captionOffset": 0.1509297052154195
+  },
+  "14": {
+   "src": "generated/vo-2f1b489c/s14.mp3",
+   "duration": 6.4,
+   "words": [
+    {
+     "word": "This",
+     "start": 0,
+     "end": 0.337
+    },
+    {
+     "word": "low-resistance",
+     "start": 0.43,
+     "end": 1.207
+    },
+    {
+     "word": "shunt",
+     "start": 1.242,
+     "end": 1.533
+    },
+    {
+     "word": "bypasses",
+     "start": 1.625,
+     "end": 2.287
+    },
+    {
+     "word": "almost",
+     "start": 2.368,
+     "end": 2.763
+    },
+    {
+     "word": "all",
+     "start": 2.844,
+     "end": 3.053
+    },
+    {
+     "word": "current,",
+     "start": 3.123,
+     "end": 3.553
+    },
+    {
+     "word": "allowing",
+     "start": 3.727,
+     "end": 4.122
+    },
+    {
+     "word": "the",
+     "start": 4.18,
+     "end": 4.249
+    },
+    {
+     "word": "meter",
+     "start": 4.307,
+     "end": 4.574
+    },
+    {
+     "word": "to",
+     "start": 4.621,
+     "end": 4.69
+    },
+    {
+     "word": "read",
+     "start": 4.76,
+     "end": 4.957
+    },
+    {
+     "word": "high",
+     "start": 5.039,
+     "end": 5.201
+    },
+    {
+     "word": "currents",
+     "start": 5.236,
+     "end": 5.573
+    },
+    {
+     "word": "safely.",
+     "start": 5.608,
+     "end": 6.362
+    }
+   ],
+   "measuredDuration": 6.362267573696145,
+   "speechStart": 0.1509297052154195,
+   "speechEnd": 6.0836281179138325,
+   "captionOffset": 0.1509297052154195
+  },
+  "15": {
+   "src": "generated/vo-2f1b489c/s15.mp3",
+   "duration": 3.3436734693877552,
+   "words": [
+    {
+     "word": "Here",
+     "start": 0,
+     "end": 0.325
+    },
+    {
+     "word": "are",
+     "start": 0.36,
+     "end": 0.464
+    },
+    {
+     "word": "the",
+     "start": 0.499,
+     "end": 0.569
+    },
+    {
+     "word": "formulas",
+     "start": 0.615,
+     "end": 1.068
+    },
+    {
+     "word": "behind",
+     "start": 1.115,
+     "end": 1.382
+    },
+    {
+     "word": "this",
+     "start": 1.44,
+     "end": 1.579
+    },
+    {
+     "word": "one.",
+     "start": 1.649,
+     "end": 1.834
+    },
+    {
+     "word": "Save",
+     "start": 1.881,
+     "end": 2.159
+    },
+    {
+     "word": "it",
+     "start": 2.194,
+     "end": 2.252
+    },
+    {
+     "word": "for",
+     "start": 2.299,
+     "end": 2.415
+    },
+    {
+     "word": "your",
+     "start": 2.461,
+     "end": 2.589
+    },
+    {
+     "word": "revision.",
+     "start": 2.635,
+     "end": 3.297
+    }
+   ],
+   "measuredDuration": 3.297233560090703,
+   "speechStart": 0.18575963718820862,
+   "speechEnd": 3.0418140589569163,
+   "captionOffset": 0.18575963718820862
+  },
+  "16": {
+   "src": "generated/vo-2f1b489c/s16.mp3",
+   "duration": 6.817959183673469,
+   "words": [
+    {
+     "word": "Shunts",
+     "start": 0,
+     "end": 0.441
+    },
+    {
+     "word": "use",
+     "start": 0.522,
+     "end": 0.697
+    },
+    {
+     "word": "manganin",
+     "start": 0.743,
+     "end": 1.115
+    },
+    {
+     "word": "because",
+     "start": 1.173,
+     "end": 1.474
+    },
+    {
+     "word": "its",
+     "start": 1.509,
+     "end": 1.625
+    },
+    {
+     "word": "resistance",
+     "start": 1.683,
+     "end": 2.194
+    },
+    {
+     "word": "stays",
+     "start": 2.229,
+     "end": 2.485
+    },
+    {
+     "word": "stable.",
+     "start": 2.508,
+     "end": 2.995
+    },
+    {
+     "word": "Always",
+     "start": 3.274,
+     "end": 3.657
+    },
+    {
+     "word": "divide",
+     "start": 3.704,
+     "end": 4.005
+    },
+    {
+     "word": "by",
+     "start": 4.029,
+     "end": 4.145
+    },
+    {
+     "word": "m",
+     "start": 4.226,
+     "end": 4.342
+    },
+    {
+     "word": "minus",
+     "start": 4.412,
+     "end": 4.702
+    },
+    {
+     "word": "one,",
+     "start": 4.783,
+     "end": 4.981
+    },
+    {
+     "word": "not",
+     "start": 5.05,
+     "end": 5.271
+    },
+    {
+     "word": "m!",
+     "start": 5.387,
+     "end": 5.48
+    },
+    {
+     "word": "Follow",
+     "start": 5.526,
+     "end": 5.793
+    },
+    {
+     "word": "for",
+     "start": 5.84,
+     "end": 5.933
+    },
+    {
+     "word": "more",
+     "start": 5.968,
+     "end": 6.13
+    },
+    {
+     "word": "tips!",
+     "start": 6.165,
+     "end": 6.78
+    }
+   ],
+   "measuredDuration": 6.780226757369615,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 6.478367346938776,
+   "captionOffset": 0.16253968253968254
+  }
+ },
+ "seo": null,
+ "ledger": [
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-09-27T16:18:03.760Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-09-27T16:18:59.950Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-09-27T16:19:36.889Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-09-27T16:19:48.951Z"
+  },
+  {
+   "what": "Voiceover",
+   "characters": 1519,
+   "at": "2026-09-27T16:19:48.980Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-09-27T16:20:06.595Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-09-27T16:20:21.315Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-09-27T16:20:48.042Z"
+  },
+  {
+   "what": "Voiceover",
+   "characters": 1451,
+   "at": "2026-09-27T16:20:48.067Z"
+  }
+ ],
+ "renders": [
+  {
+   "jobId": "video-2026-09-27T16-20-56",
+   "url": "/out/video-2026-09-27T16-20-56.mp4",
+   "quality": "medium",
+   "at": "2026-09-27T16:27:26.930Z"
+  }
+ ],
+ "published": {}
+}

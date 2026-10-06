@@ -1,0 +1,1823 @@
+{
+ "id": "v-20260927-220608-kokn",
+ "createdAt": "2026-09-27T16:36:08.288Z",
+ "updatedAt": "2026-10-01T16:42:42.397Z",
+ "content": {
+  "subject": "Electrical Machines",
+  "topic": "DC Motor Back EMF and Speed Regulation",
+  "difficulty": "Medium",
+  "hook": "Weaken the magnetic field of a DC motor, and it actually speeds up!",
+  "question": "A DC shunt motor drives a constant torque load. If the field flux is halved while the terminal voltage is kept constant, what happens to the armature current?",
+  "options": [
+   "It remains unchanged",
+   "It is halved",
+   "It is doubled",
+   "It quadruples"
+  ],
+  "correctIndex": 2,
+  "answerLine": "The armature current is doubled.",
+  "explanation": [
+   "In any DC machine, electromagnetic torque is directly proportional to both magnetic flux and armature current.",
+   "Because the mechanical load torque remains strictly constant, the product of flux and current must stay constant.",
+   "When you cut the field flux by half, the motor shaft momentarily decelerates due to torque deficit.",
+   "Back EMF is directly proportional to flux times speed, so back EMF drops instantly by half."
+  ],
+  "funFact": "DC motors run dangerously fast if their field circuit opens accidentally, a condition called runaway.",
+  "outro": "Master your electrical machine equations every day, and subscribe for more JE exam shortcuts!",
+  "hashtags": [
+   "ElectricalEngineering",
+   "DCMotor",
+   "StateAEJE",
+   "GateEE",
+   "ElectricalMachines"
+  ],
+  "motifSymbols": [
+   "⚡",
+   "⚙️",
+   "🧲",
+   "🔄"
+  ],
+  "script": [
+   {
+    "kind": "intro",
+    "narration": "Ready for today’s question?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "wave",
+     "action": "waves enthusiastically toward the viewer to kick off the challenge",
+     "emotion": "energetic, welcoming",
+     "props": "a blank whiteboard easel",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/v-20260927-220608-kokn/s0-487934.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "hook",
+    "narration": "Weaken the magnetic field of a DC motor, and it actually speeds up!",
+    "imageQuery": "industrial electric motor",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "a DC motor spinning frantically with rapid swirl lines as thin field coils fade",
+     "emotion": "dynamic",
+     "props": "a DC motor, field coil windings",
+     "gag": "the motor is hovering slightly off the ground from spinning so fast"
+    },
+    "doodleSrc": "generated/doodle/v-20260927-220608-kokn/s1-d7fb68.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "question",
+    "narration": "A DC shunt motor drives a constant torque load. If the field flux is halved while the terminal voltage is kept constant, what happens to the armature current?",
+    "imageQuery": "electric motor armature winding",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "think",
+     "action": "strokes chin and inspects a heavy mechanical weight suspended from a motor shaft",
+     "emotion": "curious, pondering",
+     "props": "a DC motor, a suspended iron weight, a rope pulley",
+     "gag": "a question mark hangs hooked onto the motor shaft like a fish"
+    },
+    "doodleSrc": "generated/doodle/v-20260927-220608-kokn/s2-112124.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "options",
+    "narration": "Is it It remains unchanged, It is halved, It is doubled, or It quadruples?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "four simple balance scales side-by-side holding various sizes of electric battery cells and weights",
+     "emotion": "analytical",
+     "props": "four balance scales, miniature weights",
+     "gag": "one scale is tilted so far a tiny weight is sliding off the edge"
+    },
+    "doodleSrc": "generated/doodle/v-20260927-220608-kokn/s3-943130.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "countdown",
+    "narration": "",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "point",
+     "action": "points repeatedly at a large stopwatch while leaning forward in anticipation",
+     "emotion": "excited anticipation",
+     "props": "a large mechanical stopwatch",
+     "gag": "the hands of the stopwatch spin in dizzying circles like fan blades"
+    },
+    "doodleSrc": "generated/doodle/v-20260927-220608-kokn/s4-ea3e32.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "answer",
+    "narration": "The armature current is doubled.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "cheer",
+     "action": "pumps a fist in celebration next to an analog current meter",
+     "emotion": "triumphant, delighted",
+     "props": "an analog ammeter with two lightning bolts beside it",
+     "gag": "the ammeter needle has kicked so hard it is bent into a curve"
+    },
+    "doodleSrc": "generated/doodle/v-20260927-220608-kokn/s5-561bf9.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "explain",
+    "narration": "In any DC machine, electromagnetic torque is directly proportional to both magnetic flux and armature current.",
+    "imageQuery": "dc electric motor cutaway",
+    "visual": {
+     "kind": "working"
+    },
+    "visualWas": {
+     "kind": "formula",
+     "formula": "T ∝ Φ × Ia",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Because the mechanical load torque remains strictly constant, the product of flux and current must stay constant.",
+    "imageQuery": "heavy industrial electric drive",
+    "visual": {
+     "kind": "compare",
+     "caption": "Torque balance",
+     "items": [
+      {
+       "label": "Flux Φ halved",
+       "symbol": "🧲"
+      },
+      {
+       "label": "Current Ia doubled",
+       "symbol": "⚡"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "When you cut the field flux by half, the motor shaft momentarily decelerates due to torque deficit.",
+    "imageQuery": "motor shaft rotor assembly",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "motor",
+     "caption": "",
+     "params": {
+      "speed": 2
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Back EMF is directly proportional to flux times speed, so back EMF drops instantly by half.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "Eb = k × Φ × ω",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "With supply voltage fixed, the armature voltage drop equals supply voltage minus this lower back EMF value.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "circuit",
+     "caption": "",
+     "params": {
+      "labelA": "V supply",
+      "network": "0.5 + 2"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "That sudden voltage imbalance forces the armature current to surge upwards until mechanical equilibrium is restored.",
+    "imageQuery": "substation electrical control panel",
+    "visual": {
+     "kind": "formula",
+     "formula": "Ia = (V - Eb) / Ra",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "To produce the exact original torque with half the flux, the armature current must exactly double.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "bars",
+     "caption": "Armature Current (Relative)",
+     "items": [
+      {
+       "label": "Initial Current",
+       "value": 1
+      },
+      {
+       "label": "Final Current",
+       "value": 2
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Speed then climbs higher until the newly established back EMF satisfies the steady armature current demand.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "graph",
+     "caption": "",
+     "params": {
+      "mode": "linear",
+      "labelA": "Speed ω",
+      "labelB": "Back EMF Eb"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Therefore, under constant load torque, field flux weakening always forces armature current to increase inversely.",
+    "imageQuery": "copper coil winding motor",
+    "visual": {
+     "kind": "icon",
+     "caption": "Ia ∝ 1 / Φ",
+     "items": [
+      {
+       "label": "Inverse Relation",
+       "symbol": "⚡"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "formulas",
+    "narration": "Here are the formulas behind this one. Save it for your revision."
+   },
+   {
+    "kind": "outro",
+    "narration": "Master your electrical machine equations every day, and subscribe for more exam shortcuts!",
+    "imageQuery": "modern electrical engineering laboratory",
+    "visual": {
+     "kind": "icon",
+     "caption": "Exam Success",
+     "items": [
+      {
+       "label": "Subscribe",
+       "symbol": "🔔"
+      }
+     ]
+    }
+   }
+  ],
+  "formulas": {
+   "title": "DC Motor Torque and Current - Important Formulas",
+   "cards": [
+    {
+     "name": "Electromagnetic Torque",
+     "formula": "T = k \\cdot \\Phi \\cdot I_a",
+     "notes": [
+      "\\Phi = Magnetic flux per pole (Wb)",
+      "I_a = Armature current (A)"
+     ],
+     "graph": {
+      "kind": "linear",
+      "x": "I_a",
+      "y": "T",
+      "label": "k \\cdot \\Phi",
+      "label2": ""
+     },
+     "icon": "gear",
+     "art": {
+      "body": "<path fill=\"currentColor\" d=\"M128 80a48 48 0 1 0 48 48a48.05 48.05 0 0 0-48-48m0 80a32 32 0 1 1 32-32a32 32 0 0 1-32 32m88-29.84q.06-2.16 0-4.32l14.92-18.64a8 8 0 0 0 1.48-7.06a107.2 107.2 0 0 0-10.88-26.25a8 8 0 0 0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186 40.54a8 8 0 0 0-3.94-6a107.7 107.7 0 0 0-26.25-10.87a8 8 0 0 0-7.06 1.49L130.16 40h-4.32L107.2 25.11a8 8 0 0 0-7.06-1.48a107.6 107.6 0 0 0-26.25 10.88a8 8 0 0 0-3.93 6l-2.64 23.76q-1.56 1.49-3 3L40.54 70a8 8 0 0 0-6 3.94a107.7 107.7 0 0 0-10.87 26.25a8 8 0 0 0 1.49 7.06L40 125.84v4.32L25.11 148.8a8 8 0 0 0-1.48 7.06a107.2 107.2 0 0 0 10.88 26.25a8 8 0 0 0 6 3.93l23.72 2.64q1.49 1.56 3 3L70 215.46a8 8 0 0 0 3.94 6a107.7 107.7 0 0 0 26.25 10.87a8 8 0 0 0 7.06-1.49L125.84 216q2.16.06 4.32 0l18.64 14.92a8 8 0 0 0 7.06 1.48a107.2 107.2 0 0 0 26.25-10.88a8 8 0 0 0 3.93-6l2.64-23.72q1.56-1.48 3-3l23.78-2.8a8 8 0 0 0 6-3.94a107.7 107.7 0 0 0 10.87-26.25a8 8 0 0 0-1.49-7.06Zm-16.1-6.5a74 74 0 0 1 0 8.68a8 8 0 0 0 1.74 5.48l14.19 17.73a91.6 91.6 0 0 1-6.23 15l-22.6 2.56a8 8 0 0 0-5.1 2.64a74 74 0 0 1-6.14 6.14a8 8 0 0 0-2.64 5.1l-2.51 22.58a91.3 91.3 0 0 1-15 6.23l-17.74-14.19a8 8 0 0 0-5-1.75h-.48a74 74 0 0 1-8.68 0a8 8 0 0 0-5.48 1.74l-17.78 14.2a91.6 91.6 0 0 1-15-6.23L82.89 187a8 8 0 0 0-2.64-5.1a74 74 0 0 1-6.14-6.14a8 8 0 0 0-5.1-2.64l-22.58-2.52a91.3 91.3 0 0 1-6.23-15l14.19-17.74a8 8 0 0 0 1.74-5.48a74 74 0 0 1 0-8.68a8 8 0 0 0-1.74-5.48L40.2 100.45a91.6 91.6 0 0 1 6.23-15L69 82.89a8 8 0 0 0 5.1-2.64a74 74 0 0 1 6.14-6.14A8 8 0 0 0 82.89 69l2.51-22.57a91.3 91.3 0 0 1 15-6.23l17.74 14.19a8 8 0 0 0 5.48 1.74a74 74 0 0 1 8.68 0a8 8 0 0 0 5.48-1.74l17.77-14.19a91.6 91.6 0 0 1 15 6.23L173.11 69a8 8 0 0 0 2.64 5.1a74 74 0 0 1 6.14 6.14a8 8 0 0 0 5.1 2.64l22.58 2.51a91.3 91.3 0 0 1 6.23 15l-14.19 17.74a8 8 0 0 0-1.74 5.53Z\"/>",
+      "width": 256,
+      "height": 256
+     }
+    },
+    {
+     "name": "Armature Current at Constant Torque",
+     "formula": "I_a = \\frac{T}{k \\cdot \\Phi}",
+     "notes": [
+      "T = Constant load torque (N m)",
+      "k = Machine constant"
+     ],
+     "graph": {
+      "kind": "inverse",
+      "x": "\\Phi",
+      "y": "I_a",
+      "label": "T = \\text{const}",
+      "label2": ""
+     },
+     "icon": "ammeter",
+     "art": {
+      "body": "<g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"><path d=\"M5 12a7 7 0 1 0 14 0a7 7 0 1 0-14 0m0 0H2m17 0h3\"/><path d=\"M10 14v-3c0-1.036.895-2 2-2s2 .964 2 2v3m0-2h-4\"/></g>",
+      "width": 24,
+      "height": 24
+     }
+    }
+   ],
+   "working": [
+    "I_{a2} = I_{a1} \\cdot \\frac{\\Phi_1}{\\Phi_2}",
+    "= I_{a1} \\cdot \\frac{\\Phi_1}{0.5 \\cdot \\Phi_1}",
+    "= 2 \\cdot I_{a1}"
+   ]
+  }
+ },
+ "design": {
+  "mode": "light",
+  "layout": "doodle",
+  "accent": "#3ddc97",
+  "showCaptions": true,
+  "showProgressBar": true,
+  "countdownSeconds": 4,
+  "scenePaddingSeconds": 0.35,
+  "trimTrailingSilence": true,
+  "showVisuals": true,
+  "showMotif": true,
+  "ambient": "auto",
+  "ambientIntensity": 0.6,
+  "motionStrength": 1,
+  "transition": "auto",
+  "textReveal": "fade",
+  "overlay": "vignette",
+  "overlayIntensity": 0.5,
+  "align": "auto",
+  "showStock": true,
+  "stockOpacity": 0.45,
+  "music": "tense",
+  "musicVolume": 0.22,
+  "customMusicSrc": "",
+  "sfx": true,
+  "sfxVolume": 0.5,
+  "orientation": "portrait",
+  "doodleEnergy": "lively",
+  "animatedEngineer": true
+ },
+ "audio": {
+  "0": {
+   "src": "generated/vo-4ec52e2f/s0.mp3",
+   "duration": 1.5151020408163265,
+   "words": [
+    {
+     "word": "Ready",
+     "start": 0,
+     "end": 0.418
+    },
+    {
+     "word": "for",
+     "start": 0.453,
+     "end": 0.557
+    },
+    {
+     "word": "today’s",
+     "start": 0.604,
+     "end": 0.859
+    },
+    {
+     "word": "question?",
+     "start": 0.894,
+     "end": 1.486
+    }
+   ],
+   "measuredDuration": 1.486077097505669,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 1.253877551020408,
+   "captionOffset": 0.17414965986394557
+  },
+  "1": {
+   "src": "generated/vo-4ec52e2f/s1.mp3",
+   "duration": 3.84,
+   "words": [
+    {
+     "word": "Weaken",
+     "start": 0,
+     "end": 0.511
+    },
+    {
+     "word": "the",
+     "start": 0.569,
+     "end": 0.639
+    },
+    {
+     "word": "magnetic",
+     "start": 0.685,
+     "end": 1.103
+    },
+    {
+     "word": "field",
+     "start": 1.161,
+     "end": 1.382
+    },
+    {
+     "word": "of",
+     "start": 1.416,
+     "end": 1.474
+    },
+    {
+     "word": "a",
+     "start": 1.521,
+     "end": 1.544
+    },
+    {
+     "word": "DC",
+     "start": 1.602,
+     "end": 1.823
+    },
+    {
+     "word": "motor,",
+     "start": 1.939,
+     "end": 2.287
+    },
+    {
+     "word": "and",
+     "start": 2.31,
+     "end": 2.403
+    },
+    {
+     "word": "it",
+     "start": 2.45,
+     "end": 2.519
+    },
+    {
+     "word": "actually",
+     "start": 2.566,
+     "end": 2.914
+    },
+    {
+     "word": "speeds",
+     "start": 2.949,
+     "end": 3.332
+    },
+    {
+     "word": "up!",
+     "start": 3.402,
+     "end": 3.808
+    }
+   ],
+   "measuredDuration": 3.8080725623582765,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 3.575873015873016,
+   "captionOffset": 0.16253968253968254
+  },
+  "2": {
+   "src": "generated/vo-4ec52e2f/s2.mp3",
+   "duration": 9.978775510204082,
+   "words": [
+    {
+     "word": "A",
+     "start": 0,
+     "end": 0.209
+    },
+    {
+     "word": "DC",
+     "start": 0.29,
+     "end": 0.499
+    },
+    {
+     "word": "shunt",
+     "start": 0.65,
+     "end": 0.871
+    },
+    {
+     "word": "motor",
+     "start": 0.929,
+     "end": 1.254
+    },
+    {
+     "word": "drives",
+     "start": 1.335,
+     "end": 1.73
+    },
+    {
+     "word": "a",
+     "start": 1.846,
+     "end": 1.904
+    },
+    {
+     "word": "constant",
+     "start": 2.02,
+     "end": 2.554
+    },
+    {
+     "word": "torque",
+     "start": 2.624,
+     "end": 2.984
+    },
+    {
+     "word": "load.",
+     "start": 3.03,
+     "end": 3.39
+    },
+    {
+     "word": "If",
+     "start": 3.669,
+     "end": 3.82
+    },
+    {
+     "word": "the",
+     "start": 3.866,
+     "end": 3.936
+    },
+    {
+     "word": "field",
+     "start": 4.005,
+     "end": 4.249
+    },
+    {
+     "word": "flux",
+     "start": 4.307,
+     "end": 4.586
+    },
+    {
+     "word": "is",
+     "start": 4.679,
+     "end": 4.818
+    },
+    {
+     "word": "halved",
+     "start": 4.934,
+     "end": 5.317
+    },
+    {
+     "word": "while",
+     "start": 5.375,
+     "end": 5.584
+    },
+    {
+     "word": "the",
+     "start": 5.619,
+     "end": 5.689
+    },
+    {
+     "word": "terminal",
+     "start": 5.747,
+     "end": 6.188
+    },
+    {
+     "word": "voltage",
+     "start": 6.246,
+     "end": 6.664
+    },
+    {
+     "word": "is",
+     "start": 6.699,
+     "end": 6.78
+    },
+    {
+     "word": "kept",
+     "start": 6.85,
+     "end": 7.07
+    },
+    {
+     "word": "constant,",
+     "start": 7.14,
+     "end": 7.779
+    },
+    {
+     "word": "what",
+     "start": 7.988,
+     "end": 8.197
+    },
+    {
+     "word": "happens",
+     "start": 8.278,
+     "end": 8.626
+    },
+    {
+     "word": "to",
+     "start": 8.673,
+     "end": 8.731
+    },
+    {
+     "word": "the",
+     "start": 8.789,
+     "end": 8.858
+    },
+    {
+     "word": "armature",
+     "start": 8.916,
+     "end": 9.334
+    },
+    {
+     "word": "current?",
+     "start": 9.358,
+     "end": 9.938
+    }
+   ],
+   "measuredDuration": 9.93814058956916,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 9.659501133786849,
+   "captionOffset": 0.17414965986394557
+  },
+  "3": {
+   "src": "generated/vo-4ec52e2f/s3.mp3",
+   "duration": 4.858775510204081,
+   "words": [
+    {
+     "word": "Is",
+     "start": 0,
+     "end": 0.302
+    },
+    {
+     "word": "it",
+     "start": 0.36,
+     "end": 0.441
+    },
+    {
+     "word": "It",
+     "start": 0.499,
+     "end": 0.58
+    },
+    {
+     "word": "remains",
+     "start": 0.65,
+     "end": 1.022
+    },
+    {
+     "word": "unchanged,",
+     "start": 1.115,
+     "end": 1.8
+    },
+    {
+     "word": "It",
+     "start": 1.916,
+     "end": 2.055
+    },
+    {
+     "word": "is",
+     "start": 2.113,
+     "end": 2.218
+    },
+    {
+     "word": "halved,",
+     "start": 2.299,
+     "end": 2.682
+    },
+    {
+     "word": "It",
+     "start": 2.705,
+     "end": 2.798
+    },
+    {
+     "word": "is",
+     "start": 2.856,
+     "end": 2.937
+    },
+    {
+     "word": "doubled,",
+     "start": 3.007,
+     "end": 3.413
+    },
+    {
+     "word": "or",
+     "start": 3.471,
+     "end": 3.646
+    },
+    {
+     "word": "It",
+     "start": 3.704,
+     "end": 3.785
+    },
+    {
+     "word": "quadruples?",
+     "start": 3.855,
+     "end": 4.83
+    }
+   ],
+   "measuredDuration": 4.829750566893424,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 4.493061224489796,
+   "captionOffset": 0.17414965986394557
+  },
+  "5": {
+   "src": "generated/vo-4ec52e2f/s5.mp3",
+   "duration": 1.9853061224489796,
+   "words": [
+    {
+     "word": "The",
+     "start": 0,
+     "end": 0.232
+    },
+    {
+     "word": "armature",
+     "start": 0.302,
+     "end": 0.731
+    },
+    {
+     "word": "current",
+     "start": 0.778,
+     "end": 1.08
+    },
+    {
+     "word": "is",
+     "start": 1.138,
+     "end": 1.231
+    },
+    {
+     "word": "doubled.",
+     "start": 1.289,
+     "end": 1.95
+    }
+   ],
+   "measuredDuration": 1.9504761904761905,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 1.7182766439909296,
+   "captionOffset": 0.16253968253968254
+  },
+  "6": {
+   "src": "generated/vo-4ec52e2f/s6.mp3",
+   "duration": 7.340408163265306,
+   "words": [
+    {
+     "word": "In",
+     "start": 0,
+     "end": 0.302
+    },
+    {
+     "word": "any",
+     "start": 0.418,
+     "end": 0.662
+    },
+    {
+     "word": "DC",
+     "start": 0.731,
+     "end": 0.987
+    },
+    {
+     "word": "machine,",
+     "start": 1.138,
+     "end": 1.591
+    },
+    {
+     "word": "electromagnetic",
+     "start": 1.765,
+     "end": 2.635
+    },
+    {
+     "word": "torque",
+     "start": 2.682,
+     "end": 2.949
+    },
+    {
+     "word": "is",
+     "start": 3.007,
+     "end": 3.17
+    },
+    {
+     "word": "directly",
+     "start": 3.286,
+     "end": 3.855
+    },
+    {
+     "word": "proportional",
+     "start": 3.913,
+     "end": 4.458
+    },
+    {
+     "word": "to",
+     "start": 4.516,
+     "end": 4.586
+    },
+    {
+     "word": "both",
+     "start": 4.667,
+     "end": 4.865
+    },
+    {
+     "word": "magnetic",
+     "start": 4.946,
+     "end": 5.433
+    },
+    {
+     "word": "flux",
+     "start": 5.492,
+     "end": 5.759
+    },
+    {
+     "word": "and",
+     "start": 5.909,
+     "end": 6.095
+    },
+    {
+     "word": "armature",
+     "start": 6.177,
+     "end": 6.641
+    },
+    {
+     "word": "current.",
+     "start": 6.676,
+     "end": 7.291
+    }
+   ],
+   "measuredDuration": 7.291065759637188,
+   "speechStart": 0.18575963718820862,
+   "speechEnd": 7.047256235827664,
+   "captionOffset": 0.18575963718820862
+  },
+  "7": {
+   "src": "generated/vo-4ec52e2f/s7.mp3",
+   "duration": 7.053061224489796,
+   "words": [
+    {
+     "word": "Because",
+     "start": 0,
+     "end": 0.418
+    },
+    {
+     "word": "the",
+     "start": 0.453,
+     "end": 0.522
+    },
+    {
+     "word": "mechanical",
+     "start": 0.569,
+     "end": 1.103
+    },
+    {
+     "word": "load",
+     "start": 1.173,
+     "end": 1.393
+    },
+    {
+     "word": "torque",
+     "start": 1.451,
+     "end": 1.8
+    },
+    {
+     "word": "remains",
+     "start": 1.892,
+     "end": 2.287
+    },
+    {
+     "word": "strictly",
+     "start": 2.31,
+     "end": 2.752
+    },
+    {
+     "word": "constant,",
+     "start": 2.81,
+     "end": 3.483
+    },
+    {
+     "word": "the",
+     "start": 3.634,
+     "end": 3.75
+    },
+    {
+     "word": "product",
+     "start": 3.808,
+     "end": 4.191
+    },
+    {
+     "word": "of",
+     "start": 4.238,
+     "end": 4.307
+    },
+    {
+     "word": "flux",
+     "start": 4.377,
+     "end": 4.656
+    },
+    {
+     "word": "and",
+     "start": 4.725,
+     "end": 4.83
+    },
+    {
+     "word": "current",
+     "start": 4.888,
+     "end": 5.19
+    },
+    {
+     "word": "must",
+     "start": 5.341,
+     "end": 5.654
+    },
+    {
+     "word": "stay",
+     "start": 5.782,
+     "end": 6.072
+    },
+    {
+     "word": "constant.",
+     "start": 6.165,
+     "end": 7.012
+    }
+   ],
+   "measuredDuration": 7.012426303854875,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 6.780226757369615,
+   "captionOffset": 0.17414965986394557
+  },
+  "8": {
+   "src": "generated/vo-4ec52e2f/s8.mp3",
+   "duration": 5.929795918367347,
+   "words": [
+    {
+     "word": "When",
+     "start": 0,
+     "end": 0.279
+    },
+    {
+     "word": "you",
+     "start": 0.337,
+     "end": 0.418
+    },
+    {
+     "word": "cut",
+     "start": 0.511,
+     "end": 0.743
+    },
+    {
+     "word": "the",
+     "start": 0.813,
+     "end": 0.917
+    },
+    {
+     "word": "field",
+     "start": 0.975,
+     "end": 1.219
+    },
+    {
+     "word": "flux",
+     "start": 1.254,
+     "end": 1.498
+    },
+    {
+     "word": "by",
+     "start": 1.579,
+     "end": 1.707
+    },
+    {
+     "word": "half,",
+     "start": 1.8,
+     "end": 2.078
+    },
+    {
+     "word": "the",
+     "start": 2.101,
+     "end": 2.194
+    },
+    {
+     "word": "motor",
+     "start": 2.264,
+     "end": 2.554
+    },
+    {
+     "word": "shaft",
+     "start": 2.589,
+     "end": 2.868
+    },
+    {
+     "word": "momentarily",
+     "start": 2.937,
+     "end": 3.599
+    },
+    {
+     "word": "decelerates",
+     "start": 3.657,
+     "end": 4.365
+    },
+    {
+     "word": "due",
+     "start": 4.447,
+     "end": 4.679
+    },
+    {
+     "word": "to",
+     "start": 4.714,
+     "end": 4.795
+    },
+    {
+     "word": "torque",
+     "start": 4.888,
+     "end": 5.213
+    },
+    {
+     "word": "deficit.",
+     "start": 5.236,
+     "end": 5.898
+    }
+   ],
+   "measuredDuration": 5.897868480725624,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 5.607619047619048,
+   "captionOffset": 0.16253968253968254
+  },
+  "9": {
+   "src": "generated/vo-4ec52e2f/s9.mp3",
+   "duration": 5.851428571428571,
+   "words": [
+    {
+     "word": "Back",
+     "start": 0,
+     "end": 0.418
+    },
+    {
+     "word": "EMF",
+     "start": 0.511,
+     "end": 0.882
+    },
+    {
+     "word": "is",
+     "start": 0.964,
+     "end": 1.033
+    },
+    {
+     "word": "directly",
+     "start": 1.091,
+     "end": 1.544
+    },
+    {
+     "word": "proportional",
+     "start": 1.602,
+     "end": 2.113
+    },
+    {
+     "word": "to",
+     "start": 2.171,
+     "end": 2.252
+    },
+    {
+     "word": "flux",
+     "start": 2.345,
+     "end": 2.659
+    },
+    {
+     "word": "times",
+     "start": 2.728,
+     "end": 2.995
+    },
+    {
+     "word": "speed,",
+     "start": 3.019,
+     "end": 3.332
+    },
+    {
+     "word": "so",
+     "start": 3.355,
+     "end": 3.471
+    },
+    {
+     "word": "back",
+     "start": 3.553,
+     "end": 3.75
+    },
+    {
+     "word": "EMF",
+     "start": 3.866,
+     "end": 4.18
+    },
+    {
+     "word": "drops",
+     "start": 4.261,
+     "end": 4.551
+    },
+    {
+     "word": "instantly",
+     "start": 4.621,
+     "end": 5.12
+    },
+    {
+     "word": "by",
+     "start": 5.178,
+     "end": 5.283
+    },
+    {
+     "word": "half.",
+     "start": 5.352,
+     "end": 5.805
+    }
+   ],
+   "measuredDuration": 5.804988662131519,
+   "speechStart": 0.10448979591836735,
+   "speechEnd": 5.468299319727891,
+   "captionOffset": 0.10448979591836735
+  },
+  "10": {
+   "src": "generated/vo-4ec52e2f/s10.mp3",
+   "duration": 7.1053061224489795,
+   "words": [
+    {
+     "word": "With",
+     "start": 0,
+     "end": 0.302
+    },
+    {
+     "word": "supply",
+     "start": 0.337,
+     "end": 0.65
+    },
+    {
+     "word": "voltage",
+     "start": 0.708,
+     "end": 1.08
+    },
+    {
+     "word": "fixed,",
+     "start": 1.138,
+     "end": 1.544
+    },
+    {
+     "word": "the",
+     "start": 1.66,
+     "end": 1.776
+    },
+    {
+     "word": "armature",
+     "start": 1.834,
+     "end": 2.241
+    },
+    {
+     "word": "voltage",
+     "start": 2.276,
+     "end": 2.694
+    },
+    {
+     "word": "drop",
+     "start": 2.728,
+     "end": 3.007
+    },
+    {
+     "word": "equals",
+     "start": 3.077,
+     "end": 3.471
+    },
+    {
+     "word": "supply",
+     "start": 3.518,
+     "end": 3.878
+    },
+    {
+     "word": "voltage",
+     "start": 3.936,
+     "end": 4.354
+    },
+    {
+     "word": "minus",
+     "start": 4.412,
+     "end": 4.865
+    },
+    {
+     "word": "this",
+     "start": 4.946,
+     "end": 5.178
+    },
+    {
+     "word": "lower",
+     "start": 5.294,
+     "end": 5.55
+    },
+    {
+     "word": "back",
+     "start": 5.619,
+     "end": 5.84
+    },
+    {
+     "word": "EMF",
+     "start": 5.921,
+     "end": 6.339
+    },
+    {
+     "word": "value.",
+     "start": 6.409,
+     "end": 7.059
+    }
+   ],
+   "measuredDuration": 7.058866213151927,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 6.791836734693877,
+   "captionOffset": 0.16253968253968254
+  },
+  "11": {
+   "src": "generated/vo-4ec52e2f/s11.mp3",
+   "duration": 7.053061224489796,
+   "words": [
+    {
+     "word": "That",
+     "start": 0,
+     "end": 0.313
+    },
+    {
+     "word": "sudden",
+     "start": 0.406,
+     "end": 0.743
+    },
+    {
+     "word": "voltage",
+     "start": 0.824,
+     "end": 1.3
+    },
+    {
+     "word": "imbalance",
+     "start": 1.347,
+     "end": 1.904
+    },
+    {
+     "word": "forces",
+     "start": 1.962,
+     "end": 2.392
+    },
+    {
+     "word": "the",
+     "start": 2.426,
+     "end": 2.496
+    },
+    {
+     "word": "armature",
+     "start": 2.566,
+     "end": 2.961
+    },
+    {
+     "word": "current",
+     "start": 3.007,
+     "end": 3.332
+    },
+    {
+     "word": "to",
+     "start": 3.367,
+     "end": 3.448
+    },
+    {
+     "word": "surge",
+     "start": 3.564,
+     "end": 3.924
+    },
+    {
+     "word": "upwards",
+     "start": 3.971,
+     "end": 4.423
+    },
+    {
+     "word": "until",
+     "start": 4.481,
+     "end": 4.748
+    },
+    {
+     "word": "mechanical",
+     "start": 4.83,
+     "end": 5.341
+    },
+    {
+     "word": "equilibrium",
+     "start": 5.433,
+     "end": 6.06
+    },
+    {
+     "word": "is",
+     "start": 6.142,
+     "end": 6.246
+    },
+    {
+     "word": "restored.",
+     "start": 6.304,
+     "end": 7.012
+    }
+   ],
+   "measuredDuration": 7.012426303854875,
+   "speechStart": 0.1509297052154195,
+   "speechEnd": 6.757006802721088,
+   "captionOffset": 0.1509297052154195
+  },
+  "12": {
+   "src": "generated/vo-4ec52e2f/s12.mp3",
+   "duration": 5.564081632653061,
+   "words": [
+    {
+     "word": "To",
+     "start": 0,
+     "end": 0.232
+    },
+    {
+     "word": "produce",
+     "start": 0.302,
+     "end": 0.673
+    },
+    {
+     "word": "the",
+     "start": 0.708,
+     "end": 0.789
+    },
+    {
+     "word": "exact",
+     "start": 0.871,
+     "end": 1.312
+    },
+    {
+     "word": "original",
+     "start": 1.393,
+     "end": 1.776
+    },
+    {
+     "word": "torque",
+     "start": 1.846,
+     "end": 2.101
+    },
+    {
+     "word": "with",
+     "start": 2.125,
+     "end": 2.264
+    },
+    {
+     "word": "half",
+     "start": 2.31,
+     "end": 2.485
+    },
+    {
+     "word": "the",
+     "start": 2.531,
+     "end": 2.601
+    },
+    {
+     "word": "flux,",
+     "start": 2.647,
+     "end": 3.1
+    },
+    {
+     "word": "the",
+     "start": 3.274,
+     "end": 3.39
+    },
+    {
+     "word": "armature",
+     "start": 3.471,
+     "end": 3.889
+    },
+    {
+     "word": "current",
+     "start": 3.924,
+     "end": 4.18
+    },
+    {
+     "word": "must",
+     "start": 4.238,
+     "end": 4.447
+    },
+    {
+     "word": "exactly",
+     "start": 4.516,
+     "end": 4.969
+    },
+    {
+     "word": "double.",
+     "start": 5.016,
+     "end": 5.526
+    }
+   ],
+   "measuredDuration": 5.526349206349207,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 5.259319727891157,
+   "captionOffset": 0.17414965986394557
+  },
+  "13": {
+   "src": "generated/vo-4ec52e2f/s13.mp3",
+   "duration": 5.69469387755102,
+   "words": [
+    {
+     "word": "Speed",
+     "start": 0,
+     "end": 0.453
+    },
+    {
+     "word": "then",
+     "start": 0.488,
+     "end": 0.627
+    },
+    {
+     "word": "climbs",
+     "start": 0.673,
+     "end": 0.964
+    },
+    {
+     "word": "higher",
+     "start": 1.01,
+     "end": 1.254
+    },
+    {
+     "word": "until",
+     "start": 1.312,
+     "end": 1.556
+    },
+    {
+     "word": "the",
+     "start": 1.602,
+     "end": 1.672
+    },
+    {
+     "word": "newly",
+     "start": 1.718,
+     "end": 1.95
+    },
+    {
+     "word": "established",
+     "start": 2.009,
+     "end": 2.485
+    },
+    {
+     "word": "back",
+     "start": 2.531,
+     "end": 2.717
+    },
+    {
+     "word": "EMF",
+     "start": 2.798,
+     "end": 3.17
+    },
+    {
+     "word": "satisfies",
+     "start": 3.239,
+     "end": 3.796
+    },
+    {
+     "word": "the",
+     "start": 3.831,
+     "end": 3.901
+    },
+    {
+     "word": "steady",
+     "start": 3.947,
+     "end": 4.214
+    },
+    {
+     "word": "armature",
+     "start": 4.296,
+     "end": 4.714
+    },
+    {
+     "word": "current",
+     "start": 4.748,
+     "end": 4.992
+    },
+    {
+     "word": "demand.",
+     "start": 5.039,
+     "end": 5.666
+    }
+   ],
+   "measuredDuration": 5.6656689342403626,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 5.317369614512471,
+   "captionOffset": 0.17414965986394557
+  },
+  "14": {
+   "src": "generated/vo-4ec52e2f/s14.mp3",
+   "duration": 7.1053061224489795,
+   "words": [
+    {
+     "word": "Therefore,",
+     "start": 0,
+     "end": 0.708
+    },
+    {
+     "word": "under",
+     "start": 0.882,
+     "end": 1.126
+    },
+    {
+     "word": "constant",
+     "start": 1.184,
+     "end": 1.625
+    },
+    {
+     "word": "load",
+     "start": 1.683,
+     "end": 1.881
+    },
+    {
+     "word": "torque,",
+     "start": 1.927,
+     "end": 2.241
+    },
+    {
+     "word": "field",
+     "start": 2.392,
+     "end": 2.728
+    },
+    {
+     "word": "flux",
+     "start": 2.775,
+     "end": 3.03
+    },
+    {
+     "word": "weakening",
+     "start": 3.1,
+     "end": 3.506
+    },
+    {
+     "word": "always",
+     "start": 3.657,
+     "end": 4.11
+    },
+    {
+     "word": "forces",
+     "start": 4.18,
+     "end": 4.563
+    },
+    {
+     "word": "armature",
+     "start": 4.644,
+     "end": 5.108
+    },
+    {
+     "word": "current",
+     "start": 5.143,
+     "end": 5.468
+    },
+    {
+     "word": "to",
+     "start": 5.515,
+     "end": 5.608
+    },
+    {
+     "word": "increase",
+     "start": 5.7,
+     "end": 6.188
+    },
+    {
+     "word": "inversely.",
+     "start": 6.246,
+     "end": 7.059
+    }
+   ],
+   "measuredDuration": 7.058866213151927,
+   "speechStart": 0.13931972789115646,
+   "speechEnd": 6.757006802721088,
+   "captionOffset": 0.13931972789115646
+  },
+  "15": {
+   "src": "generated/vo-4ec52e2f/s15.mp3",
+   "duration": 3.369795918367347,
+   "words": [
+    {
+     "word": "Here",
+     "start": 0,
+     "end": 0.325
+    },
+    {
+     "word": "are",
+     "start": 0.348,
+     "end": 0.441
+    },
+    {
+     "word": "the",
+     "start": 0.464,
+     "end": 0.534
+    },
+    {
+     "word": "formulas",
+     "start": 0.58,
+     "end": 1.022
+    },
+    {
+     "word": "behind",
+     "start": 1.091,
+     "end": 1.358
+    },
+    {
+     "word": "this",
+     "start": 1.393,
+     "end": 1.533
+    },
+    {
+     "word": "one.",
+     "start": 1.602,
+     "end": 1.846
+    },
+    {
+     "word": "Save",
+     "start": 2.02,
+     "end": 2.287
+    },
+    {
+     "word": "it",
+     "start": 2.31,
+     "end": 2.38
+    },
+    {
+     "word": "for",
+     "start": 2.415,
+     "end": 2.519
+    },
+    {
+     "word": "your",
+     "start": 2.566,
+     "end": 2.67
+    },
+    {
+     "word": "revision.",
+     "start": 2.717,
+     "end": 3.344
+    }
+   ],
+   "measuredDuration": 3.3436734693877552,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 3.076643990929705,
+   "captionOffset": 0.17414965986394557
+  },
+  "16": {
+   "src": "generated/vo-b9dab6c6/s16.mp3",
+   "duration": 4.6236734693877555,
+   "words": [
+    {
+     "word": "Master",
+     "start": 0,
+     "end": 0.488
+    },
+    {
+     "word": "your",
+     "start": 0.534,
+     "end": 0.627
+    },
+    {
+     "word": "electrical",
+     "start": 0.673,
+     "end": 1.045
+    },
+    {
+     "word": "machine",
+     "start": 1.091,
+     "end": 1.358
+    },
+    {
+     "word": "equations",
+     "start": 1.382,
+     "end": 1.869
+    },
+    {
+     "word": "every",
+     "start": 1.916,
+     "end": 2.136
+    },
+    {
+     "word": "day,",
+     "start": 2.183,
+     "end": 2.403
+    },
+    {
+     "word": "and",
+     "start": 2.461,
+     "end": 2.624
+    },
+    {
+     "word": "subscribe",
+     "start": 2.67,
+     "end": 3.135
+    },
+    {
+     "word": "for",
+     "start": 3.17,
+     "end": 3.274
+    },
+    {
+     "word": "more",
+     "start": 3.32,
+     "end": 3.506
+    },
+    {
+     "word": "exam",
+     "start": 3.564,
+     "end": 3.831
+    },
+    {
+     "word": "shortcuts!",
+     "start": 3.866,
+     "end": 4.598
+    }
+   ],
+   "measuredDuration": 4.597551020408163,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 4.272471655328798,
+   "captionOffset": 0.17414965986394557
+  }
+ },
+ "seo": {
+  "titles": [
+   "DC Shunt Motor Armature Current: Constant Torque Load Explained",
+   "What Happens to Armature Current if Field Flux Is Halved?",
+   "Can You Solve This DC Motor Torque and Flux Problem?",
+   "State AE JE Electrical: DC Shunt Motor Constant Torque Question",
+   "DC Motor Field Weakening: Effect on Armature Current & Speed"
+  ],
+  "description": "DC Motor Back EMF and Speed Regulation for State AE and JE Electrical exams.\n\nLearn what happens to the armature current of a DC shunt motor driving a constant torque load when field flux is halved. We break down the exact interaction between electromagnetic torque, back EMF, and motor speed to explain why current surges.\n\n- Torque proportionality to flux and armature current\n- Back EMF reduction and voltage imbalance\n- Armature current doubling under constant torque\n- Motor runaway hazard during field loss\n\n#Shorts #DCMotor #ElectricalMachines #StateAEJE",
+  "tags": [
+   "dc shunt motor",
+   "armature current",
+   "dc motor back emf",
+   "constant torque load",
+   "electrical machines",
+   "state ae electrical",
+   "ssc je electrical",
+   "field weakening",
+   "dc motor speed control",
+   "dc motor runaway",
+   "torque equation dc motor",
+   "electrical engineering",
+   "ae je electrical machines",
+   "flux halving dc motor",
+   "speed regulation",
+   "dc motor mcq",
+   "back emf drops",
+   "electromagnetic torque",
+   "dc motor working"
+  ],
+  "hashtags": [
+   "Shorts",
+   "DCMotor",
+   "ElectricalMachines",
+   "StateAEJE"
+  ],
+  "thumbnailText": "FLUX HALVED: CURRENT?",
+  "pinnedComment": "What happens to the speed of a DC shunt motor if the field circuit accidentally opens while running? Drop your answer below!",
+  "instagram": {
+   "caption": "What happens to armature current when a DC shunt motor's field flux is halved under constant torque? Comment your guess!\n\nWe break down the torque equation and back EMF response in DC machines.\nLearn how armature current responds when field flux is cut in half.\nUnderstand why field weakening leads to motor speed changes.\n\nSave this reel for your State AE & JE Electrical revision!",
+   "hashtags": [
+    "DCMotor",
+    "ElectricalMachines",
+    "StateAEElectrical",
+    "ElectricalEngineering"
+   ],
+   "altText": "Diagram showing DC shunt motor equations for torque, back EMF, and field flux variations.",
+   "post": "What happens to armature current when a DC shunt motor's field flux is halved under constant torque? Comment your guess!\n\nWe break down the torque equation and back EMF response in DC machines.\nLearn how armature current responds when field flux is cut in half.\nUnderstand why field weakening leads to motor speed changes.\n\nSave this reel for your State AE & JE Electrical revision!\n\n#DCMotor #ElectricalMachines #StateAEElectrical #ElectricalEngineering",
+   "hookLength": 120
+  },
+  "facebook": {
+   "title": "DC Motor Field Flux & Armature Current Explained",
+   "caption": "DC motor back EMF and torque regulation: what happens to armature current when field flux is halved under constant torque? Learn how torque balance dictates motor response. What would happen to the motor speed?",
+   "hashtags": [
+    "ElectricalMachines",
+    "DCMotor",
+    "StateJE"
+   ],
+   "keywords": [
+    "dc motor",
+    "electrical machines",
+    "armature current",
+    "back emf",
+    "field flux",
+    "constant torque",
+    "state ae electrical"
+   ],
+   "post": "DC motor back EMF and torque regulation: what happens to armature current when field flux is halved under constant torque? Learn how torque balance dictates motor response. What would happen to the motor speed?\n\n#ElectricalMachines #DCMotor #StateJE"
+  },
+  "tagsLength": 365,
+  "generatedAt": "2026-09-27T17:37:31.968Z",
+  "fingerprint": "A DC shunt motor drives a constant torque load. If the field flux is halved while the terminal voltage is kept constant, what happens to the armature current?~~It remains unchanged|It is halved|It is doubled|It quadruples~~2~~In any DC machine, electromagnetic torque is directly proportional to both magnetic flux and armature current.|Because the mechanical load torque remains strictly constant, the product of flux and current must stay constant.|When you cut the field flux by half, the motor shaft momentarily decelerates due to torque deficit.|Back EMF is directly proportional to flux times speed, so back EMF drops instantly by half.~~In any DC machine, electromagnetic torque is directly proportional to both magnetic flux and armature current.|Because the mechanical load torque remains strictly constant, the product of flux and current must stay constant.|When you cut the field flux by half, the motor shaft momentarily decelerates due to torque deficit.|Back EMF is directly proportional to flux times speed, so back EMF drops instantly by half.|With supply voltage fixed, the armature voltage drop equals supply voltage minus this lower back EMF value.|That sudden voltage imbalance forces the armature current to surge upwards until mechanical equilibrium is restored.|To produce the exact original torque with half the flux, the armature current must exactly double.|Speed then climbs higher until the newly established back EMF satisfies the steady armature current demand.|Therefore, under constant load torque, field flux weakening always forces armature current to increase inversely."
+ },
+ "ledger": [
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-09-27T16:36:37.855Z"
+  },
+  {
+   "what": "Voiceover (1 scenes)",
+   "characters": 90,
+   "at": "2026-09-27T17:28:52.623Z"
+  },
+  {
+   "what": "Thumbnail picture",
+   "cents": 3,
+   "at": "2026-09-27T17:37:57.205Z"
+  }
+ ],
+ "renders": [
+  {
+   "jobId": "video-2026-09-27T16-40-10",
+   "url": "/out/video-2026-09-27T16-40-10.mp4",
+   "quality": "medium",
+   "at": "2026-09-27T16:45:42.008Z"
+  },
+  {
+   "jobId": "video-2026-09-27T17-29-04",
+   "url": "/out/video-2026-09-27T17-29-04.mp4",
+   "quality": "medium",
+   "at": "2026-09-27T17:35:21.797Z"
+  }
+ ],
+ "published": {}
+}

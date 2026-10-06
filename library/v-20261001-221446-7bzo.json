@@ -1,0 +1,1816 @@
+{
+ "id": "v-20261001-221446-7bzo",
+ "createdAt": "2026-10-01T16:44:47.598Z",
+ "updatedAt": "2026-10-06T16:06:04.288Z",
+ "content": {
+  "subject": "Basic Electrical Engineering",
+  "topic": "Energy Consumption and the Kilowatt-hour Concept",
+  "difficulty": "Medium",
+  "hook": "Does ten bulbs for one hour consume more power than one for ten?",
+  "question": "A 100-watt bulb runs for 10 hours, while ten 100-watt bulbs run for 1 hour. How does the total electrical energy consumed in each case compare?",
+  "options": [
+   "Both consume equal energy",
+   "One bulb consumes ten times more",
+   "Ten bulbs consume ten times more",
+   "One bulb consumes one hundred times more"
+  ],
+  "correctIndex": 0,
+  "answerLine": "Both cases consume exactly the same energy.",
+  "explanation": [
+   "Electrical energy is simply defined as the product of total electrical power consumed and operating time.",
+   "In standard engineering practice, the commercial unit of billing is the kilowatt-hour, equivalent to one Board of Trade unit.",
+   "For the first case, a single one-hundred-watt lamp operates steadily for a total duration of ten hours.",
+   "Multiplying one hundred watts by ten hours gives one thousand watt-hours, which equals exactly one kilowatt-hour."
+  ],
+  "funFact": "One kilowatt-hour equals 3.6 megajoules, which is enough energy to boil about ten litres of room-temperature water.",
+  "outro": "Remember that energy integrates power over time, so share this quiz and follow for more engineering problems!",
+  "hashtags": [
+   "GATEEE",
+   "ElectricalEngineering",
+   "EnergyConcept",
+   "BasicElectrical",
+   "EngineeringQuiz"
+  ],
+  "motifSymbols": [
+   "⚡",
+   "💡",
+   "⏱️",
+   "🔌"
+  ],
+  "script": [
+   {
+    "kind": "intro",
+    "narration": "Ready for today’s question?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "wave",
+     "action": "waves warmly toward the viewer to kick off the puzzle",
+     "emotion": "friendly and enthusiastic",
+     "props": "a single incandescent light bulb on a pedestal",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/doodle-nkhak6/s0-534fab.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "hook",
+    "narration": "Does ten bulbs for one hour consume more power than one for ten?",
+    "imageQuery": "vintage electric bulb glowing",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "a single shining bulb on the left side and a neat grid of ten identical bulbs on the right",
+     "emotion": "busy",
+     "props": "light bulbs, connecting wires",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/doodle-nkhak6/s1-4e6527.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "question",
+    "narration": "A 100-watt bulb runs for 10 hours, while ten 100-watt bulbs run for 1 hour. How does the total electrical energy consumed in each case compare?",
+    "imageQuery": "power grid transmission lines dusk",
+    "visual": {
+     "kind": "formula",
+     "formula": "E = P × t",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "options",
+    "narration": "Is it that both consume equal energy, one bulb consumes ten times more, ten bulbs consume ten times more, or one bulb consumes one hundred times more?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "shrug",
+     "action": "shrugs with open hands beside a two-pan balance scale",
+     "emotion": "puzzled curiosity",
+     "props": "a two-pan balance scale with a question mark on each tray",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/doodle-nkhak6/s3-e0bb1e.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "countdown",
+    "narration": "",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "an hourglass wrapped with thick coiled copper wire as tiny sparks fall through the neck",
+     "emotion": "tense and anticipatory",
+     "props": "hourglass, copper wire coil",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/doodle-nkhak6/s4-ccf359.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "answer",
+    "narration": "Both cases consume exactly the same energy.",
+    "imageQuery": "illuminated city night skyline",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "cheer",
+     "action": "pumps fists in celebration next to an analog utility energy meter with its disc spinning",
+     "emotion": "triumphant and energetic",
+     "props": "an electrical energy meter with spinning disc",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/doodle-nkhak6/s5-54d022.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "explain",
+    "narration": "Electrical energy is simply defined as the product of total electrical power consumed and operating time.",
+    "imageQuery": "digital multimeter laboratory testing",
+    "visual": {
+     "kind": "working"
+    },
+    "visualWas": {
+     "kind": "formula",
+     "formula": "E = \\int P \\, dt = P \\times t",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "In standard engineering practice, the commercial unit of billing is the kilowatt-hour, equivalent to one Board of Trade unit.",
+    "imageQuery": "analog utility electricity meter dial",
+    "visual": {
+     "kind": "icon",
+     "caption": "1 Commercial Unit",
+     "items": [
+      {
+       "label": "1 kWh = 1 Unit",
+       "symbol": "⚡"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "For the first case, a single one-hundred-watt lamp operates steadily for a total duration of ten hours.",
+    "imageQuery": "single incandescent light bulb filament",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "area-under",
+     "caption": "",
+     "params": {
+      "count": 10
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Multiplying one hundred watts by ten hours gives one thousand watt-hours, which equals exactly one kilowatt-hour.",
+    "imageQuery": "hand writing equations on notepad",
+    "visual": {
+     "kind": "formula",
+     "formula": "100 W × 10 h = 1000 Wh = 1 kWh",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "In the second scenario, ten identical one-hundred-watt lamps operate simultaneously together across the supply line.",
+    "imageQuery": "row of incandescent light bulbs",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "ten light bulbs connected neatly in parallel between two parallel heavy copper busbars",
+     "emotion": "calm",
+     "props": "ten light bulbs, thick busbar conductors",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/doodle-nkhak6/s10-52fd5c.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "explain",
+    "narration": "Their combined electrical power demand equals one thousand watts, which is precisely one kilowatt of total load.",
+    "imageQuery": "electrical switchgear panel breakers",
+    "visual": {
+     "kind": "formula",
+     "formula": "P{total} = 10 × 100 W = 1000 W",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Running this one-kilowatt load for one hour yields one kilowatt multiplied by one hour of duration.",
+    "imageQuery": "stopwatch mechanical dial counting",
+    "visual": {
+     "kind": "formula",
+     "formula": "1000 W × 1 h = 1000 Wh = 1 kWh",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "This product equals one kilowatt-hour, showing that energy integration over time yields identical numerical totals.",
+    "imageQuery": "engineering graph analysis plot",
+    "visual": {
+     "kind": "compare",
+     "caption": "Total Energy Comparison",
+     "items": [
+      {
+       "label": "Case 1: 1 kWh",
+       "symbol": "💡"
+      },
+      {
+       "label": "Case 2: 1 kWh",
+       "symbol": "💡"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "High power for short intervals matches low power for long intervals when their area products coincide.",
+    "imageQuery": "electrical engineer workstation laboratory",
+    "visual": {
+     "kind": "bars",
+     "caption": "Energy Consumed (kWh)",
+     "items": [
+      {
+       "label": "1 Bulb × 10h",
+       "value": 1
+      },
+      {
+       "label": "10 Bulbs × 1h",
+       "value": 1
+      }
+     ]
+    }
+   },
+   {
+    "kind": "formulas",
+    "narration": "Here are the formulas behind this one. Save it for your revision."
+   },
+   {
+    "kind": "outro",
+    "narration": "Remember that energy integrates power over time, so share this quiz and follow for more engineering problems!",
+    "imageQuery": "modern electrical substation high voltage",
+    "visual": {
+     "kind": "icon",
+     "caption": "",
+     "items": [
+      {
+       "label": "3.6 Megajoules",
+       "symbol": "🔥"
+      }
+     ]
+    }
+   }
+  ],
+  "formulas": {
+   "title": "Energy Consumption - Important Formulas",
+   "cards": [
+    {
+     "name": "Electrical Energy",
+     "formula": "E = P \\cdot t",
+     "notes": [
+      "P = Power (W)",
+      "t = Time (h)"
+     ],
+     "graph": {
+      "kind": "linear",
+      "x": "t",
+      "y": "E",
+      "label": "P",
+      "label2": ""
+     },
+     "icon": "light bulb",
+     "art": {
+      "body": "<path fill=\"currentColor\" d=\"M247 18.656c-80.965 0-146.875 65.02-146.875 145.625c0 45.63 15.758 67 33.313 94.845c11.706 18.57 23.767 39.91 30.53 70.563h165.095c6.728-31.387 18.91-53.12 30.718-71.875c17.58-27.92 33.314-48.912 33.314-93.532c0-80.66-65.127-145.624-146.094-145.624zm-99.78 127.906L170.437 167L210 201.813l31.188-34.125l6.78-7.438l6.907 7.344l30.75 32.72l39.97-33.47l22.686-19l-7.655 28.594L304.75 310.28l-18.063-4.842l28.22-105.25l-24.032 20.125l-6.78 5.656l-6.033-6.44l-29.906-31.78l-30.562 33.438l-6.188 6.78l-6.875-6.062l-23.25-20.437l27.94 104.218l-18.064 4.812l-35.937-134.063l-8-29.875zm22.593 201.813V389.5L315 348.375zm153.593 17.063l-153.594 43.53v29.438l153.594-43.5v-29.47zm0 48.875L203.97 448.156h119.436zm-132.562 52.53v20.533h113.282v-20.53h-113.28z\"/>",
+      "width": 512,
+      "height": 512
+     }
+    }
+   ],
+   "working": [
+    "\\frac{E_1}{E_2} = \\frac{P_1 \\cdot t_1}{P_2 \\cdot t_2}",
+    "= \\frac{100\\,\\text{W} \\cdot 10\\,\\text{h}}{(10 \\cdot 100\\,\\text{W}) \\cdot 1\\,\\text{h}}",
+    "= \\frac{1000\\,\\text{Wh}}{1000\\,\\text{Wh}}",
+    "= 1"
+   ]
+  }
+ },
+ "design": {
+  "mode": "light",
+  "layout": "doodle",
+  "accent": "#3ddc97",
+  "showCaptions": true,
+  "showProgressBar": true,
+  "countdownSeconds": 4,
+  "scenePaddingSeconds": 0.35,
+  "trimTrailingSilence": true,
+  "showVisuals": true,
+  "showMotif": true,
+  "ambient": "auto",
+  "ambientIntensity": 0.6,
+  "motionStrength": 1,
+  "transition": "auto",
+  "textReveal": "fade",
+  "overlay": "vignette",
+  "overlayIntensity": 0.5,
+  "align": "auto",
+  "showStock": true,
+  "stockOpacity": 0.45,
+  "music": "tense",
+  "musicVolume": 0.22,
+  "customMusicSrc": "",
+  "sfx": true,
+  "sfxVolume": 0.5,
+  "orientation": "portrait",
+  "doodleEnergy": "lively",
+  "animatedEngineer": true
+ },
+ "audio": {
+  "0": {
+   "src": "generated/vo-91007254/s0.mp3",
+   "duration": 1.4889795918367348,
+   "words": [
+    {
+     "word": "Ready",
+     "start": 0,
+     "end": 0.372
+    },
+    {
+     "word": "for",
+     "start": 0.418,
+     "end": 0.511
+    },
+    {
+     "word": "today’s",
+     "start": 0.557,
+     "end": 0.813
+    },
+    {
+     "word": "question?",
+     "start": 0.848,
+     "end": 1.44
+    }
+   ],
+   "measuredDuration": 1.4396371882086167,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 1.18421768707483,
+   "captionOffset": 0.16253968253968254
+  },
+  "1": {
+   "src": "generated/vo-91007254/s1.mp3",
+   "duration": 3.239183673469388,
+   "words": [
+    {
+     "word": "Does",
+     "start": 0,
+     "end": 0.279
+    },
+    {
+     "word": "ten",
+     "start": 0.337,
+     "end": 0.488
+    },
+    {
+     "word": "bulbs",
+     "start": 0.534,
+     "end": 0.743
+    },
+    {
+     "word": "for",
+     "start": 0.778,
+     "end": 0.871
+    },
+    {
+     "word": "one",
+     "start": 0.94,
+     "end": 1.08
+    },
+    {
+     "word": "hour",
+     "start": 1.115,
+     "end": 1.3
+    },
+    {
+     "word": "consume",
+     "start": 1.37,
+     "end": 1.718
+    },
+    {
+     "word": "more",
+     "start": 1.753,
+     "end": 1.927
+    },
+    {
+     "word": "power",
+     "start": 1.962,
+     "end": 2.206
+    },
+    {
+     "word": "than",
+     "start": 2.252,
+     "end": 2.368
+    },
+    {
+     "word": "one",
+     "start": 2.438,
+     "end": 2.589
+    },
+    {
+     "word": "for",
+     "start": 2.624,
+     "end": 2.717
+    },
+    {
+     "word": "ten?",
+     "start": 2.763,
+     "end": 3.204
+    }
+   ],
+   "measuredDuration": 3.2043537414965986,
+   "speechStart": 0.1509297052154195,
+   "speechEnd": 2.9605442176870747,
+   "captionOffset": 0.1509297052154195
+  },
+  "2": {
+   "src": "generated/vo-91007254/s2.mp3",
+   "duration": 9.325714285714286,
+   "words": [
+    {
+     "word": "A",
+     "start": 0,
+     "end": 0.209
+    },
+    {
+     "word": "100-watt",
+     "start": 0.383,
+     "end": 1.033
+    },
+    {
+     "word": "bulb",
+     "start": 1.091,
+     "end": 1.312
+    },
+    {
+     "word": "runs",
+     "start": 1.37,
+     "end": 1.591
+    },
+    {
+     "word": "for",
+     "start": 1.649,
+     "end": 1.765
+    },
+    {
+     "word": "10",
+     "start": 1.834,
+     "end": 1.985
+    },
+    {
+     "word": "hours,",
+     "start": 2.043,
+     "end": 2.345
+    },
+    {
+     "word": "while",
+     "start": 2.392,
+     "end": 2.647
+    },
+    {
+     "word": "ten",
+     "start": 2.728,
+     "end": 3.019
+    },
+    {
+     "word": "100-watt",
+     "start": 3.135,
+     "end": 3.855
+    },
+    {
+     "word": "bulbs",
+     "start": 3.913,
+     "end": 4.238
+    },
+    {
+     "word": "run",
+     "start": 4.354,
+     "end": 4.563
+    },
+    {
+     "word": "for",
+     "start": 4.632,
+     "end": 4.772
+    },
+    {
+     "word": "1",
+     "start": 4.853,
+     "end": 5.027
+    },
+    {
+     "word": "hour.",
+     "start": 5.074,
+     "end": 5.375
+    },
+    {
+     "word": "How",
+     "start": 5.526,
+     "end": 5.666
+    },
+    {
+     "word": "does",
+     "start": 5.712,
+     "end": 5.851
+    },
+    {
+     "word": "the",
+     "start": 5.875,
+     "end": 5.944
+    },
+    {
+     "word": "total",
+     "start": 6.026,
+     "end": 6.362
+    },
+    {
+     "word": "electrical",
+     "start": 6.432,
+     "end": 6.92
+    },
+    {
+     "word": "energy",
+     "start": 6.978,
+     "end": 7.303
+    },
+    {
+     "word": "consumed",
+     "start": 7.372,
+     "end": 7.86
+    },
+    {
+     "word": "in",
+     "start": 7.906,
+     "end": 7.976
+    },
+    {
+     "word": "each",
+     "start": 8.046,
+     "end": 8.231
+    },
+    {
+     "word": "case",
+     "start": 8.29,
+     "end": 8.568
+    },
+    {
+     "word": "compare?",
+     "start": 8.615,
+     "end": 9.288
+    }
+   ],
+   "measuredDuration": 9.287981859410431,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 9.009342403628118,
+   "captionOffset": 0.16253968253968254
+  },
+  "3": {
+   "src": "generated/vo-91007254/s3.mp3",
+   "duration": 9.795918367346939,
+   "words": [
+    {
+     "word": "Is",
+     "start": 0,
+     "end": 0.313
+    },
+    {
+     "word": "it",
+     "start": 0.383,
+     "end": 0.488
+    },
+    {
+     "word": "that",
+     "start": 0.534,
+     "end": 0.697
+    },
+    {
+     "word": "both",
+     "start": 0.766,
+     "end": 1.045
+    },
+    {
+     "word": "consume",
+     "start": 1.103,
+     "end": 1.544
+    },
+    {
+     "word": "equal",
+     "start": 1.591,
+     "end": 1.881
+    },
+    {
+     "word": "energy,",
+     "start": 1.95,
+     "end": 2.519
+    },
+    {
+     "word": "one",
+     "start": 2.728,
+     "end": 2.949
+    },
+    {
+     "word": "bulb",
+     "start": 3.007,
+     "end": 3.239
+    },
+    {
+     "word": "consumes",
+     "start": 3.309,
+     "end": 3.75
+    },
+    {
+     "word": "ten",
+     "start": 3.831,
+     "end": 4.005
+    },
+    {
+     "word": "times",
+     "start": 4.075,
+     "end": 4.365
+    },
+    {
+     "word": "more,",
+     "start": 4.435,
+     "end": 4.783
+    },
+    {
+     "word": "ten",
+     "start": 5.027,
+     "end": 5.236
+    },
+    {
+     "word": "bulbs",
+     "start": 5.317,
+     "end": 5.573
+    },
+    {
+     "word": "consume",
+     "start": 5.619,
+     "end": 5.991
+    },
+    {
+     "word": "ten",
+     "start": 6.037,
+     "end": 6.211
+    },
+    {
+     "word": "times",
+     "start": 6.269,
+     "end": 6.536
+    },
+    {
+     "word": "more,",
+     "start": 6.606,
+     "end": 6.92
+    },
+    {
+     "word": "or",
+     "start": 7.094,
+     "end": 7.245
+    },
+    {
+     "word": "one",
+     "start": 7.338,
+     "end": 7.581
+    },
+    {
+     "word": "bulb",
+     "start": 7.639,
+     "end": 7.86
+    },
+    {
+     "word": "consumes",
+     "start": 7.93,
+     "end": 8.406
+    },
+    {
+     "word": "one",
+     "start": 8.499,
+     "end": 8.673
+    },
+    {
+     "word": "hundred",
+     "start": 8.707,
+     "end": 8.986
+    },
+    {
+     "word": "times",
+     "start": 9.021,
+     "end": 9.288
+    },
+    {
+     "word": "more?",
+     "start": 9.346,
+     "end": 9.752
+    }
+   ],
+   "measuredDuration": 9.752380952380953,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 9.520181405895691,
+   "captionOffset": 0.17414965986394557
+  },
+  "5": {
+   "src": "generated/vo-91007254/s5.mp3",
+   "duration": 2.690612244897959,
+   "words": [
+    {
+     "word": "Both",
+     "start": 0,
+     "end": 0.406
+    },
+    {
+     "word": "cases",
+     "start": 0.453,
+     "end": 0.789
+    },
+    {
+     "word": "consume",
+     "start": 0.836,
+     "end": 1.184
+    },
+    {
+     "word": "exactly",
+     "start": 1.219,
+     "end": 1.637
+    },
+    {
+     "word": "the",
+     "start": 1.683,
+     "end": 1.753
+    },
+    {
+     "word": "same",
+     "start": 1.788,
+     "end": 1.974
+    },
+    {
+     "word": "energy.",
+     "start": 2.009,
+     "end": 2.647
+    }
+   ],
+   "measuredDuration": 2.647074829931973,
+   "speechStart": 0.1509297052154195,
+   "speechEnd": 2.36843537414966,
+   "captionOffset": 0.1509297052154195
+  },
+  "6": {
+   "src": "generated/vo-91007254/s6.mp3",
+   "duration": 6.504489795918367,
+   "words": [
+    {
+     "word": "Electrical",
+     "start": 0,
+     "end": 0.731
+    },
+    {
+     "word": "energy",
+     "start": 0.789,
+     "end": 1.161
+    },
+    {
+     "word": "is",
+     "start": 1.242,
+     "end": 1.335
+    },
+    {
+     "word": "simply",
+     "start": 1.393,
+     "end": 1.776
+    },
+    {
+     "word": "defined",
+     "start": 1.834,
+     "end": 2.276
+    },
+    {
+     "word": "as",
+     "start": 2.345,
+     "end": 2.519
+    },
+    {
+     "word": "the",
+     "start": 2.601,
+     "end": 2.694
+    },
+    {
+     "word": "product",
+     "start": 2.775,
+     "end": 3.204
+    },
+    {
+     "word": "of",
+     "start": 3.262,
+     "end": 3.367
+    },
+    {
+     "word": "total",
+     "start": 3.483,
+     "end": 3.878
+    },
+    {
+     "word": "electrical",
+     "start": 3.947,
+     "end": 4.435
+    },
+    {
+     "word": "power",
+     "start": 4.505,
+     "end": 4.772
+    },
+    {
+     "word": "consumed",
+     "start": 4.83,
+     "end": 5.271
+    },
+    {
+     "word": "and",
+     "start": 5.306,
+     "end": 5.375
+    },
+    {
+     "word": "operating",
+     "start": 5.445,
+     "end": 5.886
+    },
+    {
+     "word": "time.",
+     "start": 5.944,
+     "end": 6.455
+    }
+   ],
+   "measuredDuration": 6.455147392290249,
+   "speechStart": 0.1509297052154195,
+   "speechEnd": 6.2345578231292516,
+   "captionOffset": 0.1509297052154195
+  },
+  "7": {
+   "src": "generated/vo-91007254/s7.mp3",
+   "duration": 7.758367346938775,
+   "words": [
+    {
+     "word": "In",
+     "start": 0,
+     "end": 0.313
+    },
+    {
+     "word": "standard",
+     "start": 0.372,
+     "end": 0.848
+    },
+    {
+     "word": "engineering",
+     "start": 0.906,
+     "end": 1.37
+    },
+    {
+     "word": "practice,",
+     "start": 1.416,
+     "end": 2.09
+    },
+    {
+     "word": "the",
+     "start": 2.241,
+     "end": 2.357
+    },
+    {
+     "word": "commercial",
+     "start": 2.415,
+     "end": 2.891
+    },
+    {
+     "word": "unit",
+     "start": 2.984,
+     "end": 3.251
+    },
+    {
+     "word": "of",
+     "start": 3.309,
+     "end": 3.402
+    },
+    {
+     "word": "billing",
+     "start": 3.518,
+     "end": 3.878
+    },
+    {
+     "word": "is",
+     "start": 4.029,
+     "end": 4.18
+    },
+    {
+     "word": "the",
+     "start": 4.238,
+     "end": 4.319
+    },
+    {
+     "word": "kilowatt-hour,",
+     "start": 4.4,
+     "end": 5.41
+    },
+    {
+     "word": "equivalent",
+     "start": 5.538,
+     "end": 6.002
+    },
+    {
+     "word": "to",
+     "start": 6.049,
+     "end": 6.13
+    },
+    {
+     "word": "one",
+     "start": 6.223,
+     "end": 6.42
+    },
+    {
+     "word": "Board",
+     "start": 6.467,
+     "end": 6.699
+    },
+    {
+     "word": "of",
+     "start": 6.734,
+     "end": 6.803
+    },
+    {
+     "word": "Trade",
+     "start": 6.85,
+     "end": 7.082
+    },
+    {
+     "word": "unit.",
+     "start": 7.14,
+     "end": 7.709
+    }
+   ],
+   "measuredDuration": 7.7090249433106575,
+   "speechStart": 0.10448979591836735,
+   "speechEnd": 7.441995464852607,
+   "captionOffset": 0.10448979591836735
+  },
+  "8": {
+   "src": "generated/vo-91007254/s8.mp3",
+   "duration": 6.112653061224489,
+   "words": [
+    {
+     "word": "For",
+     "start": 0,
+     "end": 0.255
+    },
+    {
+     "word": "the",
+     "start": 0.29,
+     "end": 0.36
+    },
+    {
+     "word": "first",
+     "start": 0.418,
+     "end": 0.673
+    },
+    {
+     "word": "case,",
+     "start": 0.743,
+     "end": 1.091
+    },
+    {
+     "word": "a",
+     "start": 1.126,
+     "end": 1.173
+    },
+    {
+     "word": "single",
+     "start": 1.289,
+     "end": 1.707
+    },
+    {
+     "word": "one-hundred-watt",
+     "start": 1.753,
+     "end": 2.531
+    },
+    {
+     "word": "lamp",
+     "start": 2.612,
+     "end": 2.856
+    },
+    {
+     "word": "operates",
+     "start": 2.949,
+     "end": 3.437
+    },
+    {
+     "word": "steadily",
+     "start": 3.483,
+     "end": 3.971
+    },
+    {
+     "word": "for",
+     "start": 4.029,
+     "end": 4.156
+    },
+    {
+     "word": "a",
+     "start": 4.203,
+     "end": 4.226
+    },
+    {
+     "word": "total",
+     "start": 4.296,
+     "end": 4.609
+    },
+    {
+     "word": "duration",
+     "start": 4.656,
+     "end": 5.05
+    },
+    {
+     "word": "of",
+     "start": 5.097,
+     "end": 5.155
+    },
+    {
+     "word": "ten",
+     "start": 5.224,
+     "end": 5.387
+    },
+    {
+     "word": "hours.",
+     "start": 5.445,
+     "end": 6.084
+    }
+   ],
+   "measuredDuration": 6.0836281179138325,
+   "speechStart": 0.19736961451247165,
+   "speechEnd": 5.804988662131519,
+   "captionOffset": 0.19736961451247165
+  },
+  "9": {
+   "src": "generated/vo-91007254/s9.mp3",
+   "duration": 7.6538775510204085,
+   "words": [
+    {
+     "word": "Multiplying",
+     "start": 0,
+     "end": 0.859
+    },
+    {
+     "word": "one",
+     "start": 0.952,
+     "end": 1.138
+    },
+    {
+     "word": "hundred",
+     "start": 1.184,
+     "end": 1.474
+    },
+    {
+     "word": "watts",
+     "start": 1.544,
+     "end": 1.858
+    },
+    {
+     "word": "by",
+     "start": 1.974,
+     "end": 2.125
+    },
+    {
+     "word": "ten",
+     "start": 2.206,
+     "end": 2.415
+    },
+    {
+     "word": "hours",
+     "start": 2.485,
+     "end": 2.821
+    },
+    {
+     "word": "gives",
+     "start": 2.972,
+     "end": 3.262
+    },
+    {
+     "word": "one",
+     "start": 3.413,
+     "end": 3.669
+    },
+    {
+     "word": "thousand",
+     "start": 3.715,
+     "end": 4.087
+    },
+    {
+     "word": "watt-hours,",
+     "start": 4.156,
+     "end": 4.853
+    },
+    {
+     "word": "which",
+     "start": 5.004,
+     "end": 5.201
+    },
+    {
+     "word": "equals",
+     "start": 5.248,
+     "end": 5.561
+    },
+    {
+     "word": "exactly",
+     "start": 5.642,
+     "end": 6.316
+    },
+    {
+     "word": "one",
+     "start": 6.409,
+     "end": 6.606
+    },
+    {
+     "word": "kilowatt-hour.",
+     "start": 6.653,
+     "end": 7.616
+    }
+   ],
+   "measuredDuration": 7.616145124716553,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 7.291065759637188,
+   "captionOffset": 0.16253968253968254
+  },
+  "10": {
+   "src": "generated/vo-91007254/s10.mp3",
+   "duration": 7.053061224489796,
+   "words": [
+    {
+     "word": "In",
+     "start": 0,
+     "end": 0.279
+    },
+    {
+     "word": "the",
+     "start": 0.325,
+     "end": 0.406
+    },
+    {
+     "word": "second",
+     "start": 0.464,
+     "end": 0.778
+    },
+    {
+     "word": "scenario,",
+     "start": 0.836,
+     "end": 1.44
+    },
+    {
+     "word": "ten",
+     "start": 1.509,
+     "end": 1.73
+    },
+    {
+     "word": "identical",
+     "start": 1.823,
+     "end": 2.392
+    },
+    {
+     "word": "one-hundred-watt",
+     "start": 2.473,
+     "end": 3.239
+    },
+    {
+     "word": "lamps",
+     "start": 3.332,
+     "end": 3.646
+    },
+    {
+     "word": "operate",
+     "start": 3.727,
+     "end": 4.156
+    },
+    {
+     "word": "simultaneously",
+     "start": 4.203,
+     "end": 5.178
+    },
+    {
+     "word": "together",
+     "start": 5.236,
+     "end": 5.642
+    },
+    {
+     "word": "across",
+     "start": 5.7,
+     "end": 6.026
+    },
+    {
+     "word": "the",
+     "start": 6.06,
+     "end": 6.13
+    },
+    {
+     "word": "supply",
+     "start": 6.165,
+     "end": 6.478
+    },
+    {
+     "word": "line.",
+     "start": 6.548,
+     "end": 7.012
+    }
+   ],
+   "measuredDuration": 7.012426303854875,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 6.733786848072563,
+   "captionOffset": 0.17414965986394557
+  },
+  "11": {
+   "src": "generated/vo-91007254/s11.mp3",
+   "duration": 7.2359183673469385,
+   "words": [
+    {
+     "word": "Their",
+     "start": 0,
+     "end": 0.383
+    },
+    {
+     "word": "combined",
+     "start": 0.453,
+     "end": 0.894
+    },
+    {
+     "word": "electrical",
+     "start": 0.964,
+     "end": 1.416
+    },
+    {
+     "word": "power",
+     "start": 1.474,
+     "end": 1.718
+    },
+    {
+     "word": "demand",
+     "start": 1.776,
+     "end": 2.125
+    },
+    {
+     "word": "equals",
+     "start": 2.194,
+     "end": 2.589
+    },
+    {
+     "word": "one",
+     "start": 2.705,
+     "end": 2.902
+    },
+    {
+     "word": "thousand",
+     "start": 2.937,
+     "end": 3.32
+    },
+    {
+     "word": "watts,",
+     "start": 3.39,
+     "end": 3.936
+    },
+    {
+     "word": "which",
+     "start": 4.052,
+     "end": 4.249
+    },
+    {
+     "word": "is",
+     "start": 4.296,
+     "end": 4.365
+    },
+    {
+     "word": "precisely",
+     "start": 4.423,
+     "end": 5.027
+    },
+    {
+     "word": "one",
+     "start": 5.201,
+     "end": 5.503
+    },
+    {
+     "word": "kilowatt",
+     "start": 5.573,
+     "end": 6.095
+    },
+    {
+     "word": "of",
+     "start": 6.142,
+     "end": 6.211
+    },
+    {
+     "word": "total",
+     "start": 6.293,
+     "end": 6.606
+    },
+    {
+     "word": "load.",
+     "start": 6.664,
+     "end": 7.198
+    }
+   ],
+   "measuredDuration": 7.198185941043084,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 6.942766439909297,
+   "captionOffset": 0.17414965986394557
+  },
+  "12": {
+   "src": "generated/vo-91007254/s12.mp3",
+   "duration": 5.69469387755102,
+   "words": [
+    {
+     "word": "Running",
+     "start": 0,
+     "end": 0.464
+    },
+    {
+     "word": "this",
+     "start": 0.511,
+     "end": 0.662
+    },
+    {
+     "word": "one-kilowatt",
+     "start": 0.731,
+     "end": 1.382
+    },
+    {
+     "word": "load",
+     "start": 1.44,
+     "end": 1.625
+    },
+    {
+     "word": "for",
+     "start": 1.672,
+     "end": 1.8
+    },
+    {
+     "word": "one",
+     "start": 1.869,
+     "end": 2.043
+    },
+    {
+     "word": "hour",
+     "start": 2.078,
+     "end": 2.31
+    },
+    {
+     "word": "yields",
+     "start": 2.403,
+     "end": 2.717
+    },
+    {
+     "word": "one",
+     "start": 2.798,
+     "end": 2.972
+    },
+    {
+     "word": "kilowatt",
+     "start": 3.007,
+     "end": 3.402
+    },
+    {
+     "word": "multiplied",
+     "start": 3.483,
+     "end": 4.029
+    },
+    {
+     "word": "by",
+     "start": 4.075,
+     "end": 4.203
+    },
+    {
+     "word": "one",
+     "start": 4.284,
+     "end": 4.447
+    },
+    {
+     "word": "hour",
+     "start": 4.47,
+     "end": 4.667
+    },
+    {
+     "word": "of",
+     "start": 4.725,
+     "end": 4.795
+    },
+    {
+     "word": "duration.",
+     "start": 4.876,
+     "end": 5.666
+    }
+   ],
+   "measuredDuration": 5.6656689342403626,
+   "speechStart": 0.18575963718820862,
+   "speechEnd": 5.38702947845805,
+   "captionOffset": 0.18575963718820862
+  },
+  "13": {
+   "src": "generated/vo-91007254/s13.mp3",
+   "duration": 7.288163265306123,
+   "words": [
+    {
+     "word": "This",
+     "start": 0,
+     "end": 0.302
+    },
+    {
+     "word": "product",
+     "start": 0.372,
+     "end": 0.697
+    },
+    {
+     "word": "equals",
+     "start": 0.743,
+     "end": 1.057
+    },
+    {
+     "word": "one",
+     "start": 1.173,
+     "end": 1.416
+    },
+    {
+     "word": "kilowatt-hour,",
+     "start": 1.463,
+     "end": 2.368
+    },
+    {
+     "word": "showing",
+     "start": 2.577,
+     "end": 2.879
+    },
+    {
+     "word": "that",
+     "start": 2.926,
+     "end": 3.053
+    },
+    {
+     "word": "energy",
+     "start": 3.123,
+     "end": 3.471
+    },
+    {
+     "word": "integration",
+     "start": 3.541,
+     "end": 4.098
+    },
+    {
+     "word": "over",
+     "start": 4.18,
+     "end": 4.377
+    },
+    {
+     "word": "time",
+     "start": 4.447,
+     "end": 4.807
+    },
+    {
+     "word": "yields",
+     "start": 4.923,
+     "end": 5.283
+    },
+    {
+     "word": "identical",
+     "start": 5.364,
+     "end": 5.886
+    },
+    {
+     "word": "numerical",
+     "start": 5.944,
+     "end": 6.409
+    },
+    {
+     "word": "totals.",
+     "start": 6.467,
+     "end": 7.245
+    }
+   ],
+   "measuredDuration": 7.244625850340136,
+   "speechStart": 0.1509297052154195,
+   "speechEnd": 6.942766439909297,
+   "captionOffset": 0.1509297052154195
+  },
+  "14": {
+   "src": "generated/vo-91007254/s14.mp3",
+   "duration": 5.093877551020408,
+   "words": [
+    {
+     "word": "High",
+     "start": 0,
+     "end": 0.313
+    },
+    {
+     "word": "power",
+     "start": 0.36,
+     "end": 0.615
+    },
+    {
+     "word": "for",
+     "start": 0.662,
+     "end": 0.766
+    },
+    {
+     "word": "short",
+     "start": 0.836,
+     "end": 1.057
+    },
+    {
+     "word": "intervals",
+     "start": 1.103,
+     "end": 1.474
+    },
+    {
+     "word": "matches",
+     "start": 1.533,
+     "end": 1.834
+    },
+    {
+     "word": "low",
+     "start": 1.916,
+     "end": 2.055
+    },
+    {
+     "word": "power",
+     "start": 2.113,
+     "end": 2.345
+    },
+    {
+     "word": "for",
+     "start": 2.392,
+     "end": 2.496
+    },
+    {
+     "word": "long",
+     "start": 2.566,
+     "end": 2.763
+    },
+    {
+     "word": "intervals",
+     "start": 2.821,
+     "end": 3.216
+    },
+    {
+     "word": "when",
+     "start": 3.251,
+     "end": 3.379
+    },
+    {
+     "word": "their",
+     "start": 3.413,
+     "end": 3.541
+    },
+    {
+     "word": "area",
+     "start": 3.587,
+     "end": 3.866
+    },
+    {
+     "word": "products",
+     "start": 3.913,
+     "end": 4.272
+    },
+    {
+     "word": "coincide.",
+     "start": 4.319,
+     "end": 5.062
+    }
+   ],
+   "measuredDuration": 5.061950113378685,
+   "speechStart": 0.13931972789115646,
+   "speechEnd": 4.818140589569161,
+   "captionOffset": 0.13931972789115646
+  },
+  "15": {
+   "src": "generated/vo-91007254/s15.mp3",
+   "duration": 3.1608163265306124,
+   "words": [
+    {
+     "word": "Here",
+     "start": 0,
+     "end": 0.36
+    },
+    {
+     "word": "are",
+     "start": 0.395,
+     "end": 0.488
+    },
+    {
+     "word": "the",
+     "start": 0.511,
+     "end": 0.58
+    },
+    {
+     "word": "formulas",
+     "start": 0.639,
+     "end": 1.091
+    },
+    {
+     "word": "behind",
+     "start": 1.149,
+     "end": 1.393
+    },
+    {
+     "word": "this",
+     "start": 1.44,
+     "end": 1.591
+    },
+    {
+     "word": "one.",
+     "start": 1.66,
+     "end": 1.823
+    },
+    {
+     "word": "Save",
+     "start": 1.846,
+     "end": 2.067
+    },
+    {
+     "word": "it",
+     "start": 2.09,
+     "end": 2.159
+    },
+    {
+     "word": "for",
+     "start": 2.206,
+     "end": 2.31
+    },
+    {
+     "word": "your",
+     "start": 2.357,
+     "end": 2.461
+    },
+    {
+     "word": "revision.",
+     "start": 2.496,
+     "end": 3.111
+    }
+   ],
+   "measuredDuration": 3.111473922902494,
+   "speechStart": 0.19736961451247165,
+   "speechEnd": 2.8444444444444446,
+   "captionOffset": 0.19736961451247165
+  },
+  "16": {
+   "src": "generated/vo-91007254/s16.mp3",
+   "duration": 7.471020408163265,
+   "words": [
+    {
+     "word": "Remember",
+     "start": 0,
+     "end": 0.615
+    },
+    {
+     "word": "that",
+     "start": 0.673,
+     "end": 0.813
+    },
+    {
+     "word": "energy",
+     "start": 0.929,
+     "end": 1.451
+    },
+    {
+     "word": "integrates",
+     "start": 1.544,
+     "end": 2.171
+    },
+    {
+     "word": "power",
+     "start": 2.241,
+     "end": 2.577
+    },
+    {
+     "word": "over",
+     "start": 2.647,
+     "end": 2.856
+    },
+    {
+     "word": "time,",
+     "start": 2.926,
+     "end": 3.297
+    },
+    {
+     "word": "so",
+     "start": 3.471,
+     "end": 3.657
+    },
+    {
+     "word": "share",
+     "start": 3.75,
+     "end": 4.122
+    },
+    {
+     "word": "this",
+     "start": 4.168,
+     "end": 4.319
+    },
+    {
+     "word": "quiz",
+     "start": 4.4,
+     "end": 4.702
+    },
+    {
+     "word": "and",
+     "start": 4.783,
+     "end": 4.946
+    },
+    {
+     "word": "follow",
+     "start": 5.027,
+     "end": 5.375
+    },
+    {
+     "word": "for",
+     "start": 5.445,
+     "end": 5.584
+    },
+    {
+     "word": "more",
+     "start": 5.666,
+     "end": 5.944
+    },
+    {
+     "word": "engineering",
+     "start": 6.002,
+     "end": 6.525
+    },
+    {
+     "word": "problems!",
+     "start": 6.583,
+     "end": 7.43
+    }
+   ],
+   "measuredDuration": 7.430385487528345,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 7.151746031746032,
+   "captionOffset": 0.16253968253968254
+  }
+ },
+ "seo": null,
+ "ledger": [
+  {
+   "what": "Voiceover",
+   "characters": 1591,
+   "at": "2026-10-01T16:46:33.704Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-01T16:49:03.269Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-01T16:49:04.620Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-01T16:49:17.009Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-01T16:49:20.210Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-01T16:49:23.051Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-01T16:49:31.139Z"
+  }
+ ],
+ "renders": [],
+ "published": {}
+}

@@ -1,0 +1,392 @@
+{
+ "id": "v-20260927-214342-jl3d",
+ "createdAt": "2026-09-27T16:13:42.691Z",
+ "updatedAt": "2026-09-27T16:15:05.642Z",
+ "content": {
+  "subject": "Network Theory",
+  "topic": "Series RLC Circuit Resonance",
+  "difficulty": "Medium",
+  "hook": "Can a circuit multiply voltage without using a single transformer?",
+  "question": "A series RLC circuit has a resonant frequency of 1000 radians per second and a quality factor of 10. What is its half-power bandwidth?",
+  "options": [
+   "100 radians per second",
+   "10000 radians per second",
+   "10 radians per second",
+   "50 radians per second"
+  ],
+  "correctIndex": 0,
+  "answerLine": "The half-power bandwidth is 100 radians per second.",
+  "explanation": [
+   "In a series resonant circuit, the quality factor measures the sharpness of the resonant response peak.",
+   "By definition, quality factor equals resonant angular frequency divided by the total half-power bandwidth.",
+   "The half-power bandwidth represents the frequency band where power dissipation remains at least half maximum.",
+   "Rearranging this standard formula gives bandwidth equal to resonant frequency divided by the quality factor."
+  ],
+  "funFact": "At resonance, the voltages across the inductor and capacitor can easily exceed the supply voltage by tenfold!",
+  "outro": "Master your resonant circuit formulas and crack your upcoming Assistant Engineer exams with full confidence!",
+  "hashtags": [
+   "ElectricalEngineering",
+   "NetworkTheory",
+   "GATEPrep",
+   "EngineeringExams"
+  ],
+  "motifSymbols": [
+   "⚡",
+   "Ω",
+   "📻",
+   "📈"
+  ],
+  "script": [
+   {
+    "kind": "intro",
+    "narration": "Ready for today’s question?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "wave",
+     "action": "waves enthusiastically to kick off the puzzle",
+     "emotion": "energetic, welcoming",
+     "props": "a coil of wire and a capacitor",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/v-20260927-214342-jl3d/s0-0fd143.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "hook",
+    "narration": "Can a circuit multiply voltage without using a single transformer?",
+    "imageQuery": "electrical engineering lab",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "a series loop with a resistor, an inductor coil, and a capacitor bursting with intense electrical spark arcs",
+     "emotion": "dramatic",
+     "props": "resistor, inductor coil, capacitor, AC generator",
+     "gag": "a tiny battery wearing safety goggles looking amazed"
+    }
+   },
+   {
+    "kind": "question",
+    "narration": "A series RLC circuit has a resonant frequency of 1000 radians per second and a quality factor of 10. What is its half-power bandwidth?",
+    "imageQuery": "electronic circuit board",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "circuit",
+     "caption": "",
+     "params": {
+      "labelA": "AC Source",
+      "network": "10 + 20 + 30"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "options",
+    "narration": "Is it 100 radians per second, 10000 radians per second, 10 radians per second, or 50 radians per second?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "think",
+     "action": "taps chin thoughtfully while inspecting four identical analog meters with wildly twitching needles",
+     "emotion": "puzzled, curious",
+     "props": "four analog meters",
+     "gag": "one meter needle spinning in continuous 360-degree circles like a propeller"
+    }
+   },
+   {
+    "kind": "countdown",
+    "narration": "",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "an hourglass with glowing electrical sparks tumbling rapidly between the glass bulbs",
+     "emotion": "suspenseful",
+     "props": "hourglass, electrical sparks",
+     "gag": "a stray spark zapping the wooden frame of the hourglass"
+    }
+   },
+   {
+    "kind": "answer",
+    "narration": "The half-power bandwidth is 100 radians per second.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "cheer",
+     "action": "thrusts both arms up in victory beside a sharply peaked resonant bell curve",
+     "emotion": "delighted, celebratory",
+     "props": "a resonant frequency bell curve drawing",
+     "gag": "none"
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "In a series resonant circuit, the quality factor measures the sharpness of the resonant response peak.",
+    "imageQuery": "frequency generator oscilloscope",
+    "visual": {
+     "kind": "working"
+    },
+    "visualWas": {
+     "kind": "sketch",
+     "sketch": "graph",
+     "caption": "",
+     "params": {
+      "mode": "sine",
+      "labelA": "Frequency (rad/s)",
+      "labelB": "Current (A)"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "By definition, quality factor equals resonant angular frequency divided by the total half-power bandwidth.",
+    "imageQuery": "circuit blueprint diagram",
+    "visual": {
+     "kind": "formula",
+     "formula": "Q = ω₀ / BW",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "The half-power bandwidth represents the frequency band where power dissipation remains at least half maximum.",
+    "imageQuery": "electrical testing meter",
+    "visual": {
+     "kind": "compare",
+     "caption": "Resonance Power Points",
+     "items": [
+      {
+       "label": "Peak Power Pmax",
+       "symbol": "⚡"
+      },
+      {
+       "label": "Half Power 0.5 Pmax",
+       "symbol": "📉"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Rearranging this standard formula gives bandwidth equal to resonant frequency divided by the quality factor.",
+    "imageQuery": "electronic workbench measurement",
+    "visual": {
+     "kind": "formula",
+     "formula": "BW = ω₀ / Q",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Substituting our given values gives 1000 radians per second divided by a quality factor of 10.",
+    "imageQuery": "calculating engineering formulas",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "ratio-bar",
+     "caption": "",
+     "params": {
+      "labelA": "Bandwidth Division",
+      "labelB": "Ratio"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Performing this simple division yields a bandwidth of exactly 100 radians per second between cutoff points.",
+    "imageQuery": "oscilloscope screen display",
+    "visual": {
+     "kind": "formula",
+     "formula": "BW = 1000 / 10 = 100 rad/s",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "The lower and upper cutoff frequencies lie symmetrically around resonance on a logarithmic frequency axis.",
+    "imageQuery": "audio radio spectrum",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "number-line",
+     "caption": "",
+     "params": {
+      "labelA": "ω1 = 951.2",
+      "labelB": "ω2 = 1051.2"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "A higher quality factor narrows down the bandwidth, producing far sharper circuit selectivity for tuning.",
+    "imageQuery": "radio tuner dials",
+    "visual": {
+     "kind": "compare",
+     "caption": "Circuit Selectivity",
+     "items": [
+      {
+       "label": "High Q Narrow Band",
+       "symbol": "🎯"
+      },
+      {
+       "label": "Low Q Broad Band",
+       "symbol": "📻"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Remember that mistaking bandwidth as frequency multiplied by quality factor gives the wrong answer ten thousand.",
+    "imageQuery": "exam test paper",
+    "visual": {
+     "kind": "icon",
+     "caption": "Common Pitfall",
+     "items": [
+      {
+       "label": "Avoid BW = ω₀ × Q",
+       "symbol": "⚠️"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "formulas",
+    "narration": "Here are the formulas behind this one. Save it for your revision."
+   },
+   {
+    "kind": "outro",
+    "narration": "Master your resonant circuit formulas and crack your upcoming Assistant Engineer exams with full confidence!",
+    "imageQuery": "modern electrical substation",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "waveform",
+     "caption": "",
+     "params": {
+      "frequency": 2,
+      "mode": "phase",
+      "labelA": "Voltage",
+      "labelB": "Current"
+     },
+     "items": []
+    }
+   }
+  ],
+  "formulas": {
+   "title": "Series Resonance - Important Formulas",
+   "cards": [
+    {
+     "name": "Quality Factor",
+     "formula": "Q = \\frac{\\omega_0}{BW}",
+     "notes": [
+      "\\omega_0 = Resonant angular frequency (rad/s)",
+      "BW = Half-power bandwidth (rad/s)"
+     ],
+     "graph": {
+      "kind": "none",
+      "x": "",
+      "y": "",
+      "label": "",
+      "label2": ""
+     },
+     "icon": "multimeter",
+     "art": {
+      "body": "<path fill=\"currentColor\" d=\"M11 15H6l7-14v8h5l-7 14z\"/>",
+      "width": 24,
+      "height": 24
+     }
+    },
+    {
+     "name": "Half-Power Bandwidth",
+     "formula": "BW = \\frac{\\omega_0}{Q}",
+     "notes": [
+      "Q = Quality factor"
+     ],
+     "graph": {
+      "kind": "none",
+      "x": "",
+      "y": "",
+      "label": "",
+      "label2": ""
+     },
+     "icon": "gear",
+     "art": {
+      "body": "<path fill=\"currentColor\" d=\"M128 80a48 48 0 1 0 48 48a48.05 48.05 0 0 0-48-48m0 80a32 32 0 1 1 32-32a32 32 0 0 1-32 32m88-29.84q.06-2.16 0-4.32l14.92-18.64a8 8 0 0 0 1.48-7.06a107.2 107.2 0 0 0-10.88-26.25a8 8 0 0 0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186 40.54a8 8 0 0 0-3.94-6a107.7 107.7 0 0 0-26.25-10.87a8 8 0 0 0-7.06 1.49L130.16 40h-4.32L107.2 25.11a8 8 0 0 0-7.06-1.48a107.6 107.6 0 0 0-26.25 10.88a8 8 0 0 0-3.93 6l-2.64 23.76q-1.56 1.49-3 3L40.54 70a8 8 0 0 0-6 3.94a107.7 107.7 0 0 0-10.87 26.25a8 8 0 0 0 1.49 7.06L40 125.84v4.32L25.11 148.8a8 8 0 0 0-1.48 7.06a107.2 107.2 0 0 0 10.88 26.25a8 8 0 0 0 6 3.93l23.72 2.64q1.49 1.56 3 3L70 215.46a8 8 0 0 0 3.94 6a107.7 107.7 0 0 0 26.25 10.87a8 8 0 0 0 7.06-1.49L125.84 216q2.16.06 4.32 0l18.64 14.92a8 8 0 0 0 7.06 1.48a107.2 107.2 0 0 0 26.25-10.88a8 8 0 0 0 3.93-6l2.64-23.72q1.56-1.48 3-3l23.78-2.8a8 8 0 0 0 6-3.94a107.7 107.7 0 0 0 10.87-26.25a8 8 0 0 0-1.49-7.06Zm-16.1-6.5a74 74 0 0 1 0 8.68a8 8 0 0 0 1.74 5.48l14.19 17.73a91.6 91.6 0 0 1-6.23 15l-22.6 2.56a8 8 0 0 0-5.1 2.64a74 74 0 0 1-6.14 6.14a8 8 0 0 0-2.64 5.1l-2.51 22.58a91.3 91.3 0 0 1-15 6.23l-17.74-14.19a8 8 0 0 0-5-1.75h-.48a74 74 0 0 1-8.68 0a8 8 0 0 0-5.48 1.74l-17.78 14.2a91.6 91.6 0 0 1-15-6.23L82.89 187a8 8 0 0 0-2.64-5.1a74 74 0 0 1-6.14-6.14a8 8 0 0 0-5.1-2.64l-22.58-2.52a91.3 91.3 0 0 1-6.23-15l14.19-17.74a8 8 0 0 0 1.74-5.48a74 74 0 0 1 0-8.68a8 8 0 0 0-1.74-5.48L40.2 100.45a91.6 91.6 0 0 1 6.23-15L69 82.89a8 8 0 0 0 5.1-2.64a74 74 0 0 1 6.14-6.14A8 8 0 0 0 82.89 69l2.51-22.57a91.3 91.3 0 0 1 15-6.23l17.74 14.19a8 8 0 0 0 5.48 1.74a74 74 0 0 1 8.68 0a8 8 0 0 0 5.48-1.74l17.77-14.19a91.6 91.6 0 0 1 15 6.23L173.11 69a8 8 0 0 0 2.64 5.1a74 74 0 0 1 6.14 6.14a8 8 0 0 0 5.1 2.64l22.58 2.51a91.3 91.3 0 0 1 6.23 15l-14.19 17.74a8 8 0 0 0-1.74 5.53Z\"/>",
+      "width": 256,
+      "height": 256
+     }
+    }
+   ],
+   "working": [
+    "BW = \\frac{\\omega_0}{Q}",
+    "= \\frac{1000}{10}",
+    "= 100\\,\\text{rad/s}"
+   ]
+  }
+ },
+ "design": {
+  "mode": "light",
+  "layout": "doodle",
+  "accent": "#3ddc97",
+  "showCaptions": true,
+  "showProgressBar": true,
+  "countdownSeconds": 4,
+  "scenePaddingSeconds": 0.35,
+  "trimTrailingSilence": true,
+  "showVisuals": true,
+  "showMotif": true,
+  "ambient": "auto",
+  "ambientIntensity": 0.6,
+  "motionStrength": 1,
+  "transition": "auto",
+  "textReveal": "fade",
+  "overlay": "vignette",
+  "overlayIntensity": 0.5,
+  "align": "auto",
+  "showStock": true,
+  "stockOpacity": 0.45,
+  "music": "tense",
+  "musicVolume": 0.22,
+  "customMusicSrc": "",
+  "sfx": true,
+  "sfxVolume": 0.5,
+  "orientation": "portrait",
+  "doodleEnergy": "lively",
+  "animatedEngineer": true
+ },
+ "audio": {},
+ "seo": null,
+ "ledger": [
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-09-27T16:13:46.143Z"
+  },
+  {
+   "what": "Voiceover",
+   "characters": 1472,
+   "at": "2026-09-27T16:13:46.172Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-09-27T16:14:39.596Z"
+  }
+ ],
+ "renders": [],
+ "published": {}
+}

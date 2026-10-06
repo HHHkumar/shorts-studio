@@ -1,0 +1,279 @@
+{
+ "id": "state-ae-je-electrical",
+ "exam": "State AE / JE (Electrical)",
+ "createdAt": "2026-09-27T15:46:54.617Z",
+ "syllabus": [
+  {
+   "unit": "Electric Circuits and Network Theory",
+   "topics": [
+    "Basic Circuit Elements and Laws",
+    "Network Theorems (Thevenin, Norton, Superposition, Maximum Power Transfer)",
+    "Transient and Steady State Response",
+    "AC Circuit Analysis and Resonance",
+    "Magnetic Circuits and Coupled Inductors"
+   ]
+  },
+  {
+   "unit": "Electrical Machines",
+   "topics": [
+    "DC Generators and DC Motors",
+    "Single-phase and Three-phase Transformers",
+    "Three-phase Induction Motors",
+    "Synchronous Generators and Motors",
+    "Special Electrical Machines"
+   ]
+  },
+  {
+   "unit": "Power Systems",
+   "topics": [
+    "Generation, Transmission, and Distribution",
+    "Transmission Line Parameters and Performance",
+    "Fault Analysis and Symmetrical Components",
+    "Power System Protection and Switchgear",
+    "Substation Equipment and Grounding"
+   ]
+  },
+  {
+   "unit": "Electrical and Electronic Measurements",
+   "topics": [
+    "PMMC, MI, and Electrodynamometer Instruments",
+    "Measurement of Power and Energy",
+    "Measurement of Resistance, Inductance, and Capacitance (Bridges)",
+    "Instrument Transformers (CT and PT)",
+    "Digital Instruments and Oscilloscopes"
+   ]
+  },
+  {
+   "unit": "Control Systems",
+   "topics": [
+    "Transfer Functions and Block Diagram Reduction",
+    "Time Response Analysis of First and Second Order Systems",
+    "Routh-Hurwitz Stability Criterion",
+    "Root Locus Technique",
+    "Frequency Response and Bode Plots"
+   ]
+  },
+  {
+   "unit": "Power Electronics and Drives",
+   "topics": [
+    "Semiconductor Power Devices (Diode, SCR, MOSFET, IGBT)",
+    "Phase-Controlled Rectifiers",
+    "Choppers and Inverters",
+    "AC and DC Motor Speed Control"
+   ]
+  },
+  {
+   "unit": "Analog and Digital Electronics",
+   "topics": [
+    "Diode and BJT Characteristics and Biasing",
+    "Operational Amplifiers and Applications",
+    "Combinational and Sequential Logic Circuits",
+    "Boolean Algebra and Logic Gates"
+   ]
+  }
+ ],
+ "items": [
+  {
+   "id": "bwjp9y3d",
+   "unit": "Electric Circuits and Network Theory",
+   "subject": "Network Theory",
+   "topic": "Thevenin's Theorem",
+   "angle": "Determining the Thevenin equivalent resistance in circuits containing both independent and dependent sources.",
+   "difficulty": "Medium",
+   "status": "done",
+   "videoId": "v-20260927-214122-ecrz"
+  },
+  {
+   "id": "krgbf73t",
+   "unit": "Electrical Machines",
+   "subject": "Electrical Machines",
+   "topic": "Transformer Open-Circuit and Short-Circuit Tests",
+   "angle": "Calculating core loss and equivalent copper loss parameters from standard open and short circuit test data.",
+   "difficulty": "Medium",
+   "status": "done",
+   "videoId": "v-20260927-212137-ga1x"
+  },
+  {
+   "id": "wsnjmql9",
+   "unit": "Power Systems",
+   "subject": "Power Systems",
+   "topic": "Corona Phenomenon in Transmission Lines",
+   "angle": "Evaluating factors affecting critical disruptive voltage and methods to reduce corona discharge.",
+   "difficulty": "Easy",
+   "status": "done",
+   "videoId": "v-20260927-212817-hutr"
+  },
+  {
+   "id": "vb2m02uy",
+   "unit": "Electrical and Electronic Measurements",
+   "subject": "Measurements",
+   "topic": "Extension of Range of PMMC Instruments",
+   "angle": "Calculating the required shunt resistance value to extend the current measurement range of an ammeter.",
+   "difficulty": "Medium",
+   "status": "done",
+   "videoId": "v-20260927-214757-r7xz"
+  },
+  {
+   "id": "svbwtcst",
+   "unit": "Electric Circuits and Network Theory",
+   "subject": "Network Theory",
+   "topic": "Series RLC Circuit Resonance",
+   "angle": "Finding the relationship between resonant frequency, quality factor, and half-power bandwidth in a series resonant circuit.",
+   "difficulty": "Medium",
+   "status": "done",
+   "videoId": "v-20260927-215734-antc"
+  },
+  {
+   "id": "bv0j1a0w",
+   "unit": "Electrical Machines",
+   "subject": "Electrical Machines",
+   "topic": "DC Motor Back EMF and Speed Regulation",
+   "angle": "Analyzing how armature voltage control and field flux weakening impact armature current and motor speed under constant load torque.",
+   "difficulty": "Medium",
+   "status": "done",
+   "videoId": "v-20260927-220608-kokn"
+  },
+  {
+   "id": "gd54y9sz",
+   "unit": "Power Systems",
+   "subject": "Power Systems",
+   "topic": "Ferranti Effect",
+   "angle": "Identifying the cause of no-load receiving end voltage exceeding sending end voltage on long high-voltage lines.",
+   "difficulty": "Easy",
+   "status": "todo",
+   "videoId": "v-20260927-215546-takc"
+  },
+  {
+   "id": "a96cx1n7",
+   "unit": "Control Systems",
+   "subject": "Control Systems",
+   "topic": "Routh-Hurwitz Stability Criterion",
+   "angle": "Determining the number of right-half s-plane poles from the sign changes in the first column of the Routh array.",
+   "difficulty": "Medium",
+   "status": "done",
+   "videoId": "v-20260927-215945-tmb2"
+  },
+  {
+   "id": "kf381bom",
+   "unit": "Electrical and Electronic Measurements",
+   "subject": "Measurements",
+   "topic": "Two-Wattmeter Method for Three-Phase Power",
+   "angle": "Deducing the load power factor when one wattmeter reads zero or a negative value in a balanced three-phase system.",
+   "difficulty": "Medium",
+   "status": "todo",
+   "videoId": "v-20260927-220714-275c"
+  },
+  {
+   "id": "dmrm427y",
+   "unit": "Power Electronics and Drives",
+   "subject": "Power Electronics",
+   "topic": "SCR Holding and Latching Current",
+   "angle": "Distinguishing the critical difference between holding current and latching current during thyristor turn-off and turn-on.",
+   "difficulty": "Easy",
+   "status": "done",
+   "videoId": "v-20260927-220943-hlux"
+  },
+  {
+   "id": "hvbtol8h",
+   "unit": "Analog and Digital Electronics",
+   "subject": "Analog Electronics",
+   "topic": "Operational Amplifier Inverting Configuration",
+   "angle": "Calculating the output voltage and virtual ground point in an op-amp amplifier circuit with finite open-loop gain.",
+   "difficulty": "Medium",
+   "status": "todo",
+   "videoId": ""
+  },
+  {
+   "id": "cs48mcyl",
+   "unit": "Electrical Machines",
+   "subject": "Electrical Machines",
+   "topic": "Torque-Slip Characteristics of Three-Phase Induction Motors",
+   "angle": "Determining condition for maximum starting torque by varying rotor circuit resistance in wound-rotor induction motors.",
+   "difficulty": "Medium",
+   "status": "todo",
+   "videoId": ""
+  },
+  {
+   "id": "vgyf9pmy",
+   "unit": "Power Systems",
+   "subject": "Power Systems",
+   "topic": "Suspension Insulator String Efficiency",
+   "angle": "Calculating string efficiency and voltage distribution across individual disc units along a suspension insulator string.",
+   "difficulty": "Hard",
+   "status": "todo",
+   "videoId": ""
+  },
+  {
+   "id": "dxkrqyx2",
+   "unit": "Control Systems",
+   "subject": "Control Systems",
+   "topic": "Bode Plot Phase and Gain Margin",
+   "angle": "Extracting phase crossover frequency and gain margin from asymptotic open-loop frequency response plots.",
+   "difficulty": "Hard",
+   "status": "todo",
+   "videoId": ""
+  },
+  {
+   "id": "d40e4m60",
+   "unit": "Electric Circuits and Network Theory",
+   "subject": "Network Theory",
+   "topic": "Maximum Power Transfer Theorem in AC Circuits",
+   "angle": "Determining load impedance required for maximum power delivery when source impedance has an inductive reactive component.",
+   "difficulty": "Medium",
+   "status": "todo",
+   "videoId": ""
+  },
+  {
+   "id": "123qcbk1",
+   "unit": "Electrical Machines",
+   "subject": "Electrical Machines",
+   "topic": "V-Curves and Inverted V-Curves of Synchronous Motors",
+   "angle": "Analyzing the variation of armature current and power factor with excitation current at constant mechanical output.",
+   "difficulty": "Medium",
+   "status": "todo",
+   "videoId": ""
+  },
+  {
+   "id": "zbrtpnst",
+   "unit": "Electrical and Electronic Measurements",
+   "subject": "Measurements",
+   "topic": "Schering Bridge",
+   "angle": "Evaluating dielectric loss and relative permittivity of insulating material from balanced bridge equations.",
+   "difficulty": "Medium",
+   "status": "todo",
+   "videoId": ""
+  },
+  {
+   "id": "vaedim47",
+   "unit": "Power Systems",
+   "subject": "Power Systems",
+   "topic": "Symmetrical Fault Current Calculation",
+   "angle": "Computing subtransient short-circuit MVA and fault current at generator terminals during a bolted three-phase fault.",
+   "difficulty": "Hard",
+   "status": "todo",
+   "videoId": ""
+  },
+  {
+   "id": "e0dnx61r",
+   "unit": "Power Electronics and Drives",
+   "subject": "Power Electronics",
+   "topic": "Step-Down (Buck) Chopper Output Voltage",
+   "angle": "Calculating the average load voltage and ripple factor for continuous conduction mode as a function of duty cycle.",
+   "difficulty": "Medium",
+   "status": "todo",
+   "videoId": ""
+  },
+  {
+   "id": "y3t2ds9n",
+   "unit": "Analog and Digital Electronics",
+   "subject": "Digital Electronics",
+   "topic": "Karnaugh Map Minimization",
+   "angle": "Minimizing a four-variable Boolean expression while properly handling don't-care conditions to achieve minimum gate count.",
+   "difficulty": "Medium",
+   "status": "todo",
+   "videoId": ""
+  }
+ ],
+ "focus": "",
+ "updatedAt": "2026-09-27T16:48:24.564Z"
+}

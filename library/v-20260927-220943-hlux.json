@@ -1,0 +1,1891 @@
+{
+ "id": "v-20260927-220943-hlux",
+ "createdAt": "2026-09-27T16:39:43.912Z",
+ "updatedAt": "2026-09-27T16:42:18.224Z",
+ "content": {
+  "subject": "Power Electronics",
+  "topic": "SCR Holding and Latching Current",
+  "difficulty": "Easy",
+  "hook": "Why does removing the gate pulse still turn off your thyristor?",
+  "question": "Which statement correctly compares latching current and holding current in a thyristor?",
+  "options": [
+   "Latching current is greater than holding current and associates with turn on",
+   "Holding current is greater than latching current and associates with turn on",
+   "Latching current is less than holding current and associates with turn off",
+   "Holding current is equal to latching current and associates with turn off"
+  ],
+  "correctIndex": 0,
+  "answerLine": "Latching current is greater than holding current and associates with turn on.",
+  "explanation": [
+   "Latching current is the minimum anode current needed to maintain conduction right after gate removal.",
+   "If the anode current fails to reach latching level, the SCR turns off immediately.",
+   "Holding current is the minimum anode current below which an operating thyristor drops into off state.",
+   "Therefore latching current is associated with turning on, while holding current is associated with turn off."
+  ],
+  "funFact": "Because latching current exceeds holding current, inductive loads require wider gate pulses to ensure proper turn-on.",
+  "outro": "Remember, latching means turn on, holding means turn off. Subscribe for more electrical engineering exam prep!",
+  "hashtags": [
+   "PowerElectronics",
+   "ElectricalEngineering",
+   "AEJEExam",
+   "Thyristor"
+  ],
+  "motifSymbols": [
+   "⚡",
+   "🔌",
+   "⚙️",
+   "💡"
+  ],
+  "script": [
+   {
+    "kind": "intro",
+    "narration": "Ready for today’s question?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "wave",
+     "action": "waves at the viewer beside a sketched thyristor symbol",
+     "emotion": "cheerful, welcoming",
+     "props": "thyristor",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/v-20260927-220943-hlux/s0-695538.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "hook",
+    "narration": "Why does removing the gate pulse still turn off your thyristor?",
+    "imageQuery": "power electronics laboratory circuit",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "a thyristor wired in a simple DC circuit where a detached gate wire dangles and a connected light bulb stays completely dark",
+     "emotion": "puzzled",
+     "props": "thyristor, light bulb, battery",
+     "gag": "the light bulb has closed sleeping eyes"
+    },
+    "doodleSrc": "generated/doodle/v-20260927-220943-hlux/s1-fc8c2e.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "question",
+    "narration": "Which statement correctly compares latching current and holding current in a thyristor?",
+    "imageQuery": "thyristor electrical component bench",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "think",
+     "action": "scratches chin while pondering beside a mechanical balance scale with two empty pans",
+     "emotion": "curious, focused",
+     "props": "balance scale",
+     "gag": "a question mark resting inside one of the pans"
+    },
+    "doodleSrc": "generated/doodle/v-20260927-220943-hlux/s2-369a85.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "options",
+    "narration": "Is it latching current is greater than holding current and associates with turn on, holding current is greater than latching current and associates with turn on, latching current is less than holding current and associates with turn off, or holding current is equal to latching current and associates with turn off?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "four separate panels showing different combinations of upward and downward arrows beside circuit switches",
+     "emotion": "busy",
+     "props": "switches, arrows",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/v-20260927-220943-hlux/s3-3103c8.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "countdown",
+    "narration": "",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "worried",
+     "action": "glances back and forth beside an oversized ticking mechanical stopwatch",
+     "emotion": "tense, anticipatory",
+     "props": "stopwatch",
+     "gag": "the stopwatch wobbles with cartoon vibration lines"
+    },
+    "doodleSrc": "generated/doodle/v-20260927-220943-hlux/s4-6738b3.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "answer",
+    "narration": "Latching current is greater than holding current and associates with turn on.",
+    "imageQuery": "silicon controlled rectifier module",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "cheer",
+     "action": "pumps fists in triumph next to a brilliantly shining light bulb wired to an active thyristor",
+     "emotion": "ecstatic, victorious",
+     "props": "light bulb, thyristor",
+     "gag": "the light bulb wears dark sunglasses"
+    },
+    "doodleSrc": "generated/doodle/v-20260927-220943-hlux/s5-aaf3c2.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "explain",
+    "narration": "Latching current is the minimum anode current needed to maintain conduction right after gate removal.",
+    "imageQuery": "oscilloscope waveform electrical test",
+    "visual": {
+     "kind": "bars",
+     "caption": "Current threshold, mA",
+     "items": [
+      {
+       "label": "Holding",
+       "value": 20
+      },
+      {
+       "label": "Latching",
+       "value": 50
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "If the anode current fails to reach latching level, the SCR turns off immediately.",
+    "imageQuery": "printed circuit board components",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "switch-circuit",
+     "caption": "",
+     "params": {
+      "mode": "open"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Holding current is the minimum anode current below which an operating thyristor drops into off state.",
+    "imageQuery": "electrical engineering workstation lab",
+    "visual": {
+     "kind": "formula",
+     "formula": "IL > IH",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Therefore latching current is associated with turning on, while holding current is associated with turn off.",
+    "imageQuery": "power semiconductor thyristor heatsink",
+    "visual": {
+     "kind": "compare",
+     "caption": "",
+     "items": [
+      {
+       "label": "Latching: Turn-on",
+       "symbol": "🟢"
+      },
+      {
+       "label": "Holding: Turn-off",
+       "symbol": "🔴"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "In standard silicon controlled rectifiers, latching current is typically two to three times the holding current.",
+    "imageQuery": "electronics engineering testing bench",
+    "visual": {
+     "kind": "formula",
+     "formula": "IL ≈ (2 to 3) × IH",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Remember the simple alphabetical memory aid: L comes after H, so latching current is always higher.",
+    "imageQuery": "semiconductor wafer manufacturing cleanroom",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "number-line",
+     "caption": "",
+     "params": {
+      "labelA": "0 mA",
+      "labelB": "100 mA"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "If load current rises to fifty milliamperes, an SCR with sixty milliampere latching current turns off.",
+    "imageQuery": "multimeter digital display measurement",
+    "visual": {
+     "kind": "icon",
+     "caption": "Current insufficient",
+     "items": [
+      {
+       "label": "Gate Dropped",
+       "symbol": "⚠️"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "To turn the device off successfully, anode current must be forced completely below the holding value.",
+    "imageQuery": "electrical substation control panel",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "diode-curve",
+     "caption": "",
+     "params": {},
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "State AE and JE papers test this fundamental relationship frequently because candidates often swap the definitions.",
+    "imageQuery": "engineering examination paper desk",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "checklist",
+     "caption": "",
+     "params": {
+      "mode": "circle"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "formulas",
+    "narration": "Here are the formulas behind this one. Save it for your revision."
+   },
+   {
+    "kind": "outro",
+    "narration": "Remember, latching means turn on, holding means turn off. Subscribe for more electrical engineering exam prep!",
+    "imageQuery": "modern electrical engineering laboratory",
+    "visual": {
+     "kind": "icon",
+     "caption": "Exam Success",
+     "items": [
+      {
+       "label": "AE JE Prep",
+       "symbol": "⚡"
+      }
+     ]
+    }
+   }
+  ],
+  "formulas": {
+   "title": "Thyristor Currents - Important Formulas",
+   "cards": [
+    {
+     "name": "Current Magnitude Comparison",
+     "formula": "I_L > I_H",
+     "notes": [
+      "I_L = Latching current (turn-on)",
+      "I_H = Holding current (turn-off)"
+     ],
+     "graph": {
+      "kind": "none",
+      "x": "",
+      "y": "",
+      "label": "",
+      "label2": ""
+     },
+     "icon": "switch",
+     "art": {
+      "body": "<path fill=\"currentColor\" d=\"M13 18h1a1 1 0 0 1 1 1h7v2h-7a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1H2v-2h7a1 1 0 0 1 1-1h1v-2H8a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-3zm0-12h1V4h-1zM9 4v2h2V4zm0 4v2h2V8zm0 4v2h2v-2z\"/>",
+      "width": 24,
+      "height": 24
+     }
+    },
+    {
+     "name": "Typical Latching Ratio",
+     "formula": "I_L ≈ (2 × I_H) ext{ to } (3 × I_H)",
+     "notes": [
+      "I_L = Minimum current to sustain on-state",
+      "I_H = Drop-out current during turn-off"
+     ],
+     "graph": {
+      "kind": "none",
+      "x": "",
+      "y": "",
+      "label": "",
+      "label2": ""
+     },
+     "icon": "ammeter",
+     "art": {
+      "body": "<g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"><path d=\"M5 12a7 7 0 1 0 14 0a7 7 0 1 0-14 0m0 0H2m17 0h3\"/><path d=\"M10 14v-3c0-1.036.895-2 2-2s2 .964 2 2v3m0-2h-4\"/></g>",
+      "width": 24,
+      "height": 24
+     }
+    }
+   ]
+  }
+ },
+ "design": {
+  "mode": "light",
+  "layout": "doodle",
+  "accent": "#3ddc97",
+  "showCaptions": true,
+  "showProgressBar": true,
+  "countdownSeconds": 4,
+  "scenePaddingSeconds": 0.35,
+  "trimTrailingSilence": true,
+  "showVisuals": true,
+  "showMotif": true,
+  "ambient": "auto",
+  "ambientIntensity": 0.6,
+  "motionStrength": 1,
+  "transition": "auto",
+  "textReveal": "fade",
+  "overlay": "vignette",
+  "overlayIntensity": 0.5,
+  "align": "auto",
+  "showStock": true,
+  "stockOpacity": 0.45,
+  "music": "tense",
+  "musicVolume": 0.22,
+  "customMusicSrc": "",
+  "sfx": true,
+  "sfxVolume": 0.5,
+  "orientation": "portrait",
+  "doodleEnergy": "lively",
+  "animatedEngineer": true
+ },
+ "audio": {
+  "0": {
+   "src": "generated/vo-179be249/s0.mp3",
+   "duration": 1.4889795918367348,
+   "words": [
+    {
+     "word": "Ready",
+     "start": 0,
+     "end": 0.395
+    },
+    {
+     "word": "for",
+     "start": 0.43,
+     "end": 0.522
+    },
+    {
+     "word": "today’s",
+     "start": 0.557,
+     "end": 0.801
+    },
+    {
+     "word": "question?",
+     "start": 0.824,
+     "end": 1.44
+    }
+   ],
+   "measuredDuration": 1.4396371882086167,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 1.1609977324263039,
+   "captionOffset": 0.17414965986394557
+  },
+  "1": {
+   "src": "generated/vo-179be249/s1.mp3",
+   "duration": 2.9257142857142857,
+   "words": [
+    {
+     "word": "Why",
+     "start": 0,
+     "end": 0.279
+    },
+    {
+     "word": "does",
+     "start": 0.337,
+     "end": 0.453
+    },
+    {
+     "word": "removing",
+     "start": 0.511,
+     "end": 0.882
+    },
+    {
+     "word": "the",
+     "start": 0.917,
+     "end": 0.987
+    },
+    {
+     "word": "gate",
+     "start": 1.033,
+     "end": 1.219
+    },
+    {
+     "word": "pulse",
+     "start": 1.254,
+     "end": 1.463
+    },
+    {
+     "word": "still",
+     "start": 1.486,
+     "end": 1.683
+    },
+    {
+     "word": "turn",
+     "start": 1.741,
+     "end": 1.892
+    },
+    {
+     "word": "off",
+     "start": 1.927,
+     "end": 2.02
+    },
+    {
+     "word": "your",
+     "start": 2.055,
+     "end": 2.148
+    },
+    {
+     "word": "thyristor?",
+     "start": 2.183,
+     "end": 2.879
+    }
+   ],
+   "measuredDuration": 2.8792743764172335,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 2.5658049886621317,
+   "captionOffset": 0.17414965986394557
+  },
+  "2": {
+   "src": "generated/vo-179be249/s2.mp3",
+   "duration": 4.54530612244898,
+   "words": [
+    {
+     "word": "Which",
+     "start": 0,
+     "end": 0.372
+    },
+    {
+     "word": "statement",
+     "start": 0.418,
+     "end": 0.906
+    },
+    {
+     "word": "correctly",
+     "start": 0.964,
+     "end": 1.428
+    },
+    {
+     "word": "compares",
+     "start": 1.486,
+     "end": 1.939
+    },
+    {
+     "word": "latching",
+     "start": 2.055,
+     "end": 2.45
+    },
+    {
+     "word": "current",
+     "start": 2.519,
+     "end": 2.786
+    },
+    {
+     "word": "and",
+     "start": 2.833,
+     "end": 2.937
+    },
+    {
+     "word": "holding",
+     "start": 3.007,
+     "end": 3.32
+    },
+    {
+     "word": "current",
+     "start": 3.367,
+     "end": 3.611
+    },
+    {
+     "word": "in",
+     "start": 3.657,
+     "end": 3.715
+    },
+    {
+     "word": "a",
+     "start": 3.773,
+     "end": 3.796
+    },
+    {
+     "word": "thyristor?",
+     "start": 3.855,
+     "end": 4.505
+    }
+   ],
+   "measuredDuration": 4.504671201814059,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 4.2260317460317465,
+   "captionOffset": 0.16253968253968254
+  },
+  "3": {
+   "src": "generated/vo-179be249/s3.mp3",
+   "duration": 19.252244897959184,
+   "words": [
+    {
+     "word": "Is",
+     "start": 0,
+     "end": 0.337
+    },
+    {
+     "word": "it",
+     "start": 0.418,
+     "end": 0.511
+    },
+    {
+     "word": "latching",
+     "start": 0.592,
+     "end": 1.01
+    },
+    {
+     "word": "current",
+     "start": 1.068,
+     "end": 1.405
+    },
+    {
+     "word": "is",
+     "start": 1.521,
+     "end": 1.753
+    },
+    {
+     "word": "greater",
+     "start": 1.869,
+     "end": 2.322
+    },
+    {
+     "word": "than",
+     "start": 2.38,
+     "end": 2.519
+    },
+    {
+     "word": "holding",
+     "start": 2.612,
+     "end": 3.019
+    },
+    {
+     "word": "current",
+     "start": 3.077,
+     "end": 3.425
+    },
+    {
+     "word": "and",
+     "start": 3.599,
+     "end": 3.808
+    },
+    {
+     "word": "associates",
+     "start": 3.889,
+     "end": 4.598
+    },
+    {
+     "word": "with",
+     "start": 4.772,
+     "end": 4.981
+    },
+    {
+     "word": "turn",
+     "start": 5.039,
+     "end": 5.306
+    },
+    {
+     "word": "on,",
+     "start": 5.387,
+     "end": 5.642
+    },
+    {
+     "word": "holding",
+     "start": 5.817,
+     "end": 6.188
+    },
+    {
+     "word": "current",
+     "start": 6.246,
+     "end": 6.525
+    },
+    {
+     "word": "is",
+     "start": 6.606,
+     "end": 6.769
+    },
+    {
+     "word": "greater",
+     "start": 6.861,
+     "end": 7.291
+    },
+    {
+     "word": "than",
+     "start": 7.361,
+     "end": 7.512
+    },
+    {
+     "word": "latching",
+     "start": 7.628,
+     "end": 8.057
+    },
+    {
+     "word": "current",
+     "start": 8.115,
+     "end": 8.406
+    },
+    {
+     "word": "and",
+     "start": 8.475,
+     "end": 8.649
+    },
+    {
+     "word": "associates",
+     "start": 8.719,
+     "end": 9.369
+    },
+    {
+     "word": "with",
+     "start": 9.415,
+     "end": 9.566
+    },
+    {
+     "word": "turn",
+     "start": 9.613,
+     "end": 9.845
+    },
+    {
+     "word": "on,",
+     "start": 9.926,
+     "end": 10.158
+    },
+    {
+     "word": "latching",
+     "start": 10.367,
+     "end": 10.774
+    },
+    {
+     "word": "current",
+     "start": 10.832,
+     "end": 11.168
+    },
+    {
+     "word": "is",
+     "start": 11.226,
+     "end": 11.343
+    },
+    {
+     "word": "less",
+     "start": 11.459,
+     "end": 11.691
+    },
+    {
+     "word": "than",
+     "start": 11.737,
+     "end": 11.888
+    },
+    {
+     "word": "holding",
+     "start": 11.981,
+     "end": 12.353
+    },
+    {
+     "word": "current",
+     "start": 12.422,
+     "end": 12.817
+    },
+    {
+     "word": "and",
+     "start": 12.91,
+     "end": 13.084
+    },
+    {
+     "word": "associates",
+     "start": 13.142,
+     "end": 13.781
+    },
+    {
+     "word": "with",
+     "start": 13.815,
+     "end": 13.955
+    },
+    {
+     "word": "turn",
+     "start": 14.013,
+     "end": 14.257
+    },
+    {
+     "word": "off,",
+     "start": 14.315,
+     "end": 14.605
+    },
+    {
+     "word": "or",
+     "start": 14.779,
+     "end": 14.918
+    },
+    {
+     "word": "holding",
+     "start": 14.988,
+     "end": 15.313
+    },
+    {
+     "word": "current",
+     "start": 15.36,
+     "end": 15.696
+    },
+    {
+     "word": "is",
+     "start": 15.766,
+     "end": 15.882
+    },
+    {
+     "word": "equal",
+     "start": 15.975,
+     "end": 16.312
+    },
+    {
+     "word": "to",
+     "start": 16.381,
+     "end": 16.463
+    },
+    {
+     "word": "latching",
+     "start": 16.579,
+     "end": 17.008
+    },
+    {
+     "word": "current",
+     "start": 17.066,
+     "end": 17.403
+    },
+    {
+     "word": "and",
+     "start": 17.461,
+     "end": 17.577
+    },
+    {
+     "word": "associates",
+     "start": 17.635,
+     "end": 18.239
+    },
+    {
+     "word": "with",
+     "start": 18.274,
+     "end": 18.425
+    },
+    {
+     "word": "turn",
+     "start": 18.483,
+     "end": 18.703
+    },
+    {
+     "word": "off?",
+     "start": 18.761,
+     "end": 19.226
+    }
+   ],
+   "measuredDuration": 19.22612244897959,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 18.83138321995465,
+   "captionOffset": 0.16253968253968254
+  },
+  "5": {
+   "src": "generated/vo-179be249/s5.mp3",
+   "duration": 4.54530612244898,
+   "words": [
+    {
+     "word": "Latching",
+     "start": 0,
+     "end": 0.627
+    },
+    {
+     "word": "current",
+     "start": 0.685,
+     "end": 1.01
+    },
+    {
+     "word": "is",
+     "start": 1.057,
+     "end": 1.149
+    },
+    {
+     "word": "greater",
+     "start": 1.231,
+     "end": 1.567
+    },
+    {
+     "word": "than",
+     "start": 1.614,
+     "end": 1.741
+    },
+    {
+     "word": "holding",
+     "start": 1.811,
+     "end": 2.159
+    },
+    {
+     "word": "current",
+     "start": 2.241,
+     "end": 2.589
+    },
+    {
+     "word": "and",
+     "start": 2.635,
+     "end": 2.728
+    },
+    {
+     "word": "associates",
+     "start": 2.786,
+     "end": 3.39
+    },
+    {
+     "word": "with",
+     "start": 3.425,
+     "end": 3.599
+    },
+    {
+     "word": "turn",
+     "start": 3.669,
+     "end": 3.947
+    },
+    {
+     "word": "on.",
+     "start": 4.029,
+     "end": 4.505
+    }
+   ],
+   "measuredDuration": 4.504671201814059,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 4.237641723356009,
+   "captionOffset": 0.17414965986394557
+  },
+  "6": {
+   "src": "generated/vo-179be249/s6.mp3",
+   "duration": 5.511836734693878,
+   "words": [
+    {
+     "word": "Latching",
+     "start": 0,
+     "end": 0.58
+    },
+    {
+     "word": "current",
+     "start": 0.639,
+     "end": 0.94
+    },
+    {
+     "word": "is",
+     "start": 0.987,
+     "end": 1.08
+    },
+    {
+     "word": "the",
+     "start": 1.138,
+     "end": 1.207
+    },
+    {
+     "word": "minimum",
+     "start": 1.254,
+     "end": 1.649
+    },
+    {
+     "word": "anode",
+     "start": 1.707,
+     "end": 2.043
+    },
+    {
+     "word": "current",
+     "start": 2.09,
+     "end": 2.403
+    },
+    {
+     "word": "needed",
+     "start": 2.45,
+     "end": 2.728
+    },
+    {
+     "word": "to",
+     "start": 2.775,
+     "end": 2.844
+    },
+    {
+     "word": "maintain",
+     "start": 2.926,
+     "end": 3.332
+    },
+    {
+     "word": "conduction",
+     "start": 3.402,
+     "end": 3.924
+    },
+    {
+     "word": "right",
+     "start": 3.994,
+     "end": 4.191
+    },
+    {
+     "word": "after",
+     "start": 4.238,
+     "end": 4.458
+    },
+    {
+     "word": "gate",
+     "start": 4.505,
+     "end": 4.737
+    },
+    {
+     "word": "removal.",
+     "start": 4.772,
+     "end": 5.48
+    }
+   ],
+   "measuredDuration": 5.479909297052155,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 5.201269841269841,
+   "captionOffset": 0.17414965986394557
+  },
+  "7": {
+   "src": "generated/vo-179be249/s7.mp3",
+   "duration": 5.0416326530612245,
+   "words": [
+    {
+     "word": "If",
+     "start": 0,
+     "end": 0.313
+    },
+    {
+     "word": "the",
+     "start": 0.372,
+     "end": 0.464
+    },
+    {
+     "word": "anode",
+     "start": 0.546,
+     "end": 0.871
+    },
+    {
+     "word": "current",
+     "start": 0.917,
+     "end": 1.207
+    },
+    {
+     "word": "fails",
+     "start": 1.277,
+     "end": 1.614
+    },
+    {
+     "word": "to",
+     "start": 1.66,
+     "end": 1.741
+    },
+    {
+     "word": "reach",
+     "start": 1.823,
+     "end": 2.055
+    },
+    {
+     "word": "latching",
+     "start": 2.113,
+     "end": 2.426
+    },
+    {
+     "word": "level,",
+     "start": 2.473,
+     "end": 2.798
+    },
+    {
+     "word": "the",
+     "start": 2.891,
+     "end": 3.019
+    },
+    {
+     "word": "SCR",
+     "start": 3.1,
+     "end": 3.576
+    },
+    {
+     "word": "turns",
+     "start": 3.646,
+     "end": 3.936
+    },
+    {
+     "word": "off",
+     "start": 3.982,
+     "end": 4.098
+    },
+    {
+     "word": "immediately.",
+     "start": 4.145,
+     "end": 5.016
+    }
+   ],
+   "measuredDuration": 5.015510204081632,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 4.655600907029479,
+   "captionOffset": 0.17414965986394557
+  },
+  "8": {
+   "src": "generated/vo-179be249/s8.mp3",
+   "duration": 5.381224489795918,
+   "words": [
+    {
+     "word": "Holding",
+     "start": 0,
+     "end": 0.476
+    },
+    {
+     "word": "current",
+     "start": 0.522,
+     "end": 0.859
+    },
+    {
+     "word": "is",
+     "start": 0.917,
+     "end": 1.045
+    },
+    {
+     "word": "the",
+     "start": 1.091,
+     "end": 1.161
+    },
+    {
+     "word": "minimum",
+     "start": 1.254,
+     "end": 1.672
+    },
+    {
+     "word": "anode",
+     "start": 1.753,
+     "end": 2.09
+    },
+    {
+     "word": "current",
+     "start": 2.136,
+     "end": 2.415
+    },
+    {
+     "word": "below",
+     "start": 2.461,
+     "end": 2.717
+    },
+    {
+     "word": "which",
+     "start": 2.775,
+     "end": 2.972
+    },
+    {
+     "word": "an",
+     "start": 3.019,
+     "end": 3.088
+    },
+    {
+     "word": "operating",
+     "start": 3.158,
+     "end": 3.611
+    },
+    {
+     "word": "thyristor",
+     "start": 3.657,
+     "end": 4.029
+    },
+    {
+     "word": "drops",
+     "start": 4.075,
+     "end": 4.354
+    },
+    {
+     "word": "into",
+     "start": 4.4,
+     "end": 4.54
+    },
+    {
+     "word": "off",
+     "start": 4.609,
+     "end": 4.748
+    },
+    {
+     "word": "state.",
+     "start": 4.818,
+     "end": 5.341
+    }
+   ],
+   "measuredDuration": 5.340589569160998,
+   "speechStart": 0.18575963718820862,
+   "speechEnd": 5.0967800453514736,
+   "captionOffset": 0.18575963718820862
+  },
+  "9": {
+   "src": "generated/vo-179be249/s9.mp3",
+   "duration": 6.347755102040816,
+   "words": [
+    {
+     "word": "Therefore",
+     "start": 0,
+     "end": 0.441
+    },
+    {
+     "word": "latching",
+     "start": 0.476,
+     "end": 0.789
+    },
+    {
+     "word": "current",
+     "start": 0.824,
+     "end": 1.091
+    },
+    {
+     "word": "is",
+     "start": 1.138,
+     "end": 1.219
+    },
+    {
+     "word": "associated",
+     "start": 1.289,
+     "end": 1.962
+    },
+    {
+     "word": "with",
+     "start": 2.009,
+     "end": 2.159
+    },
+    {
+     "word": "turning",
+     "start": 2.218,
+     "end": 2.554
+    },
+    {
+     "word": "on,",
+     "start": 2.624,
+     "end": 2.984
+    },
+    {
+     "word": "while",
+     "start": 3.193,
+     "end": 3.425
+    },
+    {
+     "word": "holding",
+     "start": 3.471,
+     "end": 3.796
+    },
+    {
+     "word": "current",
+     "start": 3.866,
+     "end": 4.191
+    },
+    {
+     "word": "is",
+     "start": 4.238,
+     "end": 4.331
+    },
+    {
+     "word": "associated",
+     "start": 4.4,
+     "end": 5.166
+    },
+    {
+     "word": "with",
+     "start": 5.248,
+     "end": 5.433
+    },
+    {
+     "word": "turn",
+     "start": 5.515,
+     "end": 5.77
+    },
+    {
+     "word": "off.",
+     "start": 5.828,
+     "end": 6.316
+    }
+   ],
+   "measuredDuration": 6.315827664399093,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 5.88625850340136,
+   "captionOffset": 0.17414965986394557
+  },
+  "10": {
+   "src": "generated/vo-179be249/s10.mp3",
+   "duration": 6.4,
+   "words": [
+    {
+     "word": "In",
+     "start": 0,
+     "end": 0.29
+    },
+    {
+     "word": "standard",
+     "start": 0.348,
+     "end": 0.836
+    },
+    {
+     "word": "silicon",
+     "start": 0.906,
+     "end": 1.312
+    },
+    {
+     "word": "controlled",
+     "start": 1.405,
+     "end": 1.892
+    },
+    {
+     "word": "rectifiers,",
+     "start": 1.962,
+     "end": 2.67
+    },
+    {
+     "word": "latching",
+     "start": 2.74,
+     "end": 3.135
+    },
+    {
+     "word": "current",
+     "start": 3.181,
+     "end": 3.437
+    },
+    {
+     "word": "is",
+     "start": 3.483,
+     "end": 3.576
+    },
+    {
+     "word": "typically",
+     "start": 3.646,
+     "end": 4.156
+    },
+    {
+     "word": "two",
+     "start": 4.214,
+     "end": 4.4
+    },
+    {
+     "word": "to",
+     "start": 4.458,
+     "end": 4.528
+    },
+    {
+     "word": "three",
+     "start": 4.598,
+     "end": 4.818
+    },
+    {
+     "word": "times",
+     "start": 4.865,
+     "end": 5.178
+    },
+    {
+     "word": "the",
+     "start": 5.236,
+     "end": 5.306
+    },
+    {
+     "word": "holding",
+     "start": 5.364,
+     "end": 5.689
+    },
+    {
+     "word": "current.",
+     "start": 5.747,
+     "end": 6.362
+    }
+   ],
+   "measuredDuration": 6.362267573696145,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 6.106848072562358,
+   "captionOffset": 0.16253968253968254
+  },
+  "11": {
+   "src": "generated/vo-179be249/s11.mp3",
+   "duration": 6.217142857142857,
+   "words": [
+    {
+     "word": "Remember",
+     "start": 0,
+     "end": 0.488
+    },
+    {
+     "word": "the",
+     "start": 0.534,
+     "end": 0.604
+    },
+    {
+     "word": "simple",
+     "start": 0.662,
+     "end": 1.01
+    },
+    {
+     "word": "alphabetical",
+     "start": 1.068,
+     "end": 1.741
+    },
+    {
+     "word": "memory",
+     "start": 1.811,
+     "end": 2.113
+    },
+    {
+     "word": "aid:",
+     "start": 2.148,
+     "end": 2.392
+    },
+    {
+     "word": "L",
+     "start": 2.717,
+     "end": 2.844
+    },
+    {
+     "word": "comes",
+     "start": 2.937,
+     "end": 3.17
+    },
+    {
+     "word": "after",
+     "start": 3.251,
+     "end": 3.611
+    },
+    {
+     "word": "H,",
+     "start": 3.68,
+     "end": 3.971
+    },
+    {
+     "word": "so",
+     "start": 4.052,
+     "end": 4.214
+    },
+    {
+     "word": "latching",
+     "start": 4.296,
+     "end": 4.667
+    },
+    {
+     "word": "current",
+     "start": 4.714,
+     "end": 5.004
+    },
+    {
+     "word": "is",
+     "start": 5.05,
+     "end": 5.143
+    },
+    {
+     "word": "always",
+     "start": 5.201,
+     "end": 5.538
+    },
+    {
+     "word": "higher.",
+     "start": 5.596,
+     "end": 6.177
+    }
+   ],
+   "measuredDuration": 6.176507936507937,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 5.863038548752835,
+   "captionOffset": 0.16253968253968254
+  },
+  "12": {
+   "src": "generated/vo-179be249/s12.mp3",
+   "duration": 5.929795918367347,
+   "words": [
+    {
+     "word": "If",
+     "start": 0,
+     "end": 0.29
+    },
+    {
+     "word": "load",
+     "start": 0.383,
+     "end": 0.639
+    },
+    {
+     "word": "current",
+     "start": 0.708,
+     "end": 0.987
+    },
+    {
+     "word": "rises",
+     "start": 1.045,
+     "end": 1.393
+    },
+    {
+     "word": "to",
+     "start": 1.44,
+     "end": 1.521
+    },
+    {
+     "word": "fifty",
+     "start": 1.602,
+     "end": 1.892
+    },
+    {
+     "word": "milliamperes,",
+     "start": 1.962,
+     "end": 2.612
+    },
+    {
+     "word": "an",
+     "start": 2.694,
+     "end": 2.833
+    },
+    {
+     "word": "SCR",
+     "start": 2.949,
+     "end": 3.39
+    },
+    {
+     "word": "with",
+     "start": 3.448,
+     "end": 3.576
+    },
+    {
+     "word": "sixty",
+     "start": 3.611,
+     "end": 3.889
+    },
+    {
+     "word": "milliampere",
+     "start": 3.936,
+     "end": 4.342
+    },
+    {
+     "word": "latching",
+     "start": 4.389,
+     "end": 4.737
+    },
+    {
+     "word": "current",
+     "start": 4.772,
+     "end": 5.039
+    },
+    {
+     "word": "turns",
+     "start": 5.074,
+     "end": 5.341
+    },
+    {
+     "word": "off.",
+     "start": 5.41,
+     "end": 5.898
+    }
+   ],
+   "measuredDuration": 5.897868480725624,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 5.491519274376417,
+   "captionOffset": 0.17414965986394557
+  },
+  "13": {
+   "src": "generated/vo-179be249/s13.mp3",
+   "duration": 6.452244897959184,
+   "words": [
+    {
+     "word": "To",
+     "start": 0,
+     "end": 0.221
+    },
+    {
+     "word": "turn",
+     "start": 0.313,
+     "end": 0.592
+    },
+    {
+     "word": "the",
+     "start": 0.662,
+     "end": 0.743
+    },
+    {
+     "word": "device",
+     "start": 0.801,
+     "end": 1.196
+    },
+    {
+     "word": "off",
+     "start": 1.242,
+     "end": 1.37
+    },
+    {
+     "word": "successfully,",
+     "start": 1.428,
+     "end": 2.252
+    },
+    {
+     "word": "anode",
+     "start": 2.461,
+     "end": 2.844
+    },
+    {
+     "word": "current",
+     "start": 2.879,
+     "end": 3.262
+    },
+    {
+     "word": "must",
+     "start": 3.379,
+     "end": 3.622
+    },
+    {
+     "word": "be",
+     "start": 3.692,
+     "end": 3.796
+    },
+    {
+     "word": "forced",
+     "start": 3.866,
+     "end": 4.238
+    },
+    {
+     "word": "completely",
+     "start": 4.319,
+     "end": 4.899
+    },
+    {
+     "word": "below",
+     "start": 4.969,
+     "end": 5.224
+    },
+    {
+     "word": "the",
+     "start": 5.283,
+     "end": 5.352
+    },
+    {
+     "word": "holding",
+     "start": 5.41,
+     "end": 5.724
+    },
+    {
+     "word": "value.",
+     "start": 5.782,
+     "end": 6.409
+    }
+   ],
+   "measuredDuration": 6.408707482993197,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 6.15328798185941,
+   "captionOffset": 0.16253968253968254
+  },
+  "14": {
+   "src": "generated/vo-179be249/s14.mp3",
+   "duration": 7.053061224489796,
+   "words": [
+    {
+     "word": "State",
+     "start": 0,
+     "end": 0.557
+    },
+    {
+     "word": "AE",
+     "start": 0.592,
+     "end": 0.952
+    },
+    {
+     "word": "and",
+     "start": 1.022,
+     "end": 1.161
+    },
+    {
+     "word": "JE",
+     "start": 1.231,
+     "end": 1.498
+    },
+    {
+     "word": "papers",
+     "start": 1.556,
+     "end": 1.916
+    },
+    {
+     "word": "test",
+     "start": 1.985,
+     "end": 2.252
+    },
+    {
+     "word": "this",
+     "start": 2.276,
+     "end": 2.403
+    },
+    {
+     "word": "fundamental",
+     "start": 2.45,
+     "end": 2.949
+    },
+    {
+     "word": "relationship",
+     "start": 3.007,
+     "end": 3.611
+    },
+    {
+     "word": "frequently",
+     "start": 3.68,
+     "end": 4.249
+    },
+    {
+     "word": "because",
+     "start": 4.319,
+     "end": 4.621
+    },
+    {
+     "word": "candidates",
+     "start": 4.667,
+     "end": 5.201
+    },
+    {
+     "word": "often",
+     "start": 5.248,
+     "end": 5.503
+    },
+    {
+     "word": "swap",
+     "start": 5.561,
+     "end": 5.875
+    },
+    {
+     "word": "the",
+     "start": 5.944,
+     "end": 6.014
+    },
+    {
+     "word": "definitions.",
+     "start": 6.06,
+     "end": 7.012
+    }
+   ],
+   "measuredDuration": 7.012426303854875,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 6.722176870748299,
+   "captionOffset": 0.17414965986394557
+  },
+  "15": {
+   "src": "generated/vo-179be249/s15.mp3",
+   "duration": 3.3436734693877552,
+   "words": [
+    {
+     "word": "Here",
+     "start": 0,
+     "end": 0.372
+    },
+    {
+     "word": "are",
+     "start": 0.406,
+     "end": 0.511
+    },
+    {
+     "word": "the",
+     "start": 0.534,
+     "end": 0.604
+    },
+    {
+     "word": "formulas",
+     "start": 0.65,
+     "end": 1.033
+    },
+    {
+     "word": "behind",
+     "start": 1.091,
+     "end": 1.37
+    },
+    {
+     "word": "this",
+     "start": 1.428,
+     "end": 1.579
+    },
+    {
+     "word": "one.",
+     "start": 1.637,
+     "end": 1.869
+    },
+    {
+     "word": "Save",
+     "start": 1.95,
+     "end": 2.218
+    },
+    {
+     "word": "it",
+     "start": 2.252,
+     "end": 2.322
+    },
+    {
+     "word": "for",
+     "start": 2.368,
+     "end": 2.473
+    },
+    {
+     "word": "your",
+     "start": 2.508,
+     "end": 2.612
+    },
+    {
+     "word": "revision.",
+     "start": 2.647,
+     "end": 3.297
+    }
+   ],
+   "measuredDuration": 3.297233560090703,
+   "speechStart": 0.046439909297052155,
+   "speechEnd": 3.053424036281179,
+   "captionOffset": 0.046439909297052155
+  },
+  "16": {
+   "src": "generated/vo-179be249/s16.mp3",
+   "duration": 7.131428571428572,
+   "words": [
+    {
+     "word": "Remember,",
+     "start": 0,
+     "end": 0.824
+    },
+    {
+     "word": "latching",
+     "start": 1.033,
+     "end": 1.451
+    },
+    {
+     "word": "means",
+     "start": 1.509,
+     "end": 1.765
+    },
+    {
+     "word": "turn",
+     "start": 1.834,
+     "end": 2.125
+    },
+    {
+     "word": "on,",
+     "start": 2.206,
+     "end": 2.473
+    },
+    {
+     "word": "holding",
+     "start": 2.531,
+     "end": 2.937
+    },
+    {
+     "word": "means",
+     "start": 2.995,
+     "end": 3.228
+    },
+    {
+     "word": "turn",
+     "start": 3.274,
+     "end": 3.506
+    },
+    {
+     "word": "off.",
+     "start": 3.564,
+     "end": 3.808
+    },
+    {
+     "word": "Subscribe",
+     "start": 3.959,
+     "end": 4.563
+    },
+    {
+     "word": "for",
+     "start": 4.598,
+     "end": 4.725
+    },
+    {
+     "word": "more",
+     "start": 4.795,
+     "end": 4.981
+    },
+    {
+     "word": "electrical",
+     "start": 5.027,
+     "end": 5.457
+    },
+    {
+     "word": "engineering",
+     "start": 5.526,
+     "end": 6.037
+    },
+    {
+     "word": "exam",
+     "start": 6.107,
+     "end": 6.49
+    },
+    {
+     "word": "prep!",
+     "start": 6.571,
+     "end": 7.105
+    }
+   ],
+   "measuredDuration": 7.1053061224489795,
+   "speechStart": 0.18575963718820862,
+   "speechEnd": 6.757006802721088,
+   "captionOffset": 0.18575963718820862
+  }
+ },
+ "seo": null,
+ "ledger": [
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-09-27T16:39:46.266Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-09-27T16:40:01.569Z"
+  },
+  {
+   "what": "Voiceover",
+   "characters": 1470,
+   "at": "2026-09-27T16:40:01.598Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-09-27T16:40:13.076Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-09-27T16:40:31.421Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-09-27T16:40:45.815Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-09-27T16:41:40.141Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-09-27T16:41:55.420Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-09-27T16:42:09.628Z"
+  },
+  {
+   "what": "Voiceover",
+   "characters": 1665,
+   "at": "2026-09-27T16:42:09.656Z"
+  }
+ ],
+ "renders": [
+  {
+   "jobId": "video-2026-09-27T16-42-18",
+   "url": "/out/video-2026-09-27T16-42-18.mp4",
+   "quality": "high",
+   "at": "2026-09-27T16:47:32.886Z"
+  }
+ ],
+ "published": {}
+}
