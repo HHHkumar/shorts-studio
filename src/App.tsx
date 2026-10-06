@@ -300,7 +300,7 @@ export const App: React.FC = () => {
         </nav>
       </header>
 
-      <div className="main">
+      <div className={libraryOpen || plannerOpen ? 'main wide' : 'main'}>
         <div>
           {waitingForServer ? (
             <Note kind="info" title="Starting up…">
@@ -521,7 +521,7 @@ export const App: React.FC = () => {
           </div>
         </div>
 
-        <Preview props={step >= 2 ? videoProps : null} hasAudio={hasAudio} />
+        {libraryOpen || plannerOpen ? null : <Preview props={step >= 2 ? videoProps : null} hasAudio={hasAudio} />}
       </div>
     </div>
   );
