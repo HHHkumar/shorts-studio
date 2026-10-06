@@ -742,13 +742,18 @@ const CORE_SKETCHES: Record<string, SketchDef> = {
     shape: 'wide',
     label: 'Waveform',
     describe: 'an AC waveform: two signals out of phase, or a rectified or switched output. Use for: AC theory, phase shift, rectifiers, inverters and PWM',
-    uses: 'mode ("phase", "half-wave", "full-wave", "pwm"), angle (phase shift in degrees; POSITIVE means the second wave LAGS, so 90 is a pure inductor and -90 a pure capacitor), frequency (1-4), labelA (first wave, e.g. V), labelB (second wave, e.g. I). "phase" compares TWO SIGNALS - a voltage and a current, or two supplies. Never label the two waves with two measures of ONE wave (RMS and peak, average and RMS, instantaneous and maximum): they are the same wave, so a phase between them means nothing. A question about RMS against peak takes no sketch at all',
+    uses: 'mode ("phase", "half-wave", "full-wave", "pwm"), angle (phase shift in degrees; POSITIVE means the second wave LAGS, so 90 is a pure inductor and -90 a pure capacitor; leave it out, or 0, when the two are in phase - it is drawn exactly as given, so never guess one), ratio (0.3-2.5, the second wave\'s size against the first: 1 is equal, above 1 is larger - e.g. 1.2 for a receiving-end voltage above the sending end in the Ferranti effect), frequency (1-4), labelA (first wave, e.g. V), labelB (second wave, e.g. I). "phase" compares TWO SIGNALS - a voltage and a current, or two supplies. Never label the two waves with two measures of ONE wave (RMS and peak, average and RMS, instantaneous and maximum): they are the same wave, so a phase between them means nothing. A question about RMS against peak takes no sketch at all',
     draw: ({ p, time, width, height, params, colors }) => {
       const mode = String(params.mode || 'phase');
       const k = num(params.frequency, 2, 1, 4);
-      const shift = (num(params.angle, 60, -180, 180) * Math.PI) / 180;
+      // No angle given means none: a default of 60 degrees once drew a
+      // Ferranti-effect line's receiving end lagging by 60, which it does not.
+      const shift = (num(params.angle, 0, -180, 180) * Math.PI) / 180;
+      // The second wave's size against the first - the larger of the two keeps
+      // the full height, so the difference is what shows.
+      const ratio = mode === 'phase' ? num(params.ratio, 1, 0.3, 2.5) : 1;
       const mid = height / 2;
-      const amp = height * 0.3;
+      const amp = height * 0.3 / Math.max(1, ratio);
 
       p.stroke(colors.dim);
       p.strokeWeight(2);
@@ -785,7 +790,7 @@ const CORE_SKETCHES: Record<string, SketchDef> = {
         // not a cosmetic error: a current leading its voltage by ninety degrees
         // is a capacitor, and the narration was talking about an inductor.
         plot((x) => raw(x), colors.text, 5);
-        plot((x) => raw(x, -shift), colors.accent, 6);
+        plot((x) => raw(x, -shift) * ratio, colors.accent, 6);
 
         // Unlabelled, this diagram cannot be read at all - which of the two
         // curves lags is its entire content, and two anonymous sine waves say
@@ -807,11 +812,12 @@ const CORE_SKETCHES: Record<string, SketchDef> = {
         key(width * 0.06, colors.text, a);
         key(width * 0.06 + 130, colors.accent, b);
 
+        // The caption says what is drawn: which is larger, and the phase.
         const deg = Math.round((shift * 180) / Math.PI);
-        if (deg !== 0) {
-          label(p, b + (deg > 0 ? ' lags ' : ' leads ') + a + ' by ' + Math.abs(deg) + '°',
-                width / 2, height * 0.93, colors, 24);
-        }
+        const size = ratio > 1.02 ? b + ' > ' + a : ratio < 0.98 ? b + ' < ' + a : '';
+        const phase = deg !== 0 ? b + (deg > 0 ? ' lags ' : ' leads ') + a + ' by ' + Math.abs(deg) + '°' : '';
+        const said = size && phase ? size + ', ' + phase : size ? size + ', in phase' : phase || b + ' in phase with ' + a;
+        label(p, said, width / 2, height * 0.93, colors, 24);
       }
     },
   },

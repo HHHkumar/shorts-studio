@@ -317,6 +317,19 @@ function record(name, params, w = 900, h = 460, progress = 1) {
      /leads/i.test(record('waveform', { mode: 'phase', angle: -90, frequency: 2 }).said));
   ok('custom labels are honoured',
      /Vs/.test(record('waveform', { mode: 'phase', angle: 45, labelA: 'Vs', labelB: 'Is' }).said));
+
+  // The Ferranti effect: the receiving end is LARGER and in phase. With no
+  // angle, a default of 60 degrees drew it lagging by 60, and there was no way
+  // to draw it larger at all.
+  const ferranti = { mode: 'phase', ratio: 1.25, frequency: 2, labelA: 'Vs', labelB: 'Vr' };
+  const fr = trace(ferranti);
+  const height = (pts) => Math.max(...pts.map((q) => q[1])) - Math.min(...pts.map((q) => q[1]));
+  ok('no angle draws no phase shift', fr.length === 2 && Math.abs(peakOf(fr[1]) - peakOf(fr[0])) < 6,
+     fr.length === 2 ? 'shift=' + Math.round(peakOf(fr[1]) - peakOf(fr[0])) + 'px' : 'runs=' + fr.length);
+  ok('a ratio above 1 draws the second wave larger', fr.length === 2 && Math.abs(height(fr[1]) / height(fr[0]) - 1.25) < 0.05,
+     fr.length === 2 ? 'ratio=' + (height(fr[1]) / height(fr[0])).toFixed(2) : '');
+  const fs_ = record('waveform', ferranti).said;
+  ok('and the caption says so, without inventing a lag', /Vr > Vs, in phase/.test(fs_) && !/lags/.test(fs_), fs_);
 }
 
 {

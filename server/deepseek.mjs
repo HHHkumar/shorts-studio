@@ -52,6 +52,29 @@ const SYSTEM = [
   'correctIndex is YOUR answer, 0-based, regardless of what was marked.',
 ].join('\n');
 
+/** A sketch in words, as the viewer would read it. */
+export function describeSketch(v) {
+  const p = v.params || {};
+  const parts = [];
+  if (v.sketch === 'waveform' && (p.mode || 'phase') === 'phase') {
+    // Said exactly as drawn - including what an absent value draws.
+    const a = p.labelA || 'V';
+    const b = p.labelB || 'I';
+    const deg = Number(p.angle) || 0;
+    const ratio = Number(p.ratio) || 1;
+    parts.push('two sine waves, ' + a + ' and ' + b);
+    parts.push(deg ? b + (deg > 0 ? ' lags ' : ' leads ') + a + ' by ' + Math.abs(deg) + ' degrees' : b + ' in phase with ' + a);
+    parts.push(ratio === 1 ? 'equal in size' : b + ' is ' + ratio + ' times the size of ' + a);
+  } else {
+    for (const [k, val] of Object.entries(p)) {
+      if (val !== '' && val !== null && val !== undefined) parts.push(k + ' = ' + val);
+    }
+    const items = (v.items || []).map((i) => i.label + (i.value !== undefined && i.value !== '' ? ' = ' + i.value : '')).filter(Boolean);
+    if (items.length) parts.push('items: ' + items.join(', '));
+  }
+  return v.sketch + (v.caption ? ' "' + v.caption + '"' : '') + ': ' + parts.join('; ');
+}
+
 function buildPrompt(content, options) {
   const lines = [];
   lines.push('Check this quiz question and reply with json.');
@@ -105,6 +128,18 @@ function buildPrompt(content, options) {
       lines.push('  ' + (v.caption || 'values') + ': ' +
         v.items.map((it) => it.label + ' = ' + it.value).join(', '));
     });
+    lines.push('');
+  }
+
+  // The sketches are claims too: a waveform with the wrong wave lagging, or
+  // the wrong one larger, says something false however right the words are.
+  const drawn = (content.script || [])
+    .map((s) => s.visual)
+    .filter((v) => v && v.kind === 'sketch' && v.sketch)
+    .map(describeSketch);
+  if (drawn.length) {
+    lines.push('DIAGRAMS DRAWN (check each shows something true for this question; report a wrong one with where "diagram"):');
+    drawn.forEach((d) => lines.push('  - ' + d));
     lines.push('');
   }
 
