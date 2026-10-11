@@ -1,0 +1,322 @@
+{
+ "id": "b-v-20261001-221446-7bzo",
+ "source": "library",
+ "addedAt": "2026-10-01T16:44:47.598Z",
+ "look": {
+  "layout": "doodle",
+  "mode": "light",
+  "orientation": "portrait"
+ },
+ "content": {
+  "subject": "Basic Electrical Engineering",
+  "topic": "Energy Consumption and the Kilowatt-hour Concept",
+  "difficulty": "Medium",
+  "hook": "Does ten bulbs for one hour consume more power than one for ten?",
+  "question": "A 100-watt bulb runs for 10 hours, while ten 100-watt bulbs run for 1 hour. How does the total electrical energy consumed in each case compare?",
+  "options": [
+   "Both consume equal energy",
+   "One bulb consumes ten times more",
+   "Ten bulbs consume ten times more",
+   "One bulb consumes one hundred times more"
+  ],
+  "correctIndex": 0,
+  "answerLine": "Both cases consume exactly the same energy.",
+  "explanation": [
+   "Electrical energy is simply defined as the product of total electrical power consumed and operating time.",
+   "In standard engineering practice, the commercial unit of billing is the kilowatt-hour, equivalent to one Board of Trade unit.",
+   "For the first case, a single one-hundred-watt lamp operates steadily for a total duration of ten hours.",
+   "Multiplying one hundred watts by ten hours gives one thousand watt-hours, which equals exactly one kilowatt-hour."
+  ],
+  "funFact": "One kilowatt-hour equals 3.6 megajoules, which is enough energy to boil about ten litres of room-temperature water.",
+  "outro": "Remember that energy integrates power over time, so share this quiz and follow for more engineering problems!",
+  "hashtags": [
+   "GATEEE",
+   "ElectricalEngineering",
+   "EnergyConcept",
+   "BasicElectrical",
+   "EngineeringQuiz"
+  ],
+  "motifSymbols": [
+   "⚡",
+   "💡",
+   "⏱️",
+   "🔌"
+  ],
+  "script": [
+   {
+    "kind": "intro",
+    "narration": "Ready for today’s question?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "wave",
+     "action": "waves warmly toward the viewer to kick off the puzzle",
+     "emotion": "friendly and enthusiastic",
+     "props": "a single incandescent light bulb on a pedestal",
+     "gag": "none"
+    },
+    "doodleProps": true
+   },
+   {
+    "kind": "hook",
+    "narration": "Does ten bulbs for one hour consume more power than one for ten?",
+    "imageQuery": "vintage electric bulb glowing",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "a single shining bulb on the left side and a neat grid of ten identical bulbs on the right",
+     "emotion": "busy",
+     "props": "light bulbs, connecting wires",
+     "gag": "none"
+    },
+    "doodleProps": false
+   },
+   {
+    "kind": "question",
+    "narration": "A 100-watt bulb runs for 10 hours, while ten 100-watt bulbs run for 1 hour. How does the total electrical energy consumed in each case compare?",
+    "imageQuery": "power grid transmission lines dusk",
+    "visual": {
+     "kind": "formula",
+     "formula": "E = P × t",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "options",
+    "narration": "Is it that both consume equal energy, one bulb consumes ten times more, ten bulbs consume ten times more, or one bulb consumes one hundred times more?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "shrug",
+     "action": "shrugs with open hands beside a two-pan balance scale",
+     "emotion": "puzzled curiosity",
+     "props": "a two-pan balance scale with a question mark on each tray",
+     "gag": "none"
+    },
+    "doodleProps": true
+   },
+   {
+    "kind": "countdown",
+    "narration": "",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "an hourglass wrapped with thick coiled copper wire as tiny sparks fall through the neck",
+     "emotion": "tense and anticipatory",
+     "props": "hourglass, copper wire coil",
+     "gag": "none"
+    },
+    "doodleProps": false
+   },
+   {
+    "kind": "answer",
+    "narration": "Both cases consume exactly the same energy.",
+    "imageQuery": "illuminated city night skyline",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "cheer",
+     "action": "pumps fists in celebration next to an analog utility energy meter with its disc spinning",
+     "emotion": "triumphant and energetic",
+     "props": "an electrical energy meter with spinning disc",
+     "gag": "none"
+    },
+    "doodleProps": true
+   },
+   {
+    "kind": "explain",
+    "narration": "Electrical energy is simply defined as the product of total electrical power consumed and operating time.",
+    "imageQuery": "digital multimeter laboratory testing",
+    "visual": {
+     "kind": "working"
+    },
+    "visualWas": {
+     "kind": "formula",
+     "formula": "E = \\int P \\, dt = P \\times t",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "In standard engineering practice, the commercial unit of billing is the kilowatt-hour, equivalent to one Board of Trade unit.",
+    "imageQuery": "analog utility electricity meter dial",
+    "visual": {
+     "kind": "icon",
+     "caption": "1 Commercial Unit",
+     "items": [
+      {
+       "label": "1 kWh = 1 Unit",
+       "symbol": "⚡"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "For the first case, a single one-hundred-watt lamp operates steadily for a total duration of ten hours.",
+    "imageQuery": "single incandescent light bulb filament",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "area-under",
+     "caption": "",
+     "params": {
+      "count": 10
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Multiplying one hundred watts by ten hours gives one thousand watt-hours, which equals exactly one kilowatt-hour.",
+    "imageQuery": "hand writing equations on notepad",
+    "visual": {
+     "kind": "formula",
+     "formula": "100 W × 10 h = 1000 Wh = 1 kWh",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "In the second scenario, ten identical one-hundred-watt lamps operate simultaneously together across the supply line.",
+    "imageQuery": "row of incandescent light bulbs",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "ten light bulbs connected neatly in parallel between two parallel heavy copper busbars",
+     "emotion": "calm",
+     "props": "ten light bulbs, thick busbar conductors",
+     "gag": "none"
+    },
+    "doodleProps": false
+   },
+   {
+    "kind": "explain",
+    "narration": "Their combined electrical power demand equals one thousand watts, which is precisely one kilowatt of total load.",
+    "imageQuery": "electrical switchgear panel breakers",
+    "visual": {
+     "kind": "formula",
+     "formula": "P{total} = 10 × 100 W = 1000 W",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Running this one-kilowatt load for one hour yields one kilowatt multiplied by one hour of duration.",
+    "imageQuery": "stopwatch mechanical dial counting",
+    "visual": {
+     "kind": "formula",
+     "formula": "1000 W × 1 h = 1000 Wh = 1 kWh",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "This product equals one kilowatt-hour, showing that energy integration over time yields identical numerical totals.",
+    "imageQuery": "engineering graph analysis plot",
+    "visual": {
+     "kind": "compare",
+     "caption": "Total Energy Comparison",
+     "items": [
+      {
+       "label": "Case 1: 1 kWh",
+       "symbol": "💡"
+      },
+      {
+       "label": "Case 2: 1 kWh",
+       "symbol": "💡"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "High power for short intervals matches low power for long intervals when their area products coincide.",
+    "imageQuery": "electrical engineer workstation laboratory",
+    "visual": {
+     "kind": "bars",
+     "caption": "Energy Consumed (kWh)",
+     "items": [
+      {
+       "label": "1 Bulb × 10h",
+       "value": 1
+      },
+      {
+       "label": "10 Bulbs × 1h",
+       "value": 1
+      }
+     ]
+    }
+   },
+   {
+    "kind": "formulas",
+    "narration": "Here are the formulas behind this one. Save it for your revision."
+   },
+   {
+    "kind": "outro",
+    "narration": "Remember that energy integrates power over time, so share this quiz and follow for more engineering problems!",
+    "imageQuery": "modern electrical substation high voltage",
+    "visual": {
+     "kind": "icon",
+     "caption": "",
+     "items": [
+      {
+       "label": "3.6 Megajoules",
+       "symbol": "🔥"
+      }
+     ]
+    }
+   }
+  ],
+  "formulas": {
+   "title": "Energy Consumption - Important Formulas",
+   "cards": [
+    {
+     "name": "Electrical Energy",
+     "formula": "E = P \\cdot t",
+     "notes": [
+      "P = Power (W)",
+      "t = Time (h)"
+     ],
+     "graph": {
+      "kind": "linear",
+      "x": "t",
+      "y": "E",
+      "label": "P",
+      "label2": ""
+     },
+     "icon": "light bulb",
+     "art": {
+      "body": "<path fill=\"currentColor\" d=\"M247 18.656c-80.965 0-146.875 65.02-146.875 145.625c0 45.63 15.758 67 33.313 94.845c11.706 18.57 23.767 39.91 30.53 70.563h165.095c6.728-31.387 18.91-53.12 30.718-71.875c17.58-27.92 33.314-48.912 33.314-93.532c0-80.66-65.127-145.624-146.094-145.624zm-99.78 127.906L170.437 167L210 201.813l31.188-34.125l6.78-7.438l6.907 7.344l30.75 32.72l39.97-33.47l22.686-19l-7.655 28.594L304.75 310.28l-18.063-4.842l28.22-105.25l-24.032 20.125l-6.78 5.656l-6.033-6.44l-29.906-31.78l-30.562 33.438l-6.188 6.78l-6.875-6.062l-23.25-20.437l27.94 104.218l-18.064 4.812l-35.937-134.063l-8-29.875zm22.593 201.813V389.5L315 348.375zm153.593 17.063l-153.594 43.53v29.438l153.594-43.5v-29.47zm0 48.875L203.97 448.156h119.436zm-132.562 52.53v20.533h113.282v-20.53h-113.28z\"/>",
+      "width": 512,
+      "height": 512
+     }
+    }
+   ],
+   "working": [
+    "\\frac{E_1}{E_2} = \\frac{P_1 \\cdot t_1}{P_2 \\cdot t_2}",
+    "= \\frac{100\\,\\text{W} \\cdot 10\\,\\text{h}}{(10 \\cdot 100\\,\\text{W}) \\cdot 1\\,\\text{h}}",
+    "= \\frac{1000\\,\\text{Wh}}{1000\\,\\text{Wh}}",
+    "= 1"
+   ]
+  }
+ },
+ "checkedAt": null,
+ "by": [],
+ "sawFrames": false,
+ "reviews": []
+}

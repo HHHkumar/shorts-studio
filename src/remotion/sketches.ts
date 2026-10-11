@@ -790,7 +790,12 @@ const CORE_SKETCHES: Record<string, SketchDef> = {
         // not a cosmetic error: a current leading its voltage by ninety degrees
         // is a capacitor, and the narration was talking about an inductor.
         plot((x) => raw(x), colors.text, 5);
+        // In phase and the same size, the second wave lies exactly on the
+        // first and a viewer sees one curve. Dashed, both are there to see.
+        const onTop = Math.abs(shift) < 1e-6 && Math.abs(ratio - 1) < 1e-6;
+        dashed(p, onTop);
         plot((x) => raw(x, -shift) * ratio, colors.accent, 6);
+        dashed(p, false);
 
         // Unlabelled, this diagram cannot be read at all - which of the two
         // curves lags is its entire content, and two anonymous sine waves say

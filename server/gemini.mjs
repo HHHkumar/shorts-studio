@@ -6,7 +6,8 @@
 
 import { SKETCH_NAMES } from './sketch-catalogue.mjs';
 import { checkSketch, itemLimit, sketchPromptLines } from './sketch-contract.mjs';
-import { sourceNumbers, unsourcedInVisual } from './number-source.mjs';
+import { answerShown, sourceNumbers, unsourcedInVisual } from './number-source.mjs';
+import { cutLabels } from './sketch-fit.mjs';
 import { fetchRetrying } from './retry.mjs';
 import { callClaude } from './claude.mjs';
 // Loaded straight from the app's TypeScript: Node strips the types itself, and
@@ -1000,7 +1001,7 @@ export function normalizeContent(input, options) {
       // Why a picture the model asked for was not drawn, kept on the scene so
       // the creator sees a reason and not just a gap.
       const why = [];
-      const visual = normalizeVisual(s && s.visual, kind, content.figure, why);
+      const visual = normalizeVisual(s && s.visual, kind, content.figure, why, options.orientation);
       return {
         kind,
         narration: clean(s && s.narration),
@@ -1085,6 +1086,7 @@ export function normalizeContent(input, options) {
   script = script.map((s) => (s.kind === 'countdown' ? { ...s, narration: '' } : s));
 
   script = dropRepeatedSketches(script);
+  script = dropAnswerOnQuestion(script, content);
   script = dropUnsourcedNumbers(script, content, options);
 
   // A question about a particular circuit is unreadable without that circuit
@@ -1176,6 +1178,27 @@ export function dropUnsourcedNumbers(script, content, options = {}) {
   });
 }
 
+/**
+ * Remove a question-scene sketch that draws the answer.
+ *
+ * The question scene may show the setup and nothing else, and the prompt says
+ * so. A question asking for a meter's shunt was still illustrated with the
+ * meter beside its 0.099 ohm shunt: the answer, on screen during the question.
+ */
+export function dropAnswerOnQuestion(script, content) {
+  return script.map((line) => {
+    const v = line && line.visual;
+    if (!line || line.kind !== 'question' || !v || v.kind !== 'sketch') return line;
+    const shown = answerShown(v, content);
+    if (!shown.length) return line;
+    return {
+      ...line,
+      visual: { kind: 'none' },
+      pictureNote: 'The ' + v.sketch + ' sketch was removed from the question scene: it showed ' + listed(shown) + ', which is the answer.',
+    };
+  });
+}
+
 // ---------------------------------------------------------------------------
 // Diagram validation
 // ---------------------------------------------------------------------------
@@ -1258,7 +1281,9 @@ function normalizeParams(raw) {
     if (Number.isFinite(n)) out[key] = n;
   }
   for (const key of ['mode', 'labelA', 'labelB']) {
-    const v = clean(p[key]).slice(0, 24);
+    // Kept whole: a label is drawn in full or the sketch is not drawn. It was
+    // cut to 24 letters here, and again by the sketch, and nobody was told.
+    const v = clean(p[key]).slice(0, 80);
     if (v) out[key] = v;
   }
   // A circuit network needs more than 24 characters - "12 + (12 | 12)" is
@@ -1274,7 +1299,7 @@ function normalizeParams(raw) {
  * numbers, or a "compare" with one side missing, would draw a broken scene.
  * Anything that does not fully check out degrades to no diagram at all.
  */
-function normalizeVisual(raw, sceneKind, figure, why = []) {
+function normalizeVisual(raw, sceneKind, figure, why = [], orientation = 'portrait') {
   if (!raw || typeof raw !== 'object') return { kind: 'none' };
   // A diagram before the answer gives the game away: an icon captioned
   // "Venus mystery" on the opening screen tells the viewer the answer is Venus
@@ -1356,6 +1381,16 @@ function normalizeVisual(raw, sceneKind, figure, why = []) {
     const problems = checkSketch(name, params, items);
     if (problems.length) {
       why.push('The ' + name + ' sketch ' + problems.join(', and ') + ', so it was not drawn.');
+      return { kind: 'none' };
+    }
+    // And everything it was told has to fit. A sketch cuts a label to the
+    // room it has, without a word: "Keep dependent sources" became "Keep
+    // dependent sourc" on screen. The sketch is run here, on the canvas the
+    // video will give it, and a label that comes out short stops it.
+    const cut = cutLabels(name, params, items, orientation);
+    if (cut.length) {
+      why.push('The ' + name + ' sketch has no room for "' + cut[0].label + '" - it would have been cut to "'
+        + cut[0].drawn + '" - so it was not drawn.');
       return { kind: 'none' };
     }
     // Sketches share the items array: block-flow uses it for stage labels,

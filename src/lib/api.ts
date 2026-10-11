@@ -3,6 +3,7 @@ import type { AudioResult } from './timeline';
 import type { DoodleDirection } from './doodle';
 import type { FormulaSheet } from './formula-card';
 import type { PictureReview } from './picture-review';
+import type { BenchMark, BenchScore, BenchView } from './bench';
 
 export type ContentType = 'general' | 'electrical' | 'aptitude';
 
@@ -533,6 +534,34 @@ export const api = {
     content: QuizContent; props?: VideoProps;
   }) {
     return post<{ reviews: PictureReview[]; by: string[]; sawFrames: boolean; problems: string[] }>('/api/pictures/review', body);
+  },
+
+  // --- the test bench: a fixed set of questions and a person's mark on each picture ---
+
+  bench() {
+    return getJson<BenchView>('/api/bench');
+  },
+  /** Every library video not on the bench yet. No keys, no cost. */
+  benchAddLibrary() {
+    return post<BenchView & { added: string[] }>('/api/bench/library', {});
+  },
+  benchAdd(body: { content: QuizContent; design: DesignSettings; source: 'syllabus' | 'plan' }) {
+    return post<{ id: string }>('/api/bench/case', body);
+  },
+  benchCase(id: string) {
+    return getJson<{ case: { id: string; look: { layout: string; mode: string; orientation: string }; content: QuizContent } }>('/api/bench/' + encodeURIComponent(id));
+  },
+  /** Draw a case's frames and, with a key, have its pictures reviewed. */
+  benchCheck(id: string, body: {
+    geminiKey: string; geminiModel: string; deepseekKey: string; deepseekModel: string; props: VideoProps;
+  }) {
+    return post<BenchView>('/api/bench/' + encodeURIComponent(id) + '/check', body);
+  },
+  benchMark(body: { id: string; key: string; mark: BenchMark | ''; note: string }) {
+    return post<{ score: BenchScore; provisional: BenchScore }>('/api/bench/mark', body);
+  },
+  benchRemove(id: string) {
+    return getJson<BenchView>('/api/bench/' + encodeURIComponent(id), 'DELETE');
   },
 
   /** Icons for an edited formula card: cards that already have one keep it. */

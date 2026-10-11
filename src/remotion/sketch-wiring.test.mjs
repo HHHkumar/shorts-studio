@@ -118,7 +118,9 @@ for (const [w, h] of SIZES) {
   });
 
   test('open at ' + w + 'x' + h + ': the circuit is visibly broken, and the blade lifts clear', () => {
-    const { lines, circles } = draw('switch-circuit', w, h, { mode: 'open' }, 0);
+    // At the end of the scene: the mode is where the switch finishes, and an
+    // open one starts closed so that the scene shows it opening.
+    const { lines, circles } = draw('switch-circuit', w, h, { mode: 'open' }, 1);
     const y = switchRow(circles);
     const row = lines.filter((l) => near(l.y1, y) && near(l.y2, y));
     const span = [Math.min(...row.map((l) => Math.min(l.x1, l.x2))), Math.max(...row.map((l) => Math.max(l.x1, l.x2)))];

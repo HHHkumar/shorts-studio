@@ -49,8 +49,12 @@ test('the pictures that state something are found, and the rest are left out', (
 test('a picture is said in words, as drawn', () => {
   const [wave, circuit, bars] = picturesIn(content).map((p) => p.words);
   assert(/Vr in phase with Vs/.test(wave) && /1\.2 times the size/.test(wave), wave);
-  assert(/network = 10 \+ \(50 \| 50\)/.test(circuit), circuit);
-  assert(!/Use for/.test(circuit), 'the "use for" half belongs to the model that picks, not the one that checks: ' + circuit);
+  // A circuit says how its expression reads, and what the sketch can draw.
+  assert(/arranged as 10 \+ \(50 \| 50\), where \+ is in series and \| is in parallel/.test(circuit), circuit);
+  assert(/drawn as a resistor/.test(circuit) && /labelled "Vs"/.test(circuit), circuit);
+  const band = describePicture({ kind: 'sketch', sketch: 'filter-response', params: { mode: 'band' } });
+  assert(/which frequencies a filter lets through; set to mode = band/.test(band), band);
+  assert(!/Use for/.test(band), 'the "use for" half belongs to the model that picks, not the one that checks: ' + band);
   assert(/Sending = 220, Receiving = 231/.test(bars) && /Voltage, kV/.test(bars), bars);
   assert(describePicture({ kind: 'sketch', sketch: 'diode-curve', params: {} }).includes('knee'), 'a sketch with no knobs still says what it shows');
 });

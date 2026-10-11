@@ -1,0 +1,364 @@
+{
+ "id": "b-v-20260927-212817-hutr",
+ "source": "library",
+ "addedAt": "2026-09-27T15:58:17.884Z",
+ "look": {
+  "layout": "doodle",
+  "mode": "light",
+  "orientation": "portrait"
+ },
+ "content": {
+  "subject": "Power Systems",
+  "topic": "Corona Phenomenon in Transmission Lines",
+  "difficulty": "Easy",
+  "hook": "Why do high voltage lines hiss and glow in the dark?",
+  "question": "Which modification will increase the critical disruptive voltage and effectively reduce corona loss on an overhead line?",
+  "options": [
+   "Increasing conductor spacing",
+   "Decreasing conductor radius",
+   "Operating under stormy weather",
+   "Using rough stranded conductors"
+  ],
+  "correctIndex": 0,
+  "answerLine": "Increasing conductor spacing increases the critical disruptive voltage.",
+  "explanation": [
+   "Critical disruptive voltage is the minimum phase voltage where air breakdown begins around a conductor.",
+   "The standard expression is Vd equals m naught g naught delta r natural log of d over r.",
+   "Here d represents the spacing between line conductors, while r is the overall conductor radius.",
+   "Increasing spacing d directly raises the ratio d over r inside that natural logarithm term."
+  ],
+  "funFact": "Corona discharge produces ozone gas and a faint violet glow known historically to sailors as Saint Elmo's fire.",
+  "outro": "Mastering corona formulas is essential for AE and JE exams. Follow for more daily electrical practice!",
+  "hashtags": [
+   "PowerSystems",
+   "ElectricalEngineering",
+   "AEJEExam",
+   "HighVoltage",
+   "CoronaDischarge"
+  ],
+  "motifSymbols": [
+   "⚡",
+   "🔌",
+   "💡",
+   "📏"
+  ],
+  "script": [
+   {
+    "kind": "intro",
+    "narration": "Ready for today’s question?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "wave",
+     "action": "waves warmly at the viewer to start the challenge",
+     "emotion": "eager and welcoming",
+     "props": "a transmission tower",
+     "gag": "none"
+    },
+    "doodleProps": true
+   },
+   {
+    "kind": "hook",
+    "narration": "Why do high voltage lines hiss and glow in the dark?",
+    "imageQuery": "power transmission tower night",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "overhead transmission lines suspended on steel lattice towers glowing with faint aura rings around the cables",
+     "emotion": "mysterious",
+     "props": "transmission towers, overhead cables",
+     "gag": "an owl perched on the crossarm wearing welding goggles"
+    },
+    "doodleProps": false
+   },
+   {
+    "kind": "question",
+    "narration": "Which modification will increase the critical disruptive voltage and effectively reduce corona loss on an overhead line?",
+    "imageQuery": "high voltage power lines",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "think",
+     "action": "scratches chin thoughtfully while looking up at a thick overhead conductor wire",
+     "emotion": "curious and focused",
+     "props": "a thick overhead cable, three floating question marks",
+     "gag": "none"
+    },
+    "doodleProps": true
+   },
+   {
+    "kind": "options",
+    "narration": "Is it increasing conductor spacing, decreasing conductor radius, operating under stormy weather, or using rough stranded conductors?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "four separate panels showing spaced parallel wires, an ultra-thin wire, a raincloud, and a rough knobby cable",
+     "emotion": "comparative",
+     "props": "conductor wires, a raincloud",
+     "gag": "the raincloud holds a tiny umbrella over itself"
+    },
+    "doodleProps": false
+   },
+   {
+    "kind": "countdown",
+    "narration": "",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "worried",
+     "action": "taps foot anxiously while glancing at a giant clock on the wall",
+     "emotion": "tense anticipation",
+     "props": "an oversized round wall clock",
+     "gag": "the hands on the clock spin backward in a blur"
+    },
+    "doodleProps": true
+   },
+   {
+    "kind": "answer",
+    "narration": "Increasing conductor spacing increases the critical disruptive voltage.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "cheer",
+     "action": "pumps fists in celebration beside two widely separated transmission cables",
+     "emotion": "triumphant and energetic",
+     "props": "two widely spaced parallel overhead wires",
+     "gag": "a tiny measurement ruler stretched taut between the two wires"
+    },
+    "doodleProps": true
+   },
+   {
+    "kind": "explain",
+    "narration": "Critical disruptive voltage is the minimum phase voltage where air breakdown begins around a conductor.",
+    "imageQuery": "overhead transmission lines",
+    "visual": {
+     "kind": "icon",
+     "caption": "Ionisation threshold",
+     "items": [
+      {
+       "label": "Dielectric breakdown",
+       "symbol": "⚡"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "The standard expression is Vd equals m naught g naught delta r natural log of d over r.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "Vd = m₀·g₀·δ·r·ln(d/r)",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Here d represents the spacing between line conductors, while r is the overall conductor radius.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "compare",
+     "caption": "Line geometry",
+     "items": [
+      {
+       "label": "Spacing d",
+       "symbol": "↔️"
+      },
+      {
+       "label": "Radius r",
+       "symbol": "⚪"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Increasing spacing d directly raises the ratio d over r inside that natural logarithm term.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "graph",
+     "caption": "",
+     "params": {
+      "mode": "log",
+      "labelA": "Spacing d",
+      "labelB": "ln(d/r)"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "A higher logarithmic value increases the required disruptive voltage, making corona onset far less likely.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "bars",
+     "caption": "Critical Voltage Vd (kV/phase)",
+     "items": [
+      {
+       "label": "Narrow spacing",
+       "value": 110
+      },
+      {
+       "label": "Wide spacing",
+       "value": 145
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Conversely, decreasing conductor radius r concentrates the surface electric field and triggers earlier air breakdown.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "vector-field",
+     "caption": "",
+     "params": {
+      "mode": "radial"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Rough stranded surfaces lower the irregularity factor m naught, which degrades the disruptive voltage threshold.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "bars",
+     "caption": "Irregularity factor m₀",
+     "items": [
+      {
+       "label": "Smooth solid",
+       "value": 1
+      },
+      {
+       "label": "Stranded",
+       "value": 0.85
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Stormy weather drops air density factor delta, sharply increasing corona loss during damp atmospheric conditions.",
+    "imageQuery": "stormy clouds lightning",
+    "visual": {
+     "kind": "compare",
+     "caption": "Atmospheric conditions",
+     "items": [
+      {
+       "label": "Fair weather",
+       "symbol": "☀️"
+      },
+      {
+       "label": "Stormy weather",
+       "symbol": "⛈️"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Using bundled conductors or larger diameter hollow conductors effectively raises r and controls corona.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "particles",
+     "caption": "",
+     "params": {
+      "count": 40,
+      "labelA": "Bundled"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "formulas",
+    "narration": "Here are the formulas behind this one. Save it for your revision."
+   },
+   {
+    "kind": "outro",
+    "narration": "Corona discharge produces ozone gas and a faint violet glow known historically to sailors as Saint Elmo's fire. Mastering corona formulas is essential for AE and JE exams. Follow for more daily electrical practice!",
+    "imageQuery": "electrical substation evening",
+    "visual": {
+     "kind": "icon",
+     "caption": "Violet glow",
+     "items": [
+      {
+       "label": "Saint Elmo glow",
+       "symbol": "🔮"
+      }
+     ]
+    }
+   }
+  ],
+  "formulas": {
+   "title": "Corona Phenomenon - Important Formulas",
+   "cards": [
+    {
+     "name": "Critical Disruptive Voltage",
+     "formula": "V_d = m_0 g_0 \\delta r \\ln(\\frac{d}{r})",
+     "notes": [
+      "d = Conductor spacing (m)",
+      "r = Conductor radius (m)"
+     ],
+     "graph": {
+      "kind": "none",
+      "x": "",
+      "y": "",
+      "label": "",
+      "label2": ""
+     },
+     "icon": "wire",
+     "art": {
+      "body": "<path fill=\"currentColor\" d=\"M24 14.475a7.395 7.395 0 0 1-7.38 7.41h-.016a7.3 7.3 0 0 1-4.5-1.605A7.498 7.498 0 0 1 0 14.475V2.82h1.41v11.655a6 6 0 0 0 9.585 4.815a7.38 7.38 0 0 1-1.815-4.814v-9.54a2.82 2.82 0 0 1 5.64 0v9.54a7.37 7.37 0 0 1-1.77 4.814a5.997 5.997 0 0 0 8.383-1.304a6 6 0 0 0 1.157-3.511V2.82H24zm-10.59-9.54a1.41 1.41 0 0 0-2.82 0v9.54A6 6 0 0 0 12 18.33a6 6 0 0 0 1.41-3.855z\"/>",
+      "width": 24,
+      "height": 24
+     }
+    },
+    {
+     "name": "Air Density Correction Factor",
+     "formula": "\\delta = \\frac{3.92 b}{273 + T}",
+     "notes": [
+      "b = Barometric pressure (cm Hg)",
+      "T = Temperature (deg C)"
+     ],
+     "graph": {
+      "kind": "none",
+      "x": "",
+      "y": "",
+      "label": "",
+      "label2": ""
+     },
+     "icon": "thermometer",
+     "art": {
+      "body": "<path fill=\"currentColor\" d=\"M15 13V5a3 3 0 0 0-6 0v8a5 5 0 1 0 6 0m-3-9a1 1 0 0 1 1 1v3h-2V5a1 1 0 0 1 1-1\"/>",
+      "width": 24,
+      "height": 24
+     }
+    }
+   ]
+  }
+ },
+ "checkedAt": null,
+ "by": [],
+ "sawFrames": false,
+ "reviews": []
+}

@@ -1,0 +1,466 @@
+{
+ "b-v-20260927-210412-syfm": {
+  "24e79b1d": {
+   "mark": "right",
+   "note": "8 A in, 8 A out.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.065Z"
+  },
+  "3a34d784": {
+   "mark": "wrong",
+   "note": "Shows 3 A and 2 A in and 5 A out. The question has 5 A and 3 A in, 2 A and 6 A out.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.063Z"
+  }
+ },
+ "b-v-20260927-211803-serd": {
+  "c4d39e93": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.067Z"
+  },
+  "815c67e7": {
+   "mark": "right",
+   "note": "Right in content, but the second label is cut to 'Keep dependent sourc'.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.068Z"
+  },
+  "afdcd2f6": {
+   "mark": "unrelated",
+   "note": "A battery, a switch and a lamp. The line is about attaching a test source to a dead network.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.069Z"
+  },
+  "101a3dec": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.070Z"
+  },
+  "2d38a94d": {
+   "mark": "unrelated",
+   "note": "The meter's display reads the word 'Measure' - the label was cut - instead of a reading.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.071Z"
+  },
+  "f175d95d": {
+   "mark": "unrelated",
+   "note": "Blank: a checklist with nothing on it.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.072Z"
+  }
+ },
+ "b-v-20260927-212137-ga1x": {
+  "c8551728": {
+   "mark": "wrong",
+   "note": "A battery and two resistors of 0.5 and 1.41 ohm. The 1.41 is a reactance, the supply is AC, and drawn like this they add to 1.91 ohm, not the 1.5 ohm impedance.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.073Z"
+  },
+  "00cf1db2": {
+   "mark": "unrelated",
+   "note": "A bar magnet with a strong field, under a line saying the core flux is negligibly small.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.074Z"
+  },
+  "e53f3d72": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.075Z"
+  },
+  "cf56413e": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.076Z"
+  }
+ },
+ "b-v-20260927-212817-hutr": {
+  "520ba378": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.077Z"
+  },
+  "39ecee07": {
+   "mark": "right",
+   "note": "ln(d/r) rising with spacing d.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.078Z"
+  },
+  "45c1affb": {
+   "mark": "wrong",
+   "note": "110 kV and 145 kV are not in the question or its working: invented values drawn as data.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.079Z"
+  },
+  "c9ae6c73": {
+   "mark": "unrelated",
+   "note": "A generic radial field. It does not show the surface field getting stronger as the radius falls.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.080Z"
+  },
+  "3e4e5082": {
+   "mark": "right",
+   "note": "1 and 0.85 are the textbook values, though the question gives neither - so the number rule drops it.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.081Z"
+  },
+  "6c417bf6": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.081Z"
+  },
+  "728c58ed": {
+   "mark": "unrelated",
+   "note": "Dots scattered in a circle. Nothing about bundled conductors.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.083Z"
+  }
+ },
+ "b-v-20260927-213649-q9ht": {
+  "60b6906d": {
+   "mark": "wrong",
+   "note": "On the question scene it shows the 1 ohm shunt, which is the answer. The 100 mA supply is also drawn as a battery.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.083Z"
+  },
+  "f9ffa378": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.084Z"
+  },
+  "9d5ceefb": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.085Z"
+  },
+  "ce72d921": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.086Z"
+  }
+ },
+ "b-v-20260927-214122-ecrz": {
+  "5840b706": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.087Z"
+  },
+  "3dd7cc40": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.088Z"
+  },
+  "adad1409": {
+   "mark": "unrelated",
+   "note": "Blank: a flowchart with no steps.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.089Z"
+  }
+ },
+ "b-v-20260927-214342-jl3d": {
+  "91d24bba": {
+   "mark": "wrong",
+   "note": "A series RLC circuit drawn as a battery and three resistors of 10, 20 and 30 ohm. None of those values is given, and L and C are not resistors.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.090Z"
+  },
+  "331f11ca": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.091Z"
+  },
+  "4fce9aa4": {
+   "mark": "unrelated",
+   "note": "Blank: a ratio bar with no parts.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.092Z"
+  },
+  "da0f58c4": {
+   "mark": "unrelated",
+   "note": "Blank: a number line with no points. (The two cutoff values in its labels were right.)",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.093Z"
+  },
+  "ce6751d0": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.094Z"
+  },
+  "8444dfab": {
+   "mark": "unrelated",
+   "note": "True at resonance, but the line is the sign-off. In your video it was drawn with a 60 degree lag, which was wrong.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.095Z"
+  }
+ },
+ "b-v-20260927-214515-ueat": {
+  "7ff71369": {
+   "mark": "unrelated",
+   "note": "A lever arm at 45 degrees with its label cut to 'Constant L'. Not the motor's torque balance.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.096Z"
+  },
+  "63d0ffe5": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.097Z"
+  },
+  "31f0c248": {
+   "mark": "right",
+   "note": "Generic, but it is the rotor the line is about.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.098Z"
+  },
+  "ca5f1e3a": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.099Z"
+  }
+ },
+ "b-v-20260927-214757-r7xz": {
+  "a69d6732": {
+   "mark": "wrong",
+   "note": "On the question scene it shows the 0.099 ohm shunt, which is the answer.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.099Z"
+  },
+  "fa961026": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.100Z"
+  },
+  "6cae8e88": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.101Z"
+  },
+  "8c7404d8": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.102Z"
+  }
+ },
+ "b-v-20260927-215546-takc": {
+  "07b60f38": {
+   "mark": "right",
+   "note": "As fixed: Vr larger than Vs and in phase. In your video it was drawn equal, with a 60 degree lag.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.103Z"
+  },
+  "4754101f": {
+   "mark": "wrong",
+   "note": "A battery and three resistors of 10, 50 and 50 ohm for an AC line's charging current through its capacitance.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.104Z"
+  },
+  "4b151bc0": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.105Z"
+  },
+  "2b736a94": {
+   "mark": "right",
+   "note": "Ic leading Vr by 90 degrees.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.106Z"
+  },
+  "8abb490f": {
+   "mark": "wrong",
+   "note": "Unreadable: three small arrows on top of each other with the labels overlapping. The drop at 180 degrees to Vr is not shown as a subtraction.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.107Z"
+  },
+  "9401464c": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.108Z"
+  },
+  "fb464897": {
+   "mark": "wrong",
+   "note": "A shunt reactor drawn as a battery labelled 'Reactor' and four resistors.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.109Z"
+  }
+ },
+ "b-v-20260927-215734-antc": {
+  "f66a3585": {
+   "mark": "wrong",
+   "note": "A series RLC circuit drawn as a battery and three resistors of 10, 20 and 30 ohm.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.110Z"
+  },
+  "3c8648de": {
+   "mark": "right",
+   "note": "cos phi = 1.00 is right. The triangle is flat at zero degrees, so its labels sit on top of each other.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.111Z"
+  },
+  "3d39ead3": {
+   "mark": "right",
+   "note": "A band-pass curve. The half-power points are not marked.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.112Z"
+  },
+  "75b25a74": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.113Z"
+  },
+  "fbc8c9f4": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.114Z"
+  }
+ },
+ "b-v-20260927-215945-tmb2": {
+  "cc7063bb": {
+   "mark": "unrelated",
+   "note": "Blank: a flowchart with no steps.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.115Z"
+  },
+  "537a9ace": {
+   "mark": "right",
+   "note": "The values are right. The minus eighteen is drawn as a bar like the others, with only its label negative.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.116Z"
+  },
+  "765079e8": {
+   "mark": "wrong",
+   "note": "One point in the first quadrant. The line says two roots lie in the right half plane.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.117Z"
+  }
+ },
+ "b-v-20260927-220608-kokn": {
+  "2ccdea20": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.118Z"
+  },
+  "6287b052": {
+   "mark": "right",
+   "note": "Generic, but it is the rotor the line is about.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.119Z"
+  },
+  "7b8036ca": {
+   "mark": "wrong",
+   "note": "The armature circuit as a battery and resistors of 0.5 and 2 ohm. Neither value is given, and the back EMF is not a resistor.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.120Z"
+  },
+  "feaaf83e": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.121Z"
+  },
+  "f04d36aa": {
+   "mark": "right",
+   "note": "Back EMF rising in proportion to speed.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.121Z"
+  }
+ },
+ "b-v-20260927-220714-275c": {
+  "244810f8": {
+   "mark": "right",
+   "note": "cos phi = 0.50 at sixty degrees.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.122Z"
+  },
+  "a0fd1ad5": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.123Z"
+  },
+  "cdb0654a": {
+   "mark": "right",
+   "note": "I lagging V by sixty degrees: the boundary the line refers to.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.124Z"
+  }
+ },
+ "b-v-20260927-220943-hlux": {
+  "515edd30": {
+   "mark": "wrong",
+   "note": "20 mA and 50 mA are not in the question: illustrative values drawn as data. (Latching above holding is right.)",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.125Z"
+  },
+  "c9216828": {
+   "mark": "unrelated",
+   "note": "A mechanical switch and a lamp, not the thyristor. In your video it also ended closed with 'current flows', the opposite of the line - that drawing bug is fixed.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.126Z"
+  },
+  "7da5c790": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.127Z"
+  },
+  "c5db3ecb": {
+   "mark": "unrelated",
+   "note": "Blank: a number line with no points.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.128Z"
+  },
+  "f5c94453": {
+   "mark": "wrong",
+   "note": "A diode's forward characteristic under a line about an SCR's holding current. Its two axis labels also overlap.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.129Z"
+  },
+  "e5c1bc57": {
+   "mark": "unrelated",
+   "note": "Blank: a checklist with nothing on it.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.130Z"
+  }
+ },
+ "b-v-20261001-221446-7bzo": {
+  "04991aa4": {
+   "mark": "wrong",
+   "note": "A rising curve. A 100 W lamp running steadily is a flat line, and the energy is the rectangle under it.",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.131Z"
+  },
+  "02a47ed0": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.132Z"
+  },
+  "181c6716": {
+   "mark": "right",
+   "note": "",
+   "by": "claude",
+   "at": "2026-10-11T15:41:19.133Z"
+  }
+ }
+}

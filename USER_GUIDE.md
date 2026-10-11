@@ -14,6 +14,7 @@ your work safe with Git, and how to run the same tool on a second computer.
 3. [Starting it, every time](#3-starting-it-every-time)
 4. [Making a video — the seven steps](#4-making-a-video--the-seven-steps)
    - [Diagrams that are worked out, not guessed](#diagrams-that-are-worked-out-not-guessed)
+   - [Pictures that are checked, and the test bench](#pictures-that-are-checked-and-the-test-bench)
    - [Instagram and Facebook](#instagram-and-facebook)
    - [Making a thumbnail](#making-a-thumbnail)
    - [A carousel post](#a-carousel-post)
@@ -251,7 +252,7 @@ Where you decide what the video is about.
 | **Narration language** | The language spoken *and* shown. Kannada, Hindi, Tamil and Telugu render in their own script — pair with a matching voice in step 4 and the Multilingual v2 model. |
 | **Curiosity factor** | The most important dial. **8 or 9** is the sweet spot: counter-intuitive enough to make people comment. |
 | **Target length** | 40–50s performs best for Shorts. 180–240s is the sweet spot for explainers. |
-| **How many diagrams** | *Rich* (the default) puts a chart, circuit or animation on nearly every scene. *Balanced* on most explanation scenes. *Sparse* only where it really helps. |
+| **How many diagrams** | *Balanced* (the default) gives a scene a chart, circuit or animation only when it shows exactly what that scene says, which is about half of them. *Rich* asks for one wherever there is something specific to show. *Sparse* keeps one or two. No setting asks for a diagram on every scene any more: asked for a picture it does not have, the model draws the nearest one it does. A scene with none is normal. |
 | **Gemini model** | Flash is fast and cheap. Pro is worth it for hard maths. The list is built from your own key, so it only offers models you can actually use. |
 
 #### Curiosity high — what is trending now
@@ -341,6 +342,12 @@ is never left pretending the new version was verified.
 itself — the circuit, the phasors, the price bars. Its numbers are *worked out*, not written, so the
 diagram doubles as a free second opinion on the answer. A card under the question says what happened;
 see [Diagrams that are worked out, not guessed](#diagrams-that-are-worked-out-not-guessed).
+
+**The picture check.** Every other diagram in the script is read against the line it sits on, by a
+reviewer that has the frame in front of it. It runs on its own as soon as there is a script, and
+anything it calls wrong, or merely about the same subject, is taken out before you spend anything on
+the voice. Each one is listed with the reason and a **Put it back** button, because you outrank the
+reviewer. See [Pictures that are checked, and the test bench](#pictures-that-are-checked-and-the-test-bench).
 
 > **On long explainers.** A five-minute video is a lot of script for one reply, and the room the
 > model is given used to be left at the provider's default — 8,192 tokens, whatever the model was
@@ -584,13 +591,15 @@ and the angle — and takes you there. When its question is generated, the item 
 linked to its video.
 
 **Make several at once.** Tick questions (or *Select the next 5*) and press **Make N videos**. Each
-is written, **checked by DeepSeek** if you have a key, given its formula card and worked solution,
+is written, **checked by DeepSeek** if you have a key, has **its pictures checked** and the wrong
+ones taken out, is given its formula card and worked solution,
 directed for the engineer in the Doodle look — with the pictures beside him if you tick *Draw what
 stands beside the engineer* — voiced, measured and rendered, one after another, and saved to the
 library. It uses your current look, voice and topic settings; choose a voice on the Voice step first.
 
 - **A video DeepSeek disputes stops before its voice** and stays in the library, marked to check —
-  no batch should publish past a wrong answer. So does anything that fails; the rest carry on.
+  no batch should publish past a wrong answer. So does one whose **pictures could not be checked**
+  (a rate limit, say), and anything that fails; the rest carry on.
 - **It runs in this tab.** Keep it open and the computer awake until it finishes — overnight is fine.
   *Stop after this video* ends it cleanly.
 - What each video cost is in its library entry, as for any other.
@@ -689,6 +698,91 @@ and showing them would answer the question before the countdown.
 To see it without making a video, `node --import ./tools/ts-resolve.mjs tools/circuit-preview.mjs`
 renders a lamp circuit and an AC circuit, in several looks and both shapes, into `stills/` — add
 `--video` for clips.
+
+---
+
+### Pictures that are checked, and the test bench
+
+A wrong picture does more harm than a wrong sentence, because a viewer believes a diagram more
+readily. The diagram of the question itself is worked out and checked against the answer (the section
+above). Every *other* diagram — the animated sketches, the bar charts, the side-by-side cards — now
+has to get past three things before it reaches a video. The price is fewer pictures: a scene with
+none is the tool working, not failing.
+
+**1. The rules: nothing is drawn that was not stated.** These need no model and cannot be talked
+round. A picture stopped by one leaves its scene bare, and step 3 lists it under *Asked for, and not
+drawn* with the reason.
+
+| Rule | What it stops |
+|---|---|
+| **Everything a sketch draws must be stated.** | Each sketch has knobs — an angle, a ratio, two labels, a list. One left out used to be drawn at its default as though it were a fact: a 60° lag nobody mentioned, a power factor of 0.81, a meter reading 12.4 V. Now a sketch missing anything it lists is not drawn, and neither is a list sketch with no list, which used to come out as a blank scene. |
+| **Every number needs a source.** | A bar value, a circuit component or an angle must be one the video gives — in the question, the options, the working, a formula or a spoken line — or one step from those (5 + 3, half of it, volts to millivolts). A series RLC drawn as resistors of 10, 20 and 30 Ω, or *110 kV against 145 kV* for a question with no numbers in it, goes. |
+| **A label is drawn whole.** | Sketches cut long labels to fit, silently: *Keep dependent sources* became *Keep dependent sourc*, and a meter told to show *Measure Response* displayed the reading *Measure*. A label that would be cut stops the sketch. |
+| **The question scene never shows the answer.** | A shunt question was illustrated, during the question, with the meter beside its 0.099 Ω shunt. |
+
+**2. The picture check: is it true of the line it sits on?** A picture can be fully stated and
+still wrong — a diode's curve under a line about a thyristor. That is a judgement, so it is asked of
+a reviewer whose only job is to make it. For each diagram it is given the question, the answer, the
+spoken line, the picture in words and **the frame as it will be rendered**, and gives one verdict:
+
+| Verdict | Means | What happens |
+|---|---|---|
+| **Right** | It shows what the line says, and nothing on it is false. | Stays. |
+| **Wrong** | Something on it is false for this question: the wrong component, the wrong relationship, an invented value. | Taken out. |
+| **Beside the point** | Not false, but only about the same subject — a spanner for *load torque*. | Taken out. |
+| **Not sure** | The reviewer could not tell. | Stays, flagged for you. |
+
+Gemini looks at the frames; DeepSeek, when its key is there, reads the same pictures in words, and a
+picture is kept only if neither calls it wrong or beside the point. It runs on its own when a script
+arrives on step 3, and in every batch before the formula card. The first check after starting the
+studio takes about a minute while the video engine warms up; after that, a few seconds a picture.
+Free on Gemini's free tier, and a fraction of a cent of DeepSeek. **Put it back** overrules it for
+good — that picture is not taken out again.
+
+**3. The test bench: is any of this working?** Press **Accuracy** in the top bar. The bench is a
+fixed set of questions, the pictures made for them, and *your* mark on each one — **Right**,
+**Wrong** or **Beside the point**. Your marks are the truth; the rules and the reviewer are being
+measured against them.
+
+- **Add my library videos** puts every video you have made on the bench. Free, no keys.
+- **Add questions from the syllabus** writes scripts for a spread of topics across the electrical
+  syllabus, a calculation and a concept in turn, and checks their pictures. Nothing is voiced, drawn
+  or rendered, so it costs nothing on the free tier; it waits between questions to stay inside it.
+- **Mark** each picture from its frame (click it to see it full size) and say what is wrong in the
+  box beside the buttons. That note is what says what to fix next.
+- **A dashed button is a suggestion.** Where Claude has already been through a picture it leaves a
+  suggested mark and its reason. It counts for nothing until you press a mark yourself.
+
+The tiles are the score, on your marks alone:
+
+| Tile | Reads |
+|---|---|
+| **Right, of what a viewer sees** | Of the pictures a video made today would show, how many you marked right. The number that matters. |
+| **Wrong pictures still shown** | Marked wrong or beside the point, and neither a rule nor the reviewer stops it. **This has to be zero.** |
+| **Wrong pictures stopped** | Of the bad ones, how many are stopped, and by which of the two. |
+| **Right pictures kept** | Of the good ones, how many survive. The cost of being strict. |
+| **Right, before any check** | What Gemini asks for, unfiltered — the raw material. |
+
+A picture you mark wrong stays on the bench for good. It is the standing test that whatever let it
+through no longer does: change a rule or the reviewer's instructions, press **Check again**, and the
+tiles say whether it helped. The filters find the ones worth a look — *Wrong, and still shown* is the
+to-do list; *Reviewer disagrees with me* is where the reviewer needs teaching.
+
+Cases and marks are saved in the `bench` folder and are committed with the code, so they reach your
+other computer with a push. The frames are drawn into `out\bench` and are not; **Draw and
+check** makes them again.
+
+From a terminal, without the app:
+
+```
+npm run bench
+node tools/picture-replay.mjs
+node --import ./tools/ts-resolve.mjs tools/sketch-defaults.mjs
+```
+
+The first prints the score. The second runs the rules over every video in the library and lists
+what they would stop today. The third shows what each sketch puts on screen when it is told nothing
+— the list a new sketch must not add a number to.
 
 ---
 
@@ -1908,6 +2002,8 @@ Inside `C:\Projects\shorts-studio`:
   its zip.
 - **`library\`** — the [video library](#the-video-library): one small file per video you have made.
   Committed with the code, so your other computer has the same list after a `git pull`.
+- **`bench\`** — the [test bench](#pictures-that-are-checked-and-the-test-bench): the questions, the
+  reviewer's verdicts and your marks. Committed with the code. Its frames are in `out\bench\`.
 - `out\…job.json` — one note per render, so a render the helper was stopped in the middle of can be
   run again (see [Step 6](#step-6--export)).
 - `public\generated\` — voiceover clips and pictures.

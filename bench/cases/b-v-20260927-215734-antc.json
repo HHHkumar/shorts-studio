@@ -1,0 +1,344 @@
+{
+ "id": "b-v-20260927-215734-antc",
+ "source": "library",
+ "addedAt": "2026-09-27T16:27:34.670Z",
+ "look": {
+  "layout": "doodle",
+  "mode": "light",
+  "orientation": "portrait"
+ },
+ "content": {
+  "subject": "Network Theory",
+  "topic": "Series RLC Circuit Resonance",
+  "difficulty": "Medium",
+  "hook": "Why does a sharper resonance curve actually mean a narrower bandwidth?",
+  "question": "A series RLC circuit has a resonant frequency of 1000 radians per second and a quality factor of 10. What is its bandwidth?",
+  "options": [
+   "100 radians per second",
+   "10000 radians per second",
+   "10 radians per second",
+   "50 radians per second"
+  ],
+  "correctIndex": 0,
+  "answerLine": "The bandwidth of the circuit is 100 radians per second.",
+  "explanation": [
+   "Resonance in a series RLC network happens when inductive reactance equals capacitive reactance completely.",
+   "At this resonant condition, the net reactive part vanishes and circuit impedance is purely resistive.",
+   "Quality factor measures how selective the circuit is, defined as resonant frequency divided by bandwidth.",
+   "Bandwidth represents the frequency spread between two half power points where power drops to half."
+  ],
+  "funFact": "Radio receivers use high quality factor series resonance to isolate one clean broadcast frequency.",
+  "outro": "Remember that quality factor inversely scales bandwidth. Follow for more state engineering exam practice!",
+  "hashtags": [
+   "ElectricalEngineering",
+   "NetworkTheory",
+   "GATEPrep",
+   "AEJEExam"
+  ],
+  "motifSymbols": [
+   "⚡",
+   "Ω",
+   "📻",
+   "📊"
+  ],
+  "script": [
+   {
+    "kind": "intro",
+    "narration": "Ready for today’s question?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "wave",
+     "action": "waves enthusiastically to greet the viewer beside an RLC loop sketch",
+     "emotion": "excited, welcoming",
+     "props": "a coil inductor and a two-plate capacitor",
+     "gag": "none"
+    },
+    "doodleProps": true
+   },
+   {
+    "kind": "hook",
+    "narration": "Why does a sharper resonance curve actually mean a narrower bandwidth?",
+    "imageQuery": "vintage radio receiver circuit",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "a tall spiky bell curve next to a wide flat curve, with horizontal arrows comparing their widths",
+     "emotion": "curious",
+     "props": "resonance bell curves, horizontal measurement arrows",
+     "gag": "the tallest peak has a little mountaineering flag planted at the tip"
+    },
+    "doodleProps": false
+   },
+   {
+    "kind": "question",
+    "narration": "A series RLC circuit has a resonant frequency of 1000 radians per second and a quality factor of 10. What is its bandwidth?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "circuit",
+     "caption": "",
+     "params": {
+      "labelA": "AC Source",
+      "network": "10 + 20 + 30"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "options",
+    "narration": "Is it 100 radians per second, 10000 radians per second, 10 radians per second, or 50 radians per second?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "think",
+     "action": "taps chin looking thoughtfully between four floating bubbles containing question marks",
+     "emotion": "puzzled, weighing options",
+     "props": "four round bubbles with question marks",
+     "gag": "one question mark has tangled itself into a knot"
+    },
+    "doodleProps": true
+   },
+   {
+    "kind": "countdown",
+    "narration": "",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "a pocket stopwatch with its second hand sweeping rapidly amid motion lines",
+     "emotion": "tense anticipation",
+     "props": "pocket stopwatch, pendulum weight",
+     "gag": "none"
+    },
+    "doodleProps": false
+   },
+   {
+    "kind": "answer",
+    "narration": "The bandwidth of the circuit is 100 radians per second.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "cheer",
+     "action": "raises both hands in triumph beside a bullseye board struck dead-center",
+     "emotion": "triumphant, wide grin",
+     "props": "an archery target board with an arrow in the bullseye",
+     "gag": "none"
+    },
+    "doodleProps": true
+   },
+   {
+    "kind": "explain",
+    "narration": "Resonance in a series RLC network happens when inductive reactance equals capacitive reactance completely.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "working"
+    },
+    "visualWas": {
+     "kind": "formula",
+     "formula": "XL = XC",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "At this resonant condition, the net reactive part vanishes and circuit impedance is purely resistive.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "power-factor",
+     "caption": "",
+     "params": {
+      "angle": 0
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Quality factor measures how selective the circuit is, defined as resonant frequency divided by bandwidth.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "Q = ω₀ / BW",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Bandwidth represents the frequency spread between two half power points where power drops to half.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "filter-response",
+     "caption": "",
+     "params": {
+      "mode": "band"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Rearranging the definition gives bandwidth equal to resonant frequency divided by the circuit quality factor.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "BW = ω₀ / Q",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Substitute 1000 radians per second for resonant frequency and 10 for the dimensionless quality factor.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "BW = 1000 / 10",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Dividing 1000 by 10 yields exactly 100 radians per second for this series circuit bandwidth.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "bars",
+     "caption": "Bandwidth (rad/s)",
+     "items": [
+      {
+       "label": "BW",
+       "value": 100
+      },
+      {
+       "label": "ω₀",
+       "value": 1000
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "A higher quality factor compresses the half power frequencies closer together, sharpening the response peak.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "two mechanical vise clamps squeezing the flanks of a bell curve, forcing the center upward",
+     "emotion": "calm",
+     "props": "two mechanical screw clamps, a flexible curved metal strip",
+     "gag": "none"
+    },
+    "doodleProps": false
+   },
+   {
+    "kind": "explain",
+    "narration": "Candidates often multiply instead of divide, incorrectly arriving at ten thousand radians per second.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "compare",
+     "caption": "",
+     "items": [
+      {
+       "label": "Correct: 100",
+       "symbol": "✅"
+      },
+      {
+       "label": "Trap: 10000",
+       "symbol": "❌"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "formulas",
+    "narration": "Here are the formulas behind this one. Save it for your revision."
+   },
+   {
+    "kind": "outro",
+    "narration": "Radio receivers use high quality factor series resonance to isolate one clean broadcast frequency. Remember that quality factor inversely scales bandwidth. Follow for more state engineering exam practice!",
+    "imageQuery": "telecommunications radio tower night",
+    "visual": {
+     "kind": "icon",
+     "caption": "Bandpass Resonance",
+     "items": [
+      {
+       "label": "Sharp Tuning",
+       "symbol": "📻"
+      }
+     ]
+    }
+   }
+  ],
+  "formulas": {
+   "title": "Series RLC Resonance - Important Formulas",
+   "cards": [
+    {
+     "name": "Quality Factor",
+     "formula": "Q = \\frac{\\omega_0}{\\text{BW}}",
+     "notes": [
+      "omega_0 = Resonant frequency (rad/s)",
+      "BW = Bandwidth (rad/s)"
+     ],
+     "graph": {
+      "kind": "none",
+      "x": "",
+      "y": "",
+      "label": "",
+      "label2": ""
+     },
+     "icon": "inductor",
+     "art": {
+      "body": "<path fill=\"currentColor\" d=\"M24.31 25.81c-1.75 0-3-2.49-3-6a12.8 12.8 0 0 1 1.72-6.7a2.57 2.57 0 0 0-3.79 0A12.8 12.8 0 0 1 21 19.76c0 3.56-1.23 6-3 6s-3-2.49-3-6a12.8 12.8 0 0 1 1.72-6.7a2.57 2.57 0 0 0-3.79 0a12.8 12.8 0 0 1 1.72 6.7c0 3.56-1.23 6-3 6s-3-2.49-3-6a12.9 12.9 0 0 1 1.71-6.7a2.7 2.7 0 0 0-1.89-.87C7.1 12.19 5.69 13.7 5 16l-.23.7H2a1 1 0 0 1 0-2h1.29c1.1-2.83 3.06-4.55 5.24-4.55a4.67 4.67 0 0 1 3.16 1.32a4.62 4.62 0 0 1 3.15-1.32A4.65 4.65 0 0 1 18 11.51a4.43 4.43 0 0 1 6.31 0a4.67 4.67 0 0 1 3.16-1.32c2.18 0 4.14 1.72 5.24 4.55H34a1 1 0 0 1 0 2h-2.72l-.23-.7c-.74-2.34-2.15-3.85-3.58-3.85a2.7 2.7 0 0 0-1.89.87a12.9 12.9 0 0 1 1.71 6.7c0 3.56-1.22 6.05-2.98 6.05M18 14.93a11.7 11.7 0 0 0-1 4.83c0 2.54.66 3.75 1 4c.32-.27 1-1.48 1-4a11.7 11.7 0 0 0-1-4.83m6.31 0a11.7 11.7 0 0 0-1 4.83c0 2.54.66 3.75 1 4c.32-.27 1-1.48 1-4a11.7 11.7 0 0 0-1-4.83m-12.62 0a11.7 11.7 0 0 0-1 4.83c0 2.54.66 3.75 1 4c.32-.27 1-1.48 1-4a11.7 11.7 0 0 0-1-4.83\" class=\"clr-i-outline clr-i-outline-path-1\"/><path fill=\"none\" d=\"M0 0h36v36H0z\"/>",
+      "width": 36,
+      "height": 36
+     }
+    },
+    {
+     "name": "Bandwidth",
+     "formula": "\\text{BW} = \\frac{\\omega_0}{Q}",
+     "notes": [
+      "Q = Quality factor"
+     ],
+     "graph": {
+      "kind": "none",
+      "x": "",
+      "y": "",
+      "label": "",
+      "label2": ""
+     },
+     "icon": "multimeter",
+     "art": {
+      "body": "<path fill=\"currentColor\" d=\"M11 15H6l7-14v8h5l-7 14z\"/>",
+      "width": 24,
+      "height": 24
+     }
+    }
+   ],
+   "working": [
+    "\\text{BW} = \\frac{\\omega_0}{Q}",
+    "= \\frac{1000}{10}",
+    "= 100\\,\\text{rad/s}"
+   ]
+  }
+ },
+ "checkedAt": null,
+ "by": [],
+ "sawFrames": false,
+ "reviews": []
+}

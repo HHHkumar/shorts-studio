@@ -1,0 +1,345 @@
+{
+ "id": "b-v-20260927-220943-hlux",
+ "source": "library",
+ "addedAt": "2026-09-27T16:39:43.912Z",
+ "look": {
+  "layout": "doodle",
+  "mode": "light",
+  "orientation": "portrait"
+ },
+ "content": {
+  "subject": "Power Electronics",
+  "topic": "SCR Holding and Latching Current",
+  "difficulty": "Easy",
+  "hook": "Why does removing the gate pulse still turn off your thyristor?",
+  "question": "Which statement correctly compares latching current and holding current in a thyristor?",
+  "options": [
+   "Latching current is greater than holding current and associates with turn on",
+   "Holding current is greater than latching current and associates with turn on",
+   "Latching current is less than holding current and associates with turn off",
+   "Holding current is equal to latching current and associates with turn off"
+  ],
+  "correctIndex": 0,
+  "answerLine": "Latching current is greater than holding current and associates with turn on.",
+  "explanation": [
+   "Latching current is the minimum anode current needed to maintain conduction right after gate removal.",
+   "If the anode current fails to reach latching level, the SCR turns off immediately.",
+   "Holding current is the minimum anode current below which an operating thyristor drops into off state.",
+   "Therefore latching current is associated with turning on, while holding current is associated with turn off."
+  ],
+  "funFact": "Because latching current exceeds holding current, inductive loads require wider gate pulses to ensure proper turn-on.",
+  "outro": "Remember, latching means turn on, holding means turn off. Subscribe for more electrical engineering exam prep!",
+  "hashtags": [
+   "PowerElectronics",
+   "ElectricalEngineering",
+   "AEJEExam",
+   "Thyristor"
+  ],
+  "motifSymbols": [
+   "⚡",
+   "🔌",
+   "⚙️",
+   "💡"
+  ],
+  "script": [
+   {
+    "kind": "intro",
+    "narration": "Ready for today’s question?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "wave",
+     "action": "waves at the viewer beside a sketched thyristor symbol",
+     "emotion": "cheerful, welcoming",
+     "props": "thyristor",
+     "gag": "none"
+    },
+    "doodleProps": true
+   },
+   {
+    "kind": "hook",
+    "narration": "Why does removing the gate pulse still turn off your thyristor?",
+    "imageQuery": "power electronics laboratory circuit",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "a thyristor wired in a simple DC circuit where a detached gate wire dangles and a connected light bulb stays completely dark",
+     "emotion": "puzzled",
+     "props": "thyristor, light bulb, battery",
+     "gag": "the light bulb has closed sleeping eyes"
+    },
+    "doodleProps": false
+   },
+   {
+    "kind": "question",
+    "narration": "Which statement correctly compares latching current and holding current in a thyristor?",
+    "imageQuery": "thyristor electrical component bench",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "think",
+     "action": "scratches chin while pondering beside a mechanical balance scale with two empty pans",
+     "emotion": "curious, focused",
+     "props": "balance scale",
+     "gag": "a question mark resting inside one of the pans"
+    },
+    "doodleProps": true
+   },
+   {
+    "kind": "options",
+    "narration": "Is it latching current is greater than holding current and associates with turn on, holding current is greater than latching current and associates with turn on, latching current is less than holding current and associates with turn off, or holding current is equal to latching current and associates with turn off?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "four separate panels showing different combinations of upward and downward arrows beside circuit switches",
+     "emotion": "busy",
+     "props": "switches, arrows",
+     "gag": "none"
+    },
+    "doodleProps": false
+   },
+   {
+    "kind": "countdown",
+    "narration": "",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "worried",
+     "action": "glances back and forth beside an oversized ticking mechanical stopwatch",
+     "emotion": "tense, anticipatory",
+     "props": "stopwatch",
+     "gag": "the stopwatch wobbles with cartoon vibration lines"
+    },
+    "doodleProps": true
+   },
+   {
+    "kind": "answer",
+    "narration": "Latching current is greater than holding current and associates with turn on.",
+    "imageQuery": "silicon controlled rectifier module",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "cheer",
+     "action": "pumps fists in triumph next to a brilliantly shining light bulb wired to an active thyristor",
+     "emotion": "ecstatic, victorious",
+     "props": "light bulb, thyristor",
+     "gag": "the light bulb wears dark sunglasses"
+    },
+    "doodleProps": true
+   },
+   {
+    "kind": "explain",
+    "narration": "Latching current is the minimum anode current needed to maintain conduction right after gate removal.",
+    "imageQuery": "oscilloscope waveform electrical test",
+    "visual": {
+     "kind": "bars",
+     "caption": "Current threshold, mA",
+     "items": [
+      {
+       "label": "Holding",
+       "value": 20
+      },
+      {
+       "label": "Latching",
+       "value": 50
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "If the anode current fails to reach latching level, the SCR turns off immediately.",
+    "imageQuery": "printed circuit board components",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "switch-circuit",
+     "caption": "",
+     "params": {
+      "mode": "open"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Holding current is the minimum anode current below which an operating thyristor drops into off state.",
+    "imageQuery": "electrical engineering workstation lab",
+    "visual": {
+     "kind": "formula",
+     "formula": "IL > IH",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Therefore latching current is associated with turning on, while holding current is associated with turn off.",
+    "imageQuery": "power semiconductor thyristor heatsink",
+    "visual": {
+     "kind": "compare",
+     "caption": "",
+     "items": [
+      {
+       "label": "Latching: Turn-on",
+       "symbol": "🟢"
+      },
+      {
+       "label": "Holding: Turn-off",
+       "symbol": "🔴"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "In standard silicon controlled rectifiers, latching current is typically two to three times the holding current.",
+    "imageQuery": "electronics engineering testing bench",
+    "visual": {
+     "kind": "formula",
+     "formula": "IL ≈ (2 to 3) × IH",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Remember the simple alphabetical memory aid: L comes after H, so latching current is always higher.",
+    "imageQuery": "semiconductor wafer manufacturing cleanroom",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "number-line",
+     "caption": "",
+     "params": {
+      "labelA": "0 mA",
+      "labelB": "100 mA"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "If load current rises to fifty milliamperes, an SCR with sixty milliampere latching current turns off.",
+    "imageQuery": "multimeter digital display measurement",
+    "visual": {
+     "kind": "icon",
+     "caption": "Current insufficient",
+     "items": [
+      {
+       "label": "Gate Dropped",
+       "symbol": "⚠️"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "To turn the device off successfully, anode current must be forced completely below the holding value.",
+    "imageQuery": "electrical substation control panel",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "diode-curve",
+     "caption": "",
+     "params": {},
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "State AE and JE papers test this fundamental relationship frequently because candidates often swap the definitions.",
+    "imageQuery": "engineering examination paper desk",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "checklist",
+     "caption": "",
+     "params": {
+      "mode": "circle"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "formulas",
+    "narration": "Here are the formulas behind this one. Save it for your revision."
+   },
+   {
+    "kind": "outro",
+    "narration": "Remember, latching means turn on, holding means turn off. Subscribe for more electrical engineering exam prep!",
+    "imageQuery": "modern electrical engineering laboratory",
+    "visual": {
+     "kind": "icon",
+     "caption": "Exam Success",
+     "items": [
+      {
+       "label": "AE JE Prep",
+       "symbol": "⚡"
+      }
+     ]
+    }
+   }
+  ],
+  "formulas": {
+   "title": "Thyristor Currents - Important Formulas",
+   "cards": [
+    {
+     "name": "Current Magnitude Comparison",
+     "formula": "I_L > I_H",
+     "notes": [
+      "I_L = Latching current (turn-on)",
+      "I_H = Holding current (turn-off)"
+     ],
+     "graph": {
+      "kind": "none",
+      "x": "",
+      "y": "",
+      "label": "",
+      "label2": ""
+     },
+     "icon": "switch",
+     "art": {
+      "body": "<path fill=\"currentColor\" d=\"M13 18h1a1 1 0 0 1 1 1h7v2h-7a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1H2v-2h7a1 1 0 0 1 1-1h1v-2H8a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-3zm0-12h1V4h-1zM9 4v2h2V4zm0 4v2h2V8zm0 4v2h2v-2z\"/>",
+      "width": 24,
+      "height": 24
+     }
+    },
+    {
+     "name": "Typical Latching Ratio",
+     "formula": "I_L ≈ (2 × I_H) ext{ to } (3 × I_H)",
+     "notes": [
+      "I_L = Minimum current to sustain on-state",
+      "I_H = Drop-out current during turn-off"
+     ],
+     "graph": {
+      "kind": "none",
+      "x": "",
+      "y": "",
+      "label": "",
+      "label2": ""
+     },
+     "icon": "ammeter",
+     "art": {
+      "body": "<g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"><path d=\"M5 12a7 7 0 1 0 14 0a7 7 0 1 0-14 0m0 0H2m17 0h3\"/><path d=\"M10 14v-3c0-1.036.895-2 2-2s2 .964 2 2v3m0-2h-4\"/></g>",
+      "width": 24,
+      "height": 24
+     }
+    }
+   ]
+  }
+ },
+ "checkedAt": null,
+ "by": [],
+ "sawFrames": false,
+ "reviews": []
+}

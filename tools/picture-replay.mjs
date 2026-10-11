@@ -3,8 +3,8 @@
 //   node tools/picture-replay.mjs [library-or-bench-folder]
 //
 // Every saved video still holds the pictures the model asked for. This runs
-// each one past the rules a new script now faces - the sketch contract and the
-// number-source rule - and prints which would be drawn today and which would
+// each one past the rules a new script now faces - the sketch contract, the
+// number-source rule and the label fit - and prints which would be drawn today and which would
 // be dropped, with the reason. It answers "what do the rules actually catch?"
 // on real scripts instead of invented examples, and costs nothing to run.
 
@@ -13,6 +13,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { checkSketch } from '../server/sketch-contract.mjs';
 import { sourceNumbers, unsourcedInVisual } from '../server/number-source.mjs';
+import { cutLabels } from '../server/sketch-fit.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dir = path.resolve(ROOT, process.argv[2] || 'library');
@@ -34,6 +35,10 @@ for (const f of files) {
     const problems = v.kind === 'sketch' ? checkSketch(v.sketch, v.params || {}, v.items || []) : [];
     const bad = unsourcedInVisual(v, source);
     if (bad.length) problems.push('shows ' + bad.join(', ') + ', which the video never gives');
+    if (v.kind === 'sketch' && !problems.length) {
+      const cut = cutLabels(v.sketch, v.params || {}, v.items || []);
+      if (cut.length) problems.push('"' + cut[0].label + '" would be cut to "' + cut[0].drawn + '"');
+    }
     if (problems.length) dropped++; else kept++;
     lines.push('  ' + (problems.length ? 'DROP' : 'keep') + '  ' + String(i).padStart(2) + '  ' + what.slice(0, 96) + (problems.length ? '\n          - ' + problems.join('; ') : ''));
   });

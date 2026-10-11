@@ -206,6 +206,8 @@ export function sketchPromptLines() {
     'is actually about - a sketch with one missing is thrown away, and so is one given a mode it',
     'does not have. Never fill a knob with a guess: if the scene does not give that angle, that',
     'ratio, that count or those labels, the sketch does not fit the scene, so use "none".',
+    'Labels are a word or two: at most 14 letters, fewer inside a box. A sketch whose label does',
+    'not fit is thrown away rather than drawn with the label cut short.',
     'Every number you put in a sketch must be one the question or its working gives, or follow',
     'from them in one step. An invented value drawn on screen is a false statement.',
     'Pick the one that actually shows THIS scene\'s idea. A diagram that is merely in the right',

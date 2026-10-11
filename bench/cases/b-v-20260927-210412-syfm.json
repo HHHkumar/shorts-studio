@@ -1,0 +1,354 @@
+{
+ "id": "b-v-20260927-210412-syfm",
+ "source": "library",
+ "addedAt": "2026-09-27T15:34:13.862Z",
+ "look": {
+  "layout": "doodle",
+  "mode": "light",
+  "orientation": "portrait"
+ },
+ "content": {
+  "subject": "Basic Electrical Engineering",
+  "topic": "Kirchhoff's Current Law",
+  "difficulty": "Medium",
+  "hook": "Can electric current ever vanish at a wire junction?",
+  "question": "In a node, currents entering are five amperes and three amperes, while two amperes leaves. What is the remaining branch current?",
+  "options": [
+   "Six amperes leaving",
+   "Ten amperes leaving",
+   "Six amperes entering",
+   "Four amperes leaving"
+  ],
+  "correctIndex": 0,
+  "answerLine": "The remaining branch current is six amperes leaving the node.",
+  "explanation": [
+   "Kirchhoff's current law states that total current entering any node equals total current leaving that same node.",
+   "This fundamental rule is a direct consequence of the physical law of conservation of electric charge.",
+   "Electric charge cannot accumulate at an ideal point or node, so net charge change remains zero.",
+   "First, we calculate the sum of currents entering the node, which is five plus three amperes."
+  ],
+  "funFact": "Kirchhoff formulated these network laws in 1845 while he was still an undergraduate student.",
+  "outro": "Remember that node current always balances to zero. Follow for more state engineering exam preparation tips!",
+  "hashtags": [
+   "ElectricalEngineering",
+   "KCL",
+   "CircuitTheory",
+   "GATEPrep",
+   "SSCJE"
+  ],
+  "motifSymbols": [
+   "⚡",
+   "🔌",
+   "⚙️",
+   "💡"
+  ],
+  "script": [
+   {
+    "kind": "intro",
+    "narration": "Ready for today’s question?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "wave",
+     "action": "waves enthusiastically to greet the viewer",
+     "emotion": "cheerful and eager",
+     "props": "a light bulb",
+     "gag": "none"
+    },
+    "doodleProps": true
+   },
+   {
+    "kind": "hook",
+    "narration": "Can electric current ever vanish inside a junction?",
+    "imageQuery": "electrical substation evening",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "a pipe junction with water rushing in from two sides and forming a swirl in the center",
+     "emotion": "mysterious",
+     "props": "water pipes, junction fitting",
+     "gag": "a tiny rubber duck caught spinning in the whirlpool"
+    },
+    "doodleProps": false
+   },
+   {
+    "kind": "question",
+    "narration": "In a node, currents entering are five amperes and three amperes, while two amperes leaves. What is the remaining branch current?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "figure",
+     "caption": "",
+     "reveal": false
+    }
+   },
+   {
+    "kind": "options",
+    "narration": "Is it Six amperes leaving, Ten amperes leaving, Six amperes entering, or Four amperes leaving?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "think",
+     "action": "taps chin and ponders beside four branching copper cables",
+     "emotion": "thoughtful",
+     "props": "four copper wires, junction box",
+     "gag": "one of the wires is twisted into a neat pretzel shape"
+    },
+    "doodleProps": true
+   },
+   {
+    "kind": "countdown",
+    "narration": "",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "three stopwatches side by side vibrating with cartoon motion lines",
+     "emotion": "suspenseful",
+     "props": "three stopwatches",
+     "gag": "the winding key on the center stopwatch is spinning out of control"
+    },
+    "doodleProps": false
+   },
+   {
+    "kind": "answer",
+    "narration": "The correct answer is Six amperes leaving.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "cheer",
+     "action": "throws both hands up in celebration beside a brightly glowing bulb",
+     "emotion": "triumphant and energetic",
+     "props": "a glowing light bulb, a battery",
+     "gag": "drawn confetti bursts outward around the light bulb"
+    },
+    "doodleProps": true
+   },
+   {
+    "kind": "explain",
+    "narration": "Kirchhoff's current law states that total current entering any node equals total current leaving that same node.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "Σ Iin = Σ Iout",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "This fundamental rule is a direct consequence of the physical law of conservation of electric charge.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "icon",
+     "caption": "Charge Conservation",
+     "items": [
+      {
+       "label": "Charge",
+       "symbol": "⚡"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Electric charge cannot accumulate at an ideal point or node, so net charge change remains zero.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "kirchhoff",
+     "caption": "",
+     "params": {},
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "First, we calculate the sum of currents entering the node, which is five plus three amperes.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "figure",
+     "caption": "",
+     "reveal": true,
+     "highlight": "I1"
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "This gives a total inflow of eight amperes entering into the common junction point.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "bars",
+     "caption": "Current, A",
+     "items": [
+      {
+       "label": "Entering",
+       "value": 8
+      },
+      {
+       "label": "Leaving",
+       "value": 8
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "To satisfy the balance, the total current leaving the node must also equal eight amperes.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "Ileaving = 8 A",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "We already have one branch taking two amperes away from this central connection node.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "figure",
+     "caption": "",
+     "reveal": true,
+     "highlight": "I3"
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Subtracting two amperes from eight amperes leaves exactly six amperes for our unknown path.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "I4 = 8 A - 2 A = 6 A",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Therefore, the unknown branch must carry six amperes directed away from the node.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "figure",
+     "caption": "",
+     "reveal": true,
+     "highlight": "I4"
+    }
+   },
+   {
+    "kind": "formulas",
+    "narration": "Here are the formulas behind this one. Save it for your revision."
+   },
+   {
+    "kind": "outro",
+    "narration": "Kirchhoff formulated these network laws in 1845 while he was still an undergraduate student. Remember that node current always balances to zero. Follow for more state engineering exam preparation tips!",
+    "imageQuery": "university chalkboard classroom",
+    "visual": {
+     "kind": "icon",
+     "caption": "Exam Success",
+     "items": [
+      {
+       "label": "Pass",
+       "symbol": "🎯"
+      }
+     ]
+    }
+   }
+  ],
+  "figureCheck": {
+   "status": "match",
+   "computed": "6 A",
+   "option": "Six amperes leaving"
+  },
+  "figure": {
+   "type": "junction",
+   "title": "",
+   "branches": [
+    {
+     "label": "I1",
+     "value": 5,
+     "direction": "in",
+     "unknown": false
+    },
+    {
+     "label": "I2",
+     "value": 3,
+     "direction": "in",
+     "unknown": false
+    },
+    {
+     "label": "I3",
+     "value": 2,
+     "direction": "out",
+     "unknown": false
+    },
+    {
+     "label": "I4",
+     "value": 6,
+     "direction": "out",
+     "unknown": true
+    }
+   ]
+  },
+  "formulas": {
+   "title": "Kirchhoff's Current Law - Important Formulas",
+   "cards": [
+    {
+     "name": "Kirchhoff's Current Law",
+     "formula": "\\Sigma I_{\\text{in}} = \\Sigma I_{\\text{out}}",
+     "notes": [
+      "I_{\\text{in}} = Currents entering node (A)",
+      "I_{\\text{out}} = Currents leaving node (A)"
+     ],
+     "graph": {
+      "kind": "none",
+      "x": "",
+      "y": "",
+      "label": "",
+      "label2": ""
+     },
+     "icon": "ammeter",
+     "art": {
+      "body": "<g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"><path d=\"M5 12a7 7 0 1 0 14 0a7 7 0 1 0-14 0m0 0H2m17 0h3\"/><path d=\"M10 14v-3c0-1.036.895-2 2-2s2 .964 2 2v3m0-2h-4\"/></g>",
+      "width": 24,
+      "height": 24
+     }
+    },
+    {
+     "name": "Sum of Node Currents",
+     "formula": "\\Sigma I = 0",
+     "notes": [
+      "I = Branch current with sign convention (A)"
+     ],
+     "graph": {
+      "kind": "none",
+      "x": "",
+      "y": "",
+      "label": "",
+      "label2": ""
+     },
+     "icon": "multimeter",
+     "art": {
+      "body": "<path fill=\"currentColor\" d=\"M11 15H6l7-14v8h5l-7 14z\"/>",
+      "width": 24,
+      "height": 24
+     }
+    }
+   ]
+  }
+ },
+ "checkedAt": null,
+ "by": [],
+ "sawFrames": false,
+ "reviews": []
+}

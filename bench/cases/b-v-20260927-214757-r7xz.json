@@ -1,0 +1,343 @@
+{
+ "id": "b-v-20260927-214757-r7xz",
+ "source": "library",
+ "addedAt": "2026-09-27T16:17:57.041Z",
+ "look": {
+  "layout": "doodle",
+  "mode": "light",
+  "orientation": "portrait"
+ },
+ "content": {
+  "subject": "Measurements",
+  "topic": "Extension of Range of PMMC Instruments",
+  "difficulty": "Medium",
+  "hook": "Can a tiny milliamp meter safely measure a massive ten ampere line current?",
+  "question": "A PMMC galvanometer has a coil resistance of 99 ohms and gives a full scale deflection for 10 milliamperes. What shunt resistance is required to extend its range to 10 amperes?",
+  "options": [
+   "0.099 ohms",
+   "0.100 ohms",
+   "0.990 ohms",
+   "1.000 ohms"
+  ],
+  "correctIndex": 0,
+  "answerLine": "The required shunt resistance is 0.099 ohms.",
+  "explanation": [
+   "To measure a larger current without burning the delicate coil, we place a low resistance in parallel.",
+   "First, we calculate the multiplying power m, which is the total current divided by the meter current.",
+   "The total current is 10 amperes, while the meter full scale deflection current is 10 milliamperes.",
+   "Converting 10 amperes to milliamperes gives 10000 milliamperes, yielding a multiplying factor of exactly 1000."
+  ],
+  "funFact": "Shunts in high-precision ammeters are made of manganin because its resistance barely drifts with temperature changes.",
+  "outro": "Remember, always divide by m minus one, not m! Follow for more electrical engineering prep!",
+  "hashtags": [
+   "ElectricalEngineering",
+   "AEJEPrep",
+   "ElectricalMeasurements",
+   "PMMC",
+   "GateEE"
+  ],
+  "motifSymbols": [
+   "⚡",
+   "🎛️",
+   "Ω",
+   "A"
+  ],
+  "script": [
+   {
+    "kind": "intro",
+    "narration": "Ready for today’s question?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "wave",
+     "action": "waves enthusiastically toward the viewer to kick off the challenge",
+     "emotion": "excited, welcoming",
+     "props": "a galvanometer",
+     "gag": "none"
+    },
+    "doodleProps": true
+   },
+   {
+    "kind": "hook",
+    "narration": "Can a tiny milliamp meter safely measure a massive ten ampere line current?",
+    "imageQuery": "analog ammeter instrument dial",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "a massive thick power cable surging with current beside a tiny, delicate benchtop meter",
+     "emotion": "tense",
+     "props": "a giant electrical cable, a tiny meter",
+     "gag": "the tiny meter is trembling behind a tiny blast shield"
+    },
+    "doodleProps": false
+   },
+   {
+    "kind": "question",
+    "narration": "A PMMC galvanometer has a coil resistance of 99 ohms and gives a full scale deflection for 10 milliamperes. What shunt resistance is required to extend its range to 10 amperes?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "circuit",
+     "caption": "",
+     "params": {
+      "labelA": "10 A",
+      "network": "99 | 0.099"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "options",
+    "narration": "Is it 0.099 ohms, 0.100 ohms, 0.990 ohms, or 1.000 ohms?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "think",
+     "action": "strokes chin thoughtfully while pondering four identical-looking resistor coils",
+     "emotion": "curious, debating",
+     "props": "four small resistor coils",
+     "gag": "none"
+    },
+    "doodleProps": true
+   },
+   {
+    "kind": "countdown",
+    "narration": "",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "an hourglass draining steadily while an analog meter needle ticks forward like a second hand",
+     "emotion": "suspenseful",
+     "props": "an hourglass, an analog meter",
+     "gag": "little sparks leap between the grains of sand"
+    },
+    "doodleProps": false
+   },
+   {
+    "kind": "answer",
+    "narration": "The required shunt resistance is 0.099 ohms.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "cheer",
+     "action": "leaps with both arms raised in celebration as the needle safely aligns within normal range",
+     "emotion": "triumphant, delighted",
+     "props": "a galvanometer, a sturdy shunt resistor",
+     "gag": "a tiny puff of confetti pops out of the meter terminal"
+    },
+    "doodleProps": true
+   },
+   {
+    "kind": "explain",
+    "narration": "To measure a larger current without burning the delicate coil, we place a low resistance in parallel.",
+    "imageQuery": "galvanometer movement coil vintage",
+    "visual": {
+     "kind": "working"
+    },
+    "visualWas": {
+     "kind": "sketch",
+     "sketch": "kirchhoff",
+     "caption": "",
+     "params": {
+      "labelA": "Itotal = 10 A"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "First, we calculate the multiplying power m, which is the total current divided by the meter current.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "m = I / Iₘ",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "The total current is 10 amperes, while the meter full scale deflection current is 10 milliamperes.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "compare",
+     "caption": "",
+     "items": [
+      {
+       "label": "Total I = 10 A",
+       "symbol": "⚡"
+      },
+      {
+       "label": "Meter Im = 10 mA",
+       "symbol": "🎛️"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Converting 10 amperes to milliamperes gives 10000 milliamperes, yielding a multiplying factor of exactly 1000.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "m = 10 A / 0.01 A = 1000",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "The standard shunt formula states that shunt resistance equals meter resistance divided by m minus one.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "Rₛₕ = Rₘ / (m - 1)",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Substitute the known values: coil resistance is 99 ohms and the multiplier minus one equals 999.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "Rₛₕ = 99 / (1000 - 1)",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Dividing 99 ohms by 999 yields 0.099099 ohms, which rounds neatly to 0.099 ohms.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "Rₛₕ = 99 / 999 ≈ 0.099 Ω",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Candidates frequently make the mistake of dividing by m directly, incorrectly arriving at 0.100 ohms.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "misconception",
+     "caption": "",
+     "params": {
+      "labelA": "Rm / m = 0.100 Ω",
+      "labelB": "Rm / (m-1) = 0.099 Ω"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "This low-resistance shunt bypasses almost all current, allowing the meter to read high currents safely.",
+    "imageQuery": "printed circuit board copper tracks",
+    "visual": {
+     "kind": "bars",
+     "caption": "Current division in mA",
+     "items": [
+      {
+       "label": "Shunt current",
+       "value": 9990
+      },
+      {
+       "label": "Meter current",
+       "value": 10
+      }
+     ]
+    }
+   },
+   {
+    "kind": "formulas",
+    "narration": "Here are the formulas behind this one. Save it for your revision."
+   },
+   {
+    "kind": "outro",
+    "narration": "Shunts use manganin because its resistance stays stable. Always divide by m minus one, not m! Follow for more tips!",
+    "imageQuery": "laboratory precision electrical bench",
+    "visual": {
+     "kind": "icon",
+     "caption": "Manganin Shunt",
+     "items": [
+      {
+       "label": "Stable Resistance",
+       "symbol": "🔬"
+      }
+     ]
+    }
+   }
+  ],
+  "formulas": {
+   "title": "PMMC Range Extension - Important Formulas",
+   "cards": [
+    {
+     "name": "Multiplying Factor",
+     "formula": "m = \\frac{I}{I_m}",
+     "notes": [
+      "I = Total current to be measured",
+      "I_m = Full-scale meter current"
+     ],
+     "graph": {
+      "kind": "linear",
+      "x": "I_m",
+      "y": "I",
+      "label": "m",
+      "label2": ""
+     },
+     "icon": "ammeter",
+     "art": {
+      "body": "<g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"><path d=\"M5 12a7 7 0 1 0 14 0a7 7 0 1 0-14 0m0 0H2m17 0h3\"/><path d=\"M10 14v-3c0-1.036.895-2 2-2s2 .964 2 2v3m0-2h-4\"/></g>",
+      "width": 24,
+      "height": 24
+     }
+    },
+    {
+     "name": "Ammeter Shunt Resistance",
+     "formula": "R_{sh} = \\frac{R_m}{m - 1}",
+     "notes": [
+      "R_{sh} = Shunt resistance (\\Omega)",
+      "R_m = Meter coil resistance (\\Omega)"
+     ],
+     "graph": {
+      "kind": "inverse",
+      "x": "m",
+      "y": "R_{sh}",
+      "label": "",
+      "label2": ""
+     },
+     "icon": "multimeter",
+     "art": {
+      "body": "<path fill=\"currentColor\" d=\"M11 15H6l7-14v8h5l-7 14z\"/>",
+      "width": 24,
+      "height": 24
+     }
+    }
+   ],
+   "working": [
+    "R_{sh} = \\frac{R_m}{\\frac{I}{I_m} - 1}",
+    "= \\frac{99}{\\frac{10}{0.01} - 1}",
+    "= \\frac{99}{1000 - 1}",
+    "= \\frac{99}{999}",
+    "\\approx 0.099\\,\\Omega"
+   ]
+  }
+ },
+ "checkedAt": null,
+ "by": [],
+ "sawFrames": false,
+ "reviews": []
+}

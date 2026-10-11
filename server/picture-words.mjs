@@ -54,6 +54,12 @@ export function describePicture(visual) {
     parts.push('two sine waves, ' + a + ' and ' + b);
     parts.push(deg ? b + (deg > 0 ? ' lags ' : ' leads ') + a + ' by ' + Math.abs(deg) + ' degrees' : b + ' in phase with ' + a);
     parts.push(ratio === 1 ? 'equal in size' : b + ' is ' + ratio + ' times the size of ' + a);
+  } else if (v.sketch === 'circuit' && p.network) {
+    // The network is an expression, and a checker has to be told how to read
+    // it - and what the sketch can draw: one source, and resistors.
+    parts.push('a source' + (p.labelA ? ' labelled "' + p.labelA + '"' : '') + ' driving resistors arranged as ' + p.network
+      + ', where + is in series and | is in parallel; every component is drawn as a resistor with that number on it,'
+      + ' and the source as a battery');
   } else {
     const what = shows(v.sketch);
     if (what) parts.push(what);

@@ -1,0 +1,368 @@
+{
+ "id": "b-v-20260927-214515-ueat",
+ "source": "library",
+ "addedAt": "2026-09-27T16:15:15.355Z",
+ "look": {
+  "layout": "doodle",
+  "mode": "light",
+  "orientation": "portrait"
+ },
+ "content": {
+  "subject": "Electrical Machines",
+  "topic": "DC Motor Back EMF and Speed Regulation",
+  "difficulty": "Medium",
+  "hook": "Weaken the field flux, and a DC motor actually speeds up!",
+  "question": "A DC shunt motor drives a constant torque load. If the field flux is reduced by fifty percent, what happens to the steady state armature current?",
+  "options": [
+   "It remains unchanged",
+   "It halves",
+   "It doubles",
+   "It quadruples"
+  ],
+  "correctIndex": 2,
+  "answerLine": "The steady state armature current doubles.",
+  "explanation": [
+   "Electromagnetic torque developed by any direct current machine is proportional to flux multiplied by armature current.",
+   "Because the mechanical load torque remains strictly constant, the electromagnetic torque developed must also stay unchanged.",
+   "Halving the magnetic flux demands that armature current doubles to maintain the exact same developed torque.",
+   "Initially, lowering the flux weakens the back electromotive force, causing a sudden surge in armature current."
+  ],
+  "funFact": "Field weakening is widely used in high-speed electric trains to cruise well above base motor speed!",
+  "outro": "Master your electrical machine equations, and follow along for more engineering exam prep!",
+  "hashtags": [
+   "ElectricalEngineering",
+   "DCMotor",
+   "GATEExam",
+   "AEJEPrep",
+   "Machines"
+  ],
+  "motifSymbols": [
+   "⚡",
+   "⚙️",
+   "🧲",
+   "🔄"
+  ],
+  "script": [
+   {
+    "kind": "intro",
+    "narration": "Ready for today’s question?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "wave",
+     "action": "waves enthusiastically to greet the audience",
+     "emotion": "eager, bright grin",
+     "props": "a coil of wire, a battery",
+     "gag": "none"
+    },
+    "doodleProps": true
+   },
+   {
+    "kind": "hook",
+    "narration": "Weaken the field flux, and a DC motor actually speeds up!",
+    "imageQuery": "electric motor armature copper windings",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "a motor rotor spinning rapidly with motion swooshes surrounded by shrinking magnetic field coils",
+     "emotion": "energetic",
+     "props": "a motor, magnetic coils",
+     "gag": "wind gusts whipping off the spinning shaft"
+    },
+    "doodleProps": false
+   },
+   {
+    "kind": "question",
+    "narration": "A DC shunt motor drives a constant torque load. If the field flux is reduced by fifty percent, what happens to the steady state armature current?",
+    "imageQuery": "industrial electric motor dynamo",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "a DC motor coupled by a pulley to a hanging heavy iron weight",
+     "emotion": "sturdy",
+     "props": "a motor, a pulley, an iron weight",
+     "gag": "none"
+    },
+    "doodleProps": false
+   },
+   {
+    "kind": "options",
+    "narration": "Does it remain unchanged, halve, double, or quadruple?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "shrug",
+     "action": "shrugs with raised shoulders beside an ammeter",
+     "emotion": "quizzical",
+     "props": "an ammeter, four floating question marks",
+     "gag": "none"
+    },
+    "doodleProps": true
+   },
+   {
+    "kind": "countdown",
+    "narration": "",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "an hourglass with sand rapidly draining beside an ammeter whose needle is vibrating with anticipation",
+     "emotion": "tense",
+     "props": "an hourglass, an ammeter",
+     "gag": "tiny sparks falling alongside the sand grains inside the hourglass"
+    },
+    "doodleProps": false
+   },
+   {
+    "kind": "answer",
+    "narration": "The steady state armature current doubles.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "cheer",
+     "action": "throws arms up in a victorious cheer toward the ammeter",
+     "emotion": "thrilled, triumphant",
+     "props": "an ammeter, a motor",
+     "gag": "the ammeter needle is bent from swinging forward so forcefully"
+    },
+    "doodleProps": true
+   },
+   {
+    "kind": "explain",
+    "narration": "Electromagnetic torque developed by any direct current machine is proportional to flux multiplied by armature current.",
+    "imageQuery": "dc motor stator coils",
+    "visual": {
+     "kind": "working"
+    },
+    "visualWas": {
+     "kind": "formula",
+     "formula": "T = k × Φ × Ia",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Because the mechanical load torque remains strictly constant, the electromagnetic torque developed must also stay unchanged.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "torque",
+     "caption": "",
+     "params": {
+      "angle": 45,
+      "labelA": "Constant Load Torque"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Halving the magnetic flux demands that armature current doubles to maintain the exact same developed torque.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "compare",
+     "caption": "",
+     "items": [
+      {
+       "label": "Flux: 0.5 × Φ",
+       "symbol": "🧲"
+      },
+      {
+       "label": "Current: 2 × Ia",
+       "symbol": "⚡"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Initially, lowering the flux weakens the back electromotive force, causing a sudden surge in armature current.",
+    "imageQuery": "copper coil induction electromagnetic",
+    "visual": {
+     "kind": "formula",
+     "formula": "Ia = (V - Eb) / Ra",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "This current surge creates accelerating torque, speeding up the rotor until a higher steady speed is reached.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "motor",
+     "caption": "",
+     "params": {
+      "speed": 4
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "At this elevated rotational speed, back electromotive force recovers enough to stabilize the doubled armature current.",
+    "imageQuery": "multimeter electrical bench testing",
+    "visual": {
+     "kind": "formula",
+     "formula": "Eb = k × Φ × ω",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "The rotational speed roughly doubles because speed is inversely proportional to the operating field flux.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "bars",
+     "caption": "Relative Motor Speed",
+     "items": [
+      {
+       "label": "Rated Flux",
+       "value": 1
+      },
+      {
+       "label": "Half Flux",
+       "value": 2
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Armature copper losses rise by a factor of four because losses vary with current squared.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "Ploss = Ia² × Ra",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Therefore, field weakening provides higher speed operation but causes significantly greater thermal stress on the armature.",
+    "imageQuery": "heavy industrial electric traction motor",
+    "visual": {
+     "kind": "icon",
+     "caption": "",
+     "items": [
+      {
+       "label": "High Thermal Stress",
+       "symbol": "🔥"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "formulas",
+    "narration": "Here are the formulas behind this one. Save it for your revision."
+   },
+   {
+    "kind": "outro",
+    "narration": "Field weakening lets high-speed trains cruise past base speed! Subscribe for more exam-focused electrical machine breakdowns.",
+    "imageQuery": "high speed electric train locomotive",
+    "visual": {
+     "kind": "icon",
+     "caption": "",
+     "items": [
+      {
+       "label": "AE JE Prep",
+       "symbol": "⚡"
+      }
+     ]
+    }
+   }
+  ],
+  "formulas": {
+   "title": "DC Motor Speed Regulation - Important Formulas",
+   "cards": [
+    {
+     "name": "Electromagnetic Torque",
+     "formula": "T = k \\cdot \\Phi \\cdot I_a",
+     "notes": [
+      "Phi = Field flux per pole (Wb)",
+      "Ia = Armature current (A)"
+     ],
+     "graph": {
+      "kind": "linear",
+      "x": "I_a",
+      "y": "T",
+      "label": "k\\Phi",
+      "label2": ""
+     },
+     "icon": "magnet",
+     "art": {
+      "body": "<path fill=\"currentColor\" d=\"M3 7v6a9 9 0 0 0 9 9a9 9 0 0 0 9-9V7h-4v6a5 5 0 0 1-5 5a5 5 0 0 1-5-5V7m10-2h4V2h-4M3 5h4V2H3\"/>",
+      "width": 24,
+      "height": 24
+     }
+    },
+    {
+     "name": "Steady State Armature Current",
+     "formula": "I_a = \\frac{T}{k \\cdot \\Phi}",
+     "notes": [
+      "T = Mechanical load torque (N m)",
+      "k = Machine design constant"
+     ],
+     "graph": {
+      "kind": "inverse",
+      "x": "\\Phi",
+      "y": "I_a",
+      "label": "T",
+      "label2": ""
+     },
+     "icon": "ammeter",
+     "art": {
+      "body": "<g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"><path d=\"M5 12a7 7 0 1 0 14 0a7 7 0 1 0-14 0m0 0H2m17 0h3\"/><path d=\"M10 14v-3c0-1.036.895-2 2-2s2 .964 2 2v3m0-2h-4\"/></g>",
+      "width": 24,
+      "height": 24
+     }
+    },
+    {
+     "name": "Back EMF",
+     "formula": "E_b = k \\cdot \\Phi \\cdot \\omega",
+     "notes": [
+      "Eb = Back electromotive force (V)",
+      "omega = Rotational speed (rad/s)"
+     ],
+     "graph": {
+      "kind": "linear",
+      "x": "\\omega",
+      "y": "E_b",
+      "label": "k\\Phi",
+      "label2": ""
+     },
+     "icon": "gear",
+     "art": {
+      "body": "<path fill=\"currentColor\" d=\"M128 80a48 48 0 1 0 48 48a48.05 48.05 0 0 0-48-48m0 80a32 32 0 1 1 32-32a32 32 0 0 1-32 32m88-29.84q.06-2.16 0-4.32l14.92-18.64a8 8 0 0 0 1.48-7.06a107.2 107.2 0 0 0-10.88-26.25a8 8 0 0 0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186 40.54a8 8 0 0 0-3.94-6a107.7 107.7 0 0 0-26.25-10.87a8 8 0 0 0-7.06 1.49L130.16 40h-4.32L107.2 25.11a8 8 0 0 0-7.06-1.48a107.6 107.6 0 0 0-26.25 10.88a8 8 0 0 0-3.93 6l-2.64 23.76q-1.56 1.49-3 3L40.54 70a8 8 0 0 0-6 3.94a107.7 107.7 0 0 0-10.87 26.25a8 8 0 0 0 1.49 7.06L40 125.84v4.32L25.11 148.8a8 8 0 0 0-1.48 7.06a107.2 107.2 0 0 0 10.88 26.25a8 8 0 0 0 6 3.93l23.72 2.64q1.49 1.56 3 3L70 215.46a8 8 0 0 0 3.94 6a107.7 107.7 0 0 0 26.25 10.87a8 8 0 0 0 7.06-1.49L125.84 216q2.16.06 4.32 0l18.64 14.92a8 8 0 0 0 7.06 1.48a107.2 107.2 0 0 0 26.25-10.88a8 8 0 0 0 3.93-6l2.64-23.72q1.56-1.48 3-3l23.78-2.8a8 8 0 0 0 6-3.94a107.7 107.7 0 0 0 10.87-26.25a8 8 0 0 0-1.49-7.06Zm-16.1-6.5a74 74 0 0 1 0 8.68a8 8 0 0 0 1.74 5.48l14.19 17.73a91.6 91.6 0 0 1-6.23 15l-22.6 2.56a8 8 0 0 0-5.1 2.64a74 74 0 0 1-6.14 6.14a8 8 0 0 0-2.64 5.1l-2.51 22.58a91.3 91.3 0 0 1-15 6.23l-17.74-14.19a8 8 0 0 0-5-1.75h-.48a74 74 0 0 1-8.68 0a8 8 0 0 0-5.48 1.74l-17.78 14.2a91.6 91.6 0 0 1-15-6.23L82.89 187a8 8 0 0 0-2.64-5.1a74 74 0 0 1-6.14-6.14a8 8 0 0 0-5.1-2.64l-22.58-2.52a91.3 91.3 0 0 1-6.23-15l14.19-17.74a8 8 0 0 0 1.74-5.48a74 74 0 0 1 0-8.68a8 8 0 0 0-1.74-5.48L40.2 100.45a91.6 91.6 0 0 1 6.23-15L69 82.89a8 8 0 0 0 5.1-2.64a74 74 0 0 1 6.14-6.14A8 8 0 0 0 82.89 69l2.51-22.57a91.3 91.3 0 0 1 15-6.23l17.74 14.19a8 8 0 0 0 5.48 1.74a74 74 0 0 1 8.68 0a8 8 0 0 0 5.48-1.74l17.77-14.19a91.6 91.6 0 0 1 15 6.23L173.11 69a8 8 0 0 0 2.64 5.1a74 74 0 0 1 6.14 6.14a8 8 0 0 0 5.1 2.64l22.58 2.51a91.3 91.3 0 0 1 6.23 15l-14.19 17.74a8 8 0 0 0-1.74 5.53Z\"/>",
+      "width": 256,
+      "height": 256
+     }
+    }
+   ],
+   "working": [
+    "I_{a2} = I_{a1} \\cdot \\frac{\\Phi_1}{\\Phi_2}",
+    "= I_{a1} \\cdot \\frac{\\Phi_1}{0.5 \\cdot \\Phi_1}",
+    "= 2 \\cdot I_{a1}"
+   ]
+  }
+ },
+ "checkedAt": null,
+ "by": [],
+ "sawFrames": false,
+ "reviews": []
+}

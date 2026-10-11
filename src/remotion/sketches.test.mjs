@@ -371,6 +371,31 @@ function record(name, params, w = 900, h = 460, progress = 1) {
      shown('power-factor', { angle: 60 }).includes('cos φ = 0.50'));
 }
 
+// --- the pictures found wrong by looking at the frames ---------------------------
+{
+  // switch-circuit closed itself half way through whatever the mode, so "open"
+  // - under a line about a device turning OFF - ended "Closed — current flows".
+  const end = (mode) => record('switch-circuit', { mode }, 900, 460, 1).said;
+  ok('a switch asked to end open ends open', /Open/.test(end('open')) && !/Closed/.test(end('open')), end('open'));
+  ok('and one asked to end closed ends closed', /Closed/.test(end('closed')), end('closed'));
+  ok('each starts the other way, so the scene shows the switching',
+     /Closed/.test(record('switch-circuit', { mode: 'open' }, 900, 460, 0.1).said)
+     && /Open/.test(record('switch-circuit', { mode: 'closed' }, 900, 460, 0.1).said));
+
+  // Two waves in phase and the same size lie on top of each other: one curve
+  // on screen under a legend for two. The second is dashed so both show.
+  const dashes = (params) => {
+    const calls = [];
+    const { p } = mockP5(900, 460);
+    const rec = { ...p, drawingContext: { setLineDash: (d) => calls.push(d.length) } };
+    SKETCHES.waveform.draw({ p: rec, frame: 45, time: 0, progress: 1, width: 900, height: 460, params, items: [], colors: COLORS });
+    return calls.some((n) => n > 0);
+  };
+  ok('a wave lying exactly on another is dashed', dashes({ mode: 'phase', angle: 0, labelA: 'V', labelB: 'I' }));
+  ok('and is solid as soon as the two differ',
+     !dashes({ mode: 'phase', angle: 90, labelA: 'V', labelB: 'I' }) && !dashes({ mode: 'phase', angle: 0, ratio: 1.2, labelA: 'Vs', labelB: 'Vr' }));
+}
+
 // --- nothing is stated by default ----------------------------------------------
 // A sketch told nothing used to draw its defaults as though they were facts: a
 // phasor at 35 degrees, a power factor of 0.81, a meter reading 12.4 volts,

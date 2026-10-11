@@ -56,6 +56,9 @@ import { attachFormulaIcons, generateFormulaSheet } from './formulas.mjs';
 import { liveCheck } from './live-check.mjs';
 import { reviewPictures } from './picture-review.mjs';
 import { picturesIn } from './picture-words.mjs';
+import {
+  addCase, addLibraryVideos, benchView, deleteCase, readCase, saveReviews, setMark,
+} from './bench.mjs';
 import { generateHooks } from './hooks.mjs';
 import { LANGUAGES, translateContent } from './translate.mjs';
 import { tidySheet } from '../src/lib/formula-card.ts';
@@ -566,6 +569,84 @@ app.post('/api/plans/:id/items/:itemId', ok(async (req, res) => {
 app.delete('/api/plans/:id', ok(async (req, res) => {
   deletePlan(PLANS_DIR, req.params.id);
   res.json({ ok: true });
+}));
+
+// --- the test bench (server/bench.mjs) ---------------------------------------
+//
+// A fixed set of questions, the pictures made for them, and a person's mark
+// on each. The frames a person marks from are drawn into out/bench/<case>/.
+
+const benchFrame = (id, scene) => {
+  const name = 'scene-' + String(scene).padStart(2, '0') + '.jpg';
+  return fs.existsSync(path.join(paths.OUT_DIR, 'bench', id, name)) ? '/out/bench/' + id + '/' + name : '';
+};
+
+app.get('/api/bench', (_req, res) => {
+  res.json(benchView(paths.ROOT, benchFrame));
+});
+
+/** One case's script, so the browser can lay out the timeline its frames are drawn from. */
+app.get('/api/bench/:id', ok(async (req, res) => {
+  const found = readCase(paths.ROOT, req.params.id);
+  res.json({ case: { id: found.id, look: found.look, content: found.content } });
+}));
+
+/** Every video in the library that is not on the bench yet. No keys, no cost. */
+app.post('/api/bench/library', ok(async (_req, res) => {
+  const added = addLibraryVideos(paths.ROOT, allVideos(LIBRARY_DIR));
+  console.log('[bench] ' + added.length + ' library videos added');
+  res.json({ added, ...benchView(paths.ROOT, benchFrame) });
+}));
+
+/** A script just written for the bench: a question from the syllabus, never made into a video. */
+app.post('/api/bench/case', ok(async (req, res) => {
+  const { content, design, source } = req.body || {};
+  const made = addCase(paths.ROOT, { content, design, source: source === 'plan' ? 'plan' : 'syllabus' });
+  console.log('[bench] added ' + made.id);
+  res.json({ id: made.id });
+}));
+
+/**
+ * Draw a case's frames and, with a key, have its pictures reviewed.
+ *
+ * Nothing is taken out of a bench case: the reviewer's verdict is recorded
+ * beside the person's mark, which is the point of the bench. Without a key
+ * the frames are still drawn, so the pictures can be marked.
+ */
+app.post('/api/bench/:id/check', ok(async (req, res) => {
+  const { geminiKey, geminiModel, deepseekKey, deepseekModel, props } = req.body || {};
+  const found = readCase(paths.ROOT, req.params.id);
+  const pictures = picturesIn(found.content);
+  let frames = [];
+  if (pictures.length && props && Array.isArray(props.scenes)) {
+    // The case's own script, whatever the browser sent with the timeline.
+    const out = await renderSceneFrames({ ...props, content: found.content }, pictures.map((p) => p.scene), { folder: 'bench/' + found.id });
+    frames = out.frames;
+  }
+  if (pictures.length && (geminiKey || deepseekKey)) {
+    const out = await reviewPictures({
+      content: found.content, geminiKey, geminiModel: geminiModel || 'gemini-2.5-flash', deepseekKey, deepseekModel, frames,
+    });
+    saveReviews(paths.ROOT, found.id, out);
+    console.log('[bench] ' + found.id + ': ' + out.reviews.map((r) => r.verdict).join(', '));
+  } else {
+    console.log('[bench] ' + found.id + ': ' + frames.length + ' frames drawn, not reviewed');
+  }
+  res.json(benchView(paths.ROOT, benchFrame));
+}));
+
+app.post('/api/bench/mark', ok(async (req, res) => {
+  const { id, key, mark, note } = req.body || {};
+  // A mark made in the browser is a person's: only a tool can leave a suggestion.
+  setMark(paths.ROOT, id, key, { mark, note, by: 'you' });
+  const view = benchView(paths.ROOT, benchFrame);
+  res.json({ score: view.score, provisional: view.provisional });
+}));
+
+app.delete('/api/bench/:id', ok(async (req, res) => {
+  deleteCase(paths.ROOT, req.params.id);
+  fs.rmSync(path.join(paths.OUT_DIR, 'bench', req.params.id), { recursive: true, force: true });
+  res.json(benchView(paths.ROOT, benchFrame));
 }));
 
 // --- the formula card -------------------------------------------------------

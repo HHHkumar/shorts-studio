@@ -1556,7 +1556,15 @@ export const EXTRA_SKETCHES: Record<string, SketchDef> = {
   'switch-circuit': wide('Switch', 'a circuit that only works when the switch is closed',
     'mode ("open" or "closed")',
     ({ p, progress, width, height, params, colors }) => {
-      const closed = String(params.mode || '') === 'closed' || progress > 0.55;
+      // The mode is where the switch ENDS. It starts the other way and changes
+      // part way through, so the scene shows the switching - but the picture a
+      // viewer is left with is the one that was asked for.
+      //
+      // It used to close itself after half the scene whatever the mode, so
+      // "open" - under a line saying the device turns off - finished as a
+      // closed circuit captioned "current flows".
+      const wanted = String(params.mode || '').toLowerCase() === 'closed';
+      const closed = progress > 0.45 ? wanted : !wanted;
       const left = width * 0.18;
       const right = width * 0.82;
       const top = height * 0.32;

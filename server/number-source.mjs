@@ -154,6 +154,37 @@ export function unsourced(values, source, wholes = []) {
   return (values || []).filter((v) => Number.isFinite(Number(v)) && !isSourced(v, source, wholes));
 }
 
+/** Every number a picture draws as a value: bars, entries, circuit components, an angle. */
+function drawnNumbers(visual) {
+  const v = visual || {};
+  const p = v.params || {};
+  const out = (v.items || []).map((it) => it && it.value).filter((n) => Number.isFinite(n));
+  if (v.kind === 'sketch') {
+    if (p.network) out.push(...numbersIn(p.network));
+    for (const k of ['angle', 'ratio', 'count', 'amplitude']) if (Number.isFinite(p[k])) out.push(p[k]);
+    out.push(...numbersIn(p.labelA), ...numbersIn(p.labelB));
+  }
+  return out.map((n) => Math.abs(n));
+}
+
+/**
+ * The numbers a picture on the QUESTION scene shows that are the answer.
+ *
+ * A setup diagram may show what the question gives and nothing else. A meter
+ * question asking for its shunt was illustrated with the meter's 99 ohms
+ * beside a 0.099 ohm shunt - the answer, drawn on screen while the viewer was
+ * still being asked for it. A number counts as the answer when the correct
+ * option states it and the question does not.
+ */
+export function answerShown(visual, content) {
+  const c = content || {};
+  const answer = numbersIn((c.options || [])[c.correctIndex]).map((n) => Math.abs(n));
+  if (!answer.length) return [];
+  const asked = numbersIn(c.question).map((n) => Math.abs(n));
+  const secret = answer.filter((a) => !asked.some((q) => close(q, a)));
+  return [...new Set(drawnNumbers(visual).filter((n) => secret.some((a) => close(a, n) && close(n, a))))];
+}
+
 /** Angles that state a relationship rather than a measurement: in phase, a pure reactance, opposite. */
 const PLAIN_ANGLES = [0, 90, 120, 180, 360];
 

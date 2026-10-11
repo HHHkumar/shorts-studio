@@ -182,7 +182,7 @@ export const PictureCheck: React.FC<{
       ) : null}
 
       {!canCheck && unchecked.length ? (
-        <Note kind="info" title="The pictures have not been checked">
+        <Note kind="info" title={unchecked.length === 1 ? 'One picture has not been checked' : unchecked.length + ' pictures have not been checked'}>
           Add a Gemini key on step 1 and every diagram is checked against the line it sits on before you
           spend anything on the voice.
         </Note>
