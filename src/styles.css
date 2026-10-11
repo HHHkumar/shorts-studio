@@ -720,3 +720,22 @@ ul.issues .sev-low .sev { background: rgba(108,140,255,.16); color: var(--accent
 .plan-result.failed { color: #ff8a7a; }
 
 .library-translate { width: auto; font-size: 12.5px; padding: 5px 8px; }
+
+/* --- the picture check (PictureCheck.tsx) --- */
+.picture-check { margin-top: 18px; }
+.picture-list { display: grid; gap: 10px; margin-top: 10px; }
+.picture-row {
+  display: flex; gap: 14px; align-items: flex-start; padding: 12px 14px;
+  border: 1px solid var(--line); border-radius: 12px;
+}
+.picture-row.bad { border-color: rgba(255, 138, 122, 0.55); }
+.picture-row.warn { border-color: rgba(255, 200, 87, 0.5); }
+.picture-row img { width: 72px; border-radius: 8px; flex: none; border: 1px solid var(--line); }
+.picture-main { flex: 1; min-width: 0; display: grid; gap: 4px; font-size: 14px; }
+.picture-words { font-weight: 600; }
+.picture-reason { color: var(--text); }
+.picture-chip { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); }
+.picture-chip.ok { color: var(--good, #3ddc97); border-color: currentColor; }
+.picture-chip.bad { color: #ff8a7a; border-color: currentColor; }
+.picture-chip.warn { color: #ffc857; border-color: currentColor; }
+.picture-notes { display: grid; gap: 4px; margin-top: 12px; font-size: 14px; }

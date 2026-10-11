@@ -2,15 +2,18 @@ import { normalizeContent } from './gemini.mjs';
 let fails = 0;
 const ok = (n, c, extra='') => { console.log((c?'  ok  ':'  FAIL')+'  '+n+(extra?'  '+extra:'')); if(!c) fails++; };
 
-const vis = (sceneKind, visual) => normalizeContent(
+// `said` is the scene's narration: a number a picture draws must be one the
+// video gives, so a test that draws numbers has to say them.
+const vis = (sceneKind, visual, said = 'n') => normalizeContent(
   { question:'q', options:['a','b','c','d'], correctIndex:0,
-    script:[{ kind: sceneKind, narration:'n', visual }] },
+    script:[{ kind: sceneKind, narration: said, visual }] },
   { subject:'S', topic:'T', difficulty:'D', intro:'' },
 ).script.find(s => s.kind === sceneKind).visual;
 
 // --- the question scene may now show the setup -------------------------------
 ok('question: circuit allowed',
-   vis('question', { kind:'sketch', sketch:'circuit', params:{mode:'series'} }).sketch === 'circuit');
+   vis('question', { kind:'sketch', sketch:'circuit', params:{ network:'12 + 6' } },
+       'Twelve ohms in series with six ohms.').sketch === 'circuit');
 ok('question: formula allowed',
    vis('question', { kind:'formula', formula:'V = I R' }).kind === 'formula');
 
@@ -29,7 +32,7 @@ ok('question: icon BLOCKED (the "Venus mystery" case)',
 // circuits without a network rather than the rule about captions.
 ok('question: caption stripped (captions leak answers)',
    vis('question', { kind:'sketch', sketch:'circuit', params:{ network:'12 | 6' },
-                     caption:'the answer is 4 ohms' }).caption === '');
+                     caption:'the answer is 4 ohms' }, 'Twelve ohms beside six ohms.').caption === '');
 
 // --- a circuit nobody described is not drawn ---------------------------------
 // The old modes could draw two of the many arrangements a question describes,
@@ -38,9 +41,15 @@ ok('question: caption stripped (captions leak answers)',
 ok('circuit with no network refused',
    vis('explain', { kind:'sketch', sketch:'circuit', params:{ labelA:'12 V' } }).kind === 'none');
 ok('circuit with a network drawn',
-   vis('explain', { kind:'sketch', sketch:'circuit', params:{ network:'(12 | 6) + 2' } }).kind === 'sketch');
-ok('circuit with only the old mode still drawn (saved scripts keep their diagram)',
-   vis('explain', { kind:'sketch', sketch:'circuit', params:{ mode:'series' } }).kind === 'sketch');
+   vis('explain', { kind:'sketch', sketch:'circuit', params:{ network:'(12 | 6) + 2' } },
+       'Twelve ohms beside six ohms, then two ohms.').kind === 'sketch');
+// A saved script is never put through this again, so it keeps its diagram; a
+// new one cannot ask by mode alone, because a mode draws values nobody stated.
+ok('circuit with only the old mode is no longer drawn for a new script',
+   vis('explain', { kind:'sketch', sketch:'circuit', params:{ mode:'series' } }).kind === 'none');
+ok('circuit with values the video never gives is not drawn',
+   vis('explain', { kind:'sketch', sketch:'circuit', params:{ network:'10 + 20 + 30' } },
+       'A series RLC circuit at resonance.').kind === 'none');
 
 // --- the other pre-reveal scenes stay completely bare ------------------------
 for (const k of ['hook','options','countdown','answer']) {
@@ -50,19 +59,22 @@ for (const k of ['hook','options','countdown','answer']) {
 
 // --- explain keeps everything -------------------------------------------------
 ok('explain: graph still allowed',
-   vis('explain', { kind:'sketch', sketch:'graph', params:{mode:'log'} }).sketch === 'graph');
+   vis('explain', { kind:'sketch', sketch:'graph', params:{mode:'log', labelA:'Spacing', labelB:'Voltage'} }).sketch === 'graph');
 ok('explain: caption kept',
-   vis('explain', { kind:'sketch', sketch:'pie', caption:'Fuel mix' }).caption === 'Fuel mix');
+   vis('explain', { kind:'sketch', sketch:'pie', caption:'Fuel mix',
+                    items:[{label:'Coal',value:70},{label:'Solar',value:30}] },
+       'Coal gives 70 percent and solar 30.').caption === 'Fuel mix');
 
 // --- the new sketches survive, with their items ------------------------------
 const flow = vis('explain', { kind:'sketch', sketch:'block-flow',
   items:[{label:'Boiler'},{label:'Turbine'},{label:'Condenser'},{label:'Pump'}] });
 ok('block-flow keeps its stages', flow.items.length === 4, JSON.stringify(flow.items.map(i=>i.label)));
 const pie = vis('explain', { kind:'sketch', sketch:'pie',
-  items:[{label:'Coal',value:70},{label:'Solar',value:30}] });
+  items:[{label:'Coal',value:70},{label:'Solar',value:30}] }, 'Coal gives 70 percent and solar 30.');
 ok('pie keeps its values', pie.items[0].value === 70);
 ok('phasor keeps its angle',
-   vis('explain', { kind:'sketch', sketch:'phasor', params:{angle:36} }).params.angle === 36);
+   vis('explain', { kind:'sketch', sketch:'phasor', params:{angle:36, labelA:'V', labelB:'I'} },
+       'The current lags by thirty six degrees.').params.angle === 36);
 ok('invented sketch still rejected',
    vis('explain', { kind:'sketch', sketch:'not-a-real-one' }).kind === 'none');
 

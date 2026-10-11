@@ -27,7 +27,7 @@ import { planCarousel } from '../src/lib/carousel.ts';
 import { CLAUDE_MODELS, DEFAULT_CLAUDE_MODEL, listClaudeModels } from './claude.mjs';
 import { listVoices, speak, VOICE_MODELS } from './tts.mjs';
 import {
-  jobs as renderJobs, readCarousel, recentRenders, recoverJobs, renderCarousel, renderThumbnail, retryRender, startRender, paths,
+  jobs as renderJobs, readCarousel, recentRenders, recoverJobs, renderCarousel, renderSceneFrames, renderThumbnail, retryRender, startRender, paths,
 } from './render.mjs';
 import {
   allVideos, deleteVideo, listVideos, mediaInUse, newVideoId, openVideo, recordOnVideo, saveVideo, VIDEO_ID,
@@ -54,6 +54,8 @@ import { generateDoodleDirections } from './doodle-directions.mjs';
 import { scenesToRecord } from './voiceover-plan.mjs';
 import { attachFormulaIcons, generateFormulaSheet } from './formulas.mjs';
 import { liveCheck } from './live-check.mjs';
+import { reviewPictures } from './picture-review.mjs';
+import { picturesIn } from './picture-words.mjs';
 import { generateHooks } from './hooks.mjs';
 import { LANGUAGES, translateContent } from './translate.mjs';
 import { tidySheet } from '../src/lib/formula-card.ts';
@@ -693,6 +695,55 @@ app.post('/api/validate', ok(async (req, res) => {
   }
   const report = await validateContent(apiKey, model || 'deepseek-chat', content, options || {});
   res.json({ report });
+}));
+
+/** Folders of frames rendered for a picture check. The newest few are kept to look at. */
+function pruneFrameFolders(prefix, keep) {
+  try {
+    const old = fs.readdirSync(paths.OUT_DIR)
+      .filter((f) => f.startsWith(prefix) && /^[a-z]+-[0-9]{13}$/.test(f))
+      .sort()
+      .slice(0, -keep);
+    for (const f of old) fs.rmSync(path.join(paths.OUT_DIR, f), { recursive: true, force: true });
+  } catch { /* a folder that will not go is not worth failing a check for */ }
+}
+
+/**
+ * The picture check: every diagram read against the line it sits on.
+ *
+ * With the video's props, each picture's frame is rendered first and Gemini
+ * judges what the viewer will see; a frame that will not render does not stop
+ * the check, which then goes on the words. DeepSeek, when its key is here,
+ * reads the same pictures in words - a reviewer that did not write the script.
+ */
+app.post('/api/pictures/review', ok(async (req, res) => {
+  const { geminiKey, geminiModel, deepseekKey, deepseekModel, content, props } = req.body || {};
+  if (!content || !Array.isArray(content.script)) throw new Error('There is no script to check yet.');
+  const pictures = picturesIn(content);
+  if (!pictures.length) {
+    res.json({ reviews: [], by: [], sawFrames: false, problems: [] });
+    return;
+  }
+
+  let frames = [];
+  if (geminiKey && props && Array.isArray(props.scenes)) {
+    const started = Date.now();
+    try {
+      pruneFrameFolders('review-', 6);
+      const out = await renderSceneFrames(props, pictures.map((p) => p.scene), { folder: 'review-' + Date.now() });
+      frames = out.frames;
+      console.log('[pictures] rendered ' + frames.length + ' frames in ' + ((Date.now() - started) / 1000).toFixed(1) + 's');
+    } catch (e) {
+      console.log('[pictures] no frames, checking on the words alone: ' + (e && e.message ? e.message : e));
+    }
+  }
+
+  const out = await reviewPictures({
+    content, geminiKey, geminiModel: geminiModel || 'gemini-2.5-flash', deepseekKey, deepseekModel, frames,
+  });
+  console.log('[pictures] ' + out.reviews.map((r) => r.verdict).join(', ') + ' - by ' + out.by.join(' and ')
+    + (out.sawFrames ? ', with frames' : ', on words alone'));
+  res.json({ reviews: out.reviews, by: out.by, sawFrames: out.sawFrames, problems: out.problems });
 }));
 
 // --- step 1: write the question and the script ------------------------------

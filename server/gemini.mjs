@@ -4,7 +4,9 @@
 // broken into the exact scenes the Remotion composition expects.
 // ---------------------------------------------------------------------------
 
-import { SKETCH_NAMES, sketchPromptLines } from './sketch-catalogue.mjs';
+import { SKETCH_NAMES } from './sketch-catalogue.mjs';
+import { checkSketch, itemLimit, sketchPromptLines } from './sketch-contract.mjs';
+import { sourceNumbers, unsourcedInVisual } from './number-source.mjs';
 import { fetchRetrying } from './retry.mjs';
 import { callClaude } from './claude.mjs';
 // Loaded straight from the app's TypeScript: Node strips the types itself, and
@@ -169,7 +171,10 @@ export const QUIZ_SYSTEM = [
   + ' and it is dropped rather than cut, because half an equation is a wrong equation.',
   '- bars    : 2 to 4 quantities compared. Each item needs a label and a numeric value, all in',
   '            the SAME unit, and the unit goes in "caption", e.g. "Surface gravity, m/s²".',
-  '            Best for "which is bigger". Never invent numbers you are not confident about.',
+  '            Best for "which is bigger". EVERY value must be a number the question or its',
+  '            working gives, or one step from those (their sum, their ratio). A chart with any',
+  '            other number - a typical value, an illustrative one - is thrown away: on screen it',
+  '            reads as data. To compare two things without numbers, use "compare".',
   '- compare : exactly 2 things side by side. Each item needs a short label and one emoji as',
   '            "symbol". Best for before/after, or here/there.',
   '- icon    : one emoji as "symbol" plus a 1-3 word label.',
@@ -300,12 +305,19 @@ const EXAM_STYLE = {
     + 'typical values, failure modes and safe practice. No exam framing.',
 };
 
+// None of these asks for a diagram on every scene. "Rich" once did, and a
+// model told to fill every scene fills the ones with nothing to show too: a
+// spanner for "constant load torque", scattered dots for "bundled conductors".
+// Asked for a picture it does not have, it draws the nearest one it does.
 const DIAGRAM_DENSITY = {
-  sparse: 'Use a diagram only where it genuinely earns its place - roughly one explain scene in three.',
-  balanced: 'Put a diagram on most explain scenes, and on the question scene when there is a setup worth showing.',
-  rich: 'Put a diagram on EVERY explain scene, and a setup diagram on the question scene. '
-    + 'Vary the kind - do not use the same one twice in a row. If nothing shows the real situation '
-    + 'of a scene, leave it bare: a merely related picture is worse than none.',
+  sparse: 'A diagram only on the one or two explain scenes where a picture carries the point better '
+    + 'than words can. Every other scene stays bare.',
+  balanced: 'A diagram on an explain scene only when it shows the very thing that scene states - the '
+    + 'same components, the same values, the same relationship. Expect that to be about half of them. '
+    + 'A scene with nothing specific to show stays bare, and a bare scene is correct.',
+  rich: 'A diagram on every explain scene that has something specific to show, and a setup diagram on '
+    + 'the question scene. Vary the kind - do not use the same one twice in a row. A scene with nothing '
+    + 'specific to show stays bare: a merely related picture is worse than none, and is thrown away.',
 };
 
 function densityLine(o) {
@@ -983,12 +995,20 @@ export function normalizeContent(input, options) {
   }
 
   let script = (Array.isArray(c.script) ? c.script : [])
-    .map((s) => ({
-      kind: SCENE_KINDS.includes(s && s.kind) ? s.kind : 'explain',
-      narration: clean(s && s.narration),
-      imageQuery: clean(s && s.imageQuery).slice(0, 60),
-      visual: normalizeVisual(s && s.visual, SCENE_KINDS.includes(s && s.kind) ? s.kind : 'explain', content.figure),
-    }))
+    .map((s) => {
+      const kind = SCENE_KINDS.includes(s && s.kind) ? s.kind : 'explain';
+      // Why a picture the model asked for was not drawn, kept on the scene so
+      // the creator sees a reason and not just a gap.
+      const why = [];
+      const visual = normalizeVisual(s && s.visual, kind, content.figure, why);
+      return {
+        kind,
+        narration: clean(s && s.narration),
+        imageQuery: clean(s && s.imageQuery).slice(0, 60),
+        visual,
+        ...(why.length ? { pictureNote: why[0] } : {}),
+      };
+    })
     .filter((s) => s.narration || s.kind === 'countdown');
 
   // Keep the storytelling order no matter what order the model emitted.
@@ -1065,6 +1085,7 @@ export function normalizeContent(input, options) {
   script = script.map((s) => (s.kind === 'countdown' ? { ...s, narration: '' } : s));
 
   script = dropRepeatedSketches(script);
+  script = dropUnsourcedNumbers(script, content, options);
 
   // A question about a particular circuit is unreadable without that circuit
   // on screen. The KCL video asked about a junction and showed a formula card
@@ -1111,13 +1132,47 @@ export function dropRepeatedSketches(script) {
     const count = seen.get(name) || 0;
     // Back to back is always wrong; a third outing is padding whatever the gap.
     if (name === previous || count >= 2) {
+      const note = name === previous
+        ? 'The ' + name + ' sketch was asked for twice in a row, so the second was not drawn.'
+        : 'The ' + name + ' sketch had already been used twice in this video.';
       previous = '';
-      return { ...line, visual: { kind: 'none' } };
+      return { ...line, visual: { kind: 'none' }, pictureNote: note };
     }
 
     seen.set(name, count + 1);
     previous = name;
     return line;
+  });
+}
+
+const listed = (values) => {
+  const said = values.map((v) => String(v));
+  return said.length > 1 ? said.slice(0, -1).join(', ') + ' and ' + said[said.length - 1] : said[0];
+};
+
+/**
+ * Remove any chart or sketch that draws a number the video never gives.
+ *
+ * A model fills a picture with plausible values the way it fills a sentence
+ * with plausible words: 110 kV against 145 kV for a question with no numbers
+ * in it, a series RLC as three resistors of 10, 20 and 30 ohms. On screen
+ * those read as data. See number-source.mjs for what counts as given.
+ *
+ * English only: the givens are read out of the narration, numbers written as
+ * words included, and that reading knows no other language.
+ */
+export function dropUnsourcedNumbers(script, content, options = {}) {
+  if (options.language && !/^english$/i.test(String(options.language).trim())) return script;
+  const source = sourceNumbers({ ...content, script });
+  return script.map((line) => {
+    const bad = unsourcedInVisual(line && line.visual, source);
+    if (!bad.length) return line;
+    const what = line.visual.kind === 'bars' ? 'A bar chart' : 'The ' + line.visual.sketch + ' sketch';
+    return {
+      ...line,
+      visual: { kind: 'none' },
+      pictureNote: what + ' was removed: it showed ' + listed(bad) + ', which the question and its working never give.',
+    };
   });
 }
 
@@ -1195,6 +1250,9 @@ function normalizeParams(raw) {
   const p = raw && typeof raw === 'object' ? raw : {};
   const out = {};
   for (const key of ['angle', 'speed', 'frequency', 'amplitude', 'count', 'ratio']) {
+    // Absent must stay absent: Number(null) and Number('') are both 0, and a
+    // zero nobody wrote is exactly the invented value the contract refuses.
+    if (p[key] === null || p[key] === undefined || p[key] === '' || typeof p[key] === 'boolean') continue;
     const n = Number(p[key]);
     // Each sketch clamps to its own sensible range; this only strips junk.
     if (Number.isFinite(n)) out[key] = n;
@@ -1216,7 +1274,7 @@ function normalizeParams(raw) {
  * numbers, or a "compare" with one side missing, would draw a broken scene.
  * Anything that does not fully check out degrades to no diagram at all.
  */
-function normalizeVisual(raw, sceneKind, figure) {
+function normalizeVisual(raw, sceneKind, figure, why = []) {
   if (!raw || typeof raw !== 'object') return { kind: 'none' };
   // A diagram before the answer gives the game away: an icon captioned
   // "Venus mystery" on the opening screen tells the viewer the answer is Venus
@@ -1254,7 +1312,8 @@ function normalizeVisual(raw, sceneKind, figure) {
   const items = (Array.isArray(raw.items) ? raw.items : [])
     .map((it) => ({
       label: clean(it && it.label).slice(0, 40),
-      value: Number(it && it.value),
+      // An absent value stays absent: Number(null) is 0, a value nobody gave.
+      value: it && it.value !== null && it.value !== undefined && it.value !== '' ? Number(it.value) : NaN,
       symbol: typeof (it && it.symbol) === 'string' ? it.symbol.trim().slice(0, 4) : '',
     }))
     .filter((it) => it.label || it.symbol);
@@ -1267,7 +1326,10 @@ function normalizeVisual(raw, sceneKind, figure) {
     const name = matchSketch(raw.sketch);
     if (!name) return { kind: 'none' };
     const params = normalizeParams(raw.params);
-    if (sketchLabelsAreNonsense(name, params)) return { kind: 'none' };
+    if (sketchLabelsAreNonsense(name, params)) {
+      why.push('The ' + name + ' sketch was labelled with two measures of one wave, which cannot differ in phase.');
+      return { kind: 'none' };
+    }
 
     // A circuit with no network is a circuit whose shape nobody stated, and
     // the old modes could only draw two of the many a question describes - so
@@ -1282,16 +1344,30 @@ function normalizeVisual(raw, sceneKind, figure) {
     // exactly what the model stated and nothing a default filled in.
     if (name === 'circuit') {
       const stated = raw.params && typeof raw.params === 'object' ? raw.params : {};
-      if (!clean(stated.network) && !clean(stated.mode)) return { kind: 'none' };
+      if (!clean(stated.network) && !clean(stated.mode)) {
+        why.push('The circuit sketch was not given a network, so there was no circuit to draw.');
+        return { kind: 'none' };
+      }
+    }
+    // A sketch draws every knob it has, stated or not - and an unstated one
+    // draws its default as though it were a fact: a sixty-degree lag, a meter
+    // reading 12.4 volts. So everything the sketch lists must be stated, by
+    // the contract read from its own "uses" line, or nothing is drawn.
+    const problems = checkSketch(name, params, items);
+    if (problems.length) {
+      why.push('The ' + name + ' sketch ' + problems.join(', and ') + ', so it was not drawn.');
+      return { kind: 'none' };
     }
     // Sketches share the items array: block-flow uses it for stage labels,
-    // pie for slices, circuit for component values.
+    // pie for slices, kirchhoff for branch currents. Each takes as many as it
+    // says it draws - the cap was five for all of them, which quietly cut a
+    // nine-cell matrix and an eight-bar histogram short.
     return {
       kind,
       sketch: name,
       caption,
       params,
-      items: items.slice(0, 5).map((it) => ({ label: it.label, value: it.value, symbol: it.symbol })),
+      items: items.slice(0, itemLimit(name)).map((it) => ({ label: it.label, value: it.value, symbol: it.symbol })),
     };
   }
 

@@ -5,11 +5,12 @@ import {
   type TopicForm,
   type ValidationReport,
 } from '../lib/api';
-import type { QuizContent, ScenePanel, SceneKind, ScriptLine } from '../lib/types';
+import type { QuizContent, ScenePanel, SceneKind, ScriptLine, VideoProps } from '../lib/types';
 import type { FigureCheck } from '../lib/figures/index.ts';
 import { missingLabels } from '../lib/options-timing';
 import { FormulaCardPanel } from './FormulaCardPanel';
 import { HookIdeas } from './HookIdeas';
+import { PictureCheck } from './PictureCheck';
 import { motionWordsIn } from '../lib/motion-lexicon';
 import { scriptSeconds } from '../lib/blank-script';
 import { closingScene, factIsSpoken, speakFunFact, withFunFact } from '../lib/fun-fact';
@@ -319,6 +320,8 @@ export const StepScript: React.FC<{
   form: TopicForm;
   report: ValidationReport | null;
   setReport: (r: ValidationReport | null) => void;
+  /** The video as it stands, so the picture check can look at real frames. */
+  videoProps: VideoProps | null;
   onBack: () => void;
   onNext: () => void;
 }> = ({
@@ -338,6 +341,7 @@ export const StepScript: React.FC<{
   form,
   report,
   setReport,
+  videoProps,
   onBack,
   onNext,
 }) => {
@@ -504,6 +508,18 @@ export const StepScript: React.FC<{
             </Note>
           ) : null}
         </>
+      )}
+
+      {explainer ? null : (
+        <PictureCheck
+          content={content}
+          setContent={setContent}
+          videoProps={videoProps}
+          geminiKey={geminiKey}
+          geminiModel={geminiModel}
+          deepseekKey={deepseekKey}
+          deepseekModel={deepseekModel}
+        />
       )}
 
       {hasAudio ? (

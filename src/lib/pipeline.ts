@@ -3,7 +3,7 @@
 // runner's engine. The same calls the steps make, in the same order, so a
 // video made overnight is made exactly as one made by hand.
 //
-//   write -> check -> formula card -> engineer -> pictures -> voice -> render
+//   write -> check -> picture check -> formula card -> engineer -> drawings -> voice -> render
 //
 // It stops short, and leaves the video in the library to look at, whenever a
 // check fails: DeepSeek disagreeing with the answer is the one thing no
@@ -19,6 +19,7 @@ import { tidySheet } from './formula-card';
 import { withFormulaScene, withWorking } from './script-edit';
 import { doodleScenes, needsDrawing, tidyDirection } from './doodle';
 import { recordVoice } from './voice-run';
+import { applyPictureReview } from './picture-review';
 
 export interface PipelineSettings {
   geminiKey: string;
@@ -42,7 +43,7 @@ export interface PlannedQuestion {
   difficulty: string;
 }
 
-export type PipelineStage = 'write' | 'check' | 'formulas' | 'engineer' | 'pictures' | 'voice' | 'render';
+export type PipelineStage = 'write' | 'check' | 'review' | 'formulas' | 'engineer' | 'pictures' | 'voice' | 'render';
 
 export interface PipelineResult {
   videoId: string;
@@ -98,7 +99,33 @@ export async function makeVideo(
       }
     }
 
-    // 3. The formula card and the worked solution.
+    // 3. The picture check: every diagram read against its line, with the
+    // frame in front of the reviewer, and anything wrong or beside the point
+    // taken out. Before the formula card and the engineer, because a scene that
+    // loses its diagram is a scene the engineer now has to carry.
+    onStage('review', 'Checking the pictures');
+    try {
+      const sent = content.script;
+      const timeline = buildScenes(sent, {}, s.design, FPS, 0);
+      const out = await api.reviewPictures({
+        geminiKey: s.geminiKey.trim(), geminiModel: s.geminiModel, deepseekKey: s.deepseekKey.trim(), deepseekModel: s.deepseekModel,
+        content, props: { content, scenes: timeline.scenes, design: s.design, fps: FPS, totalDurationInFrames: timeline.totalDurationInFrames },
+      });
+      const applied = applyPictureReview(content.script, sent, out.reviews);
+      content = {
+        ...content,
+        script: applied.script,
+        pictureReview: { checkedAt: new Date().toISOString(), by: out.by, sawFrames: out.sawFrames, reviews: applied.reviews, problems: out.problems },
+      };
+      await save();
+    } catch (e) {
+      // Unchecked pictures are not a reason to lose the video: it is left for a
+      // person to look at, with the reason said.
+      await save();
+      return { videoId, status: 'review', note: 'The pictures could not be checked, so the video was not made: ' + (e instanceof Error ? e.message : String(e)) };
+    }
+
+    // 4. The formula card and the worked solution.
     onStage('formulas', 'Writing the formula card');
     try {
       const { sheet } = await api.formulas({ apiKey: s.geminiKey.trim(), model: s.geminiModel, content });
@@ -114,7 +141,7 @@ export async function makeVideo(
     }
     await save();
 
-    // 4. The animated engineer, in the Doodle look.
+    // 5. The animated engineer, in the Doodle look.
     if (s.design.layout === 'doodle') {
       onStage('engineer', 'Directing the engineer');
       const animated = s.design.animatedEngineer !== false;
@@ -143,13 +170,13 @@ export async function makeVideo(
     }
     if (shouldStop()) return { videoId, status: 'review', note: 'Stopped before the voiceover.' };
 
-    // 5. The voice, recorded and measured.
+    // 6. The voice, recorded and measured.
     onStage('voice', 'Recording');
     audio = await recordVoice(s.elevenKey, s.voice, content.script, undefined, (p) =>
       onStage('voice', p.total ? p.done + ' of ' + p.total + ' scenes' : p.stage));
     await save();
 
-    // 6. The render, recorded against the video by the server.
+    // 7. The render, recorded against the video by the server.
     onStage('render', 'Starting');
     const { scenes, totalDurationInFrames } = buildScenes(content.script, audio, s.design, FPS, tidySheet(content.formulas)?.cards.length ?? 0);
     const { jobId } = await api.startRender({ content, scenes, design: s.design, fps: FPS, totalDurationInFrames }, s.quality, videoId);

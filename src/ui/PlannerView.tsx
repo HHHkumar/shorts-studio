@@ -21,6 +21,7 @@ import { Check, ErrorNote, Note, Select, Spinner, TextInput } from './controls';
 const STAGE_LABEL: Record<PipelineStage, string> = {
   write: 'Writing',
   check: 'Checking the answer',
+  review: 'Checking the pictures',
   formulas: 'Formula card',
   engineer: 'Directing the engineer',
   pictures: 'Drawing',

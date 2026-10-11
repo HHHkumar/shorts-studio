@@ -443,6 +443,7 @@ export const App: React.FC = () => {
               form={form}
               report={report}
               setReport={setReport}
+              videoProps={videoProps}
               onBack={() => go(1)}
               onNext={() => go(3)}
             />

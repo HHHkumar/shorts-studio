@@ -43,8 +43,9 @@ const sk = (v) => normalizeContent({ question:'q', options:['a','b','c','d'], co
   script:[{kind:'explain',narration:'e',visual:v}] }, base).script.find(s=>s.kind==='explain').visual;
 ok('valid sketch kept', sk({kind:'sketch',sketch:'orbit',params:{count:3,labelA:'Sun'}}).sketch==='orbit');
 ok('invented name rejected', sk({kind:'sketch',sketch:'quantum-foam',params:{}}).kind==='none');
-ok('junk params stripped', JSON.stringify(sk({kind:'sketch',sketch:'graph',params:{count:'lots',mode:'quadratic',angle:NaN}}).params)==='{"mode":"quadratic"}',
-   JSON.stringify(sk({kind:'sketch',sketch:'graph',params:{count:'lots',mode:'quadratic',angle:NaN}}).params));
+ok('junk params stripped', JSON.stringify(sk({kind:'sketch',sketch:'vector-field',params:{count:'lots',mode:'radial',angle:NaN}}).params)==='{"mode":"radial"}',
+   JSON.stringify(sk({kind:'sketch',sketch:'vector-field',params:{count:'lots',mode:'radial',angle:NaN}}).params));
+ok('a knob given as null is absent, not zero', sk({kind:'sketch',sketch:'power-factor',params:{angle:null}}).kind==='none');
 ok('bars need 2 numbers', sk({kind:'bars',items:[{label:'a',value:1}]}).kind==='none');
 ok('compare needs 2 sides', sk({kind:'compare',items:[{label:'a',symbol:'x'}]}).kind==='none');
 
@@ -145,9 +146,9 @@ ok('an invented name is refused', matchSketch('teleporter') === '');
 ok('junk is refused', matchSketch(null) === '' && matchSketch('') === '');
 
 let vis = normalizeContent({ question:'q', options:['a','b','c','d'], correctIndex:0,
-  script:[{ kind:'explain', narration:'n', visual:{ kind:'sketch', sketch:'Number Line' } }] }, base);
+  script:[{ kind:'explain', narration:'n', visual:{ kind:'sketch', sketch:'Diode Curve' } }] }, base);
 ok('a loosely spelled sketch survives normalisation',
-   vis.script.find((l)=>l.kind==='explain').visual.sketch === 'number-line');
+   vis.script.find((l)=>l.kind==='explain').visual.sketch === 'diode-curve');
 vis = normalizeContent({ question:'q', options:['a','b','c','d'], correctIndex:0,
   script:[{ kind:'explain', narration:'n', visual:{ kind:'sketch', sketch:'teleporter' } }] }, base);
 ok('an invented sketch degrades to no diagram',
@@ -290,8 +291,8 @@ ok('a rectifier waveform is unaffected - it has one wave in and one out',
    sketchScene({ mode: 'half-wave', labelA: 'Peak', labelB: 'RMS' }).kind === 'sketch');
 ok('one measure against a real signal is refused too',
    sketchScene({ mode: 'phase', labelA: 'Peak', labelB: 'Current' }).kind === 'none');
-ok('an unlabelled phase waveform is left alone',
-   sketchScene({ mode: 'phase', angle: 90 }).kind === 'sketch');
+ok('an unlabelled phase waveform is refused: which curve is which is its whole content',
+   sketchScene({ mode: 'phase', angle: 90 }).kind === 'none');
 
 const { figurePromptLines } = await import('../src/lib/figures/index.ts');
 const electrical = figurePromptLines('Basic Electrical Engineering', 'Kirchhoff’s laws').join('\n');

@@ -53,29 +53,8 @@ ${entries.join('\n')}
 
 export const SKETCH_NAMES = SKETCH_CATALOGUE.map((s) => s.name);
 
-/**
- * The lines describing the library inside the generation prompt.
- *
- * Deliberately two lines per sketch and not three. At a hundred entries the old
- * three-line form was three hundred lines of every request, most of it repeating
- * the sketch's own name back at the model.
- */
-export function sketchPromptLines() {
-  const lines = [
-    'ANIMATED SKETCHES. Setting visual.kind to "sketch" runs a real animation, drawn live.',
-    'Set "sketch" to one of these names and put its knobs in "params". Never invent a name.',
-    'Prefer a sketch over a static diagram whenever the point is about MOVEMENT or CHANGE.',
-    'Pick the one that actually shows THIS scene\\'s idea. A diagram that is merely in the right',
-    'subject is worse than none: it looks like an illustration of something else.',
-    'Do not use the same sketch twice in one video unless the second use shows a different case.',
-  ];
-  for (const s of SKETCH_CATALOGUE) {
-    lines.push('- ' + s.name + ': ' + s.describe);
-    lines.push('    params: ' + s.uses);
-  }
-  lines.push('Leave out any parameter you are unsure of; every one has a sensible default.');
-  return lines;
-}
+// What the model is told about these, and what each must be given before it
+// is drawn, is worked out from the "uses" lines above in sketch-contract.mjs.
 
 /**
  * Guards against this file being stale. The test calls it; so does boot.

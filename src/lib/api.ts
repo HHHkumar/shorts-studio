@@ -2,6 +2,7 @@ import type { DesignSettings, QuizContent, Scene, ScriptLine, VideoKind, VideoPr
 import type { AudioResult } from './timeline';
 import type { DoodleDirection } from './doodle';
 import type { FormulaSheet } from './formula-card';
+import type { PictureReview } from './picture-review';
 
 export type ContentType = 'general' | 'electrical' | 'aptitude';
 
@@ -521,6 +522,19 @@ export const api = {
     return post<{ sheet: FormulaSheet }>('/api/formulas', body);
   },
 
+  /**
+   * A reviewer reads every diagram against the line it sits on. With `props`
+   * the helper renders each frame first, so the reviewer sees what the viewer
+   * will; without, it goes on the words alone. Free tier, and a fraction of a
+   * cent of DeepSeek when that key is there.
+   */
+  reviewPictures(body: {
+    geminiKey: string; geminiModel: string; deepseekKey: string; deepseekModel: string;
+    content: QuizContent; props?: VideoProps;
+  }) {
+    return post<{ reviews: PictureReview[]; by: string[]; sawFrames: boolean; problems: string[] }>('/api/pictures/review', body);
+  },
+
   /** Icons for an edited formula card: cards that already have one keep it. */
   formulaIcons(sheet: FormulaSheet) {
     return post<{ sheet: FormulaSheet }>('/api/formulas/icons', { sheet });
@@ -715,7 +729,7 @@ export const DEFAULT_TOPIC_FORM: TopicForm = {
   avoid: '',
   extra: '',
   intro: '',
-  diagramDensity: 'rich',
+  diagramDensity: 'balanced',
 };
 
 export const DEFAULT_VOICE_SETTINGS: VoiceSettings = {
@@ -837,9 +851,9 @@ export const EXAMS = [
 ];
 
 export const DIAGRAM_DENSITIES = [
-  { id: 'sparse', label: 'Sparse — only where it really helps' },
-  { id: 'balanced', label: 'Balanced — most explanation scenes' },
-  { id: 'rich', label: 'Rich — every scene that can take one (recommended)' },
+  { id: 'sparse', label: 'Sparse — one or two that carry the point' },
+  { id: 'balanced', label: 'Balanced — where a scene has something to show (recommended)' },
+  { id: 'rich', label: 'Rich — every scene that has something to show' },
 ];
 
 export const LEVELS = [

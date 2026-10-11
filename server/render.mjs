@@ -248,6 +248,44 @@ export async function renderThumbnail(inputProps) {
   return { fileName, url: '/out/' + fileName, bytes: fs.statSync(output).size };
 }
 
+/**
+ * One frame of the video for each scene asked for, as the viewer will see it.
+ *
+ * For the picture check: a picture is judged on what is drawn, not on what was
+ * asked for, and the two have differed before - a switch drawn open under the
+ * caption "Closed". Each frame is taken just before its scene starts to fade,
+ * when everything that scene reveals has been revealed.
+ *
+ * Half size and JPEG: a reviewer reads a diagram at 540 pixels wide as well as
+ * at 1080, and nine frames are a tenth the bytes. Scenes that are not in the
+ * timeline (a countdown turned off) are skipped.
+ */
+export async function renderSceneFrames(inputProps, sceneIndexes, { scale = 0.5, folder = '' } = {}) {
+  const name = folder || 'frames-' + Date.now();
+  const dir = path.join(OUT_DIR, name);
+  fs.mkdirSync(dir, { recursive: true });
+
+  const serveUrl = await getBundle(() => undefined);
+  syncAudioIntoBundle(serveUrl);
+  await ensureBrowser();
+
+  const composition = await selectComposition({ serveUrl, id: 'QuizVideo', inputProps });
+  const frames = [];
+  for (const index of sceneIndexes) {
+    const scene = (inputProps.scenes || []).find((s) => s && s.id === 's' + index);
+    if (!scene) continue;
+    const frame = Math.min(
+      composition.durationInFrames - 1,
+      Math.max(0, scene.startFrame + scene.durationInFrames - 2),
+    );
+    const fileName = 'scene-' + String(index).padStart(2, '0') + '.jpg';
+    const output = path.join(dir, fileName);
+    await renderStill({ composition, serveUrl, inputProps, output, frame, scale, imageFormat: 'jpeg', jpegQuality: 82, overwrite: true });
+    frames.push({ scene: index, file: output, url: '/out/' + name + '/' + fileName });
+  }
+  return { folder: name, frames };
+}
+
 /** A carousel folder name this app made - the only shape accepted back from the browser. */
 export const CAROUSEL_FOLDER = /^carousel-[0-9]{13}$/;
 

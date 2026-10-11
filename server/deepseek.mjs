@@ -9,6 +9,7 @@
 
 const ENDPOINT = 'https://api.deepseek.com/chat/completions';
 import { fetchRetrying } from './retry.mjs';
+import { describePicture } from './picture-words.mjs';
 
 export const DEEPSEEK_MODELS = [
   { id: 'deepseek-chat', label: 'DeepSeek Chat — fast and cheap (recommended)' },
@@ -51,29 +52,6 @@ const SYSTEM = [
   'verdict "pass" = correct, unambiguous and fairly explained. Use an empty issues array.',
   'correctIndex is YOUR answer, 0-based, regardless of what was marked.',
 ].join('\n');
-
-/** A sketch in words, as the viewer would read it. */
-export function describeSketch(v) {
-  const p = v.params || {};
-  const parts = [];
-  if (v.sketch === 'waveform' && (p.mode || 'phase') === 'phase') {
-    // Said exactly as drawn - including what an absent value draws.
-    const a = p.labelA || 'V';
-    const b = p.labelB || 'I';
-    const deg = Number(p.angle) || 0;
-    const ratio = Number(p.ratio) || 1;
-    parts.push('two sine waves, ' + a + ' and ' + b);
-    parts.push(deg ? b + (deg > 0 ? ' lags ' : ' leads ') + a + ' by ' + Math.abs(deg) + ' degrees' : b + ' in phase with ' + a);
-    parts.push(ratio === 1 ? 'equal in size' : b + ' is ' + ratio + ' times the size of ' + a);
-  } else {
-    for (const [k, val] of Object.entries(p)) {
-      if (val !== '' && val !== null && val !== undefined) parts.push(k + ' = ' + val);
-    }
-    const items = (v.items || []).map((i) => i.label + (i.value !== undefined && i.value !== '' ? ' = ' + i.value : '')).filter(Boolean);
-    if (items.length) parts.push('items: ' + items.join(', '));
-  }
-  return v.sketch + (v.caption ? ' "' + v.caption + '"' : '') + ': ' + parts.join('; ');
-}
 
 function buildPrompt(content, options) {
   const lines = [];
@@ -136,7 +114,7 @@ function buildPrompt(content, options) {
   const drawn = (content.script || [])
     .map((s) => s.visual)
     .filter((v) => v && v.kind === 'sketch' && v.sketch)
-    .map(describeSketch);
+    .map(describePicture);
   if (drawn.length) {
     lines.push('DIAGRAMS DRAWN (check each shows something true for this question; report a wrong one with where "diagram"):');
     drawn.forEach((d) => lines.push('  - ' + d));

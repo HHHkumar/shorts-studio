@@ -359,10 +359,10 @@ export const StepTopic: React.FC<{
         <Select label="Tone of voice" value={form.tone} options={TONES} onChange={set('tone')} />
         <Select
           label="How many diagrams"
-          value={form.diagramDensity || 'rich'}
+          value={form.diagramDensity || 'balanced'}
           options={DIAGRAM_DENSITIES}
           onChange={(v) => set('diagramDensity')(v as 'sparse' | 'balanced' | 'rich')}
-          hint="Charts, circuits and animations drawn into the video. Rich puts one on nearly every scene."
+          hint="Charts, circuits and animations drawn into the video. A scene gets one only when it shows exactly what that scene says, so some scenes having none is normal."
         />
         {useClaude ? (
           <Select

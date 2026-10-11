@@ -1,6 +1,8 @@
 import { SKETCHES, SKETCH_NAMES } from './sketches.ts';
 import { SKETCH_CATALOGUE } from '../../server/sketch-catalogue.mjs';
 import fs from 'node:fs';
+import { mockP5, sketchMarks, sketchTexts } from './sketch-mock.mjs';
+import { checkSketch, contractFor } from '../../server/sketch-contract.mjs';
 
 // ---------------------------------------------------------------------------
 // Every sketch, drawn against a fake p5.
@@ -19,56 +21,6 @@ import fs from 'node:fs';
 
 let fails = 0;
 const ok = (n, c, extra='') => { console.log((c?'  ok  ':'  FAIL')+'  '+n+(extra?'  '+extra:'')); if(!c) fails++; };
-
-/** A p5 that draws nothing and remembers everything. */
-function mockP5(width, height) {
-  const bad = [];
-  const drawn = [];
-  let calls = 0;
-
-  const check = (name, args) => {
-    calls++;
-    for (const a of args) {
-      if (typeof a === 'number' && !Number.isFinite(a)) {
-        bad.push(name + '(' + args.join(', ') + ')');
-        return;
-      }
-    }
-  };
-  // A drawing call, as opposed to a state change. Only these count as "drew".
-  const marks = (name) => (...args) => { check(name, args); drawn.push(name); };
-  const state = (name) => (...args) => { check(name, args); };
-
-  const p = {
-    CENTER: 'center', LEFT: 'left', RIGHT: 'right', TOP: 'top', BOTTOM: 'bottom',
-    PIE: 'pie', ROUND: 'round', CORNER: 'corner',
-
-    line: marks('line'), rect: marks('rect'), circle: marks('circle'),
-    ellipse: marks('ellipse'), arc: marks('arc'), text: marks('text'),
-    vertex: marks('vertex'), point: marks('point'), triangle: marks('triangle'),
-    quad: marks('quad'), bezier: marks('bezier'),
-
-    beginShape: state('beginShape'), endShape: state('endShape'),
-    push: state('push'), pop: state('pop'),
-    fill: state('fill'), noFill: state('noFill'),
-    stroke: state('stroke'), noStroke: state('noStroke'),
-    strokeWeight: state('strokeWeight'), strokeCap: state('strokeCap'),
-    textAlign: state('textAlign'), textSize: state('textSize'),
-    textStyle: state('textStyle'),
-    translate: state('translate'), rotate: state('rotate'),
-    rectMode: state('rectMode'), ellipseMode: state('ellipseMode'),
-
-    radians: (d) => (d * Math.PI) / 180,
-    // Deterministic, like the seeded random the real renderer uses.
-    random: (a, b) => (b === undefined ? (a === undefined ? 0.5 : 0.5 * a) : a + (b - a) * 0.5),
-    color: () => ({ setAlpha() {} }),
-    drawingContext: { setLineDash() {} },
-    width,
-    height,
-  };
-
-  return { p, bad, drawn, get calls() { return calls; } };
-}
 
 const COLORS = { accent: '#4c9aff', text: '#ffffff', dim: '#94a3b8', good: '#3ddc97', bg: '#0b1020' };
 
@@ -417,6 +369,41 @@ function record(name, params, w = 900, h = 460, progress = 1) {
      shown('power-factor', { angle: 90 }).includes('cos φ = 0.00'));
   ok('and does not silently pick a different angle',
      shown('power-factor', { angle: 60 }).includes('cos φ = 0.50'));
+}
+
+// --- nothing is stated by default ----------------------------------------------
+// A sketch told nothing used to draw its defaults as though they were facts: a
+// phasor at 35 degrees, a power factor of 0.81, a meter reading 12.4 volts,
+// branch currents of 3, 2 and 5 amps. The contract now refuses a sketch that
+// was not given what it lists - so the ones still allowed to draw when told
+// nothing must say nothing that reads as a measurement.
+{
+  // Fixed pictures whose numbers are true of every case, or are only counters.
+  const TRUE_ANYWHERE = new Set([
+    'three-phase',     // "120° apart"
+    'rms-value',       // "RMS = 0.707 × peak"
+    'binary-search',   // "1 left" - where the search ends
+    'nuclear-decay',   // "1 half life, 2 half lifes"
+    'energy-levels',   // "n=1, n=2"
+    'normal-curve',    // "-1σ, +1σ"
+  ]);
+  const inventing = [];
+  const blank = [];
+  for (const name of SKETCH_NAMES) {
+    const freeToDraw = checkSketch(name, {}, []).length === 0;
+    if (!freeToDraw) continue;
+    if (!sketchMarks(SKETCHES[name])) blank.push(name);
+    const numbers = sketchTexts(SKETCHES[name]).filter((t) => /\d/.test(t));
+    if (numbers.length && !TRUE_ANYWHERE.has(name)) inventing.push(name + ' [' + numbers.join(' | ') + ']');
+  }
+  ok('no sketch that may be drawn untold prints a number of its own', inventing.length === 0, inventing.join(', '));
+  ok('and none of them draws a blank', blank.length === 0, blank.join(', '));
+
+  // The other half: a sketch that draws nothing when told nothing must be one
+  // the contract refuses, or it reaches a video as an empty scene.
+  const emptyButAllowed = SKETCH_NAMES.filter((n) => !sketchMarks(SKETCHES[n]) && checkSketch(n, {}, []).length === 0);
+  ok('every sketch that is blank without its items is refused without them', emptyButAllowed.length === 0, emptyButAllowed.join(', '));
+  ok('every sketch has a contract', SKETCH_NAMES.every((n) => contractFor(n)));
 }
 
 // --- the size of the library --------------------------------------------------

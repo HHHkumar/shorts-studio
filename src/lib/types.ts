@@ -10,6 +10,7 @@ import type { DesignLookSlug } from './design-looks';
 import type { Figure, FigureCheck } from './figures/index.ts';
 import type { DoodleDirection } from './doodle.ts';
 import type { FormulaSheet } from './formula-card.ts';
+import type { PictureReviewRecord } from './picture-review.ts';
 
 export type BuiltInLayout = 'simple' | 'elegant' | 'nerdy' | 'flashy' | 'doodle';
 /** The built-in layouts plus every look imported from Claude Design (design-kits/). */
@@ -96,6 +97,11 @@ export interface QuizContent {
   figure?: Figure;
   /** What happened when the figure was checked against the answer. */
   figureCheck?: FigureCheck;
+  /**
+   * What the picture check said about each diagram, and which it took out.
+   * See src/lib/picture-review.ts.
+   */
+  pictureReview?: PictureReviewRecord;
   /** Call to action for the last scene. */
   outro: string;
   hashtags: string[];
@@ -329,6 +335,12 @@ export interface ScriptLine {
   bullets?: string[];
   /** Optional diagram for this beat. */
   visual?: SceneVisual;
+  /**
+   * Why this scene has no diagram although one was asked for: a sketch that
+   * was not told everything it draws, a chart with a number the question never
+   * gave, a picture the check took out. Shown to the creator, never drawn.
+   */
+  pictureNote?: string;
   /** Explainer scenes only: the content of this scene's layout. */
   panel?: ScenePanel;
   /** 2-4 concrete words for finding a backdrop photo, written by Gemini. */

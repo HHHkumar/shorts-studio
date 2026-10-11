@@ -24,7 +24,7 @@ export const SKETCH_CATALOGUE = [
   { name: 'refraction', describe: 'A light ray bending as it crosses a boundary. Use for refraction, lenses, Snell’s law, why a straw looks bent.', uses: 'angle (10-70 degrees of incidence), ratio (1.1-2.4, refractive index of the lower medium), labelA / labelB (the two media)' },
   { name: 'circuit', describe: 'a source and ANY arrangement of components in series and parallel, drawn from a description of the network. Use for: equivalent resistance, series and parallel combinations, current and voltage division, ladders, basic circuit questions', uses: 'network (REQUIRED - without it no circuit is drawn at all) - the circuit written as an expression, where + is series and | is parallel and | binds tighter. "12 + (12 | 12)" is one in series with two in parallel. "(12 + 12) | 12" is two in series in parallel with a third. "4 | 4 | 4" is three in parallel. "2 + 3 + 4" is three in series. Read the question and write the arrangement it describes, with the component value in each position. Also labelA (the source, e.g. "12 V")' },
   { name: 'phasor', describe: 'voltage and current phasors with the angle between them, or the power triangle. Use for: power factor, leading and lagging loads, real and reactive power', uses: 'angle (-90 to 90 degrees), mode ("phasor" or "power-triangle"), labelA, labelB' },
-  { name: 'waveform', describe: 'an AC waveform: two signals out of phase, or a rectified or switched output. Use for: AC theory, phase shift, rectifiers, inverters and PWM', uses: 'mode ("phase", "half-wave", "full-wave", "pwm"), angle (phase shift in degrees; POSITIVE means the second wave LAGS, so 90 is a pure inductor and -90 a pure capacitor; leave it out, or 0, when the two are in phase - it is drawn exactly as given, so never guess one), ratio (0.3-2.5, the second wave\'s size against the first: 1 is equal, above 1 is larger - e.g. 1.2 for a receiving-end voltage above the sending end in the Ferranti effect), frequency (1-4), labelA (first wave, e.g. V), labelB (second wave, e.g. I). "phase" compares TWO SIGNALS - a voltage and a current, or two supplies. Never label the two waves with two measures of ONE wave (RMS and peak, average and RMS, instantaneous and maximum): they are the same wave, so a phase between them means nothing. A question about RMS against peak takes no sketch at all' },
+  { name: 'waveform', describe: 'an AC waveform: two signals out of phase, or a rectified or switched output. Use for: AC theory, phase shift, rectifiers, inverters and PWM', uses: 'mode ("phase", "half-wave", "full-wave", "pwm"), angle (phase shift in degrees; POSITIVE means the second wave LAGS, so 90 is a pure inductor and -90 a pure capacitor, and 0 is in phase - it is drawn exactly as given, so never guess one), ratio (0.3-2.5, the second wave\'s size against the first: 1 is equal, above 1 is larger - e.g. 1.2 for a receiving-end voltage above the sending end in the Ferranti effect), frequency (1-4), labelA (first wave, e.g. V), labelB (second wave, e.g. I). "phase" compares TWO SIGNALS - a voltage and a current, or two supplies. Never label the two waves with two measures of ONE wave (RMS and peak, average and RMS, instantaneous and maximum): they are the same wave, so a phase between them means nothing. A question about RMS against peak takes no sketch at all' },
   { name: 'block-flow', describe: 'labelled boxes joined by arrows, lighting up in order - a process or plant flow. Use for: a process or plant flow: boiler to turbine to condenser, or any staged sequence', uses: 'items (3-5 stage labels, e.g. Boiler, Turbine, Condenser, Pump)' },
   { name: 'transformer', describe: 'a core with primary and secondary windings, for turns ratio and voltage transformation. Use for: turns ratio, step-up and step-down, voltage and current transformation', uses: 'ratio (0.2-5, secondary turns relative to primary), labelA (primary), labelB (secondary)' },
   { name: 'pie', describe: 'a pie showing how a whole splits up - shares, losses, a fuel mix. Use for: shares, losses, a fuel mix, where the energy goes', uses: 'items (2-5 slices, each with a label and a value; they need not add to 100)' },
@@ -228,29 +228,8 @@ export const SKETCH_CATALOGUE = [
 
 export const SKETCH_NAMES = SKETCH_CATALOGUE.map((s) => s.name);
 
-/**
- * The lines describing the library inside the generation prompt.
- *
- * Deliberately two lines per sketch and not three. At a hundred entries the old
- * three-line form was three hundred lines of every request, most of it repeating
- * the sketch's own name back at the model.
- */
-export function sketchPromptLines() {
-  const lines = [
-    'ANIMATED SKETCHES. Setting visual.kind to "sketch" runs a real animation, drawn live.',
-    'Set "sketch" to one of these names and put its knobs in "params". Never invent a name.',
-    'Prefer a sketch over a static diagram whenever the point is about MOVEMENT or CHANGE.',
-    'Pick the one that actually shows THIS scene\'s idea. A diagram that is merely in the right',
-    'subject is worse than none: it looks like an illustration of something else.',
-    'Do not use the same sketch twice in one video unless the second use shows a different case.',
-  ];
-  for (const s of SKETCH_CATALOGUE) {
-    lines.push('- ' + s.name + ': ' + s.describe);
-    lines.push('    params: ' + s.uses);
-  }
-  lines.push('Leave out any parameter you are unsure of; every one has a sensible default.');
-  return lines;
-}
+// What the model is told about these, and what each must be given before it
+// is drawn, is worked out from the "uses" lines above in sketch-contract.mjs.
 
 /**
  * Guards against this file being stale. The test calls it; so does boot.
