@@ -1,7 +1,7 @@
 {
  "id": "v-20260927-212137-ga1x",
  "createdAt": "2026-09-27T15:51:37.697Z",
- "updatedAt": "2026-09-27T16:07:18.324Z",
+ "updatedAt": "2026-10-12T15:33:11.268Z",
  "content": {
   "subject": "Electrical Machines",
   "topic": "Transformer Open-Circuit and Short-Circuit Tests",
@@ -159,27 +159,18 @@
     "narration": "A small reduced voltage circulates full rated current through the series winding impedances.",
     "imageQuery": "electrical measurement panel",
     "visual": {
-     "kind": "sketch",
-     "sketch": "circuit",
-     "caption": "",
-     "params": {
-      "labelA": "30 V",
-      "network": "0.5 + 1.41"
-     },
-     "items": []
-    }
+     "kind": "none"
+    },
+    "pictureNote": "Taken out by the picture check: Draws an AC transformer test with a DC battery source and represents the leakage reactance as a resistor."
    },
    {
     "kind": "explain",
     "narration": "Because the applied test voltage is very low, the core flux remains negligibly small.",
     "imageQuery": "magnetic core transformer",
     "visual": {
-     "kind": "sketch",
-     "sketch": "magnetism",
-     "caption": "",
-     "params": {},
-     "items": []
-    }
+     "kind": "none"
+    },
+    "pictureNote": "Taken out by the picture check: Shows a generic permanent bar magnet instead of transformer core flux."
    },
    {
     "kind": "explain",
@@ -331,6 +322,118 @@
     "= \\frac{200}{400}",
     "= 0.5\\,\\Omega"
    ]
+  },
+  "pictureReview": {
+   "checkedAt": "2026-10-12T15:32:19.392Z",
+   "by": [
+    "Gemini",
+    "DeepSeek"
+   ],
+   "sawFrames": true,
+   "reviews": [
+    {
+     "scene": 7,
+     "key": "c8551728",
+     "verdict": "wrong",
+     "reason": "Draws an AC transformer test with a DC battery source and represents the leakage reactance as a resistor.",
+     "said": [
+      {
+       "by": "Gemini",
+       "verdict": "wrong",
+       "reason": "Draws an AC transformer test with a DC battery source and represents the leakage reactance as a resistor."
+      },
+      {
+       "by": "DeepSeek",
+       "verdict": "wrong",
+       "reason": "The series winding impedances are drawn as resistors 0.5 + 1.41, but the working gives R_eq = 0.5 ohms and Z_eq = 1.5 ohms, so the 1.41 value is not supported and the diagram misrepresents the equivalent circuit."
+      }
+     ],
+     "words": "The \"circuit\" diagram: a source labelled \"30 V\" driving resistors arranged as 0.5 + 1.41, where + is in series and | is in parallel; every component is drawn as a resistor with that number on it, and the source as a battery.",
+     "narration": "A small reduced voltage circulates full rated current through the series winding impedances.",
+     "frame": "/out/review-1791819127176/scene-07.jpg",
+     "removed": {
+      "kind": "sketch",
+      "sketch": "circuit",
+      "caption": "",
+      "params": {
+       "labelA": "30 V",
+       "network": "0.5 + 1.41"
+      },
+      "items": []
+     }
+    },
+    {
+     "scene": 8,
+     "key": "00cf1db2",
+     "verdict": "unrelated",
+     "reason": "Shows a generic permanent bar magnet instead of transformer core flux.",
+     "said": [
+      {
+       "by": "Gemini",
+       "verdict": "unrelated",
+       "reason": "Shows a generic permanent bar magnet instead of transformer core flux."
+      },
+      {
+       "by": "DeepSeek",
+       "verdict": "unrelated",
+       "reason": "A generic magnetic field-line diagram does not show that the low applied test voltage makes the core flux negligibly small."
+      }
+     ],
+     "words": "The \"magnetism\" diagram: field lines looping from one pole to the other.",
+     "narration": "Because the applied test voltage is very low, the core flux remains negligibly small.",
+     "frame": "/out/review-1791819127176/scene-08.jpg",
+     "removed": {
+      "kind": "sketch",
+      "sketch": "magnetism",
+      "caption": "",
+      "params": {},
+      "items": []
+     }
+    },
+    {
+     "scene": 9,
+     "key": "e53f3d72",
+     "verdict": "right",
+     "reason": "Correctly shows that core loss is negligible while copper loss is the active loss measured in the short-circuit test.",
+     "said": [
+      {
+       "by": "Gemini",
+       "verdict": "right",
+       "reason": "Correctly shows that core loss is negligible while copper loss is the active loss measured in the short-circuit test."
+      },
+      {
+       "by": "DeepSeek",
+       "verdict": "right",
+       "reason": "It correctly shows core loss eliminated and copper loss as the measured quantity in the short-circuit test."
+      }
+     ],
+     "words": "Two things side by side captioned \"Losses in SC Test\": Core Loss ❌ | Copper Loss 🔥.",
+     "narration": "That means core loss vanishes, so the wattmeter measures pure full-load copper loss.",
+     "frame": "/out/review-1791819127176/scene-09.jpg"
+    },
+    {
+     "scene": 16,
+     "key": "cf56413e",
+     "verdict": "right",
+     "reason": "Correctly summarizes the roles of the open-circuit test measuring core loss and the short-circuit test measuring copper loss.",
+     "said": [
+      {
+       "by": "Gemini",
+       "verdict": "right",
+       "reason": "Correctly summarizes the roles of the open-circuit test measuring core loss and the short-circuit test measuring copper loss."
+      },
+      {
+       "by": "DeepSeek",
+       "verdict": "right",
+       "reason": "It correctly states that the open-circuit test gives core loss and the short-circuit test gives copper loss."
+      }
+     ],
+     "words": "Two things side by side captioned \"Test Roles\": OC: Core Loss 🧲 | SC: Copper Loss ⚡.",
+     "narration": "Open-circuit tests give core loss, short-circuit tests give copper loss. Follow for more daily engineering practice!",
+     "frame": "/out/review-1791819127176/scene-16.jpg"
+    }
+   ],
+   "problems": []
   }
  },
  "design": {
@@ -1418,76 +1521,6 @@
    "speechStart": 0.16253968253968254,
    "speechEnd": 4.922630385487528,
    "captionOffset": 0.16253968253968254
-  },
-  "15": {
-   "src": "generated/vo-38dde919/s15.mp3",
-   "duration": 3.6048979591836736,
-   "words": [
-    {
-     "word": "Here",
-     "start": 0,
-     "end": 0.325
-    },
-    {
-     "word": "are",
-     "start": 0.36,
-     "end": 0.464
-    },
-    {
-     "word": "the",
-     "start": 0.499,
-     "end": 0.569
-    },
-    {
-     "word": "formulas",
-     "start": 0.615,
-     "end": 1.103
-    },
-    {
-     "word": "behind",
-     "start": 1.161,
-     "end": 1.44
-    },
-    {
-     "word": "this",
-     "start": 1.486,
-     "end": 1.625
-    },
-    {
-     "word": "one.",
-     "start": 1.695,
-     "end": 1.916
-    },
-    {
-     "word": "Save",
-     "start": 2.09,
-     "end": 2.392
-    },
-    {
-     "word": "it",
-     "start": 2.426,
-     "end": 2.496
-    },
-    {
-     "word": "for",
-     "start": 2.543,
-     "end": 2.659
-    },
-    {
-     "word": "your",
-     "start": 2.705,
-     "end": 2.821
-    },
-    {
-     "word": "revision.",
-     "start": 2.879,
-     "end": 3.576
-    }
-   ],
-   "measuredDuration": 3.575873015873016,
-   "speechStart": 0.19736961451247165,
-   "speechEnd": 3.297233560090703,
-   "captionOffset": 0.19736961451247165
   },
   "16": {
    "src": "generated/vo-38dde919/s16.mp3",

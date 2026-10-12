@@ -190,8 +190,8 @@
    "topic": "Torque-Slip Characteristics of Three-Phase Induction Motors",
    "angle": "Determining condition for maximum starting torque by varying rotor circuit resistance in wound-rotor induction motors.",
    "difficulty": "Medium",
-   "status": "todo",
-   "videoId": ""
+   "status": "done",
+   "videoId": "v-20261012-210421-4zpe"
   },
   {
    "id": "vgyf9pmy",
@@ -275,5 +275,5 @@
   }
  ],
  "focus": "",
- "updatedAt": "2026-09-27T16:48:24.564Z"
+ "updatedAt": "2026-10-12T15:34:21.918Z"
 }

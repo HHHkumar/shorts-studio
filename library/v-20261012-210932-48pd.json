@@ -1,0 +1,2187 @@
+{
+ "id": "v-20261012-210932-48pd",
+ "createdAt": "2026-10-12T15:39:34.211Z",
+ "updatedAt": "2026-10-12T15:54:57.099Z",
+ "content": {
+  "subject": "Basic Electrical Engineering",
+  "topic": "Difference between Resistance and Reactance",
+  "difficulty": "Medium",
+  "hook": "Both block alternating current, but only one burns real power.",
+  "question": "Which statement correctly distinguishes electrical resistance from electrical reactance in an alternating current circuit?",
+  "options": [
+   "Resistance dissipates energy as heat while reactance temporarily stores and returns energy",
+   "Resistance depends directly on frequency while reactance is completely independent of frequency",
+   "Resistance causes a ninety degree phase shift while reactance maintains zero phase shift",
+   "Resistance is measured in ohms while reactance is exclusively measured in henries or farads"
+  ],
+  "correctIndex": 0,
+  "answerLine": "Resistance dissipates energy as heat while reactance temporarily stores and returns energy.",
+  "explanation": [
+   "Both quantities oppose current flow in alternating current circuits and both are measured in ohms.",
+   "However, resistance converts electrical energy irreversibly into heat through the collision of moving charge carriers.",
+   "Ideal pure resistance maintains voltage and alternating current perfectly in phase with zero degree angle.",
+   "Therefore, the average active real power consumed across a pure resistor equals voltage times current."
+  ],
+  "funFact": "Because pure reactance draws current without burning watts, utilities penalize low power factor industrial loads.",
+  "outro": "Master your electrical engineering concepts with us and ace your state junior engineer exam.",
+  "hashtags": [
+   "ElectricalEngineering",
+   "BasicElectrical",
+   "JEExam",
+   "EngineeringConcepts",
+   "CircuitTheory"
+  ],
+  "motifSymbols": [
+   "⚡",
+   "Ω",
+   "🔌",
+   "💡",
+   "🔄"
+  ],
+  "script": [
+   {
+    "kind": "intro",
+    "narration": "Here's your daily dose of science.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "wave",
+     "action": "waves cheerily toward the viewer beside a blank notepad",
+     "emotion": "friendly, welcoming",
+     "props": "a notepad, a light bulb",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/doodle-4wr2ob/s0-ef42fa.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "hook",
+    "narration": "Both block alternating current, but only one burns real power.",
+    "imageQuery": "power substation high voltage transformers",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "a glowing hot heating coil radiating heat waves next to an inductor coil sitting cool",
+     "emotion": "busy",
+     "props": "a heating coil, an inductor coil",
+     "gag": "a tiny melting ice cube resting beside the heating coil"
+    },
+    "doodleSrc": "generated/doodle/doodle-4wr2ob/s1-ce883a.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "question",
+    "narration": "Which statement correctly distinguishes electrical resistance from electrical reactance in an alternating current circuit?",
+    "imageQuery": "electrical circuit components resistor inductor",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "think",
+     "action": "scratches his chin looking up at a giant question mark",
+     "emotion": "puzzled, curious",
+     "props": "a large question mark",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/doodle-4wr2ob/s2-e37d4d.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "options",
+    "narration": "Is it that resistance dissipates energy as heat while reactance temporarily stores and returns energy, resistance depends directly on frequency while reactance is completely independent of frequency, resistance causes a ninety degree phase shift while reactance maintains zero phase shift, or resistance is measured in ohms while reactance is exclusively measured in henries or farads?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "teach",
+     "action": "gestures between four blank diagram boxes stacked beside him",
+     "emotion": "focused",
+     "props": "four blank diagram boxes",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/doodle-4wr2ob/s3-019bb6.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "countdown",
+    "narration": "",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "a pocket stopwatch ticking down rapidly with motion blur lines",
+     "emotion": "busy",
+     "props": "a pocket stopwatch",
+     "gag": "sweat drops spraying off the ticking stopwatch"
+    },
+    "doodleSrc": "generated/doodle/doodle-4wr2ob/s4-e2bbb4.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "answer",
+    "narration": "Resistance dissipates energy as heat while reactance temporarily stores and returns energy.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "cheer",
+     "action": "raises both arms celebrating beside a hot glowing resistor venting puffs of smoke",
+     "emotion": "triumphant, delighted",
+     "props": "a resistor, a capacitor",
+     "gag": "the smoking resistor wears a tiny chef hat"
+    },
+    "doodleSrc": "generated/doodle/doodle-4wr2ob/s5-622418.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "explain",
+    "narration": "Both quantities oppose current flow in alternating current circuits and both are measured in ohms.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "working"
+    },
+    "visualWas": {
+     "kind": "compare",
+     "caption": "",
+     "items": [
+      {
+       "label": "Resistance R",
+       "symbol": "⚡"
+      },
+      {
+       "label": "Reactance X",
+       "symbol": "🔄"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "However, resistance converts electrical energy irreversibly into heat through the collision of moving charge carriers.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "P = I² × R",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Ideal pure resistance maintains voltage and alternating current perfectly in phase with zero degree angle.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "waveform",
+     "caption": "",
+     "params": {
+      "angle": 0,
+      "mode": "phase",
+      "labelA": "V",
+      "labelB": "I"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Therefore, the average active real power consumed across a pure resistor equals voltage times current.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "P = V × I × cos(0°) = V × I",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "In contrast, reactance opposes alternating current strictly by storing energy in electric or magnetic fields.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "pictureNote": "Taken out by the picture check: uses a battery icon to represent a capacitor, which stores energy electrochemically rather than via an electrostatic field.",
+    "doodle": {
+     "subject": "illustration",
+     "action": "an inductor coil surrounded by magnetic flux loops next to two capacitor plates holding electric field lines",
+     "emotion": "calm",
+     "props": "an inductor coil, two capacitor plates",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/doodle-4wr2ob/s10-24ceb9.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "explain",
+    "narration": "An inductor builds up magnetic energy, whereas a capacitor stores energy within its electrostatic field.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "XL = 2πfL , XC = 1 / (2πfC)",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "This cyclic energy exchange produces a ninety degree phase shift between alternating voltage and current.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "pictureNote": "Taken out by the picture check: Shows I lagging V by 90 degrees, which is only true for an inductor; pure reactance in general can also have I leading V by 90 degrees (capacitor), so the picture is misleading for the general statement.",
+    "doodle": {
+     "subject": "illustration",
+     "action": "two alternating sine waves drawn side-by-side shifted by a quarter cycle with dashed alignment lines",
+     "emotion": "calm",
+     "props": "an oscilloscope screen",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/doodle-4wr2ob/s12-3ae50c.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "explain",
+    "narration": "Because the phase angle is ninety degrees, the average real power dissipated across pure reactance is zero.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "P = V × I × cos(90°) = 0 W",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Furthermore, inductive and capacitive reactance change with supply frequency, whereas ideal resistance remains completely constant.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "graph",
+     "caption": "",
+     "params": {
+      "mode": "linear",
+      "labelA": "Frequency f",
+      "labelB": "Reactance XL"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "formulas",
+    "narration": "Here are the formulas behind this one. Save it for your revision."
+   },
+   {
+    "kind": "outro",
+    "narration": "Because pure reactance draws current without burning watts, utilities penalize low power factor industrial loads. Follow for more engineering prep!",
+    "imageQuery": "electrical engineering laboratory test bench",
+    "visual": {
+     "kind": "icon",
+     "caption": "Power Factor",
+     "items": [
+      {
+       "label": "cos φ",
+       "symbol": "⚡"
+      }
+     ]
+    }
+   }
+  ],
+  "pictureReview": {
+   "checkedAt": "2026-10-12T15:40:40.555Z",
+   "by": [
+    "Gemini",
+    "DeepSeek"
+   ],
+   "sawFrames": true,
+   "reviews": [
+    {
+     "scene": 6,
+     "key": "76ad2940",
+     "verdict": "unrelated",
+     "reason": "shows only labels for Resistance R and Reactance X without illustrating opposition to current flow or the unit of ohms stated in the line.",
+     "said": [
+      {
+       "by": "Gemini",
+       "verdict": "unrelated",
+       "reason": "shows only labels for Resistance R and Reactance X without illustrating opposition to current flow or the unit of ohms stated in the line."
+      },
+      {
+       "by": "DeepSeek",
+       "verdict": "right",
+       "reason": "Shows resistance R and reactance X side by side, matching the line that both oppose current and are measured in ohms."
+      }
+     ],
+     "words": "Two things side by side: Resistance R ⚡ | Reactance X 🔄.",
+     "narration": "Both quantities oppose current flow in alternating current circuits and both are measured in ohms.",
+     "frame": "/out/review-1791819572338/scene-06.jpg",
+     "kept": true
+    },
+    {
+     "scene": 8,
+     "key": "e2649b60",
+     "verdict": "right",
+     "reason": "correctly shows voltage and current waveforms perfectly in phase with zero phase angle for pure resistance.",
+     "said": [
+      {
+       "by": "Gemini",
+       "verdict": "right",
+       "reason": "correctly shows voltage and current waveforms perfectly in phase with zero phase angle for pure resistance."
+      },
+      {
+       "by": "DeepSeek",
+       "verdict": "right",
+       "reason": "Shows V and I sine waves in phase with zero phase shift, correctly illustrating pure resistance."
+      }
+     ],
+     "words": "The \"waveform\" diagram: two sine waves, V and I; I in phase with V; equal in size.",
+     "narration": "Ideal pure resistance maintains voltage and alternating current perfectly in phase with zero degree angle.",
+     "frame": "/out/review-1791819572338/scene-08.jpg"
+    },
+    {
+     "scene": 10,
+     "key": "b01df329",
+     "verdict": "wrong",
+     "reason": "uses a battery icon to represent a capacitor, which stores energy electrochemically rather than via an electrostatic field.",
+     "said": [
+      {
+       "by": "Gemini",
+       "verdict": "wrong",
+       "reason": "uses a battery icon to represent a capacitor, which stores energy electrochemically rather than via an electrostatic field."
+      },
+      {
+       "by": "DeepSeek",
+       "verdict": "right",
+       "reason": "Shows an inductor with magnetic field and a capacitor with electric field, correctly matching the line about storing energy in magnetic or electric fields."
+      }
+     ],
+     "words": "Two things side by side: Inductor B-field 🧲 | Capacitor E-field 🔋.",
+     "narration": "In contrast, reactance opposes alternating current strictly by storing energy in electric or magnetic fields.",
+     "frame": "/out/review-1791819572338/scene-10.jpg",
+     "removed": {
+      "kind": "compare",
+      "caption": "",
+      "items": [
+       {
+        "label": "Inductor B-field",
+        "symbol": "🧲"
+       },
+       {
+        "label": "Capacitor E-field",
+        "symbol": "🔋"
+       }
+      ]
+     }
+    },
+    {
+     "scene": 12,
+     "key": "086d60c2",
+     "verdict": "wrong",
+     "reason": "Shows I lagging V by 90 degrees, which is only true for an inductor; pure reactance in general can also have I leading V by 90 degrees (capacitor), so the picture is misleading for the general statement.",
+     "said": [
+      {
+       "by": "Gemini",
+       "verdict": "right",
+       "reason": "correctly shows alternating voltage and current waveforms separated by a ninety-degree phase shift."
+      },
+      {
+       "by": "DeepSeek",
+       "verdict": "wrong",
+       "reason": "Shows I lagging V by 90 degrees, which is only true for an inductor; pure reactance in general can also have I leading V by 90 degrees (capacitor), so the picture is misleading for the general statement."
+      }
+     ],
+     "words": "The \"waveform\" diagram: two sine waves, V and I; I lags V by 90 degrees; equal in size.",
+     "narration": "This cyclic energy exchange produces a ninety degree phase shift between alternating voltage and current.",
+     "frame": "/out/review-1791819572338/scene-12.jpg",
+     "removed": {
+      "kind": "sketch",
+      "sketch": "waveform",
+      "caption": "",
+      "params": {
+       "angle": 90,
+       "mode": "phase",
+       "labelA": "V",
+       "labelB": "I"
+      },
+      "items": []
+     }
+    },
+    {
+     "scene": 14,
+     "key": "199e3700",
+     "verdict": "right",
+     "reason": "correctly shows inductive reactance increasing linearly as a function of frequency.",
+     "said": [
+      {
+       "by": "Gemini",
+       "verdict": "right",
+       "reason": "correctly shows inductive reactance increasing linearly as a function of frequency."
+      },
+      {
+       "by": "DeepSeek",
+       "verdict": "right",
+       "reason": "Shows a linear graph of reactance XL against frequency f, correctly illustrating that inductive reactance changes with frequency."
+      }
+     ],
+     "words": "The \"graph\" diagram: Draws a curve on axes, revealed left to right; set to mode = linear, labelA = Frequency f, labelB = Reactance XL.",
+     "narration": "Furthermore, inductive and capacitive reactance change with supply frequency, whereas ideal resistance remains completely constant.",
+     "frame": "/out/review-1791819572338/scene-14.jpg"
+    }
+   ],
+   "problems": []
+  },
+  "formulas": {
+   "title": "Resistance and Reactance - Important Formulas",
+   "cards": [
+    {
+     "name": "Power in Pure Resistance",
+     "formula": "P = I^2 R",
+     "notes": [
+      "P = Real power dissipated (W)",
+      "R = Resistance (ohms)"
+     ],
+     "graph": {
+      "kind": "linear",
+      "x": "I^2",
+      "y": "P",
+      "label": "R",
+      "label2": ""
+     },
+     "icon": "light bulb",
+     "art": {
+      "body": "<path fill=\"currentColor\" d=\"M247 18.656c-80.965 0-146.875 65.02-146.875 145.625c0 45.63 15.758 67 33.313 94.845c11.706 18.57 23.767 39.91 30.53 70.563h165.095c6.728-31.387 18.91-53.12 30.718-71.875c17.58-27.92 33.314-48.912 33.314-93.532c0-80.66-65.127-145.624-146.094-145.624zm-99.78 127.906L170.437 167L210 201.813l31.188-34.125l6.78-7.438l6.907 7.344l30.75 32.72l39.97-33.47l22.686-19l-7.655 28.594L304.75 310.28l-18.063-4.842l28.22-105.25l-24.032 20.125l-6.78 5.656l-6.033-6.44l-29.906-31.78l-30.562 33.438l-6.188 6.78l-6.875-6.062l-23.25-20.437l27.94 104.218l-18.064 4.812l-35.937-134.063l-8-29.875zm22.593 201.813V389.5L315 348.375zm153.593 17.063l-153.594 43.53v29.438l153.594-43.5v-29.47zm0 48.875L203.97 448.156h119.436zm-132.562 52.53v20.533h113.282v-20.53h-113.28z\"/>",
+      "width": 512,
+      "height": 512
+     }
+    },
+    {
+     "name": "Inductive Reactance",
+     "formula": "X_L = 2\\pi f L",
+     "notes": [
+      "f = Frequency (Hz)",
+      "L = Inductance (H)"
+     ],
+     "graph": {
+      "kind": "linear",
+      "x": "f",
+      "y": "X_L",
+      "label": "2\\pi L",
+      "label2": ""
+     },
+     "icon": "transformer",
+     "art": {
+      "body": "<path fill=\"currentColor\" d=\"M4.5 2a.499.499 0 1 0 0 1h1a.499.499 0 1 0 0-1zm6 0a.499.499 0 1 0 0 1h1a.499.499 0 1 0 0-1zm-7 2a.499.499 0 1 0 0 1h3a.499.499 0 1 0 0-1zm6 0a.499.499 0 1 0 0 1h3a.499.499 0 1 0 0-1zm-7 2c-.277 0-.5.223-.5.5v6c0 .277.223.5.5.5h11c.277 0 .5-.223.5-.5v-6c0-.277-.223-.5-.5-.5zm7.5.5V9l2.5-.5l-2.5 4V10l-2.5.5zM3.5 7h2a.499.499 0 1 1 0 1h-2a.499.499 0 1 1 0-1m0 2h2a.499.499 0 1 1 0 1h-2a.499.499 0 1 1 0-1m0 2h2a.499.499 0 1 1 0 1h-2a.499.499 0 1 1 0-1\"/>",
+      "width": 24,
+      "height": 24
+     }
+    },
+    {
+     "name": "Capacitive Reactance",
+     "formula": "X_C = \\frac{1}{2\\pi f C}",
+     "notes": [
+      "f = Frequency (Hz)",
+      "C = Capacitance (F)"
+     ],
+     "graph": {
+      "kind": "inverse",
+      "x": "f",
+      "y": "X_C",
+      "label": "",
+      "label2": ""
+     },
+     "icon": "battery",
+     "art": {
+      "body": "<path fill=\"currentColor\" d=\"M16.67 4H15V2H9v2H7.33A1.33 1.33 0 0 0 6 5.33v15.34C6 21.4 6.6 22 7.33 22h9.34A1.33 1.33 0 0 0 18 20.67V5.33C18 4.6 17.4 4 16.67 4\"/>",
+      "width": 24,
+      "height": 24
+     }
+    },
+    {
+     "name": "Real Power in Pure Reactance",
+     "formula": "P = V I \\cos(90^\\circ) = 0",
+     "notes": [
+      "V = RMS voltage (V)",
+      "I = RMS current (A)"
+     ],
+     "graph": {
+      "kind": "phase-shift",
+      "x": "t",
+      "y": "v, i",
+      "label": "v(t)",
+      "label2": "i(t)"
+     },
+     "icon": "multimeter",
+     "art": {
+      "body": "<g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\"><rect width=\"14.5\" height=\"18.5\" x=\"4.75\" y=\"2.75\" rx=\"2.5\"/><path d=\"M7.75 5.75h8.5V9.5h-8.5Z\"/><circle cx=\"12\" cy=\"15.25\" r=\"3.25\"/><path d=\"m12 15.25l1.5-1.5\"/></g>",
+      "width": 24,
+      "height": 24
+     }
+    }
+   ]
+  }
+ },
+ "design": {
+  "mode": "light",
+  "layout": "doodle",
+  "accent": "#3ddc97",
+  "showCaptions": true,
+  "showProgressBar": true,
+  "countdownSeconds": 4,
+  "scenePaddingSeconds": 0.35,
+  "trimTrailingSilence": true,
+  "showVisuals": true,
+  "showMotif": true,
+  "ambient": "auto",
+  "ambientIntensity": 0.6,
+  "motionStrength": 1,
+  "transition": "auto",
+  "textReveal": "fade",
+  "overlay": "vignette",
+  "overlayIntensity": 0.5,
+  "align": "auto",
+  "showStock": true,
+  "stockOpacity": 0.45,
+  "music": "tense",
+  "musicVolume": 0.22,
+  "customMusicSrc": "",
+  "sfx": true,
+  "sfxVolume": 0.5,
+  "orientation": "portrait",
+  "doodleEnergy": "lively",
+  "animatedEngineer": true
+ },
+ "audio": {
+  "0": {
+   "src": "generated/vo-2bc4b99a/s0.mp3",
+   "duration": 1.906938775510204,
+   "words": [
+    {
+     "word": "Here's",
+     "start": 0,
+     "end": 0.325
+    },
+    {
+     "word": "your",
+     "start": 0.36,
+     "end": 0.476
+    },
+    {
+     "word": "daily",
+     "start": 0.522,
+     "end": 0.766
+    },
+    {
+     "word": "dose",
+     "start": 0.813,
+     "end": 1.01
+    },
+    {
+     "word": "of",
+     "start": 1.045,
+     "end": 1.115
+    },
+    {
+     "word": "science.",
+     "start": 1.184,
+     "end": 1.858
+    }
+   ],
+   "measuredDuration": 1.8575963718820863,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 1.5789569160997732,
+   "captionOffset": 0.17414965986394557
+  },
+  "1": {
+   "src": "generated/vo-2bc4b99a/s1.mp3",
+   "duration": 3.526530612244898,
+   "words": [
+    {
+     "word": "Both",
+     "start": 0,
+     "end": 0.43
+    },
+    {
+     "word": "block",
+     "start": 0.464,
+     "end": 0.673
+    },
+    {
+     "word": "alternating",
+     "start": 0.743,
+     "end": 1.242
+    },
+    {
+     "word": "current,",
+     "start": 1.289,
+     "end": 1.567
+    },
+    {
+     "word": "but",
+     "start": 1.591,
+     "end": 1.741
+    },
+    {
+     "word": "only",
+     "start": 1.823,
+     "end": 2.159
+    },
+    {
+     "word": "one",
+     "start": 2.229,
+     "end": 2.403
+    },
+    {
+     "word": "burns",
+     "start": 2.45,
+     "end": 2.717
+    },
+    {
+     "word": "real",
+     "start": 2.775,
+     "end": 2.937
+    },
+    {
+     "word": "power.",
+     "start": 2.995,
+     "end": 3.483
+    }
+   ],
+   "measuredDuration": 3.4829931972789114,
+   "speechStart": 0.1509297052154195,
+   "speechEnd": 3.1927437641723357,
+   "captionOffset": 0.1509297052154195
+  },
+  "2": {
+   "src": "generated/vo-2bc4b99a/s2.mp3",
+   "duration": 7.183673469387755,
+   "words": [
+    {
+     "word": "Which",
+     "start": 0,
+     "end": 0.372
+    },
+    {
+     "word": "statement",
+     "start": 0.418,
+     "end": 0.859
+    },
+    {
+     "word": "correctly",
+     "start": 0.917,
+     "end": 1.37
+    },
+    {
+     "word": "distinguishes",
+     "start": 1.428,
+     "end": 2.183
+    },
+    {
+     "word": "electrical",
+     "start": 2.392,
+     "end": 2.972
+    },
+    {
+     "word": "resistance",
+     "start": 3.03,
+     "end": 3.576
+    },
+    {
+     "word": "from",
+     "start": 3.611,
+     "end": 3.773
+    },
+    {
+     "word": "electrical",
+     "start": 3.843,
+     "end": 4.307
+    },
+    {
+     "word": "reactance",
+     "start": 4.389,
+     "end": 5.12
+    },
+    {
+     "word": "in",
+     "start": 5.329,
+     "end": 5.503
+    },
+    {
+     "word": "an",
+     "start": 5.55,
+     "end": 5.619
+    },
+    {
+     "word": "alternating",
+     "start": 5.677,
+     "end": 6.188
+    },
+    {
+     "word": "current",
+     "start": 6.258,
+     "end": 6.536
+    },
+    {
+     "word": "circuit?",
+     "start": 6.583,
+     "end": 7.152
+    }
+   ],
+   "measuredDuration": 7.151746031746032,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 6.931156462585034,
+   "captionOffset": 0.17414965986394557
+  },
+  "3": {
+   "src": "generated/vo-2bc4b99a/s3.mp3",
+   "duration": 26.514285714285716,
+   "words": [
+    {
+     "word": "Is",
+     "start": 0,
+     "end": 0.313
+    },
+    {
+     "word": "it",
+     "start": 0.372,
+     "end": 0.453
+    },
+    {
+     "word": "that",
+     "start": 0.499,
+     "end": 0.639
+    },
+    {
+     "word": "resistance",
+     "start": 0.72,
+     "end": 1.347
+    },
+    {
+     "word": "dissipates",
+     "start": 1.405,
+     "end": 1.974
+    },
+    {
+     "word": "energy",
+     "start": 2.032,
+     "end": 2.403
+    },
+    {
+     "word": "as",
+     "start": 2.473,
+     "end": 2.601
+    },
+    {
+     "word": "heat",
+     "start": 2.682,
+     "end": 2.972
+    },
+    {
+     "word": "while",
+     "start": 3.146,
+     "end": 3.413
+    },
+    {
+     "word": "reactance",
+     "start": 3.471,
+     "end": 4.133
+    },
+    {
+     "word": "temporarily",
+     "start": 4.18,
+     "end": 4.888
+    },
+    {
+     "word": "stores",
+     "start": 4.946,
+     "end": 5.433
+    },
+    {
+     "word": "and",
+     "start": 5.503,
+     "end": 5.654
+    },
+    {
+     "word": "returns",
+     "start": 5.724,
+     "end": 6.211
+    },
+    {
+     "word": "energy,",
+     "start": 6.258,
+     "end": 6.769
+    },
+    {
+     "word": "resistance",
+     "start": 6.978,
+     "end": 7.535
+    },
+    {
+     "word": "depends",
+     "start": 7.581,
+     "end": 7.953
+    },
+    {
+     "word": "directly",
+     "start": 8.011,
+     "end": 8.533
+    },
+    {
+     "word": "on",
+     "start": 8.603,
+     "end": 8.696
+    },
+    {
+     "word": "frequency",
+     "start": 8.777,
+     "end": 9.427
+    },
+    {
+     "word": "while",
+     "start": 9.601,
+     "end": 9.857
+    },
+    {
+     "word": "reactance",
+     "start": 9.903,
+     "end": 10.553
+    },
+    {
+     "word": "is",
+     "start": 10.6,
+     "end": 10.739
+    },
+    {
+     "word": "completely",
+     "start": 10.832,
+     "end": 11.494
+    },
+    {
+     "word": "independent",
+     "start": 11.54,
+     "end": 12.109
+    },
+    {
+     "word": "of",
+     "start": 12.155,
+     "end": 12.225
+    },
+    {
+     "word": "frequency,",
+     "start": 12.295,
+     "end": 13.142
+    },
+    {
+     "word": "resistance",
+     "start": 13.316,
+     "end": 14.013
+    },
+    {
+     "word": "causes",
+     "start": 14.071,
+     "end": 14.535
+    },
+    {
+     "word": "a",
+     "start": 14.617,
+     "end": 14.686
+    },
+    {
+     "word": "ninety",
+     "start": 14.802,
+     "end": 15.267
+    },
+    {
+     "word": "degree",
+     "start": 15.336,
+     "end": 15.743
+    },
+    {
+     "word": "phase",
+     "start": 15.801,
+     "end": 16.161
+    },
+    {
+     "word": "shift",
+     "start": 16.196,
+     "end": 16.486
+    },
+    {
+     "word": "while",
+     "start": 16.567,
+     "end": 16.823
+    },
+    {
+     "word": "reactance",
+     "start": 16.881,
+     "end": 17.508
+    },
+    {
+     "word": "maintains",
+     "start": 17.566,
+     "end": 18.123
+    },
+    {
+     "word": "zero",
+     "start": 18.297,
+     "end": 18.703
+    },
+    {
+     "word": "phase",
+     "start": 18.761,
+     "end": 19.063
+    },
+    {
+     "word": "shift,",
+     "start": 19.098,
+     "end": 19.435
+    },
+    {
+     "word": "or",
+     "start": 19.493,
+     "end": 19.783
+    },
+    {
+     "word": "resistance",
+     "start": 19.957,
+     "end": 20.607
+    },
+    {
+     "word": "is",
+     "start": 20.654,
+     "end": 20.782
+    },
+    {
+     "word": "measured",
+     "start": 20.898,
+     "end": 21.316
+    },
+    {
+     "word": "in",
+     "start": 21.362,
+     "end": 21.443
+    },
+    {
+     "word": "ohms",
+     "start": 21.559,
+     "end": 21.861
+    },
+    {
+     "word": "while",
+     "start": 21.954,
+     "end": 22.21
+    },
+    {
+     "word": "reactance",
+     "start": 22.268,
+     "end": 22.906
+    },
+    {
+     "word": "is",
+     "start": 22.964,
+     "end": 23.092
+    },
+    {
+     "word": "exclusively",
+     "start": 23.185,
+     "end": 23.974
+    },
+    {
+     "word": "measured",
+     "start": 24.044,
+     "end": 24.462
+    },
+    {
+     "word": "in",
+     "start": 24.52,
+     "end": 24.624
+    },
+    {
+     "word": "henries",
+     "start": 24.741,
+     "end": 25.263
+    },
+    {
+     "word": "or",
+     "start": 25.379,
+     "end": 25.53
+    },
+    {
+     "word": "farads?",
+     "start": 25.611,
+     "end": 26.47
+    }
+   ],
+   "measuredDuration": 26.470748299319727,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 26.16888888888889,
+   "captionOffset": 0.17414965986394557
+  },
+  "5": {
+   "src": "generated/vo-2bc4b99a/s5.mp3",
+   "duration": 5.328979591836735,
+   "words": [
+    {
+     "word": "Resistance",
+     "start": 0,
+     "end": 0.673
+    },
+    {
+     "word": "dissipates",
+     "start": 0.708,
+     "end": 1.149
+    },
+    {
+     "word": "energy",
+     "start": 1.207,
+     "end": 1.556
+    },
+    {
+     "word": "as",
+     "start": 1.614,
+     "end": 1.718
+    },
+    {
+     "word": "heat",
+     "start": 1.8,
+     "end": 2.055
+    },
+    {
+     "word": "while",
+     "start": 2.136,
+     "end": 2.392
+    },
+    {
+     "word": "reactance",
+     "start": 2.45,
+     "end": 2.995
+    },
+    {
+     "word": "temporarily",
+     "start": 3.03,
+     "end": 3.646
+    },
+    {
+     "word": "stores",
+     "start": 3.692,
+     "end": 4.017
+    },
+    {
+     "word": "and",
+     "start": 4.063,
+     "end": 4.156
+    },
+    {
+     "word": "returns",
+     "start": 4.226,
+     "end": 4.609
+    },
+    {
+     "word": "energy.",
+     "start": 4.667,
+     "end": 5.294
+    }
+   ],
+   "measuredDuration": 5.294149659863946,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 5.050340136054421,
+   "captionOffset": 0.16253968253968254
+  },
+  "6": {
+   "src": "generated/vo-2bc4b99a/s6.mp3",
+   "duration": 5.668571428571428,
+   "words": [
+    {
+     "word": "Both",
+     "start": 0,
+     "end": 0.43
+    },
+    {
+     "word": "quantities",
+     "start": 0.476,
+     "end": 0.929
+    },
+    {
+     "word": "oppose",
+     "start": 0.987,
+     "end": 1.393
+    },
+    {
+     "word": "current",
+     "start": 1.44,
+     "end": 1.718
+    },
+    {
+     "word": "flow",
+     "start": 1.765,
+     "end": 1.974
+    },
+    {
+     "word": "in",
+     "start": 2.043,
+     "end": 2.136
+    },
+    {
+     "word": "alternating",
+     "start": 2.252,
+     "end": 2.81
+    },
+    {
+     "word": "current",
+     "start": 2.868,
+     "end": 3.135
+    },
+    {
+     "word": "circuits",
+     "start": 3.193,
+     "end": 3.657
+    },
+    {
+     "word": "and",
+     "start": 3.75,
+     "end": 3.913
+    },
+    {
+     "word": "both",
+     "start": 3.982,
+     "end": 4.191
+    },
+    {
+     "word": "are",
+     "start": 4.226,
+     "end": 4.342
+    },
+    {
+     "word": "measured",
+     "start": 4.389,
+     "end": 4.725
+    },
+    {
+     "word": "in",
+     "start": 4.772,
+     "end": 4.841
+    },
+    {
+     "word": "ohms.",
+     "start": 4.957,
+     "end": 5.619
+    }
+   ],
+   "measuredDuration": 5.61922902494331,
+   "speechStart": 0.1509297052154195,
+   "speechEnd": 5.317369614512471,
+   "captionOffset": 0.1509297052154195
+  },
+  "7": {
+   "src": "generated/vo-2bc4b99a/s7.mp3",
+   "duration": 7.053061224489796,
+   "words": [
+    {
+     "word": "However,",
+     "start": 0,
+     "end": 0.65
+    },
+    {
+     "word": "resistance",
+     "start": 0.929,
+     "end": 1.486
+    },
+    {
+     "word": "converts",
+     "start": 1.521,
+     "end": 1.974
+    },
+    {
+     "word": "electrical",
+     "start": 2.055,
+     "end": 2.566
+    },
+    {
+     "word": "energy",
+     "start": 2.624,
+     "end": 2.949
+    },
+    {
+     "word": "irreversibly",
+     "start": 3.007,
+     "end": 3.715
+    },
+    {
+     "word": "into",
+     "start": 3.785,
+     "end": 3.994
+    },
+    {
+     "word": "heat",
+     "start": 4.11,
+     "end": 4.354
+    },
+    {
+     "word": "through",
+     "start": 4.4,
+     "end": 4.609
+    },
+    {
+     "word": "the",
+     "start": 4.632,
+     "end": 4.702
+    },
+    {
+     "word": "collision",
+     "start": 4.748,
+     "end": 5.166
+    },
+    {
+     "word": "of",
+     "start": 5.259,
+     "end": 5.387
+    },
+    {
+     "word": "moving",
+     "start": 5.503,
+     "end": 5.805
+    },
+    {
+     "word": "charge",
+     "start": 5.875,
+     "end": 6.2
+    },
+    {
+     "word": "carriers.",
+     "start": 6.235,
+     "end": 7.012
+    }
+   ],
+   "measuredDuration": 7.012426303854875,
+   "speechStart": 0.13931972789115646,
+   "speechEnd": 6.698956916099773,
+   "captionOffset": 0.13931972789115646
+  },
+  "8": {
+   "src": "generated/vo-2bc4b99a/s8.mp3",
+   "duration": 6.817959183673469,
+   "words": [
+    {
+     "word": "Ideal",
+     "start": 0,
+     "end": 0.662
+    },
+    {
+     "word": "pure",
+     "start": 0.743,
+     "end": 0.975
+    },
+    {
+     "word": "resistance",
+     "start": 1.01,
+     "end": 1.567
+    },
+    {
+     "word": "maintains",
+     "start": 1.614,
+     "end": 2.159
+    },
+    {
+     "word": "voltage",
+     "start": 2.229,
+     "end": 2.868
+    },
+    {
+     "word": "and",
+     "start": 2.961,
+     "end": 3.158
+    },
+    {
+     "word": "alternating",
+     "start": 3.251,
+     "end": 3.843
+    },
+    {
+     "word": "current",
+     "start": 3.901,
+     "end": 4.203
+    },
+    {
+     "word": "perfectly",
+     "start": 4.261,
+     "end": 4.737
+    },
+    {
+     "word": "in",
+     "start": 4.772,
+     "end": 4.841
+    },
+    {
+     "word": "phase",
+     "start": 4.899,
+     "end": 5.236
+    },
+    {
+     "word": "with",
+     "start": 5.271,
+     "end": 5.445
+    },
+    {
+     "word": "zero",
+     "start": 5.503,
+     "end": 5.805
+    },
+    {
+     "word": "degree",
+     "start": 5.863,
+     "end": 6.13
+    },
+    {
+     "word": "angle.",
+     "start": 6.177,
+     "end": 6.78
+    }
+   ],
+   "measuredDuration": 6.780226757369615,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 6.524807256235827,
+   "captionOffset": 0.16253968253968254
+  },
+  "9": {
+   "src": "generated/vo-2bc4b99a/s9.mp3",
+   "duration": 6.295510204081633,
+   "words": [
+    {
+     "word": "Therefore,",
+     "start": 0,
+     "end": 0.511
+    },
+    {
+     "word": "the",
+     "start": 0.534,
+     "end": 0.604
+    },
+    {
+     "word": "average",
+     "start": 0.673,
+     "end": 1.126
+    },
+    {
+     "word": "active",
+     "start": 1.184,
+     "end": 1.602
+    },
+    {
+     "word": "real",
+     "start": 1.637,
+     "end": 1.823
+    },
+    {
+     "word": "power",
+     "start": 1.904,
+     "end": 2.171
+    },
+    {
+     "word": "consumed",
+     "start": 2.252,
+     "end": 2.728
+    },
+    {
+     "word": "across",
+     "start": 2.775,
+     "end": 3.146
+    },
+    {
+     "word": "a",
+     "start": 3.181,
+     "end": 3.216
+    },
+    {
+     "word": "pure",
+     "start": 3.309,
+     "end": 3.587
+    },
+    {
+     "word": "resistor",
+     "start": 3.622,
+     "end": 4.052
+    },
+    {
+     "word": "equals",
+     "start": 4.145,
+     "end": 4.574
+    },
+    {
+     "word": "voltage",
+     "start": 4.656,
+     "end": 5.108
+    },
+    {
+     "word": "times",
+     "start": 5.166,
+     "end": 5.457
+    },
+    {
+     "word": "current.",
+     "start": 5.538,
+     "end": 6.269
+    }
+   ],
+   "measuredDuration": 6.2693877551020405,
+   "speechStart": 0.1509297052154195,
+   "speechEnd": 6.013968253968254,
+   "captionOffset": 0.1509297052154195
+  },
+  "10": {
+   "src": "generated/vo-2bc4b99a/s10.mp3",
+   "duration": 7.131428571428572,
+   "words": [
+    {
+     "word": "In",
+     "start": 0,
+     "end": 0.29
+    },
+    {
+     "word": "contrast,",
+     "start": 0.36,
+     "end": 0.94
+    },
+    {
+     "word": "reactance",
+     "start": 1.068,
+     "end": 1.66
+    },
+    {
+     "word": "opposes",
+     "start": 1.707,
+     "end": 2.218
+    },
+    {
+     "word": "alternating",
+     "start": 2.334,
+     "end": 2.949
+    },
+    {
+     "word": "current",
+     "start": 3.007,
+     "end": 3.32
+    },
+    {
+     "word": "strictly",
+     "start": 3.379,
+     "end": 3.866
+    },
+    {
+     "word": "by",
+     "start": 3.924,
+     "end": 4.052
+    },
+    {
+     "word": "storing",
+     "start": 4.122,
+     "end": 4.563
+    },
+    {
+     "word": "energy",
+     "start": 4.632,
+     "end": 4.981
+    },
+    {
+     "word": "in",
+     "start": 5.05,
+     "end": 5.143
+    },
+    {
+     "word": "electric",
+     "start": 5.213,
+     "end": 5.654
+    },
+    {
+     "word": "or",
+     "start": 5.724,
+     "end": 5.828
+    },
+    {
+     "word": "magnetic",
+     "start": 5.898,
+     "end": 6.339
+    },
+    {
+     "word": "fields.",
+     "start": 6.409,
+     "end": 7.105
+    }
+   ],
+   "measuredDuration": 7.1053061224489795,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 6.826666666666667,
+   "captionOffset": 0.17414965986394557
+  },
+  "11": {
+   "src": "generated/vo-2bc4b99a/s11.mp3",
+   "duration": 6.530612244897959,
+   "words": [
+    {
+     "word": "An",
+     "start": 0,
+     "end": 0.337
+    },
+    {
+     "word": "inductor",
+     "start": 0.406,
+     "end": 0.813
+    },
+    {
+     "word": "builds",
+     "start": 0.882,
+     "end": 1.161
+    },
+    {
+     "word": "up",
+     "start": 1.219,
+     "end": 1.312
+    },
+    {
+     "word": "magnetic",
+     "start": 1.37,
+     "end": 1.776
+    },
+    {
+     "word": "energy,",
+     "start": 1.834,
+     "end": 2.334
+    },
+    {
+     "word": "whereas",
+     "start": 2.543,
+     "end": 2.926
+    },
+    {
+     "word": "a",
+     "start": 2.984,
+     "end": 3.007
+    },
+    {
+     "word": "capacitor",
+     "start": 3.077,
+     "end": 3.727
+    },
+    {
+     "word": "stores",
+     "start": 3.843,
+     "end": 4.238
+    },
+    {
+     "word": "energy",
+     "start": 4.296,
+     "end": 4.679
+    },
+    {
+     "word": "within",
+     "start": 4.748,
+     "end": 5.027
+    },
+    {
+     "word": "its",
+     "start": 5.085,
+     "end": 5.201
+    },
+    {
+     "word": "electrostatic",
+     "start": 5.259,
+     "end": 5.909
+    },
+    {
+     "word": "field.",
+     "start": 5.968,
+     "end": 6.502
+    }
+   ],
+   "measuredDuration": 6.501587301587302,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 6.164897959183674,
+   "captionOffset": 0.17414965986394557
+  },
+  "12": {
+   "src": "generated/vo-2bc4b99a/s12.mp3",
+   "duration": 6.504489795918367,
+   "words": [
+    {
+     "word": "This",
+     "start": 0,
+     "end": 0.337
+    },
+    {
+     "word": "cyclic",
+     "start": 0.418,
+     "end": 0.894
+    },
+    {
+     "word": "energy",
+     "start": 0.975,
+     "end": 1.37
+    },
+    {
+     "word": "exchange",
+     "start": 1.44,
+     "end": 1.916
+    },
+    {
+     "word": "produces",
+     "start": 1.95,
+     "end": 2.392
+    },
+    {
+     "word": "a",
+     "start": 2.438,
+     "end": 2.473
+    },
+    {
+     "word": "ninety",
+     "start": 2.566,
+     "end": 2.914
+    },
+    {
+     "word": "degree",
+     "start": 2.972,
+     "end": 3.262
+    },
+    {
+     "word": "phase",
+     "start": 3.297,
+     "end": 3.576
+    },
+    {
+     "word": "shift",
+     "start": 3.611,
+     "end": 3.924
+    },
+    {
+     "word": "between",
+     "start": 3.982,
+     "end": 4.284
+    },
+    {
+     "word": "alternating",
+     "start": 4.342,
+     "end": 4.934
+    },
+    {
+     "word": "voltage",
+     "start": 5.004,
+     "end": 5.48
+    },
+    {
+     "word": "and",
+     "start": 5.538,
+     "end": 5.7
+    },
+    {
+     "word": "current.",
+     "start": 5.793,
+     "end": 6.455
+    }
+   ],
+   "measuredDuration": 6.455147392290249,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 6.211337868480726,
+   "captionOffset": 0.17414965986394557
+  },
+  "13": {
+   "src": "generated/vo-2bc4b99a/s13.mp3",
+   "duration": 7.183673469387755,
+   "words": [
+    {
+     "word": "Because",
+     "start": 0,
+     "end": 0.453
+    },
+    {
+     "word": "the",
+     "start": 0.476,
+     "end": 0.546
+    },
+    {
+     "word": "phase",
+     "start": 0.592,
+     "end": 0.917
+    },
+    {
+     "word": "angle",
+     "start": 0.964,
+     "end": 1.3
+    },
+    {
+     "word": "is",
+     "start": 1.324,
+     "end": 1.405
+    },
+    {
+     "word": "ninety",
+     "start": 1.486,
+     "end": 1.846
+    },
+    {
+     "word": "degrees,",
+     "start": 1.916,
+     "end": 2.345
+    },
+    {
+     "word": "the",
+     "start": 2.38,
+     "end": 2.461
+    },
+    {
+     "word": "average",
+     "start": 2.543,
+     "end": 3.019
+    },
+    {
+     "word": "real",
+     "start": 3.088,
+     "end": 3.367
+    },
+    {
+     "word": "power",
+     "start": 3.448,
+     "end": 3.75
+    },
+    {
+     "word": "dissipated",
+     "start": 3.831,
+     "end": 4.47
+    },
+    {
+     "word": "across",
+     "start": 4.528,
+     "end": 4.865
+    },
+    {
+     "word": "pure",
+     "start": 4.946,
+     "end": 5.271
+    },
+    {
+     "word": "reactance",
+     "start": 5.329,
+     "end": 6.037
+    },
+    {
+     "word": "is",
+     "start": 6.095,
+     "end": 6.339
+    },
+    {
+     "word": "zero.",
+     "start": 6.467,
+     "end": 7.152
+    }
+   ],
+   "measuredDuration": 7.151746031746032,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 6.919546485260771,
+   "captionOffset": 0.17414965986394557
+  },
+  "14": {
+   "src": "generated/vo-2bc4b99a/s14.mp3",
+   "duration": 8.777142857142858,
+   "words": [
+    {
+     "word": "Furthermore,",
+     "start": 0,
+     "end": 0.801
+    },
+    {
+     "word": "inductive",
+     "start": 1.045,
+     "end": 1.672
+    },
+    {
+     "word": "and",
+     "start": 1.73,
+     "end": 1.869
+    },
+    {
+     "word": "capacitive",
+     "start": 1.95,
+     "end": 2.647
+    },
+    {
+     "word": "reactance",
+     "start": 2.705,
+     "end": 3.262
+    },
+    {
+     "word": "change",
+     "start": 3.309,
+     "end": 3.622
+    },
+    {
+     "word": "with",
+     "start": 3.657,
+     "end": 3.808
+    },
+    {
+     "word": "supply",
+     "start": 3.855,
+     "end": 4.214
+    },
+    {
+     "word": "frequency,",
+     "start": 4.272,
+     "end": 4.934
+    },
+    {
+     "word": "whereas",
+     "start": 5.108,
+     "end": 5.492
+    },
+    {
+     "word": "ideal",
+     "start": 5.642,
+     "end": 6.037
+    },
+    {
+     "word": "resistance",
+     "start": 6.095,
+     "end": 6.699
+    },
+    {
+     "word": "remains",
+     "start": 6.769,
+     "end": 7.163
+    },
+    {
+     "word": "completely",
+     "start": 7.245,
+     "end": 7.872
+    },
+    {
+     "word": "constant.",
+     "start": 7.941,
+     "end": 8.731
+    }
+   ],
+   "measuredDuration": 8.730702947845804,
+   "speechStart": 0.13931972789115646,
+   "speechEnd": 8.498503401360544,
+   "captionOffset": 0.13931972789115646
+  },
+  "15": {
+   "src": "generated/vo-2bc4b99a/s15.mp3",
+   "duration": 3.0040816326530613,
+   "words": [
+    {
+     "word": "Here",
+     "start": 0,
+     "end": 0.279
+    },
+    {
+     "word": "are",
+     "start": 0.302,
+     "end": 0.395
+    },
+    {
+     "word": "the",
+     "start": 0.418,
+     "end": 0.488
+    },
+    {
+     "word": "formulas",
+     "start": 0.534,
+     "end": 0.987
+    },
+    {
+     "word": "behind",
+     "start": 1.045,
+     "end": 1.3
+    },
+    {
+     "word": "this",
+     "start": 1.347,
+     "end": 1.486
+    },
+    {
+     "word": "one.",
+     "start": 1.556,
+     "end": 1.73
+    },
+    {
+     "word": "Save",
+     "start": 1.753,
+     "end": 1.962
+    },
+    {
+     "word": "it",
+     "start": 1.985,
+     "end": 2.043
+    },
+    {
+     "word": "for",
+     "start": 2.078,
+     "end": 2.183
+    },
+    {
+     "word": "your",
+     "start": 2.218,
+     "end": 2.322
+    },
+    {
+     "word": "revision.",
+     "start": 2.357,
+     "end": 2.972
+    }
+   ],
+   "measuredDuration": 2.972154195011338,
+   "speechStart": 0.18575963718820862,
+   "speechEnd": 2.705124716553288,
+   "captionOffset": 0.18575963718820862
+  },
+  "16": {
+   "src": "generated/vo-2bc4b99a/s16.mp3",
+   "duration": 9.795918367346939,
+   "words": [
+    {
+     "word": "Because",
+     "start": 0,
+     "end": 0.464
+    },
+    {
+     "word": "pure",
+     "start": 0.522,
+     "end": 0.813
+    },
+    {
+     "word": "reactance",
+     "start": 0.871,
+     "end": 1.405
+    },
+    {
+     "word": "draws",
+     "start": 1.44,
+     "end": 1.765
+    },
+    {
+     "word": "current",
+     "start": 1.846,
+     "end": 2.194
+    },
+    {
+     "word": "without",
+     "start": 2.252,
+     "end": 2.589
+    },
+    {
+     "word": "burning",
+     "start": 2.659,
+     "end": 3.03
+    },
+    {
+     "word": "watts,",
+     "start": 3.088,
+     "end": 3.622
+    },
+    {
+     "word": "utilities",
+     "start": 3.901,
+     "end": 4.505
+    },
+    {
+     "word": "penalize",
+     "start": 4.574,
+     "end": 5.143
+    },
+    {
+     "word": "low",
+     "start": 5.201,
+     "end": 5.433
+    },
+    {
+     "word": "power",
+     "start": 5.515,
+     "end": 5.793
+    },
+    {
+     "word": "factor",
+     "start": 5.863,
+     "end": 6.246
+    },
+    {
+     "word": "industrial",
+     "start": 6.327,
+     "end": 6.931
+    },
+    {
+     "word": "loads.",
+     "start": 7.012,
+     "end": 7.523
+    },
+    {
+     "word": "Follow",
+     "start": 7.732,
+     "end": 8.046
+    },
+    {
+     "word": "for",
+     "start": 8.104,
+     "end": 8.231
+    },
+    {
+     "word": "more",
+     "start": 8.301,
+     "end": 8.533
+    },
+    {
+     "word": "engineering",
+     "start": 8.603,
+     "end": 9.137
+    },
+    {
+     "word": "prep!",
+     "start": 9.207,
+     "end": 9.752
+    }
+   ],
+   "measuredDuration": 9.752380952380953,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 9.508571428571429,
+   "captionOffset": 0.16253968253968254
+  }
+ },
+ "seo": {
+  "titles": [
+   "Resistance vs Reactance Explained: AC Circuit Basics",
+   "What Is the Real Difference Between Resistance and Reactance?",
+   "Can You Identify the Difference Between Resistance and Reactance?",
+   "Resistance vs Reactance for State AE JE Electrical Exams",
+   "Energy Dissipation vs Energy Storage: Resistance and Reactance"
+  ],
+  "description": "Master the difference between resistance and reactance for State AE JE Electrical exams.\n\nIn an AC circuit, both resistance and reactance oppose current and are measured in ohms, but they handle electrical energy in fundamentally different ways. This video breaks down how resistance converts energy into heat while reactance temporarily stores it in electric or magnetic fields.\n\n- Why resistance causes irreversible power dissipation as heat\n- How inductive and capacitive reactance store and return energy\n- Phase angle differences and power factor impact in AC circuits\n- Why ideal reactance consumes zero average active power\n\n#Shorts #ElectricalEngineering #StateAEJE #BasicElectrical",
+  "tags": [
+   "resistance vs reactance",
+   "difference between resistance and reactance",
+   "electrical resistance",
+   "electrical reactance",
+   "basic electrical engineering",
+   "state ae electrical",
+   "state je electrical",
+   "ssc je electrical",
+   "ac circuit basics",
+   "inductive reactance",
+   "capacitive reactance",
+   "active power vs reactive power",
+   "phase angle in ac circuits",
+   "ac circuits",
+   "power factor basics",
+   "electrical engineering concepts",
+   "resistance and reactance",
+   "reactance in ohms",
+   "heat dissipation resistor"
+  ],
+  "hashtags": [
+   "Shorts",
+   "ElectricalEngineering",
+   "StateAEJE",
+   "CircuitTheory"
+  ],
+  "thumbnailText": "Resistance vs Reactance",
+  "pinnedComment": "Do you know whether inductive reactance increases or decreases when frequency rises? Drop your answer below!",
+  "instagram": {
+   "caption": "Can you spot how electrical resistance differs from reactance in an AC circuit? Test your concepts below!\n\nBoth quantities oppose alternating current and share the same unit of ohms.\nResistance converts energy into heat with zero phase shift.\nReactance stores and releases energy across a ninety degree phase angle.\nSave this reel for your State AE JE Electrical revision!",
+   "hashtags": [
+    "ElectricalEngineering",
+    "StateJESubject",
+    "CircuitTheory",
+    "ElectricalJE"
+   ],
+   "altText": "Diagram showing the difference between resistance dissipating heat and reactance storing energy.",
+   "post": "Can you spot how electrical resistance differs from reactance in an AC circuit? Test your concepts below!\n\nBoth quantities oppose alternating current and share the same unit of ohms.\nResistance converts energy into heat with zero phase shift.\nReactance stores and releases energy across a ninety degree phase angle.\nSave this reel for your State AE JE Electrical revision!\n\n#ElectricalEngineering #StateJESubject #CircuitTheory #ElectricalJE",
+   "hookLength": 105
+  },
+  "facebook": {
+   "title": "Resistance vs Reactance: Key Differences in AC Circuits",
+   "caption": "Resistance vs reactance: do you know the core difference in AC circuits? Learn how heat dissipation and energy storage affect power consumption in electrical networks. Can you state their phase angles?",
+   "hashtags": [
+    "ElectricalEngineering",
+    "StateAEElectrical"
+   ],
+   "keywords": [
+    "resistance vs reactance",
+    "ac circuit theory",
+    "basic electrical engineering",
+    "state ae electrical",
+    "state je electrical",
+    "inductive reactance",
+    "capacitive reactance"
+   ],
+   "post": "Resistance vs reactance: do you know the core difference in AC circuits? Learn how heat dissipation and energy storage affect power consumption in electrical networks. Can you state their phase angles?\n\n#ElectricalEngineering #StateAEElectrical"
+  },
+  "tagsLength": 447,
+  "generatedAt": "2026-10-12T15:53:59.399Z",
+  "fingerprint": "Which statement correctly distinguishes electrical resistance from electrical reactance in an alternating current circuit?~~Resistance dissipates energy as heat while reactance temporarily stores and returns energy|Resistance depends directly on frequency while reactance is completely independent of frequency|Resistance causes a ninety degree phase shift while reactance maintains zero phase shift|Resistance is measured in ohms while reactance is exclusively measured in henries or farads~~0~~Both quantities oppose current flow in alternating current circuits and both are measured in ohms.|However, resistance converts electrical energy irreversibly into heat through the collision of moving charge carriers.|Ideal pure resistance maintains voltage and alternating current perfectly in phase with zero degree angle.|Therefore, the average active real power consumed across a pure resistor equals voltage times current.~~Both quantities oppose current flow in alternating current circuits and both are measured in ohms.|However, resistance converts electrical energy irreversibly into heat through the collision of moving charge carriers.|Ideal pure resistance maintains voltage and alternating current perfectly in phase with zero degree angle.|Therefore, the average active real power consumed across a pure resistor equals voltage times current.|In contrast, reactance opposes alternating current strictly by storing energy in electric or magnetic fields.|An inductor builds up magnetic energy, whereas a capacitor stores energy within its electrostatic field.|This cyclic energy exchange produces a ninety degree phase shift between alternating voltage and current.|Because the phase angle is ninety degrees, the average real power dissipated across pure reactance is zero.|Furthermore, inductive and capacitive reactance change with supply frequency, whereas ideal resistance remains completely constant."
+ },
+ "ledger": [
+  {
+   "what": "Voiceover",
+   "characters": 1886,
+   "at": "2026-10-12T15:43:35.347Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-12T15:46:44.826Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-12T15:46:46.459Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-12T15:46:46.531Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-12T15:47:02.771Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-12T15:47:03.601Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-12T15:47:03.836Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-12T15:47:20.224Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-12T15:47:23.124Z"
+  },
+  {
+   "what": "Thumbnail picture",
+   "cents": 3,
+   "at": "2026-10-12T15:54:55.865Z"
+  }
+ ],
+ "renders": [
+  {
+   "jobId": "video-2026-10-12T15-47-50",
+   "url": "/out/video-2026-10-12T15-47-50.mp4",
+   "quality": "medium",
+   "at": "2026-10-12T15:53:18.570Z"
+  }
+ ],
+ "published": {}
+}
