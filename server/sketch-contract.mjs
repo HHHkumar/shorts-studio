@@ -52,9 +52,10 @@ const OPTIONAL = {
   phasor: ['mode'], clock: ['mode'], 'grid-logic': ['mode'],
   // Its items are extra; the two labels are the picture.
   'before-after': ['items'],
-  // The source label is extra; the network is the picture. `mode` is the old
-  // way of asking, kept only so a saved video still draws.
-  circuit: ['labelA', 'mode'],
+  // The network and whether it is AC or DC are the picture. The supply may be
+  // left out - the network then stands between two terminals - and the fact
+  // to check it against is there to be used, not demanded.
+  circuit: ['labelA', 'labelB'],
   // In phase mode the waveform needs more - see needsFor().
   waveform: ['angle', 'ratio', 'labelA', 'labelB'],
 };
@@ -155,7 +156,9 @@ export function checkSketch(name, params, items) {
   const problems = [];
 
   const missing = needsFor(contract, p).filter((k) => !stated(p[k]));
-  if (missing.length) problems.push('was not given ' + missing.map((k) => SAY[k]).join(', '));
+  // "Which variant" means little for a circuit: its mode is AC or DC.
+  const say = (k) => (name === 'circuit' && k === 'mode' ? 'whether it is AC or DC ("mode")' : SAY[k]);
+  if (missing.length) problems.push('was not given ' + missing.map(say).join(', '));
 
   if (contract.modes && stated(p.mode) && !contract.modes.includes(String(p.mode).toLowerCase())) {
     problems.push('has no "' + p.mode + '" variant (it has ' + contract.modes.join(', ') + ')');

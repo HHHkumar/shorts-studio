@@ -75,9 +75,11 @@ test('how fast or how full a picture looks need not be stated', () => {
   assert(!refused('diode-curve', {}), why('diode-curve'));
 });
 
-test('a circuit needs its network, and nothing else', () => {
-  assert(refused('circuit', { labelA: '12 V' }), 'drawn with no network');
-  assert(!refused('circuit', { network: '99 | 1' }), why('circuit', { network: '99 | 1' }));
+test('a circuit needs its network and whether it is AC or DC; its supply may be left out', () => {
+  assert(refused('circuit', { labelA: '12 V', mode: 'dc' }), 'drawn with no network');
+  assert(/AC or DC/.test(why('circuit', { network: 'R + L + C' })), 'an AC circuit could be drawn on a battery by default: ' + why('circuit', { network: 'R + L + C' }));
+  assert(!refused('circuit', { network: '99 | 1', mode: 'dc' }), why('circuit', { network: '99 | 1', mode: 'dc' }));
+  assert(refused('circuit', { network: '99 | 1', mode: 'series' }), 'the old "series" mode still passes for a new script');
 });
 
 test('each sketch takes as many items as it says it draws', () => {

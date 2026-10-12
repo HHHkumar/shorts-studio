@@ -69,10 +69,13 @@ test('a script is refused a sketch whose label would be cut, and is told why', (
 });
 
 test('the question scene does not show the answer', () => {
-  const circuit = { kind: 'sketch', sketch: 'circuit', params: { network: '99 | 0.099' }, items: [] };
+  const circuit = { kind: 'sketch', sketch: 'circuit', params: { network: '99 | 0.099', mode: 'dc' }, items: [] };
   const video = { question: 'A 99 ohm meter. What shunt extends it to 10 amperes?', options: ['0.099 ohms', '1 ohm'], correctIndex: 0 };
   assert(answerShown(circuit, video).join() === '0.099', answerShown(circuit, video).join());
-  assert(!answerShown({ ...circuit, params: { network: '99 | 5' } }, video).length, 'a number that is not the answer was called the answer');
+  assert(!answerShown({ ...circuit, params: { network: '99 | 5', mode: 'dc' } }, video).length, 'a number that is not the answer was called the answer');
+  // Marked with a "?" it is hidden on the question scene, so it is no leak at all.
+  const hidden = { ...circuit, params: { network: 'Rm=99Ω | Rsh=0.099Ω?', labelA: '10 A', mode: 'dc' } };
+  assert(!answerShown(hidden, video).length, 'a hidden value was counted as shown: ' + answerShown(hidden, video));
 
   const s = scene(circuit, 'The shunt is 0.099 ohms beside the 99 ohm coil.');
   const q = s.find((l) => l.kind === 'question');

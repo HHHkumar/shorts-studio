@@ -515,22 +515,42 @@ got whichever of the two was closer, and the picture disagreed with the words. A
 contradicts the question is worse than no picture: the words get checked and the picture gets
 believed.
 
-It now takes the **network itself**, written as a short expression where `+` is series and `|` is
-parallel:
+It now takes the **network itself**, written as a short line where `+` is series and `|` is
+parallel — and **each part is drawn as what it is**. That second half is new. The line used to draw
+every part as a resistor on a battery, whatever the scene was about, so a series RLC circuit came
+out as three resistors of 10, 20 and 30 Ω and a transmission line's capacitance as two 50 Ω
+resistors across a cell. Five of its eight uses in real videos were wrong for that one reason.
 
 | Written | Drawn |
 |---|---|
-| `12 + (12 \| 12)` | one in series with two in parallel |
-| `(12 + 12) \| 12` | two in series, in parallel with a third |
-| `4 \| 4 \| 4` | three in parallel |
-| `10 + (20 \| (5 + 5))` | a ladder |
+| `R + L + C`, supply `Vs`, AC | a resistor, a coil and a capacitor across an AC source — a schematic, with no values invented |
+| `Rm=99Ω \| Rsh=1Ω?`, supply `100 mA` | a meter resistance and its shunt hanging from a current source, the shunt shown as **?** until the answer |
+| `Req=0.5Ω + Xeq=j1.41Ω`, supply `30 V`, AC | a resistance and an inductive reactance (`-j5Ω` is a capacitive one) |
+| `Ra=0.5Ω + Eb=210V`, supply `220 V` | an armature resistance and a back EMF, opposing the supply |
+| `L + (C \| Load)`, supply `Vs`, AC | a line: its inductance along the top, its capacitance and its load across |
+| `4Ω + (6Ω \| 3Ω)`, no supply | a network between two terminals **A** and **B** |
+
+A part is what its **unit** says — Ω a resistor, mH an inductor, µF a capacitor, V an EMF — or, with
+no value, what its **name** starts with, the way a circuit diagram letters its parts: R, L, C, X, E.
+There are also a lamp, a switch (open or closed), a diode, a thyristor, a load, and the meters A, V
+and G. A part that cannot be read is **refused, never guessed**, and a circuit must say whether it
+is AC or DC, so nothing is drawn on a battery by default.
+
+**It is solved, and can be checked.** When every part has a value the circuit is worked out by the
+same nodal analysis as the question's own figure, and current flows round it after the answer. The
+script may also state one fact about it — *I(Rm) = 1 mA*, *I = 20 A*, *R = 6 Ω* — which is then
+**checked against the solved circuit** and shown underneath. A circuit that does not give that value
+is not drawn: it is not the circuit in the question. Step 3 says so under *Asked for, and not
+drawn*, with what it actually works out to.
 
 Parallel binds tighter than series, as it does on paper, so `R1 + R2 | R3` is R1 in series with the
-pair. Every arrangement these questions use reduces to series and parallel, so this covers the set
-rather than a sample of it — there is no longer a list of shapes to run out of. A bridge does not
-reduce and is a separate figure.
+pair. A circuit that ends in parallel branches is drawn as a **ladder** — each branch a rung between
+two rails — which is how a shunt, a divider or a line is drawn in a textbook. A bridge does not
+reduce to series and parallel and is a separate figure.
 
-If the expression cannot be read it falls back to the old two shapes rather than drawing a guess.
+To see the line drawn without making a video:
+`node --import ./tools/ts-resolve.mjs tools/circuit-line-preview.mjs` renders a dozen circuits, each
+on a question scene and on an explanation, into `out\frames\circuit-line`.
 
 
 Play the phone preview before rendering. Fixing something here takes a second; after a render it
@@ -732,8 +752,12 @@ spoken line, the picture in words and **the frame as it will be rendered**, and 
 | **Beside the point** | Not false, but only about the same subject — a spanner for *load torque*. | Taken out. |
 | **Not sure** | The reviewer could not tell. | Stays, flagged for you. |
 
-Gemini looks at the frames; DeepSeek, when its key is there, reads the same pictures in words, and a
-picture is kept only if neither calls it wrong or beside the point. It runs on its own when a script
+Gemini looks at the frames; DeepSeek, when its key is there, reads the same pictures in words. **A
+picture is taken out when the two agree it should go.** On the first real video checked, every
+picture both objected to was wrong, and every picture only one objected to was sound — a reviewer
+alone is quick to call a plain picture "generic". Where they differ the picture stays, marked **Not
+sure**, with what each said, for you to judge. With only one reviewer, it takes out what it calls
+wrong and leaves what it calls beside the point to you. It runs on its own when a script
 arrives on step 3, and in every batch before the formula card. The first check after starting the
 studio takes about a minute while the video engine warms up; after that, a few seconds a picture.
 Free on Gemini's free tier, and a fraction of a cent of DeepSeek. **Put it back** overrules it for

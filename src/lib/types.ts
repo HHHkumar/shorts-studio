@@ -155,6 +155,8 @@ export interface SceneVisual {
   highlight?: string;
   /** sketch: the knobs that animation reads. See src/remotion/sketches.ts. */
   params?: {
+    /** circuit: the network as a line - see src/lib/circuit-line.ts. */
+    network?: string;
     mode?: string;
     angle?: number;
     speed?: number;

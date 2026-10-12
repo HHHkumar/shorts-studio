@@ -8,6 +8,9 @@ import { FigureView } from './Figure';
 import { WorkingView } from './WorkingView';
 import { ReduceView } from './ReduceView';
 import { reductionFor } from '../lib/figures/reduce';
+import { readCircuitLine } from '../lib/circuit-line';
+import { isNotation, mathWidth, mendFormula, parseMath } from '../lib/formula-card';
+import { MathText } from './MathText';
 import { P5Sketch, type SketchArgs } from './P5Sketch';
 import { handFontReady } from './fonts';
 import { SKETCHES, type SketchParams } from './sketches';
@@ -24,7 +27,17 @@ export const Visual: React.FC<{
   figure?: Figure;
   /** The question's worked solution (the formula card's working lines). */
   working?: string[];
-}> = ({ theme, visual, figure, working }) => {
+  /** On the question scene: nothing the answer would give away is shown yet. */
+  setup?: boolean;
+}> = ({ theme, visual, figure, working, setup = false }) => {
+  // A circuit sketch is read into the same solved circuit the question's own
+  // figure uses, so it is drawn with real parts - an inductor as a coil, an AC
+  // supply as one - rather than as boxes on a battery. One the line cannot
+  // express falls back to the old drawing, so a saved video still plays.
+  const line = React.useMemo(
+    () => (visual && visual.kind === 'sketch' && visual.sketch === 'circuit' ? readCircuitLine(visual.params || {}).line : null),
+    [visual],
+  );
   if (!visual || visual.kind === 'none') return null;
 
   let body: React.ReactNode = null;
@@ -40,6 +53,13 @@ export const Visual: React.FC<{
   else if (visual.kind === 'bars' && visual.items?.length) body = <Bars theme={theme} items={visual.items} />;
   else if (visual.kind === 'compare' && visual.items?.length) body = <Compare theme={theme} items={visual.items} />;
   else if (visual.kind === 'icon' && visual.items?.length) body = <Icon theme={theme} item={visual.items[0]} />;
+  else if (line) {
+    // The fact a circuit was checked against belongs to the explanation. On
+    // the question scene it would read as what is being asked, which it may
+    // not be - so there the circuit is shown bare, with any "?" part hidden.
+    const shown = setup && line.circuit.ask ? { ...line.circuit, ask: undefined } : line.circuit;
+    body = <FigureView theme={theme} figure={shown} reveal={!setup} />;
+  }
   else if (visual.kind === 'sketch' && visual.sketch) {
     body = (
       <Sketch
@@ -173,6 +193,13 @@ const Formula: React.FC<{ theme: Theme; text: string }> = ({ theme, text }) => {
   const perChar = mono ? 0.62 : 0.55;
   const estimate = (size: number) => text.length * (size * perChar + 1);
 
+  // A formula written with subscripts, fractions or roots is typeset, the way
+  // the formula card sets its own. Shown as it was typed, "P_{sc} = I_{sc}^2
+  // \times R_{eq}" went on screen with its braces and its backslash.
+  const notation = isNotation(text);
+  const mended = React.useMemo(() => (notation ? mendFormula(text) : text), [text, notation]);
+  const set = React.useMemo(() => (notation ? mathWidth(parseMath(mended)) : 0), [mended, notation]);
+
   let size = 34;
   let oneLine = false;
   for (let candidate = 82; candidate >= 34; candidate -= 2) {
@@ -181,6 +208,12 @@ const Formula: React.FC<{ theme: Theme; text: string }> = ({ theme, text }) => {
       oneLine = true;
       break;
     }
+  }
+  if (notation) {
+    // Sized from how wide it will set, with the same margin for error the
+    // formula card allows itself.
+    size = Math.max(26, Math.min(82, Math.floor(available / Math.max(1, set * 1.18))));
+    oneLine = true;
   }
   if (!oneLine) {
     // Two lines at a readable size beats one line nobody can read.
@@ -211,7 +244,7 @@ const Formula: React.FC<{ theme: Theme; text: string }> = ({ theme, text }) => {
         whiteSpace: oneLine ? 'nowrap' : 'normal',
       }}
     >
-      {text}
+      {notation ? <MathText theme={theme} src={mended} size={size} /> : text}
     </div>
   );
 };

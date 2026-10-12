@@ -3,7 +3,7 @@ import { useCurrentFrame, useVideoConfig } from 'remotion';
 import type { Theme } from '../lib/theme';
 import { answerFigure, formatAnswer, formatQuantity, type Figure } from '../lib/figures/index.ts';
 import {
-  ASK_UNIT, elementText, layoutCircuit, solveCircuit, type Circuit, type CircuitElement, type PlacedElement,
+  elementText, fitCircuit, isSolvable, solveCircuit, type Circuit, type CircuitElement, type PlacedElement,
 } from '../lib/figures/circuit.ts';
 import { circuitFlow, type PartFlow } from '../lib/figures/circuit-flow.ts';
 import { AnimatedWirePath, GlowingLampSymbol } from './figures/CircuitFlow';
@@ -156,8 +156,10 @@ const QUANTITY_WORD: Record<string, string> = {
 function askText(c: Circuit, reveal: boolean): string {
   if (!c.ask) return '';
   const { quantity, element, from, to } = c.ask;
+  const part = element ? c.elements.find((e) => e.id === element) : undefined;
+  // A part with no name of its own is said by what it is, never by its id.
   const target = element
-    ? (c.elements.find((e) => e.id === element)?.label || element)
+    ? (part?.label || (part && (part.kind === 'voltage' || part.kind === 'current') ? 'the supply' : element))
     : from + ' and ' + to;
   const lead = element ? QUANTITY_WORD[quantity] : (quantity[0].toUpperCase() + quantity.slice(1) + ' between');
   if (!reveal) return lead + ' ' + target + ' = ?';
@@ -171,7 +173,11 @@ const CircuitArt: React.FC<ArtProps & { circuit: Circuit; highlight?: string }> 
   const at = useStagger();
   const frame = useCurrentFrame();
   const footer = circuit.ask ? font * 2.2 : 0;
-  const layout = layoutCircuit(circuit, w, h - footer, font);
+  // Labels are set as large as leaves them clear of each other: three parts
+  // in a row have room for full-size type, five do not.
+  const fitted = React.useMemo(() => fitCircuit(circuit, w, h - footer, font), [circuit, w, h, footer, font]);
+  const layout = fitted.layout;
+  const labelFont = fitted.font;
   const asked = circuit.ask?.element;
 
   // The circuit comes alive only once the answer is out. How fast each wire's
@@ -181,7 +187,9 @@ const CircuitArt: React.FC<ArtProps & { circuit: Circuit; highlight?: string }> 
   // countdown. Until the reveal it is the still drawing it always was; at the
   // reveal it switches on, just after its parts have drawn themselves in.
   const flow = React.useMemo(
-    () => (reveal ? circuitFlow(circuit, solveCircuit(circuit)) : null),
+    // Only a circuit that can be solved has a current to show: a schematic
+    // with unnamed values, or a thyristor in it, stays a still drawing.
+    () => (reveal && isSolvable(circuit) ? circuitFlow(circuit, solveCircuit(circuit)) : null),
     [circuit, reveal],
   );
   const drawn = 6 + layout.elements.length * 3 + 8;
@@ -193,7 +201,7 @@ const CircuitArt: React.FC<ArtProps & { circuit: Circuit; highlight?: string }> 
     ...layout.elements.map((e) => (e.label ? e.label.box.y2 : e.my)),
   );
   const footerY = Math.min(h - font * 0.6, drawnBottom + font * 2);
-  const terminals = new Set([circuit.ask?.from, circuit.ask?.to].filter(Boolean) as string[]);
+  const terminals = new Set([circuit.ask?.from, circuit.ask?.to, ...(circuit.terminals || [])].filter(Boolean) as string[]);
 
   return (
     <g>
@@ -212,7 +220,7 @@ const CircuitArt: React.FC<ArtProps & { circuit: Circuit; highlight?: string }> 
               brightness={flow ? flow.lamps[p.element.id] ?? 0 : 0}
               on={on}
             />
-            <PartLabel p={p} theme={theme} font={font} reveal={reveal} colour={p.element.unknown && !reveal ? theme.accent : colour} />
+            <PartLabel p={p} theme={theme} font={labelFont} reveal={reveal} colour={p.element.unknown && !reveal ? theme.accent : colour} />
           </g>
         );
       })}
@@ -289,7 +297,7 @@ const Part: React.FC<{
         {e.kind === 'lamp' ? (
           <GlowingLampSymbol half={half} colour={colour} bg={bg} glow={accent} brightness={brightness} on={on} strokeWidth={STROKE} />
         ) : (
-          <Symbol kind={e.kind} half={half} common={common} colour={colour} bg={bg} ac={ac} />
+          <Symbol element={e} half={half} common={common} colour={colour} bg={bg} ac={ac} angle={angle} />
         )}
       </g>
     </g>
@@ -297,10 +305,65 @@ const Part: React.FC<{
 };
 
 const Symbol: React.FC<{
-  kind: CircuitElement['kind']; half: number; colour: string; bg: string; ac: boolean;
+  element: CircuitElement; half: number; colour: string; bg: string; ac: boolean;
   common: React.SVGProps<SVGElement>;
-}> = ({ kind, half, colour, bg, ac, common }) => {
+  /** How far the part has been turned, so a letter inside it can be turned back upright. */
+  angle: number;
+}> = ({ element, half, colour, bg, ac, common, angle }) => {
   const c = common as any;
+  const kind = element.kind;
+  if (kind === 'meter') {
+    const r = Math.min(34, half);
+    return (
+      <g>
+        <line x1={-half} y1={0} x2={-r} y2={0} {...c} />
+        <line x1={r} y1={0} x2={half} y2={0} {...c} />
+        <circle r={r} fill={bg} stroke={colour} strokeWidth={STROKE} />
+        <text
+          transform={'rotate(' + -angle + ')'} textAnchor="middle" dominantBaseline="central"
+          fontFamily="Arial, Helvetica, sans-serif" fontWeight={800} fontSize={r * 1.05} fill={colour}
+        >
+          {element.letter || 'G'}
+        </text>
+      </g>
+    );
+  }
+  if (kind === 'switch') {
+    const gap = Math.min(30, half * 0.6);
+    return (
+      <g>
+        <line x1={-half} y1={0} x2={-gap} y2={0} {...c} />
+        <line x1={gap} y1={0} x2={half} y2={0} {...c} />
+        {/* The blade lifts clear when open, and lies across the gap when closed. */}
+        <line x1={-gap} y1={0} x2={element.open ? gap * 0.75 : gap} y2={element.open ? -gap * 0.95 : 0} {...c} />
+        <circle cx={-gap} cy={0} r={6} fill={colour} />
+        <circle cx={gap} cy={0} r={6} fill={colour} />
+      </g>
+    );
+  }
+  if (kind === 'diode' || kind === 'scr') {
+    const k = Math.min(22, half * 0.5);
+    return (
+      <g>
+        <line x1={-half} y1={0} x2={-k} y2={0} {...c} />
+        <line x1={k} y1={0} x2={half} y2={0} {...c} />
+        <polygon points={-k + ',' + -k * 1.1 + ' ' + -k + ',' + k * 1.1 + ' ' + k + ',0'} fill={bg} stroke={colour} strokeWidth={STROKE} strokeLinejoin="round" />
+        <line x1={k} y1={-k * 1.1} x2={k} y2={k * 1.1} {...c} />
+        {/* A thyristor is a diode with a gate, drawn leaving the cathode. */}
+        {kind === 'scr' ? <polyline points={k + ',' + k * 0.5 + ' ' + k * 1.9 + ',' + k * 1.6 + ' ' + k * 1.9 + ',' + k * 2.3} {...c} /> : null}
+      </g>
+    );
+  }
+  if (kind === 'load') {
+    const bw = Math.min(half * 0.78, 54);
+    return (
+      <g>
+        <line x1={-half} y1={0} x2={-bw} y2={0} {...c} />
+        <line x1={bw} y1={0} x2={half} y2={0} {...c} />
+        <rect x={-bw} y={-22} width={bw * 2} height={44} fill={bg} stroke={colour} strokeWidth={STROKE} strokeLinejoin="round" />
+      </g>
+    );
+  }
   if (kind === 'resistor') {
     const pts: string[] = [-half + ',0'];
     const n = 12;
@@ -381,11 +444,12 @@ const PartLabel: React.FC<{ p: PlacedElement; theme: Theme; font: number; reveal
   if (!text || !at) return null;
   const common = { fontFamily: theme.fontBody, fontWeight: 700, fontSize: font, fill: colour, textAnchor: at.anchor };
   if (!at.twoLines) return <text x={at.x} y={at.y} {...common}>{text}</text>;
+  // A name alone, or a value alone, has one line; the two together, two.
   const [name, value] = text.split(' = ');
   return (
     <text x={at.x} y={at.y} {...common}>
       <tspan x={at.x}>{name}</tspan>
-      <tspan x={at.x} dy={font * 1.05}>{value}</tspan>
+      {value ? <tspan x={at.x} dy={font * 1.05}>{value}</tspan> : null}
     </text>
   );
 };

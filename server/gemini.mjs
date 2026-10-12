@@ -8,6 +8,8 @@ import { SKETCH_NAMES } from './sketch-catalogue.mjs';
 import { checkSketch, itemLimit, sketchPromptLines } from './sketch-contract.mjs';
 import { answerShown, sourceNumbers, unsourcedInVisual } from './number-source.mjs';
 import { cutLabels } from './sketch-fit.mjs';
+import { circuitProblems } from './circuit-check.mjs';
+import { isNotation, mathWidth, mendFormula, parseMath } from '../src/lib/formula-card.ts';
 import { fetchRetrying } from './retry.mjs';
 import { callClaude } from './claude.mjs';
 // Loaded straight from the app's TypeScript: Node strips the types itself, and
@@ -75,7 +77,7 @@ const RESPONSE_SCHEMA = {
                   mode: { type: 'STRING' },
                   network: {
                     type: 'STRING',
-                    description: 'circuit only: the network, e.g. "12 + (12 | 12)". | is parallel, + is series, and | binds tighter.',
+                    description: 'circuit only: the circuit as a line of its real parts, e.g. "R + L + C" or "Rm=99Ω | Rsh=1Ω?". + is series, | is parallel and binds tighter.',
                   },
                   angle: { type: 'NUMBER' },
                   speed: { type: 'NUMBER' },
@@ -167,7 +169,9 @@ export const QUIZ_SYSTEM = [
   '  otherwise "sketch" or "formula", never',
   '  bars, compare or icon, and never a graph or pie, because a plotted curve usually IS the answer.',
   '- hook, options, countdown and answer: always "none".',
-  '- formula : one short equation in plain unicode, e.g. "F = m × a" or "v² = u² + 2as".',
+  '- formula : one short equation, e.g. "F = m × a" or "v² = u² + 2as". Subscripts, powers,',
+  '            fractions and roots may be written as V_{sc}, I^2, \\frac{a}{b} and \\sqrt{x}, and are',
+  '            typeset; write nothing else in LaTeX.',
   '            Keep it under 40 characters: it is shown on one line on a card. Longer than 64'
   + ' and it is dropped rather than cut, because half an equation is a wrong equation.',
   '- bars    : 2 to 4 quantities compared. Each item needs a label and a numeric value, all in',
@@ -924,6 +928,21 @@ const clean = (v, fallback = '') => {
   return out || fallback;
 };
 
+/**
+ * A formula, tidied without losing its subscripts.
+ *
+ * clean() takes underscores out, because in a sentence an underscore is
+ * markdown. In a formula it is the subscript: "V_{sc} = 30 V" went on screen
+ * as "V{sc} = 30 V", braces and all.
+ */
+const cleanFormula = (v) => (typeof v === 'string' ? v : '')
+  .replace(/\*\*/g, '')
+  .replace(/`/g, '')
+  .replace(/\\\(|\\\)|\\\[|\\\]/g, '')
+  .replace(/^\$+|\$+$/g, '')
+  .replace(/\s+/g, ' ')
+  .trim();
+
 export function normalizeContent(input, options) {
   const c = input && typeof input === 'object' ? input : {};
 
@@ -1383,6 +1402,18 @@ function normalizeVisual(raw, sceneKind, figure, why = [], orientation = 'portra
       why.push('The ' + name + ' sketch ' + problems.join(', and ') + ', so it was not drawn.');
       return { kind: 'none' };
     }
+    // A circuit is not one of the library's drawings: its line is read into
+    // a real circuit - parts by their units and names, a supply, a fact to
+    // check it against - and solved. One that cannot be read, that does not do
+    // what the script says, or that will not fit, is not drawn.
+    if (name === 'circuit') {
+      const wrong = circuitProblems(params, orientation);
+      if (wrong.length) {
+        why.push('The circuit ' + wrong[0] + ', so it was not drawn.');
+        return { kind: 'none' };
+      }
+      return { kind, sketch: name, caption, params, items: [] };
+    }
     // And everything it was told has to fit. A sketch cuts a label to the
     // room it has, without a word: "Keep dependent sources" became "Keep
     // dependent sourc" on screen. The sketch is run here, on the canvas the
@@ -1407,11 +1438,17 @@ function normalizeVisual(raw, sceneKind, figure, why = [], orientation = 'portra
   }
 
   if (kind === 'formula') {
-    const formula = clean(raw.formula);
+    const formula = cleanFormula(raw.formula);
     // Never cut an equation to length. Half of "1 Year = 365 x 24 = 8,760" is
     // not a shorter fact, it is a false one, and it would be stated on screen
     // with total confidence. Past what the card can hold, drop it instead.
-    if (!formula || formula.length > 64) return { kind: 'none' };
+    //
+    // One written with subscripts and fractions is measured by how wide it
+    // sets, not by how many characters its markup takes.
+    const tooLong = isNotation(formula)
+      ? mathWidth(parseMath(mendFormula(formula))) > 27
+      : formula.length > 64;
+    if (!formula || tooLong) return { kind: 'none' };
     return { kind, formula, caption };
   }
 

@@ -239,7 +239,7 @@ export const QuestionScene: React.FC<SceneProps> = ({ theme, scene, content, sho
         />
       ) : null}
       {/* Setup only - the server strips anything that could reveal the answer. */}
-      {showVisuals ? <Visual theme={theme} visual={scene.visual} figure={content.figure} working={content.formulas?.working} /> : null}
+      {showVisuals ? <Visual theme={theme} visual={scene.visual} figure={content.figure} working={content.formulas?.working} setup /> : null}
     </Stage>
   );
 };

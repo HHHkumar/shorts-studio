@@ -30,7 +30,7 @@ const content = () => ({
   question: 'A series RLC circuit has a resonant frequency of 1000 radians per second and a quality factor of 10. What is its bandwidth?',
   options: ['100 radians per second', '10', '1000', '10000'], correctIndex: 0, explanation: ['BW = 1000 / 10'],
   script: [
-    { kind: 'question', narration: 'A series RLC circuit.', visual: sketch('circuit', { network: '10 + 20 + 30' }), doodleSrc: 'generated/x.png' },
+    { kind: 'question', narration: 'A series RLC circuit.', visual: sketch('circuit', { network: '10 + 20 + 30', mode: 'ac' }), doodleSrc: 'generated/x.png' },
     { kind: 'explain', narration: 'Bandwidth is the spread between the half power points.', visual: sketch('filter-response', { mode: 'band' }) },
     { kind: 'explain', narration: 'At resonance the circuit is purely resistive.', visual: sketch('power-factor', { angle: 0 }) },
     { kind: 'explain', narration: 'Divide 1000 by 10.', visual: { kind: 'formula', formula: 'BW = 1000 / 10' } },

@@ -18,7 +18,17 @@
 
 import { formatQuantity, parseUnit, type UnitClass } from './quantity.ts';
 
-export type ElementKind = 'resistor' | 'lamp' | 'inductor' | 'capacitor' | 'voltage' | 'current' | 'wire';
+/**
+ * Every part a circuit can be drawn with. The first seven are the ones a
+ * figure written out as a netlist may use, and all of them are solved. The
+ * rest come from the short circuit line (src/lib/circuit-line.ts): a meter is
+ * solved as its own resistance; a switch as a wire or a gap; a diode, a
+ * thyristor and a load box are drawn and never solved, because their behaviour
+ * is not a number.
+ */
+export type ElementKind =
+  | 'resistor' | 'lamp' | 'inductor' | 'capacitor' | 'voltage' | 'current' | 'wire'
+  | 'meter' | 'switch' | 'diode' | 'scr' | 'load';
 export const ELEMENT_KINDS: ElementKind[] = ['resistor', 'lamp', 'inductor', 'capacitor', 'voltage', 'current', 'wire'];
 
 export type AskQuantity = 'current' | 'voltage' | 'power' | 'resistance' | 'impedance';
@@ -40,8 +50,20 @@ export interface CircuitElement {
   value: number;
   /** Drawn as "?" until the answer is revealed. The value is still the true one. */
   unknown: boolean;
-  /** What to call it on screen. Defaults to the id. */
+  /** What to call it on screen. Defaults to the id. Empty: the value stands alone. */
   label: string;
+  /**
+   * The value as it should be written, when that is not the stored one: a
+   * reactance is kept in henries or farads so it can be solved, and shown as
+   * the "j4 Ω" it was given as.
+   */
+  shown?: string;
+  /** No value at all: drawn and named, never solved. */
+  symbolic?: boolean;
+  /** A switch that is open; a meter's letter is in `letter`. */
+  open?: boolean;
+  /** What a meter's dial says: A, V, G or W. */
+  letter?: string;
 }
 
 export interface CircuitAsk {
@@ -59,6 +81,12 @@ export interface Circuit {
   nodes: CircuitNode[];
   elements: CircuitElement[];
   ask?: CircuitAsk;
+  /**
+   * Nodes drawn as open, lettered terminals whether or not anything is asked
+   * of them: a network that stands between A and B has those two ends on the
+   * question scene as well, where nothing is asked yet.
+   */
+  terminals?: string[];
 }
 
 /** The grid is small on purpose: past this, labels collide on a phone screen. */
@@ -69,7 +97,18 @@ const MAX_ELEMENTS = 10;
 
 const BASE_UNIT: Record<ElementKind, UnitClass> = {
   resistor: 'Ω', lamp: 'Ω', inductor: 'H', capacitor: 'F', voltage: 'V', current: 'A', wire: '',
+  meter: 'Ω', switch: '', diode: '', scr: '', load: 'Ω',
 };
+
+/** True when every part has a value and a law, so the circuit can be solved. */
+export function isSolvable(c: Circuit): boolean {
+  if (!c.elements.some((e) => e.kind === 'voltage' || e.kind === 'current')) return false;
+  return c.elements.every((e) => {
+    if (e.kind === 'wire' || e.kind === 'switch') return true;
+    if (e.kind === 'diode' || e.kind === 'scr' || e.kind === 'load') return false;
+    return !e.symbolic && Number.isFinite(e.value) && e.value > 0;
+  });
+}
 
 export const ASK_UNIT: Record<AskQuantity, UnitClass> = {
   current: 'A', voltage: 'V', power: 'W', resistance: 'Ω', impedance: 'Ω',
@@ -314,7 +353,7 @@ export function solveCircuit(c: Circuit, test?: { from: string; to: string }): C
   for (const e of c.elements) {
     if (e.kind === 'voltage' && across(e)) continue;
     if (e.kind === 'voltage') fixed.push({ element: e, volts: test ? 0 : e.value });
-    else if (e.kind === 'wire' || (e.kind === 'inductor' && omega === 0)) fixed.push({ element: e, volts: 0 });
+    else if (e.kind === 'wire' || (e.kind === 'switch' && !e.open) || (e.kind === 'inductor' && omega === 0)) fixed.push({ element: e, volts: 0 });
   }
 
   const size = index.size + fixed.length;
@@ -323,7 +362,7 @@ export function solveCircuit(c: Circuit, test?: { from: string; to: string }): C
   const at = (node: string) => index.get(node);
 
   const admittance = (e: CircuitElement): Complex | null => {
-    if (e.kind === 'resistor' || e.kind === 'lamp') return cx(1 / e.value);
+    if (e.kind === 'resistor' || e.kind === 'lamp' || e.kind === 'meter') return cx(1 / e.value);
     if (e.kind === 'inductor' && omega > 0) return div(cx(1), cx(0, omega * e.value));
     if (e.kind === 'capacitor' && omega > 0) return cx(0, omega * e.value);
     return null;
@@ -433,8 +472,12 @@ export function answerCircuit(c: Circuit): { value: number; unit: UnitClass } | 
 /** "R1 = 4 Ω", or "R1 = ?" while the value is still being asked. */
 export function elementText(e: CircuitElement, reveal: boolean): string {
   if (e.kind === 'wire') return '';
-  const shown = e.unknown && !reveal ? '?' : formatQuantity(e.value, BASE_UNIT[e.kind]);
-  return e.label + ' = ' + shown;
+  // A part with no value is named and nothing more: no number is invented for it.
+  const value = e.symbolic
+    ? (e.unknown ? '?' : '')
+    : e.unknown && !reveal ? '?' : (e.shown || formatQuantity(e.value, BASE_UNIT[e.kind]));
+  if (!e.label) return value;
+  return value ? e.label + ' = ' + value : e.label;
 }
 
 // --- layout ------------------------------------------------------------------------
@@ -476,7 +519,9 @@ export interface CircuitLayout {
 export const CHAR_WIDTH = 0.62;
 
 /** How far a label stands off its part: further for the round symbols. */
-const reachFor = (e: CircuitElement) => (e.kind === 'voltage' || e.kind === 'current' || e.kind === 'lamp' ? 58 : 40);
+// A cell's "+" mark stands 52 px off its axis, so a source's label clears that.
+const reachFor = (e: CircuitElement) =>
+  (e.kind === 'voltage' ? 72 : e.kind === 'current' || e.kind === 'lamp' || e.kind === 'meter' ? 58 : e.kind === 'switch' ? 50 : 40);
 
 /**
  * Where a label goes, measured with its revealed text - the longest it will
@@ -494,15 +539,45 @@ export function placeLabel(
     const y = side === 'above' ? my - reach - 6 : my + reach + font * 0.8;
     return { x: mx, y, anchor: 'middle', twoLines: false, box: { x1: mx - width / 2, x2: mx + width / 2, y1: y - font, y2: y + font * 0.3 } };
   }
-  const [name, value] = text.split(' = ');
+  // A name alone, or a value alone, is one line; both make two.
+  const [name, value = ''] = text.split(' = ');
   const width = Math.max(name.length, value.length) * font * CHAR_WIDTH;
   const right = side === 'right';
   const x = right ? mx + reach : mx - reach;
   const y = my - font * 0.15;
   return {
     x, y, anchor: right ? 'start' : 'end', twoLines: true,
-    box: { x1: right ? x : x - width, x2: right ? x + width : x, y1: y - font, y2: y + font * 1.35 },
+    box: { x1: right ? x : x - width, x2: right ? x + width : x, y1: y - font, y2: y + (value ? font * 1.35 : font * 0.3) },
   };
+}
+
+const overlaps = (a: LabelLayout['box'], b: LabelLayout['box'], gap = 4) =>
+  a.x1 < b.x2 + gap && b.x1 < a.x2 + gap && a.y1 < b.y2 + gap && b.y1 < a.y2 + gap;
+
+/**
+ * The largest type, at or under `font`, at which no label sits on another or
+ * runs off the frame. A circuit of three parts in a row has room for 36 px
+ * labels; one of five does not, and a label lying across its neighbour is a
+ * label nobody can read. Never smaller than `floor`: past that the circuit is
+ * too crowded to draw, and the caller is told so by `fits`.
+ */
+export function fitCircuit(c: Circuit, width: number, height: number, font = 36, floor = 20): { layout: CircuitLayout; font: number; fits: boolean } {
+  let layout = layoutCircuit(c, width, height, font);
+  for (let size = font; ; size -= 2) {
+    layout = layoutCircuit(c, width, height, size);
+    const boxes = layout.elements.map((e) => e.label && e.label.box).filter(Boolean) as LabelLayout['box'][];
+    const inside = boxes.every((b) => b.x1 >= -2 && b.x2 <= width + 2 && b.y1 >= -2 && b.y2 <= height + 2);
+    // Clear of each other, and of every part but the one each belongs to.
+    const bodies = layout.elements.filter((e) => e.length > 0).map((e) => ({
+      of: e,
+      box: e.vertical
+        ? { x1: e.mx - 34, x2: e.mx + 34, y1: e.my - e.length / 2, y2: e.my + e.length / 2 }
+        : { x1: e.mx - e.length / 2, x2: e.mx + e.length / 2, y1: e.my - 34, y2: e.my + 34 },
+    }));
+    const clear = boxes.every((a, i) => boxes.every((b, j) => j <= i || !overlaps(a, b)))
+      && layout.elements.every((e) => !e.label || bodies.every((b) => b.of === e || !overlaps(e.label!.box, b.box, 0)));
+    if ((inside && clear && layout.spacing >= 90) || size <= floor) return { layout, font: size, fits: inside && clear && layout.spacing >= 90 };
+  }
 }
 
 /**
@@ -544,7 +619,7 @@ export function layoutCircuit(c: Circuit, width: number, height: number, font = 
     if (side === 'below' && a.row === maxRow) bottom = Math.max(bottom, label.box.y2 + 12);
   }
   // Terminal letters sit above their node.
-  if (c.ask?.from || c.ask?.to) top = Math.max(top, font + 36);
+  if (c.ask?.from || c.ask?.to || c.terminals?.length) top = Math.max(top, font + 36);
 
   const colSpan = Math.max(1, maxCol - minCol);
   const rowSpan = Math.max(1, maxRow - minRow);

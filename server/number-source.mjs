@@ -19,6 +19,25 @@
 // nothing. A second net - the picture review - reads what this lets through.
 // ---------------------------------------------------------------------------
 
+import { readCircuitLine } from '../src/lib/circuit-line.ts';
+
+/**
+ * The numbers a circuit sketch writes on screen. `shown` leaves out the ones
+ * hidden behind a "?" - what is on the question scene before the answer.
+ */
+function circuitNumbers(params, shownOnly = false) {
+  const { line } = readCircuitLine(params || {});
+  if (!line) return numbersIn((params || {}).network);
+  if (!shownOnly) return line.written;
+  const hidden = [...line.hidden];
+  return line.written.filter((n) => {
+    const at = hidden.indexOf(n);
+    if (at < 0) return true;
+    hidden.splice(at, 1);
+    return false;
+  });
+}
+
 const UNITS = {
   zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9,
   ten: 10, eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16,
@@ -159,8 +178,11 @@ function drawnNumbers(visual) {
   const v = visual || {};
   const p = v.params || {};
   const out = (v.items || []).map((it) => it && it.value).filter((n) => Number.isFinite(n));
-  if (v.kind === 'sketch') {
-    if (p.network) out.push(...numbersIn(p.network));
+  if (v.kind === 'sketch' && v.sketch === 'circuit') {
+    // Before the answer a circuit shows its parts and its supply - not the
+    // part hidden behind a "?", and not the fact it was checked against.
+    out.push(...circuitNumbers(p, true));
+  } else if (v.kind === 'sketch') {
     for (const k of ['angle', 'ratio', 'count', 'amplitude']) if (Number.isFinite(p[k])) out.push(p[k]);
     out.push(...numbersIn(p.labelA), ...numbersIn(p.labelB));
   }
@@ -205,7 +227,9 @@ export function unsourcedInVisual(visual, source) {
   const bad = [];
   // Only entries that carry a number: a flowchart's steps have none.
   bad.push(...unsourced((v.items || []).map((it) => it.value).filter((n) => Number.isFinite(n)), source));
-  if (v.sketch === 'circuit' && p.network) bad.push(...unsourced(numbersIn(p.network), source));
+  // A circuit's parts and its supply: what it is checked against is worked
+  // out from those by the solver, so it needs no source of its own.
+  if (v.sketch === 'circuit' && p.network) return [...new Set(unsourced(circuitNumbers(p), source))];
   if (Number.isFinite(p.angle) && !PLAIN_ANGLES.includes(Math.abs(p.angle))) {
     // An angle may also be what is left of a right angle or a half turn.
     bad.push(...unsourced([p.angle], source, [90, 180, 360]));

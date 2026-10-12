@@ -11,9 +11,13 @@
 // and the frame as it will be rendered.
 //
 // Two reviewers when both keys are there: Gemini, which can see the frame, and
-// DeepSeek, which did not write the script. A picture is kept only when
-// neither calls it wrong or unrelated. That errs towards no picture, which is
-// the side this app means to err on.
+// DeepSeek, which did not write the script. A picture is taken out when they
+// AGREE it should go. On the first real video checked, every picture both
+// objected to was wrong - a line drawn as a battery and resistors, an arrow
+// diagram too small to read - and every picture only one objected to was fine:
+// a capacitor for a line's capacitance, a pair of labelled cards. A reviewer
+// alone is quick to call a sound picture "generic"; two seldom make the same
+// mistake. Where they differ the picture stays, marked for a person to judge.
 // ---------------------------------------------------------------------------
 
 import fs from 'node:fs';
@@ -23,7 +27,7 @@ import { picturesIn } from './picture-words.mjs';
 const GEMINI = 'https://generativelanguage.googleapis.com/v1beta/models';
 const DEEPSEEK = 'https://api.deepseek.com/chat/completions';
 
-/** From best to worst. Two reviewers who differ are settled by the worse verdict. */
+/** The four verdicts a reviewer may give, from best to worst. */
 export const VERDICTS = ['right', 'unsure', 'unrelated', 'wrong'];
 
 /** A picture with one of these verdicts is taken out of the video. */
@@ -44,8 +48,11 @@ const SYSTEM_LINES = (withFrames) => [
   ] : []),
   '',
   'Judge each picture against THE LINE IT SITS ON and against the question. One verdict each:',
-  '- "right": it shows the specific thing the line says - the same component, the same',
-  '  relationship, the same values - and nothing on it is false for this question.',
+  '- "right": it shows the thing the line says - the same component, the same relationship, the',
+  '  same values - and nothing on it is false for this question. When the line states a general',
+  '  principle, a correct general illustration of THAT principle is right: a parallel-plate',
+  '  capacitor under a line about the capacitance between conductors, currents meeting at a node',
+  '  under a line about charge not piling up there.',
   '- "wrong": something on it is false or misleading here. The usual faults:',
   '  * the wrong component or device: a resistor standing for an inductor, a capacitor, a reactor,',
   '    a winding or a back EMF; a diode\'s characteristic for a thyristor; a switch for a source.',
@@ -57,14 +64,15 @@ const SYSTEM_LINES = (withFrames) => [
   '  * on the question scene: anything that shows or gives away the answer. That scene may show',
   '    the setup the question describes and nothing more.',
   '  * a drawing that cannot be read: parts on top of each other, or too small to make out.',
-  '- "unrelated": nothing on it is false in general, but it does not show what this line says: a',
-  '  generic picture from the same chapter, an analogy the line does not make, a decoration, or a',
-  '  picture with nothing in it.',
+  '- "unrelated": nothing on it is false in general, but it is not about what this line says: a',
+  '  picture of some other idea from the same chapter, an analogy the line does not make, or a',
+  '  picture with nothing in it. Simple is not unrelated, and neither is general.',
   '- "unsure": you cannot tell from what you were given. Say this rather than guess.',
   '',
-  'Be strict about "right": when you hesitate between "right" and anything else, it is not',
-  '"right". Be fair as well: a schematic may be simple, and a picture is not wrong for leaving',
-  'things out. It is wrong for showing something false.',
+  'Be strict about what is FALSE, and fair about what is merely plain: a schematic may be simple,',
+  'and a picture is not wrong for leaving things out. It is wrong for showing something false.',
+  'A "side by side" picture is two short labels, each under a small emoji. Judge what the labels',
+  'say; the emoji is decoration and is never a reason to object.',
   '',
   'reason: one concrete sentence naming what is false or missing, e.g. "draws the line\'s shunt',
   'capacitance as two 50 ohm resistors". For "right", say what it shows correctly.',
@@ -148,24 +156,41 @@ export function judgeReply(reply, pictures) {
 }
 
 /**
- * Two reviews of the same pictures, settled by the worse verdict, with each
- * reviewer's reason kept beside its name.
+ * One verdict from what each reviewer said.
+ *
+ * A picture goes only when every reviewer who looked says it should - and
+ * then by the worse of their verdicts. One alone may take out a picture it
+ * calls WRONG, since there is nobody to contradict it; "unrelated" from one
+ * reviewer alone is an opinion about relevance, and is left to a person.
+ * Anything short of agreement is "unsure": kept, and shown with both views.
  */
+export function settle(said) {
+  const views = (said || []).filter((s) => s && VERDICTS.includes(s.verdict));
+  if (!views.length) return { verdict: 'unsure', reason: '' };
+  const against = views.filter((s) => isFlagged(s.verdict));
+  const reasonOf = (verdict) => (views.find((s) => s.verdict === verdict) || {}).reason || '';
+
+  if (against.length === views.length && (views.length > 1 || views[0].verdict === 'wrong')) {
+    const verdict = views.some((s) => s.verdict === 'wrong') ? 'wrong' : 'unrelated';
+    return { verdict, reason: reasonOf(verdict) };
+  }
+  if (against.length) {
+    const who = against.map((s) => s.by + ' says ' + (s.verdict === 'wrong' ? 'wrong' : 'beside the point')
+      + (s.reason ? ' (' + s.reason.replace(/\.$/, '') + ')' : '')).join('; ');
+    const others = views.filter((s) => !isFlagged(s.verdict)).map((s) => s.by).join(' and ');
+    return { verdict: 'unsure', reason: who + (others ? '; ' + others + ' does not.' : '. Nobody else looked.') };
+  }
+  if (views.some((s) => s.verdict === 'unsure')) return { verdict: 'unsure', reason: reasonOf('unsure') };
+  return { verdict: 'right', reason: reasonOf('right') };
+}
+
+/** Reviews of the same pictures by several reviewers, settled picture by picture. */
 export function combineReviews(named) {
   const sets = named.filter((s) => s && Array.isArray(s.reviews) && s.reviews.length);
   if (!sets.length) return [];
   return sets[0].reviews.map((first, i) => {
-    let verdict = first.verdict;
-    const said = [];
-    for (const set of sets) {
-      const r = set.reviews[i];
-      if (!r) continue;
-      if (VERDICTS.indexOf(r.verdict) > VERDICTS.indexOf(verdict)) verdict = r.verdict;
-      said.push({ by: set.by, verdict: r.verdict, reason: r.reason });
-    }
-    // The reason shown is the one that goes with the verdict that won.
-    const winner = said.find((s) => s.verdict === verdict) || said[0];
-    return { scene: first.scene, key: first.key, verdict, reason: winner ? winner.reason : '', said };
+    const said = sets.map((set) => set.reviews[i] && { by: set.by, verdict: set.reviews[i].verdict, reason: set.reviews[i].reason }).filter(Boolean);
+    return { scene: first.scene, key: first.key, ...settle(said), said };
   });
 }
 

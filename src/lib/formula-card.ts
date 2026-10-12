@@ -358,6 +358,23 @@ export function parseMath(src: string): MathNode[] {
 /** Is this node an operator that wants space either side? */
 export const isSpaced = (n: MathNode): boolean => n.t === 'text' && n.style === 'op' && EQUALITY.has(n.s);
 
+/** True when a formula is written in the card notation rather than as plain text. */
+export const isNotation = (text: string): boolean => /[\\_^{}]/.test(String(text || ''));
+
+/**
+ * A formula whose subscripts lost their underscores, put right.
+ *
+ * Every string a model writes used to have its underscores taken out, because
+ * in prose an underscore is markdown. In a formula it is the subscript, so
+ * "V_{sc} = 30 V" went on screen as "V{sc} = 30 V" - braces and all. New
+ * formulas keep theirs; this mends the ones already saved. A brace straight
+ * after a letter, a digit or a bracket is a subscript, unless that letter is
+ * the end of a command such as \frac or \sqrt, whose brace is its argument.
+ */
+export function mendFormula(text: string): string {
+  return String(text || '').replace(/(?<!\\[A-Za-z]*)([A-Za-z0-9)\]])\{/g, '$1_{');
+}
+
 /**
  * Roughly how wide a formula sets, in em - to choose a font size that fits
  * the card before the browser has laid anything out.

@@ -12,7 +12,7 @@ const vis = (sceneKind, visual, said = 'n') => normalizeContent(
 
 // --- the question scene may now show the setup -------------------------------
 ok('question: circuit allowed',
-   vis('question', { kind:'sketch', sketch:'circuit', params:{ network:'12 + 6' } },
+   vis('question', { kind:'sketch', sketch:'circuit', params:{ network:'12 + 6', mode:'dc' } },
        'Twelve ohms in series with six ohms.').sketch === 'circuit');
 ok('question: formula allowed',
    vis('question', { kind:'formula', formula:'V = I R' }).kind === 'formula');
@@ -31,7 +31,7 @@ ok('question: icon BLOCKED (the "Venus mystery" case)',
 // Needs a circuit that survives on its own, or this measures the rule about
 // circuits without a network rather than the rule about captions.
 ok('question: caption stripped (captions leak answers)',
-   vis('question', { kind:'sketch', sketch:'circuit', params:{ network:'12 | 6' },
+   vis('question', { kind:'sketch', sketch:'circuit', params:{ network:'12 | 6', mode:'dc' },
                      caption:'the answer is 4 ohms' }, 'Twelve ohms beside six ohms.').caption === '');
 
 // --- a circuit nobody described is not drawn ---------------------------------
@@ -41,14 +41,31 @@ ok('question: caption stripped (captions leak answers)',
 ok('circuit with no network refused',
    vis('explain', { kind:'sketch', sketch:'circuit', params:{ labelA:'12 V' } }).kind === 'none');
 ok('circuit with a network drawn',
-   vis('explain', { kind:'sketch', sketch:'circuit', params:{ network:'(12 | 6) + 2' } },
+   vis('explain', { kind:'sketch', sketch:'circuit', params:{ network:'(12 | 6) + 2', mode:'dc' } },
        'Twelve ohms beside six ohms, then two ohms.').kind === 'sketch');
+// A circuit says whether it is AC or DC: left to a default, a series RLC
+// circuit was drawn on a battery.
+ok('circuit not said to be AC or DC is not drawn',
+   vis('explain', { kind:'sketch', sketch:'circuit', params:{ network:'(12 | 6) + 2' } },
+       'Twelve ohms beside six ohms, then two ohms.').kind === 'none');
+// Its parts are read for what they are, and a part that cannot be read stops it.
+ok('circuit with real parts drawn',
+   vis('explain', { kind:'sketch', sketch:'circuit', params:{ network:'R + L + C', labelA:'Vs', mode:'ac' } }).kind === 'sketch');
+ok('circuit with a part nobody can name is not drawn',
+   vis('explain', { kind:'sketch', sketch:'circuit', params:{ network:'R + Thingamajig', mode:'ac' } }).kind === 'none');
+// And it is solved: a circuit that does not do what the script says it does goes.
+ok('circuit that gives the value the script states is drawn',
+   vis('explain', { kind:'sketch', sketch:'circuit', params:{ network:'Rm=99Ω | Rsh=1Ω', labelA:'100 mA', mode:'dc', labelB:'I(Rm) = 1 mA' } },
+       'A 99 ohm meter and a 1 ohm shunt share 100 milliamperes.').kind === 'sketch');
+ok('circuit that does not is refused',
+   vis('explain', { kind:'sketch', sketch:'circuit', params:{ network:'Rm=99Ω | Rsh=2Ω', labelA:'100 mA', mode:'dc', labelB:'I(Rm) = 1 mA' } },
+       'A 99 ohm meter and a 2 ohm shunt share 100 milliamperes.').kind === 'none');
 // A saved script is never put through this again, so it keeps its diagram; a
 // new one cannot ask by mode alone, because a mode draws values nobody stated.
 ok('circuit with only the old mode is no longer drawn for a new script',
    vis('explain', { kind:'sketch', sketch:'circuit', params:{ mode:'series' } }).kind === 'none');
 ok('circuit with values the video never gives is not drawn',
-   vis('explain', { kind:'sketch', sketch:'circuit', params:{ network:'10 + 20 + 30' } },
+   vis('explain', { kind:'sketch', sketch:'circuit', params:{ network:'10 + 20 + 30', mode:'ac' } },
        'A series RLC circuit at resonance.').kind === 'none');
 
 // --- the other pre-reveal scenes stay completely bare ------------------------

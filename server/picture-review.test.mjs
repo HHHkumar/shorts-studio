@@ -4,7 +4,7 @@
 // how a reply is read, how two reviewers are settled. The model's judgement is
 // measured on the test bench, against a person's marks, not here.
 
-import { buildReviewRequest, combineReviews, isFlagged, judgeReply, REVIEW_SYSTEM, REVIEW_SYSTEM_TEXT } from './picture-review.mjs';
+import { buildReviewRequest, combineReviews, isFlagged, judgeReply, REVIEW_SYSTEM, REVIEW_SYSTEM_TEXT, settle } from './picture-review.mjs';
 import { describePicture, pictureKey, picturesIn } from './picture-words.mjs';
 
 let passed = 0;
@@ -49,9 +49,10 @@ test('the pictures that state something are found, and the rest are left out', (
 test('a picture is said in words, as drawn', () => {
   const [wave, circuit, bars] = picturesIn(content).map((p) => p.words);
   assert(/Vr in phase with Vs/.test(wave) && /1\.2 times the size/.test(wave), wave);
-  // A circuit says how its expression reads, and what the sketch can draw.
-  assert(/arranged as 10 \+ \(50 \| 50\), where \+ is in series and \| is in parallel/.test(circuit), circuit);
-  assert(/drawn as a resistor/.test(circuit) && /labelled "Vs"/.test(circuit), circuit);
+  // A circuit is said part by part, as the video reads its line.
+  assert(/fed by a DC voltage source Vs: a resistor of 10 Ω, in series with \[a resistor of 50 Ω in parallel with a resistor of 50 Ω\]/.test(circuit), circuit);
+  const typed = describePicture({ kind: 'sketch', sketch: 'circuit', params: { network: 'L + (C | Load)', labelA: 'Vs', mode: 'ac' } });
+  assert(/an AC voltage source Vs: an inductor L, in series with \[a capacitor C in parallel with a load Load\]/.test(typed), typed);
   const band = describePicture({ kind: 'sketch', sketch: 'filter-response', params: { mode: 'band' } });
   assert(/which frequencies a filter lets through; set to mode = band/.test(band), band);
   assert(!/Use for/.test(band), 'the "use for" half belongs to the model that picks, not the one that checks: ' + band);
@@ -103,17 +104,48 @@ test('a picture the reviewer skipped is unsure, never right by default', () => {
   assert(judgeReply({ pictures: [{ n: 1, verdict: 'fine', reason: 'x' }] }, pictures)[0].verdict === 'unsure', 'an unknown verdict was trusted');
 });
 
-test('two reviewers are settled by the worse verdict, and both are kept', () => {
+// How two reviewers are settled comes from the first real video checked: the
+// four pictures both objected to were wrong, and the three only one objected
+// to were fine.
+const view = (by, verdict, reason = '') => ({ by, verdict, reason });
+
+test('a picture goes when both reviewers say it should, by the worse verdict', () => {
+  const s = settle([view('Gemini', 'wrong', 'a battery and resistors for an AC line'), view('DeepSeek', 'unrelated', 'generic')]);
+  assert(s.verdict === 'wrong' && s.reason === 'a battery and resistors for an AC line', JSON.stringify(s));
+  assert(settle([view('Gemini', 'unrelated', 'g'), view('DeepSeek', 'unrelated', 'd')]).verdict === 'unrelated');
+});
+
+test('where they differ it stays, marked for a person, with both views said', () => {
+  const s = settle([view('Gemini', 'unrelated', 'A generic capacitor.'), view('DeepSeek', 'right', 'shows the capacitance')]);
+  assert(s.verdict === 'unsure', 'one objection took a picture out: ' + s.verdict);
+  assert(/Gemini says beside the point \(A generic capacitor\); DeepSeek does not\./.test(s.reason), s.reason);
+  assert(settle([view('Gemini', 'wrong', 'x'), view('DeepSeek', 'right', 'y')]).verdict === 'unsure', 'a lone "wrong" out of two took it out');
+  assert(!isFlagged(s.verdict));
+});
+
+test('one reviewer alone may take out what it calls wrong, but not what it calls beside the point', () => {
+  assert(settle([view('Gemini', 'wrong', 'x')]).verdict === 'wrong');
+  const s = settle([view('Gemini', 'unrelated', 'generic')]);
+  assert(s.verdict === 'unsure' && /Nobody else looked/.test(s.reason), JSON.stringify(s));
+});
+
+test('agreement that it is right is right; a doubt is a doubt; no view at all is unsure', () => {
+  assert(settle([view('Gemini', 'right', 'ok'), view('DeepSeek', 'right', 'fine')]).verdict === 'right');
+  assert(settle([view('Gemini', 'right'), view('DeepSeek', 'unsure', '?')]).verdict === 'unsure');
+  assert(settle([]).verdict === 'unsure' && settle(null).verdict === 'unsure');
+});
+
+test('each reviewer\'s own verdict is kept beside the settled one', () => {
   const gemini = { by: 'Gemini', reviews: judgeReply({ pictures: [
-    { n: 1, verdict: 'right', reason: 'fine' }, { n: 2, verdict: 'right', reason: 'a pi model' }, { n: 3, verdict: 'unsure', reason: '?' },
+    { n: 1, verdict: 'right', reason: 'fine' }, { n: 2, verdict: 'wrong', reason: 'resistors' }, { n: 3, verdict: 'unrelated', reason: 'generic' },
   ] }, pictures) };
   const deepseek = { by: 'DeepSeek', reviews: judgeReply({ pictures: [
     { n: 1, verdict: 'right', reason: 'fine' }, { n: 2, verdict: 'wrong', reason: 'capacitance drawn as resistors' }, { n: 3, verdict: 'right', reason: 'ok' },
   ] }, pictures) };
   const both = combineReviews([gemini, deepseek]);
   assert(both.map((x) => x.verdict).join() === 'right,wrong,unsure', both.map((x) => x.verdict).join());
-  assert(both[1].reason === 'capacitance drawn as resistors', 'the reason shown is not the one behind the verdict');
   assert(both[1].said.length === 2 && both[1].said[0].by === 'Gemini', 'a reviewer\'s own verdict was lost');
+  assert(both[2].scene === pictures[2].scene && both[2].key === pictures[2].key, 'a settled verdict lost its picture');
   assert(combineReviews([gemini]).length === 3, 'one reviewer alone is still a review');
 });
 

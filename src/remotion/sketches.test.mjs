@@ -396,6 +396,16 @@ function record(name, params, w = 900, h = 460, progress = 1) {
      !dashes({ mode: 'phase', angle: 90, labelA: 'V', labelB: 'I' }) && !dashes({ mode: 'phase', angle: 0, ratio: 1.2, labelA: 'Vs', labelB: 'Vr' }));
 }
 
+// --- a sketch's own caption is written whole -------------------------------------
+// Captions were cut to 28 letters, and a reviewer looking at a real video
+// called one "a cut-off caption": "Rotor lags the field — that".
+{
+  const says = (name, params) => record(name, params, 900, 460, 1).said;
+  ok('the induction motor finishes its sentence', /that gap is slip/.test(says('induction-motor', { ratio: 0.05 })), says('induction-motor', { ratio: 0.05 }));
+  ok('and so does the venturi', /lower pressure/.test(says('bernoulli', {})), says('bernoulli', {}));
+  ok('and the logarithm', /ten times the last/.test(says('logarithm', { labelA: 'x', labelB: 'log x' })));
+}
+
 // --- nothing is stated by default ----------------------------------------------
 // A sketch told nothing used to draw its defaults as though they were facts: a
 // phasor at 35 degrees, a power factor of 0.81, a meter reading 12.4 volts,

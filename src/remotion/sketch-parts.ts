@@ -55,13 +55,19 @@ export const clean = (v: unknown, max = 22): string =>
 export function caption(
   p: p5, text: string, x: number, y: number, colors: SketchColors, size = 24,
 ) {
-  const t = clean(text, 28);
+  // A caption is written whole. It was cut to 28 letters, so a sketch's own
+  // sentence came out as "Rotor lags the field — that" and "Narrow = faster =
+  // lower pres". A long one is set smaller until it fits the canvas instead:
+  // half a sentence under a diagram is a different sentence.
+  const t = clean(text, 72);
   if (!t) return;
+  const room = (Number(p.width) || 900) * 0.94;
+  const fitted = Math.max(15, Math.min(size, room / (t.length * 0.5)));
   p.push();
   p.noStroke();
   p.fill(colors.dim);
   p.textAlign(p.CENTER, p.CENTER);
-  p.textSize(size);
+  p.textSize(fitted);
   p.text(t, x, y);
   p.pop();
 }

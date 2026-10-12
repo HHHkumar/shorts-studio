@@ -25,8 +25,9 @@ import path from 'node:path';
 import { picturesIn } from './picture-words.mjs';
 import { checkSketch } from './sketch-contract.mjs';
 import { answerShown, sourceNumbers, unsourcedInVisual } from './number-source.mjs';
-import { isFlagged } from './picture-review.mjs';
+import { isFlagged, settle } from './picture-review.mjs';
 import { cutLabels } from './sketch-fit.mjs';
+import { circuitProblems } from './circuit-check.mjs';
 
 /** The only ids this module reads or writes - no path can be smuggled in. */
 export const CASE_ID = /^b-[a-z0-9]+(?:-[a-z0-9]+){0,12}$/;
@@ -200,7 +201,9 @@ export function refusedToday(visual, source, orientation = 'portrait', question 
   if (answer.length) reasons.push('shows ' + answer.join(', ') + ' on the question scene, which is the answer');
   const bad = unsourcedInVisual(visual, source);
   if (bad.length) reasons.push('shows ' + bad.join(', ') + ', which the video never gives');
-  if (visual.kind === 'sketch' && !reasons.length) {
+  if (visual.kind === 'sketch' && visual.sketch === 'circuit' && !reasons.length) {
+    reasons.push(...circuitProblems(visual.params, orientation));
+  } else if (visual.kind === 'sketch' && !reasons.length) {
     const cut = cutLabels(visual.sketch, visual.params || {}, visual.items || [], orientation);
     if (cut.length) reasons.push('has no room for "' + cut[0].label + '", which would be cut to "' + cut[0].drawn + '"');
   }
@@ -217,7 +220,9 @@ export function benchView(root, frameUrl = () => '') {
   const cases = listCases(root).map((c) => {
     const content = c.content;
     const source = sourceNumbers(content);
-    const reviews = new Map((c.reviews || []).map((r) => [r.key, r]));
+    // Settled again from what each reviewer said, so a change to how they
+    // are settled shows in the score at once, without paying for a re-check.
+    const reviews = new Map((c.reviews || []).map((r) => [r.key, r.said && r.said.length ? { ...r, ...settle(r.said) } : r]));
     const mine = marks[c.id] || {};
     const pictures = picturesIn(content).map((p) => {
       const review = reviews.get(p.key) || null;

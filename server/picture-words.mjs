@@ -15,6 +15,7 @@
 import { SKETCH_CATALOGUE } from './sketch-catalogue.mjs';
 // Shared with the browser, which has to recognise the same picture by the same key.
 import { pictureKey, REVIEWED_KINDS } from '../src/lib/picture-review.ts';
+import { readCircuitLine } from '../src/lib/circuit-line.ts';
 
 export { pictureKey, REVIEWED_KINDS };
 
@@ -55,8 +56,11 @@ export function describePicture(visual) {
     parts.push(deg ? b + (deg > 0 ? ' lags ' : ' leads ') + a + ' by ' + Math.abs(deg) + ' degrees' : b + ' in phase with ' + a);
     parts.push(ratio === 1 ? 'equal in size' : b + ' is ' + ratio + ' times the size of ' + a);
   } else if (v.sketch === 'circuit' && p.network) {
-    // The network is an expression, and a checker has to be told how to read
-    // it - and what the sketch can draw: one source, and resistors.
+    // Read the way the video reads it, so what is said is what is drawn: each
+    // part by its kind and value, the supply, and what it was solved to give.
+    const { line } = readCircuitLine(p);
+    if (line) return 'The "circuit" diagram' + caption + ': ' + line.words;
+    // A line from before parts had kinds: boxes with numbers on a battery.
     parts.push('a source' + (p.labelA ? ' labelled "' + p.labelA + '"' : '') + ' driving resistors arranged as ' + p.network
       + ', where + is in series and | is in parallel; every component is drawn as a resistor with that number on it,'
       + ' and the source as a battery');
