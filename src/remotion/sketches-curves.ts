@@ -1,6 +1,7 @@
 import type p5 from 'p5';
 import type { SketchColors, SketchDef } from './sketches';
 import { arrow, axes, caption, clean, curve, junction, num, setDash, wire, type Plot } from './sketch-parts';
+import { angleBetween, phasorSum, readPhasors } from '../lib/phasors';
 
 // ---------------------------------------------------------------------------
 // The standard characteristics: the curves an electrical paper keeps asking
@@ -28,6 +29,9 @@ type Draw = SketchDef['draw'];
 
 const wide = (label: string, describe: string, uses: string, draw: Draw): SketchDef =>
   ({ shape: 'wide', label, describe, uses, draw });
+
+const square = (label: string, describe: string, uses: string, draw: Draw): SketchDef =>
+  ({ shape: 'square', label, describe, uses, draw });
 
 /** Type that scales with the canvas, so a label is as readable on a phone as on a desktop. */
 const sizeFor = (width: number, height: number, base = 27) =>
@@ -503,5 +507,136 @@ export const CURVE_SKETCHES: Record<string, SketchDef> = {
         note(p, 'Full load', plot.x(rated), plot.bottom + f * 0.8, colors, f * 0.8, 'center');
       }
       if (progress > 0.8) note(p, 'Series: runs away at no load', plot.x(0.97), plot.y(0.93), colors, f * 0.78, 'right', colors.accent);
+    }),
+
+  // Each phasor has its own length and angle. Added head to tail, the last is
+  // their sum - and src/lib/phasors.ts refuses the diagram if it is not.
+  phasors: square('Phasor diagram',
+    'two to four phasors, each at its own angle and length, either all from one point or added head to tail with their resultant. Use for: phasor diagrams, which quantity leads or lags, a voltage as the sum of another voltage and a drop (a line, a transformer, an alternator), the two-wattmeter method, capacitor and inductor currents',
+    'items (2-4 phasors: label is its name, value its length against the others, symbol its angle in degrees anticlockwise from the horizontal - e.g. {"label": "Ic", "value": 0.4, "symbol": "90"} leads a phasor at 0 by ninety degrees, and "-90" lags it), mode ("fan" to draw them all from one point, "sum" to add them head to tail - the LAST one is their resultant, and is checked: it must equal the sum of the others, or nothing is drawn)',
+    ({ p, progress, width, height, params, items, colors }) => {
+      const list = readPhasors(items).filter((ph) => ph.label && Number.isFinite(ph.length) && ph.length > 0 && Number.isFinite(ph.angle));
+      if (list.length < 2) return;
+      const adding = String(params.mode || '').toLowerCase() === 'sum' && list.length >= 3;
+      // Names are the only words on a phasor diagram, so they are set large.
+      const f = sizeFor(width, height, 34);
+      const vec = (ph: { length: number; angle: number }) => ({
+        x: ph.length * Math.cos((ph.angle * Math.PI) / 180),
+        y: ph.length * Math.sin((ph.angle * Math.PI) / 180),
+      });
+
+      // Every arrow as a start and an end, in the phasors' own plane (y upwards).
+      type Seg = { from: { x: number; y: number }; to: { x: number; y: number }; label: string; total: boolean; angle: number };
+      const segs: Seg[] = [];
+      if (adding) {
+        let at = { x: 0, y: 0 };
+        for (const ph of list.slice(0, -1)) {
+          const v = vec(ph);
+          const to = { x: at.x + v.x, y: at.y + v.y };
+          segs.push({ from: at, to, label: ph.label, total: false, angle: ph.angle });
+          at = to;
+        }
+        // Drawn to where the parts actually end, so the triangle closes exactly.
+        segs.push({ from: { x: 0, y: 0 }, to: at, label: list[list.length - 1].label, total: true, angle: phasorSum(list.slice(0, -1)).angle });
+      } else {
+        for (const ph of list) segs.push({ from: { x: 0, y: 0 }, to: vec(ph), label: ph.label, total: false, angle: ph.angle });
+      }
+
+      const xs = segs.flatMap((s) => [s.from.x, s.to.x]);
+      const ys = segs.flatMap((s) => [s.from.y, s.to.y]);
+      const spanX = Math.max(1e-6, Math.max(...xs) - Math.min(...xs));
+      const spanY = Math.max(1e-6, Math.max(...ys) - Math.min(...ys));
+      // A diagram that is all along one line still gets room either side of it.
+      const scale = Math.min((width * 0.7) / spanX, (height * 0.6) / Math.max(spanY, spanX * 0.25));
+      const midX = (Math.max(...xs) + Math.min(...xs)) / 2;
+      const midY = (Math.max(...ys) + Math.min(...ys)) / 2;
+      const X = (x: number) => width / 2 + (x - midX) * scale;
+      const Y = (y: number) => height * 0.5 - (y - midY) * scale;
+
+      // The reference direction, through the origin.
+      setDash(p, true);
+      wire(p, width * 0.08, Y(0), width * 0.92, Y(0), colors.dim, 2);
+      setDash(p, false);
+
+      // Arrows that lie along one line are set on separate rows: a drop drawn
+      // back along the voltage it is taken from is otherwise one arrow, and the
+      // sum cannot be seen at all. The parts climb above the reference line, each
+      // with room for its name; their resultant sits below it.
+      const collinear = (a: Seg, b: Seg) => Math.abs(Math.sin(((a.angle - b.angle) * Math.PI) / 180)) < 0.09;
+      const inLine = adding && segs.every((s) => collinear(s, segs[0]));
+      const row = f * 2.3;
+      // "Up" on the page, at right angles to the first arrow.
+      const first = segs[0];
+      const firstLen = Math.hypot(first.to.x - first.from.x, first.to.y - first.from.y) || 1;
+      const up = { x: -(first.to.y - first.from.y) / firstLen, y: -(first.to.x - first.from.x) / firstLen };
+      if (up.y > 0) { up.x = -up.x; up.y = -up.y; }
+      const rowOf = (s: Seg, i: number): number => (!inLine ? 0 : s.total ? -1 : i);
+
+      segs.forEach((s, i) => {
+        const on = Math.max(0, Math.min(1, progress * 2.2 - i * 0.45));
+        if (on <= 0) return;
+        const dx = s.to.x - s.from.x;
+        const dy = s.to.y - s.from.y;
+        const len = Math.hypot(dx, dy) || 1;
+        const px = up.x * row * rowOf(s, i);
+        const py = up.y * row * rowOf(s, i);
+        const x1 = X(s.from.x) + px;
+        const y1 = Y(s.from.y) + py;
+        const x2 = X(s.from.x + dx * on) + px;
+        const y2 = Y(s.from.y + dy * on) + py;
+        const colour = s.total ? colors.accent : i === 0 ? colors.text : adding ? colors.text : colors.accent;
+        arrow(p, x1, y1, x2, y2, colour, s.total || i === 0 ? 6 : 5, 16);
+        if (on < 1) return;
+        // Named beside its tip when they share an origin; beside its middle when chained.
+        const ux = dx / len;
+        const uy = -dy / len;
+        if (inLine) {
+          // Each name on the outer side of its own row.
+          const side = s.total ? -1 : 1;
+          note(p, s.label, (x1 + x2) / 2 + up.x * side * f * 0.85, (y1 + y2) / 2 + up.y * side * f * 0.85, colors, f, 'center', colour);
+        } else if (adding) {
+          const side = s.total ? -1 : 1;
+          const lx = (x1 + x2) / 2 + -uy * side * f * 0.95;
+          const ly = (y1 + y2) / 2 + ux * side * f * 0.95;
+          note(p, s.label, lx, ly, colors, f, 'center', colour);
+        } else {
+          // One that lies along the reference line is named just above it, so
+          // the dashed line does not run through its name.
+          const along = Math.abs(uy) < 0.09;
+          note(p, s.label, x2 + ux * f * 0.9, y2 + uy * f * 0.9 - (along ? f * 0.75 : 0), colors, f, ux > 0.3 ? 'left' : ux < -0.3 ? 'right' : 'center', colour);
+        }
+      });
+
+      // The angle each makes with the first, when they share an origin: a
+      // square for a right angle, an arc and its size for any other.
+      if (!adding && progress > 0.75) {
+        const base = list[0].angle;
+        list.slice(1).forEach((ph, k) => {
+          const between = angleBetween(ph.angle, base);
+          if (between < 0.5 || Math.abs(between - 180) < 0.5) return;
+          const signed = ((((ph.angle - base) % 360) + 540) % 360) - 180;
+          const r = Math.min(width, height) * (0.1 + k * 0.045);
+          const a0 = (-base * Math.PI) / 180;
+          const a1 = (-ph.angle * Math.PI) / 180;
+          if (Math.abs(between - 90) < 0.5) {
+            const k2 = r * 0.42;
+            const u0 = { x: Math.cos(a0) * k2, y: Math.sin(a0) * k2 };
+            const u1 = { x: Math.cos(a1) * k2, y: Math.sin(a1) * k2 };
+            wire(p, X(0) + u0.x, Y(0) + u0.y, X(0) + u0.x + u1.x, Y(0) + u0.y + u1.y, colors.dim, 3);
+            wire(p, X(0) + u1.x, Y(0) + u1.y, X(0) + u0.x + u1.x, Y(0) + u0.y + u1.y, colors.dim, 3);
+            return;
+          }
+          p.push();
+          p.noFill();
+          p.stroke(colors.dim);
+          p.strokeWeight(3);
+          // Anticlockwise on the page is a falling angle on the screen.
+          if (signed > 0) p.arc(X(0), Y(0), r * 2, r * 2, a1, a0);
+          else p.arc(X(0), Y(0), r * 2, r * 2, a0, a1);
+          p.pop();
+          const mid = (-(base + signed / 2) * Math.PI) / 180;
+          note(p, Math.round(between) + '°', X(0) + Math.cos(mid) * (r + f * 0.9), Y(0) + Math.sin(mid) * (r + f * 0.9), colors, f * 0.8);
+        });
+      }
     }),
 };

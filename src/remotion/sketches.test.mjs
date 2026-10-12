@@ -66,6 +66,7 @@ const CASES = [
  */
 const GOOD_ITEMS = {
   'power-time': [{ label: 'One bulb', value: 100, symbol: '10' }, { label: 'Ten bulbs', value: 1000, symbol: '1' }],
+  phasors: [{ label: 'V', value: 1, symbol: '0' }, { label: 'I', value: 0.6, symbol: '-60' }],
 };
 const itemsFor = (name, c) => (c.name === 'typical' && GOOD_ITEMS[name] ? GOOD_ITEMS[name] : c.items);
 

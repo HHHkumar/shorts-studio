@@ -32,6 +32,11 @@ const CASES = [
   { sketch: 'dc-motor-curves', params: {}, say: 'A series motor slows steeply as the load rises.' },
   { sketch: 'power-time', params: {}, items: [{ label: 'One bulb', value: 100, symbol: '10' }, { label: 'Ten bulbs', value: 1000, symbol: '1' }], say: 'Both use one kilowatt-hour.' },
   { sketch: 'power-time', params: {}, items: [{ label: 'Heater', value: 2000, symbol: '3' }], say: 'Two kilowatts for three hours is six units.' },
+  { sketch: 'phasors', params: { mode: 'fan' }, items: [{ label: 'Vr', value: 1, symbol: '0' }, { label: 'Ic', value: 0.45, symbol: '90' }], say: 'The charging current leads the receiving end voltage by ninety degrees.' },
+  { sketch: 'phasors', params: { mode: 'sum' }, items: [{ label: 'Vr', value: 1, symbol: '0' }, { label: 'Ic X', value: 0.18, symbol: '180' }, { label: 'Vs', value: 0.82, symbol: '0' }], say: 'The drop subtracts, so the sending end voltage is the smaller.' },
+  { sketch: 'phasors', params: { mode: 'fan' }, items: [{ label: 'V', value: 1, symbol: '0' }, { label: 'I', value: 0.7, symbol: '-60' }], say: 'The current lags the voltage by sixty degrees.' },
+  { sketch: 'phasors', params: { mode: 'sum' }, items: [{ label: 'V', value: 1, symbol: '0' }, { label: 'I Xs', value: 0.5, symbol: '60' }, { label: 'E', value: 1.32, symbol: '19.1' }], say: 'The excitation voltage is the terminal voltage plus the reactance drop.' },
+  { sketch: 'phasors', params: { mode: 'fan' }, items: [{ label: 'VR', value: 1, symbol: '0' }, { label: 'VL', value: 0.8, symbol: '90' }, { label: 'VC', value: 0.5, symbol: '-90' }], say: 'The inductor and capacitor voltages are in opposition.' },
 ];
 
 const script = CASES.map((c) => ({

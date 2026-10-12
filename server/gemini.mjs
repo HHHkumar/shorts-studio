@@ -8,7 +8,7 @@ import { SKETCH_NAMES } from './sketch-catalogue.mjs';
 import { checkSketch, itemLimit, sketchPromptLines } from './sketch-contract.mjs';
 import { answerShown, sourceNumbers, unsourcedInVisual } from './number-source.mjs';
 import { cutLabels } from './sketch-fit.mjs';
-import { circuitProblems } from './circuit-check.mjs';
+import { workedOutProblems } from './sketch-checks.mjs';
 import { isNotation, mathWidth, mendFormula, parseMath } from '../src/lib/formula-card.ts';
 import { fetchRetrying } from './retry.mjs';
 import { callClaude } from './claude.mjs';
@@ -1358,7 +1358,9 @@ function normalizeVisual(raw, sceneKind, figure, why = [], orientation = 'portra
       label: clean(it && it.label).slice(0, 40),
       // An absent value stays absent: Number(null) is 0, a value nobody gave.
       value: it && it.value !== null && it.value !== undefined && it.value !== '' ? Number(it.value) : NaN,
-      symbol: typeof (it && it.symbol) === 'string' ? it.symbol.trim().slice(0, 4) : '',
+      // Eight characters: an emoji needs four at most, but a sketch may read
+      // a number from here - a phasor's angle, "-36.87" - and four cut it short.
+      symbol: typeof (it && it.symbol) === 'string' ? it.symbol.trim().slice(0, 8) : '',
     }))
     .filter((it) => it.label || it.symbol);
 
@@ -1402,18 +1404,19 @@ function normalizeVisual(raw, sceneKind, figure, why = [], orientation = 'portra
       why.push('The ' + name + ' sketch ' + problems.join(', and ') + ', so it was not drawn.');
       return { kind: 'none' };
     }
-    // A circuit is not one of the library's drawings: its line is read into
-    // a real circuit - parts by their units and names, a supply, a fact to
-    // check it against - and solved. One that cannot be read, that does not do
+    // A few sketches are worked out rather than merely drawn. A circuit's
+    // line is read into a real circuit - parts by their units and names, a
+    // supply, a fact to check it against - and solved; a phasor diagram that
+    // adds its phasors must add up. One that cannot be read, that does not do
     // what the script says, or that will not fit, is not drawn.
-    if (name === 'circuit') {
-      const wrong = circuitProblems(params, orientation);
-      if (wrong.length) {
-        why.push('The circuit ' + wrong[0] + ', so it was not drawn.');
-        return { kind: 'none' };
-      }
-      return { kind, sketch: name, caption, params, items: [] };
+    const wrong = workedOutProblems(name, params, items, orientation);
+    if (wrong.length) {
+      why.push(wrong[0] + ', so it was not drawn.');
+      return { kind: 'none' };
     }
+    // A circuit is drawn from its line alone, by the figure renderer: the
+    // library's own check on labels does not apply to it.
+    if (name === 'circuit') return { kind, sketch: name, caption, params, items: [] };
     // And everything it was told has to fit. A sketch cuts a label to the
     // room it has, without a word: "Keep dependent sources" became "Keep
     // dependent sourc" on screen. The sketch is run here, on the canvas the
@@ -1462,11 +1465,11 @@ function normalizeVisual(raw, sceneKind, figure, why = [], orientation = 'portra
   if (kind === 'compare') {
     const pair = items.slice(0, 2);
     if (pair.length < 2) return { kind: 'none' };
-    return { kind, caption, items: pair.map((it) => ({ label: it.label, symbol: it.symbol || '•' })) };
+    return { kind, caption, items: pair.map((it) => ({ label: it.label, symbol: (it.symbol || '•').slice(0, 4) })) };
   }
 
   // icon
   const first = items[0];
   if (!first || !first.symbol) return { kind: 'none' };
-  return { kind, caption, items: [{ label: first.label, symbol: first.symbol }] };
+  return { kind, caption, items: [{ label: first.label, symbol: first.symbol.slice(0, 4) }] };
 }

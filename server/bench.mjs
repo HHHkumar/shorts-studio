@@ -27,7 +27,7 @@ import { checkSketch } from './sketch-contract.mjs';
 import { answerShown, sourceNumbers, unsourcedInVisual } from './number-source.mjs';
 import { isFlagged, settle } from './picture-review.mjs';
 import { cutLabels } from './sketch-fit.mjs';
-import { circuitProblems } from './circuit-check.mjs';
+import { workedOutProblems } from './sketch-checks.mjs';
 
 /** The only ids this module reads or writes - no path can be smuggled in. */
 export const CASE_ID = /^b-[a-z0-9]+(?:-[a-z0-9]+){0,12}$/;
@@ -201,9 +201,12 @@ export function refusedToday(visual, source, orientation = 'portrait', question 
   if (answer.length) reasons.push('shows ' + answer.join(', ') + ' on the question scene, which is the answer');
   const bad = unsourcedInVisual(visual, source);
   if (bad.length) reasons.push('shows ' + bad.join(', ') + ', which the video never gives');
-  if (visual.kind === 'sketch' && visual.sketch === 'circuit' && !reasons.length) {
-    reasons.push(...circuitProblems(visual.params, orientation));
-  } else if (visual.kind === 'sketch' && !reasons.length) {
+  if (visual.kind === 'sketch' && !reasons.length) {
+    // Said as the rest are: "has no room for...", "does not do what the script says...".
+    reasons.push(...workedOutProblems(visual.sketch, visual.params, visual.items, orientation)
+      .map((r) => r.replace(/^The [a-z]+ /, '')));
+  }
+  if (visual.kind === 'sketch' && visual.sketch !== 'circuit' && !reasons.length) {
     const cut = cutLabels(visual.sketch, visual.params || {}, visual.items || [], orientation);
     if (cut.length) reasons.push('has no room for "' + cut[0].label + '", which would be cut to "' + cut[0].drawn + '"');
   }

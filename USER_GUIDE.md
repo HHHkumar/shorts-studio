@@ -569,6 +569,7 @@ from the equation a textbook gives, with the landmarks an examiner asks about ma
 | **V-curves** | Armature current against field current: unity power factor at the foot, lagging and leading either side. |
 | **DC motor speed against torque** | Shunt, series and compound through the same full-load point. |
 | **Power over time** | Steady power as a rectangle whose area is the energy — one load, or two set together. The energy is worked out, not written. |
+| **Phasor diagram** | Two to four phasors, each with its own length and angle, drawn from one point or **added head to tail**. When they are added, the last one is checked against the sum of the others: a sending-end voltage drawn larger than the receiving end it should be smaller than is refused, with what the sum really comes to. |
 
 None of them carries an invented number: they are shapes and relationships, true of every machine
 of the kind. `node --import ./tools/ts-resolve.mjs tools/curve-preview.mjs` draws them all into

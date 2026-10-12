@@ -20,6 +20,7 @@
 // ---------------------------------------------------------------------------
 
 import { readCircuitLine } from '../src/lib/circuit-line.ts';
+import { phasorAngles } from '../src/lib/phasors.ts';
 
 /**
  * The numbers a circuit sketch writes on screen. `shown` leaves out the ones
@@ -225,6 +226,12 @@ export function unsourcedInVisual(visual, source) {
   if (v.kind !== 'sketch') return [];
   const p = v.params || {};
   const bad = [];
+  // A phasor's length is relative and never printed; its angle is what the
+  // diagram states. So the angles are held to account, and the lengths are not.
+  if (v.sketch === 'phasors') {
+    const angles = phasorAngles(v.items).filter((a) => !PLAIN_ANGLES.includes(Math.round(a * 100) / 100));
+    return [...new Set(unsourced(angles, source, [90, 180, 360]))];
+  }
   // Only entries that carry a number: a flowchart's steps have none.
   bad.push(...unsourced((v.items || []).map((it) => it.value).filter((n) => Number.isFinite(n)), source));
   // A load on the power-time picture has two: its watts, and the hours in its symbol.

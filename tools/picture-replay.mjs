@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 import { checkSketch } from '../server/sketch-contract.mjs';
 import { sourceNumbers, unsourcedInVisual } from '../server/number-source.mjs';
 import { cutLabels } from '../server/sketch-fit.mjs';
-import { circuitProblems } from '../server/circuit-check.mjs';
+import { workedOutProblems } from '../server/sketch-checks.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dir = path.resolve(ROOT, process.argv[2] || 'library');
@@ -36,9 +36,8 @@ for (const f of files) {
     const problems = v.kind === 'sketch' ? checkSketch(v.sketch, v.params || {}, v.items || []) : [];
     const bad = unsourcedInVisual(v, source);
     if (bad.length) problems.push('shows ' + bad.join(', ') + ', which the video never gives');
-    if (v.kind === 'sketch' && v.sketch === 'circuit' && !problems.length) {
-      problems.push(...circuitProblems(v.params));
-    } else if (v.kind === 'sketch' && !problems.length) {
+    if (v.kind === 'sketch' && !problems.length) problems.push(...workedOutProblems(v.sketch, v.params, v.items));
+    if (v.kind === 'sketch' && v.sketch !== 'circuit' && !problems.length) {
       const cut = cutLabels(v.sketch, v.params || {}, v.items || []);
       if (cut.length) problems.push('"' + cut[0].label + '" would be cut to "' + cut[0].drawn + '"');
     }

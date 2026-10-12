@@ -357,7 +357,7 @@ export const MORE_SKETCHES: Record<string, SketchDef> = {
     }),
 
   'vector-add': square('Adding vectors',
-    'two arrows joined head to tail with their resultant. Use for: vectors, resultant force, components',
+    'two arrows joined head to tail with their resultant. Use for: vectors, resultant force, components. Not for phasors - voltages, currents and their drops have the phasors sketch, which takes the length and angle of each and checks the sum',
     'angle (10-170, between them), labelA, labelB',
     ({ p, progress, width, height, params, colors }) => {
       const deg = num(params.angle, 60, 10, 170);
