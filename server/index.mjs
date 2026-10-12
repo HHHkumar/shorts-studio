@@ -17,7 +17,7 @@ import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { spawn } from 'node:child_process';
 
-import { buildQuizPrompt, generateContent, listModels, QUIZ_SYSTEM } from './gemini.mjs';
+import { buildQuizPrompt, generateContent, listModels, quizSystemFor } from './gemini.mjs';
 import {
   buildStoryboardPrompt, checkMotion, generateStoryboard, STORYBOARD_SYSTEM,
 } from './explainer.mjs';
@@ -745,7 +745,8 @@ app.post('/api/prompt/preview', ok(async (req, res) => {
   // the logic would drift and start describing a request nobody is sending.
   const explainer = o.videoKind === 'explainer';
   const prompt = explainer ? buildStoryboardPrompt(o) : buildQuizPrompt(o);
-  const system = explainer ? STORYBOARD_SYSTEM : QUIZ_SYSTEM;
+  // The same text the generate route sends, sketches shortlisted for this subject and all.
+  const system = explainer ? STORYBOARD_SYSTEM : quizSystemFor(o);
 
   res.json({
     videoKind: explainer ? 'explainer' : 'mcq',

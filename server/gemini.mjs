@@ -126,7 +126,15 @@ const RESPONSE_SCHEMA = {
   ],
 };
 
-export const QUIZ_SYSTEM = [
+/**
+ * What the model is told about its job, for one video.
+ *
+ * It differs from video to video in one place: the sketches it is shown. The
+ * whole library is over two hundred, and was nine tenths of this text; a video
+ * is shown the shelves for its own subject (sketch-shelves.mjs). With no
+ * options it describes every sketch, which is what QUIZ_SYSTEM below is.
+ */
+export const quizSystemFor = (options) => [
   'You write short-form science and maths quiz videos (YouTube Shorts, Reels and TikTok, plus',
   'longer landscape explainers). You always return one multiple-choice question with exactly 4',
   'options, and a narration script.',
@@ -190,7 +198,7 @@ export const QUIZ_SYSTEM = [
   'Say nothing in a diagram that gives away the answer before the answer scene.',
   '',
 
-  ...sketchPromptLines(),
+  ...sketchPromptLines(options),
   '',
   'motifSymbols: 3 to 6 single emoji or symbols evoking the topic, e.g. ["🪐","🌙","⭐","g"].',
   'They drift faintly in the background, so pick things that read at a glance.',
@@ -207,6 +215,9 @@ export const QUIZ_SYSTEM = [
   '  never the specific thing that is the answer. A photo of Venus over the hook of a question',
   '  whose answer is Venus gives it away.',
 ].join('\n');
+
+/** The same, describing every sketch in the library. */
+export const QUIZ_SYSTEM = quizSystemFor(null);
 
 // ---------------------------------------------------------------------------
 // Length budgeting
@@ -588,7 +599,7 @@ export function callModel(provider, apiKey, model, request) {
 
 export async function generateContent(apiKey, model, options) {
   const parsed = await callModel(options.provider, apiKey, model, {
-    system: QUIZ_SYSTEM,
+    system: quizSystemFor(options),
     prompt: buildQuizPrompt(options),
     schema: RESPONSE_SCHEMA,
     temperature: 0.4 + (Number(options.curiosity) || 5) * 0.06,

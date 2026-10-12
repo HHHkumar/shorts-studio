@@ -18,6 +18,7 @@
 // ---------------------------------------------------------------------------
 
 import { SKETCH_CATALOGUE } from './sketch-catalogue.mjs';
+import { shortlist } from './sketch-shelves.mjs';
 
 /** Every knob a sketch can read. speed and frequency only set how fast or how tightly it moves. */
 const KNOBS = ['mode', 'network', 'angle', 'amplitude', 'count', 'ratio', 'labelA', 'labelB'];
@@ -200,7 +201,10 @@ function mustState(contract) {
  *
  * Two lines per sketch, and a third only where something must be stated.
  */
-export function sketchPromptLines() {
+export function sketchPromptLines(options) {
+  // A video is shown the sketches for its own subject, not all two hundred:
+  // see sketch-shelves.mjs. With no options - a test, a tool - it is all of them.
+  const shown = new Set(options ? shortlist(SKETCH_CATALOGUE.map((s) => s.name), options) : SKETCH_CATALOGUE.map((s) => s.name));
   const lines = [
     'ANIMATED SKETCHES. Setting visual.kind to "sketch" runs a real animation, drawn live.',
     'Set "sketch" to one of these names and put its knobs in "params". Never invent a name.',
@@ -218,6 +222,7 @@ export function sketchPromptLines() {
     'Do not use the same sketch twice in one video unless the second use shows a different case.',
   ];
   for (const s of SKETCH_CATALOGUE) {
+    if (!shown.has(s.name)) continue;
     const must = mustState(CONTRACTS.get(s.name));
     lines.push('- ' + s.name + ': ' + s.describe);
     lines.push('    params: ' + s.uses);

@@ -575,6 +575,18 @@ None of them carries an invented number: they are shapes and relationships, true
 of the kind. `node --import ./tools/ts-resolve.mjs tools/curve-preview.mjs` draws them all into
 `out\frames\curves`, to check each against the textbook.
 
+**Each video is offered only the diagrams for its subject.** The library has over two hundred, and
+all of them used to be described in every request — nine tenths of everything the model was told,
+so a script on transformer testing was offered a DNA helix and a seating puzzle. A model given two
+hundred choices picks the nearest thing more often than the right one. An electrical video is now
+shown fewer than ninety: the electrical diagrams, the mathematics an engineering paper leans on, and
+the ones every subject shares (a flowchart, a classification tree, a chart of its own numbers).
+Aptitude, physics, chemistry and the rest each have their own shelf; the science and computer
+sections of the aptitude paper are given science and computing, not puzzles; and a subject without
+a shelf — general knowledge, history — still sees the whole library. It goes by the subject you
+picked, never by a word in the topic.
+**See exactly what will be sent** on step 2 shows the list a video is given.
+
 
 Play the phone preview before rendering. Fixing something here takes a second; after a render it
 takes minutes.
