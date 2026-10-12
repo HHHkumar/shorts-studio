@@ -1,7 +1,7 @@
 {
  "id": "v-20260927-215546-takc",
  "createdAt": "2026-09-27T16:25:46.700Z",
- "updatedAt": "2026-10-06T16:09:30.582Z",
+ "updatedAt": "2026-10-12T15:27:58.466Z",
  "content": {
   "subject": "Power Systems",
   "topic": "Ferranti Effect",
@@ -78,18 +78,9 @@
     "narration": "In a long transmission line operating under no load or light load, what causes the receiving end voltage to exceed the sending end voltage?",
     "imageQuery": "high voltage electricity pylon",
     "visual": {
-     "kind": "sketch",
-     "sketch": "waveform",
-     "caption": "",
-     "params": {
-      "frequency": 2,
-      "mode": "phase",
-      "labelA": "Vs",
-      "labelB": "Vr",
-      "ratio": 1.2
-     },
-     "items": []
-    }
+     "kind": "none"
+    },
+    "pictureNote": "Taken out by the picture check: shows receiving end voltage equal in amplitude and phase to sending end voltage rather than exceeding it."
    },
    {
     "kind": "options",
@@ -140,36 +131,27 @@
      "emotion": "triumphant, energetic",
      "props": "a transmission line diagram, capacitor plates",
      "gag": "none"
-    }
+    },
+    "doodleSrc": "generated/doodle/doodle-p6ocif/s5-c8fac9.jpg",
+    "doodleProps": true
    },
    {
     "kind": "explain",
     "narration": "Under no load or light load, a long line still draws a significant charging current from supply.",
     "imageQuery": "substation electrical transformers",
     "visual": {
-     "kind": "sketch",
-     "sketch": "circuit",
-     "caption": "",
-     "params": {
-      "labelA": "Vs",
-      "network": "10 + (50 | 50)"
-     },
-     "items": []
-    }
+     "kind": "none"
+    },
+    "pictureNote": "Taken out by the picture check: draws an AC transmission line as a DC battery driving a network of resistors with unmentioned values."
    },
    {
     "kind": "explain",
     "narration": "This current flows through the distributed shunt capacitance formed between the overhead conductors and the ground plane.",
     "imageQuery": "",
     "visual": {
-     "kind": "sketch",
-     "sketch": "capacitor-field",
-     "caption": "",
-     "params": {
-      "labelA": "Air dielectric"
-     },
-     "items": []
-    }
+     "kind": "none"
+    },
+    "pictureNote": "Taken out by the picture check: shows a generic parallel-plate capacitor with air dielectric rather than overhead transmission conductors and ground plane."
    },
    {
     "kind": "explain",
@@ -203,35 +185,18 @@
     "narration": "Multiplying leading current by inductive reactance produces a voltage drop that is in phase with sending voltage.",
     "imageQuery": "",
     "visual": {
-     "kind": "sketch",
-     "sketch": "vector-add",
-     "caption": "",
-     "params": {
-      "angle": 180,
-      "labelA": "Vr",
-      "labelB": "j·Ic·X"
-     },
-     "items": []
-    }
+     "kind": "none"
+    },
+    "pictureNote": "Taken out by the picture check: the phasor diagram is drawn too small to read with overlapping text and vectors."
    },
    {
     "kind": "explain",
     "narration": "Instead of subtracting, this drop adds to the sending end voltage as you move towards the load.",
     "imageQuery": "",
     "visual": {
-     "kind": "compare",
-     "caption": "No-load voltages",
-     "items": [
-      {
-       "label": "Sending Vs",
-       "symbol": "📉"
-      },
-      {
-       "label": "Receiving Vr",
-       "symbol": "📈"
-      }
-     ]
-    }
+     "kind": "none"
+    },
+    "pictureNote": "Taken out by the picture check: uses generic stock trend line graphs to represent terminal voltage magnitudes."
    },
    {
     "kind": "explain",
@@ -263,15 +228,9 @@
     "narration": "Engineers install shunt reactors at the receiving substation to absorb leading vars and hold voltage flat.",
     "imageQuery": "high voltage reactor substation",
     "visual": {
-     "kind": "sketch",
-     "sketch": "circuit",
-     "caption": "",
-     "params": {
-      "labelA": "Reactor",
-      "network": "10 + (50 | 50 | 50)"
-     },
-     "items": []
-    }
+     "kind": "none"
+    },
+    "pictureNote": "Taken out by the picture check: draws a reactor as a DC battery source driving a purely resistive network."
    },
    {
     "kind": "formulas",
@@ -291,7 +250,9 @@
      "emotion": "friendly, proud",
      "props": "an electrical coil, a giant thumbs-up icon",
      "gag": "none"
-    }
+    },
+    "doodleSrc": "generated/doodle/doodle-p6ocif/s16-8290f4.jpg",
+    "doodleProps": true
    }
   ],
   "formulas": {
@@ -340,6 +301,230 @@
      }
     }
    ]
+  },
+  "pictureReview": {
+   "checkedAt": "2026-10-12T15:27:28.947Z",
+   "by": [
+    "Gemini",
+    "DeepSeek"
+   ],
+   "sawFrames": true,
+   "reviews": [
+    {
+     "scene": 2,
+     "key": "f07e12fe",
+     "verdict": "wrong",
+     "reason": "shows receiving end voltage equal in amplitude and phase to sending end voltage rather than exceeding it.",
+     "said": [
+      {
+       "by": "Gemini",
+       "verdict": "wrong",
+       "reason": "shows receiving end voltage equal in amplitude and phase to sending end voltage rather than exceeding it."
+      },
+      {
+       "by": "DeepSeek",
+       "verdict": "wrong",
+       "reason": "The question scene shows Vr equal to and in phase with Vs, which contradicts the premise that Vr exceeds Vs and gives away a false relationship."
+      }
+     ],
+     "words": "The \"waveform\" diagram: two sine waves, Vs and Vr; Vr in phase with Vs; equal in size.",
+     "narration": "In a long transmission line operating under no load or light load, what causes the receiving end voltage to exceed the sending end voltage?",
+     "frame": "/out/review-1791818825938/scene-02.jpg",
+     "removed": {
+      "kind": "sketch",
+      "sketch": "waveform",
+      "caption": "",
+      "params": {
+       "frequency": 2,
+       "mode": "phase",
+       "labelA": "Vs",
+       "labelB": "Vr"
+      },
+      "items": []
+     }
+    },
+    {
+     "scene": 6,
+     "key": "4754101f",
+     "verdict": "wrong",
+     "reason": "draws an AC transmission line as a DC battery driving a network of resistors with unmentioned values.",
+     "said": [
+      {
+       "by": "Gemini",
+       "verdict": "wrong",
+       "reason": "draws an AC transmission line as a DC battery driving a network of resistors with unmentioned values."
+      },
+      {
+       "by": "DeepSeek",
+       "verdict": "wrong",
+       "reason": "The line says the line draws charging current through shunt capacitance, but the picture shows only resistors and a battery, with no capacitance or transmission-line model."
+      }
+     ],
+     "words": "The \"circuit\" diagram: a source labelled \"Vs\" driving resistors arranged as 10 + (50 | 50), where + is in series and | is in parallel; every component is drawn as a resistor with that number on it, and the source as a battery.",
+     "narration": "Under no load or light load, a long line still draws a significant charging current from supply.",
+     "frame": "/out/review-1791818825938/scene-06.jpg",
+     "removed": {
+      "kind": "sketch",
+      "sketch": "circuit",
+      "caption": "",
+      "params": {
+       "labelA": "Vs",
+       "network": "10 + (50 | 50)"
+      },
+      "items": []
+     }
+    },
+    {
+     "scene": 7,
+     "key": "4b151bc0",
+     "verdict": "unrelated",
+     "reason": "shows a generic parallel-plate capacitor with air dielectric rather than overhead transmission conductors and ground plane.",
+     "said": [
+      {
+       "by": "Gemini",
+       "verdict": "unrelated",
+       "reason": "shows a generic parallel-plate capacitor with air dielectric rather than overhead transmission conductors and ground plane."
+      },
+      {
+       "by": "DeepSeek",
+       "verdict": "right",
+       "reason": "It correctly shows two plates with an air dielectric field, representing the distributed shunt capacitance between overhead conductors and ground."
+      }
+     ],
+     "words": "The \"capacitor-field\" diagram: two plates with a field between them; set to labelA = Air dielectric.",
+     "narration": "This current flows through the distributed shunt capacitance formed between the overhead conductors and the ground plane.",
+     "frame": "/out/review-1791818825938/scene-07.jpg",
+     "removed": {
+      "kind": "sketch",
+      "sketch": "capacitor-field",
+      "caption": "",
+      "params": {
+       "labelA": "Air dielectric"
+      },
+      "items": []
+     }
+    },
+    {
+     "scene": 8,
+     "key": "2b736a94",
+     "verdict": "right",
+     "reason": "correctly shows the charging current phasor Ic leading the receiving end voltage phasor Vr by 90 degrees.",
+     "said": [
+      {
+       "by": "Gemini",
+       "verdict": "right",
+       "reason": "correctly shows the charging current phasor Ic leading the receiving end voltage phasor Vr by 90 degrees."
+      },
+      {
+       "by": "DeepSeek",
+       "verdict": "right",
+       "reason": "It correctly shows Vr and Ic phasors with a -90 degree angle, meaning the charging current leads the receiving-end voltage by ninety degrees."
+      }
+     ],
+     "words": "The \"phasor\" diagram: voltage and current phasors with the angle between them, or the power triangle; set to angle = -90, mode = phasor, labelA = Vr, labelB = Ic.",
+     "narration": "Because capacitive reactance dominates, this charging current leads the receiving end voltage by ninety degrees in phase.",
+     "frame": "/out/review-1791818825938/scene-08.jpg"
+    },
+    {
+     "scene": 10,
+     "key": "8abb490f",
+     "verdict": "wrong",
+     "reason": "the phasor diagram is drawn too small to read with overlapping text and vectors.",
+     "said": [
+      {
+       "by": "Gemini",
+       "verdict": "wrong",
+       "reason": "the phasor diagram is drawn too small to read with overlapping text and vectors."
+      },
+      {
+       "by": "DeepSeek",
+       "verdict": "wrong",
+       "reason": "The vector-add diagram uses a 180-degree angle between Vr and j·Ic·X, but the line says the drop is in phase with sending voltage, not opposite to Vr."
+      }
+     ],
+     "words": "The \"vector-add\" diagram: two arrows joined head to tail with their resultant; set to angle = 180, labelA = Vr, labelB = j·Ic·X.",
+     "narration": "Multiplying leading current by inductive reactance produces a voltage drop that is in phase with sending voltage.",
+     "frame": "/out/review-1791818825938/scene-10.jpg",
+     "removed": {
+      "kind": "sketch",
+      "sketch": "vector-add",
+      "caption": "",
+      "params": {
+       "angle": 180,
+       "labelA": "Vr",
+       "labelB": "j·Ic·X"
+      },
+      "items": []
+     }
+    },
+    {
+     "scene": 11,
+     "key": "9401464c",
+     "verdict": "unrelated",
+     "reason": "uses generic stock trend line graphs to represent terminal voltage magnitudes.",
+     "said": [
+      {
+       "by": "Gemini",
+       "verdict": "unrelated",
+       "reason": "uses generic stock trend line graphs to represent terminal voltage magnitudes."
+      },
+      {
+       "by": "DeepSeek",
+       "verdict": "right",
+       "reason": "It correctly contrasts sending voltage falling with receiving voltage rising under no-load, matching the line that the drop adds rather than subtracts."
+      }
+     ],
+     "words": "Two things side by side captioned \"No-load voltages\": Sending Vs 📉 | Receiving Vr 📈.",
+     "narration": "Instead of subtracting, this drop adds to the sending end voltage as you move towards the load.",
+     "frame": "/out/review-1791818825938/scene-11.jpg",
+     "removed": {
+      "kind": "compare",
+      "caption": "No-load voltages",
+      "items": [
+       {
+        "label": "Sending Vs",
+        "symbol": "📉"
+       },
+       {
+        "label": "Receiving Vr",
+        "symbol": "📈"
+       }
+      ]
+     }
+    },
+    {
+     "scene": 14,
+     "key": "fb464897",
+     "verdict": "wrong",
+     "reason": "draws a reactor as a DC battery source driving a purely resistive network.",
+     "said": [
+      {
+       "by": "Gemini",
+       "verdict": "wrong",
+       "reason": "draws a reactor as a DC battery source driving a purely resistive network."
+      },
+      {
+       "by": "DeepSeek",
+       "verdict": "wrong",
+       "reason": "The line is about installing shunt reactors to absorb leading vars, but the picture shows a source labelled Reactor driving resistors, with no reactor or shunt connection."
+      }
+     ],
+     "words": "The \"circuit\" diagram: a source labelled \"Reactor\" driving resistors arranged as 10 + (50 | 50 | 50), where + is in series and | is in parallel; every component is drawn as a resistor with that number on it, and the source as a battery.",
+     "narration": "Engineers install shunt reactors at the receiving substation to absorb leading vars and hold voltage flat.",
+     "frame": "/out/review-1791818825938/scene-14.jpg",
+     "removed": {
+      "kind": "sketch",
+      "sketch": "circuit",
+      "caption": "",
+      "params": {
+       "labelA": "Reactor",
+       "network": "10 + (50 | 50 | 50)"
+      },
+      "items": []
+     }
+    }
+   ],
+   "problems": []
   }
  },
  "design": {
@@ -389,6 +574,16 @@
    "what": "Doodle drawing",
    "cents": 4,
    "at": "2026-09-27T16:27:14.331Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-12T15:27:53.903Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-12T15:27:57.249Z"
   }
  ],
  "renders": [],

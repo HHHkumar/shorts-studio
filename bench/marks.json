@@ -3,28 +3,28 @@
   "24e79b1d": {
    "mark": "right",
    "note": "8 A in, 8 A out.",
-   "by": "claude",
-   "at": "2026-10-11T15:41:19.065Z"
+   "by": "you",
+   "at": "2026-10-12T15:25:26.326Z"
   },
   "3a34d784": {
-   "mark": "wrong",
+   "mark": "right",
    "note": "Shows 3 A and 2 A in and 5 A out. The question has 5 A and 3 A in, 2 A and 6 A out.",
-   "by": "claude",
-   "at": "2026-10-11T15:41:19.063Z"
+   "by": "you",
+   "at": "2026-10-12T15:25:19.200Z"
   }
  },
  "b-v-20260927-211803-serd": {
   "c4d39e93": {
    "mark": "right",
    "note": "",
-   "by": "claude",
-   "at": "2026-10-11T15:41:19.067Z"
+   "by": "you",
+   "at": "2026-10-12T15:25:42.387Z"
   },
   "815c67e7": {
    "mark": "right",
    "note": "Right in content, but the second label is cut to 'Keep dependent sourc'.",
-   "by": "claude",
-   "at": "2026-10-11T15:41:19.068Z"
+   "by": "you",
+   "at": "2026-10-12T15:25:43.424Z"
   },
   "afdcd2f6": {
    "mark": "unrelated",
@@ -35,8 +35,8 @@
   "101a3dec": {
    "mark": "right",
    "note": "",
-   "by": "claude",
-   "at": "2026-10-11T15:41:19.070Z"
+   "by": "you",
+   "at": "2026-10-12T15:26:04.749Z"
   },
   "2d38a94d": {
    "mark": "unrelated",
@@ -47,48 +47,48 @@
   "f175d95d": {
    "mark": "unrelated",
    "note": "Blank: a checklist with nothing on it.",
-   "by": "claude",
-   "at": "2026-10-11T15:41:19.072Z"
+   "by": "you",
+   "at": "2026-10-12T15:26:22.118Z"
   }
  },
  "b-v-20260927-212137-ga1x": {
   "c8551728": {
    "mark": "wrong",
    "note": "A battery and two resistors of 0.5 and 1.41 ohm. The 1.41 is a reactance, the supply is AC, and drawn like this they add to 1.91 ohm, not the 1.5 ohm impedance.",
-   "by": "claude",
-   "at": "2026-10-11T15:41:19.073Z"
+   "by": "you",
+   "at": "2026-10-12T15:26:18.989Z"
   },
   "00cf1db2": {
-   "mark": "unrelated",
+   "mark": "right",
    "note": "A bar magnet with a strong field, under a line saying the core flux is negligibly small.",
-   "by": "claude",
-   "at": "2026-10-11T15:41:19.074Z"
+   "by": "you",
+   "at": "2026-10-12T15:26:36.871Z"
   },
   "e53f3d72": {
    "mark": "right",
    "note": "",
-   "by": "claude",
-   "at": "2026-10-11T15:41:19.075Z"
+   "by": "you",
+   "at": "2026-10-12T15:26:44.421Z"
   },
   "cf56413e": {
    "mark": "right",
    "note": "",
-   "by": "claude",
-   "at": "2026-10-11T15:41:19.076Z"
+   "by": "you",
+   "at": "2026-10-12T15:26:46.136Z"
   }
  },
  "b-v-20260927-212817-hutr": {
   "520ba378": {
    "mark": "right",
    "note": "",
-   "by": "claude",
-   "at": "2026-10-11T15:41:19.077Z"
+   "by": "you",
+   "at": "2026-10-12T15:26:47.648Z"
   },
   "39ecee07": {
    "mark": "right",
    "note": "ln(d/r) rising with spacing d.",
-   "by": "claude",
-   "at": "2026-10-11T15:41:19.078Z"
+   "by": "you",
+   "at": "2026-10-12T15:26:55.175Z"
   },
   "45c1affb": {
    "mark": "wrong",

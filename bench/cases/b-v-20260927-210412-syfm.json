@@ -347,8 +347,48 @@
    ]
   }
  },
- "checkedAt": null,
- "by": [],
- "sawFrames": false,
- "reviews": []
+ "checkedAt": "2026-10-12T15:24:52.141Z",
+ "by": [
+  "Gemini",
+  "DeepSeek"
+ ],
+ "sawFrames": true,
+ "reviews": [
+  {
+   "key": "3a34d784",
+   "scene": 8,
+   "verdict": "wrong",
+   "reason": "Shows a three-branch junction with 2 A entering and 5 A leaving, contradicting the question which specifies four branches with 5 A and 3 A entering and 2 A leaving.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "wrong",
+     "reason": "Shows a three-branch junction with 2 A entering and 5 A leaving, contradicting the question which specifies four branches with 5 A and 3 A entering and 2 A leaving."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "It shows currents meeting at a junction with in equalling out, which correctly illustrates that charge does not accumulate at the node."
+    }
+   ]
+  },
+  {
+   "key": "24e79b1d",
+   "scene": 10,
+   "verdict": "right",
+   "reason": "Correctly shows the total entering current of 8 A matching the balanced 8 A leaving current.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "Correctly shows the total entering current of 8 A matching the balanced 8 A leaving current."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "The bar chart shows Entering = 8 A and Leaving = 8 A, correctly matching the line's total inflow of eight amperes and the KCL balance."
+    }
+   ]
+  }
+ ]
 }
