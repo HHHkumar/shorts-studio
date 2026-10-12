@@ -3,6 +3,7 @@ import type { SketchArgs } from './P5Sketch';
 import { EXTRA_SKETCHES } from './sketches-extra';
 import { MORE_SKETCHES } from './sketches-more';
 import { GAP_SKETCHES } from './sketches-gaps';
+import { CURVE_SKETCHES } from './sketches-curves';
 import { layoutNet, parseNet } from '../lib/circuit-net';
 
 // ---------------------------------------------------------------------------
@@ -405,7 +406,7 @@ const CORE_SKETCHES: Record<string, SketchDef> = {
   graph: {
     shape: 'wide',
     label: 'Graph of a function',
-    describe: 'Draws a curve on axes, revealed left to right. Use for showing how one quantity depends on another.',
+    describe: 'Draws a plain mathematical curve on axes, revealed left to right. Use for showing how one quantity depends on another when the dependence IS one of its shapes. Not for a named characteristic: the torque of a motor against slip, series resonance, a thyristor, a B-H loop, a magnetisation curve, transformer efficiency and V-curves each have their own sketch, with the right shape and its landmarks - a general curve of roughly the right shape is a wrong picture',
     uses: 'mode ("linear", "quadratic", "cubic", "exponential", "inverse-square", "sine", "log"), labelA (x axis), labelB (y axis)',
     draw: ({ p, progress, width, height, params, colors }) => {
       const mode = String(params.mode || 'quadratic');
@@ -1462,7 +1463,7 @@ function node(
  * and neither it nor the renderer knows or cares which file an entry came from.
  */
 export const SKETCHES: Record<string, SketchDef> = {
-  ...CORE_SKETCHES, ...EXTRA_SKETCHES, ...MORE_SKETCHES, ...GAP_SKETCHES,
+  ...CORE_SKETCHES, ...EXTRA_SKETCHES, ...MORE_SKETCHES, ...GAP_SKETCHES, ...CURVE_SKETCHES,
 };
 
 export const SKETCH_NAMES = Object.keys(SKETCHES);

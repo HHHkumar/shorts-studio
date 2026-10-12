@@ -552,6 +552,28 @@ To see the line drawn without making a video:
 `node --import ./tools/ts-resolve.mjs tools/circuit-line-preview.mjs` renders a dozen circuits, each
 on a question scene and on an explanation, into `out\frames\circuit-line`.
 
+**The standard characteristics are drawn from their equations.** A script about induction-motor
+torque once asked for "a graph" and got an upward curve; one about a thyristor's holding current
+got a diode. The library had the right curve for neither, so the nearest shape was used — and a
+curve of the wrong shape is a wrong statement. These now have their own drawings, each computed
+from the equation a textbook gives, with the landmarks an examiner asks about marked and named:
+
+| Characteristic | What it shows |
+|---|---|
+| **Torque against slip** | Starting torque, maximum torque and the slip it occurs at, s = R₂/X₂. A second form draws the family as rotor resistance rises: the peak keeps its height and moves to standstill at R₂ = X₂. |
+| **Series resonance** | The peak at f₀, the half-power points at 0.707 of it, and the bandwidth f₀/Q. A second form sets a high-Q curve against a low-Q one. |
+| **Thyristor** | Forward blocking to the breakover voltage, conduction, the latching current above the holding current, reverse blocking and breakdown. |
+| **Hysteresis loop** | Saturation, retentivity and coercive force; or a narrow soft-iron loop against a wide hard-steel one. |
+| **Magnetisation curve** | The air-gap line, the knee, saturation, and the residual voltage it starts from. |
+| **Transformer efficiency** | Efficiency against load, with iron loss and copper loss crossing under its maximum. |
+| **V-curves** | Armature current against field current: unity power factor at the foot, lagging and leading either side. |
+| **DC motor speed against torque** | Shunt, series and compound through the same full-load point. |
+| **Power over time** | Steady power as a rectangle whose area is the energy — one load, or two set together. The energy is worked out, not written. |
+
+None of them carries an invented number: they are shapes and relationships, true of every machine
+of the kind. `node --import ./tools/ts-resolve.mjs tools/curve-preview.mjs` draws them all into
+`out\frames\curves`, to check each against the textbook.
+
 
 Play the phone preview before rendering. Fixing something here takes a second; after a render it
 takes minutes.

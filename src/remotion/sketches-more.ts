@@ -381,7 +381,7 @@ export const MORE_SKETCHES: Record<string, SketchDef> = {
     }),
 
   'area-under': wide('Area under a curve',
-    'a curve with the area beneath it filled in strips. Use for: integration, area under a graph, accumulated total',
+    'a rising curve with the area beneath it filled in strips. Use for: integration, area under a graph, accumulated total. Not for energy as power x time at a steady power - that is a rectangle, and power-time draws it',
     'count (4-12 strips)',
     ({ p, progress, width, height, params, colors }) => {
       const n = Math.round(num(params.count, 8, 4, 12));
@@ -1173,7 +1173,10 @@ export const MORE_SKETCHES: Record<string, SketchDef> = {
     'a breaker tripping open on a fault. Use for: protection, breakers, fuses, tripping, fault clearing',
     'mode ("closed", "trip")',
     ({ p, progress, width, height, params, colors }) => {
-      const tripped = String(params.mode || '') === 'trip' || progress > 0.55;
+      // The mode is how the breaker ENDS. It tripped itself half way through
+      // whatever it was told, so "closed" finished open - the same fault the
+      // switch had. A trip is shown happening; a closed breaker stays closed.
+      const tripped = String(params.mode || '').toLowerCase() === 'trip' && progress > 0.45;
       const cy = height * 0.44;
       wire(p, width * 0.1, cy, width * 0.38, cy, colors.text, 5);
       wire(p, width * 0.62, cy, width * 0.9, cy, colors.text, 5);
@@ -1201,9 +1204,13 @@ export const MORE_SKETCHES: Record<string, SketchDef> = {
 
   relay: wide('Relay',
     'a small coil closing a bigger contact. Use for: relays, contactors, control circuits, switching',
-    'mode ("closed" to energise it)',
+    'mode ("closed" when the coil is energised, "open" when it is not)',
     ({ p, progress, width, height, params, colors }) => {
-      const on = String(params.mode || '') === 'closed' || progress > 0.5;
+      // The mode is how the relay ENDS: it used to energise itself half way
+      // through whatever it was told. It starts the other way, so the scene
+      // shows the contact moving.
+      const wanted = String(params.mode || '').toLowerCase() === 'closed';
+      const on = progress > 0.45 ? wanted : !wanted;
       const cy = height * 0.5;
       box(p, width * 0.26, cy, width * 0.2, height * 0.3, 'Coil', colors, { lit: on });
       for (let i = 0; i < 4; i++) {
@@ -1257,7 +1264,7 @@ export const MORE_SKETCHES: Record<string, SketchDef> = {
     }),
 
   'diode-curve': wide('Diode characteristic',
-    'current staying flat then rising sharply past the knee. Use for: diodes, rectification, forward voltage',
+    'current staying flat then rising sharply past the knee. Use for: diodes, rectification, forward voltage. A diode only - a thyristor (SCR) has its own characteristic, scr-characteristic',
     'no parameters',
     ({ p, progress, width, height, colors }) => {
       const plot = axes(p, width, height, colors, { x: 'Voltage', y: 'Current' });
@@ -1274,7 +1281,9 @@ export const MORE_SKETCHES: Record<string, SketchDef> = {
     'a transistor switching a load on. Use for: transistors, switching, amplification, base current',
     'mode ("on" or "off")',
     ({ p, progress, width, height, params, colors }) => {
-      const on = String(params.mode || '') === 'on' || progress > 0.5;
+      // The mode is how the transistor ENDS: "off" used to finish conducting.
+      const wanted = String(params.mode || '').toLowerCase() === 'on';
+      const on = progress > 0.45 ? wanted : !wanted;
       const cx = width * 0.52;
       const cy = height * 0.5;
       p.push();
@@ -1294,7 +1303,7 @@ export const MORE_SKETCHES: Record<string, SketchDef> = {
     }),
 
   'filter-response': wide('Filter response',
-    'which frequencies a filter lets through. Use for: filters, low pass, high pass, bandwidth, cutoff',
+    'which frequencies a filter lets through. Use for: filters, low pass, high pass, cutoff. For the resonance of an RLC circuit, with its half-power points and bandwidth marked, use resonance-curve',
     'mode ("low", "high" or "band")',
     ({ p, progress, width, height, params, colors }) => {
       const mode = String(params.mode || 'low');

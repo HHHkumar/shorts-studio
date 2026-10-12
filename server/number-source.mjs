@@ -227,6 +227,11 @@ export function unsourcedInVisual(visual, source) {
   const bad = [];
   // Only entries that carry a number: a flowchart's steps have none.
   bad.push(...unsourced((v.items || []).map((it) => it.value).filter((n) => Number.isFinite(n)), source));
+  // A load on the power-time picture has two: its watts, and the hours in its symbol.
+  if (v.sketch === 'power-time') {
+    const hours = (v.items || []).map((it) => Number(String((it && it.symbol) || '').replace(/[^0-9.]/g, ''))).filter((n) => Number.isFinite(n) && n > 0);
+    bad.push(...unsourced(hours, source));
+  }
   // A circuit's parts and its supply: what it is checked against is worked
   // out from those by the solver, so it needs no source of its own.
   if (v.sketch === 'circuit' && p.network) return [...new Set(unsourced(circuitNumbers(p), source))];

@@ -60,6 +60,15 @@ const CASES = [
   },
 ];
 
+/**
+ * "Good input" is not the same list for every sketch: one that reads a number
+ * out of each item's symbol is given nothing to draw by an emoji.
+ */
+const GOOD_ITEMS = {
+  'power-time': [{ label: 'One bulb', value: 100, symbol: '10' }, { label: 'Ten bulbs', value: 1000, symbol: '1' }],
+};
+const itemsFor = (name, c) => (c.name === 'typical' && GOOD_ITEMS[name] ? GOOD_ITEMS[name] : c.items);
+
 const SHAPES = [
   { name: 'wide', width: 900, height: 460 },
   { name: 'square', width: 520, height: 520 },
@@ -89,7 +98,7 @@ for (const name of SKETCH_NAMES) {
             width: shape.width,
             height: shape.height,
             params: c.params,
-            items: c.items,
+            items: itemsFor(name, c),
             colors: COLORS,
           });
         } catch (e) {
@@ -133,7 +142,7 @@ for (const name of SKETCH_NAMES) {
     SKETCHES[name].draw({
       p: track, frame: 45, time: 1.5, progress: 1,
       width: shape.width, height: shape.height,
-      params: CASES[0].params, items: CASES[0].items, colors: COLORS,
+      params: CASES[0].params, items: itemsFor(name, CASES[0]), colors: COLORS,
     });
   } catch { continue; }
   if (!xs.length) continue;
@@ -382,6 +391,16 @@ function record(name, params, w = 900, h = 460, progress = 1) {
      /Closed/.test(record('switch-circuit', { mode: 'open' }, 900, 460, 0.1).said)
      && /Open/.test(record('switch-circuit', { mode: 'closed' }, 900, 460, 0.1).said));
 
+  // The same fault in three more: each switched itself half way through
+  // whatever its mode, so one state could never be the picture left on screen.
+  const final = (name, mode) => record(name, { mode }, 900, 460, 1).said;
+  ok('a breaker told to stay closed ends closed', /CLOSED/.test(final('circuit-breaker', 'closed')) && !/TRIPPED/.test(final('circuit-breaker', 'closed')), final('circuit-breaker', 'closed'));
+  ok('and one told to trip ends tripped', /TRIPPED/.test(final('circuit-breaker', 'trip')));
+  ok('a relay told to be open ends de-energised', !/Energised/.test(final('relay', 'open')), final('relay', 'open'));
+  ok('and one told to close ends energised', /Energised/.test(final('relay', 'closed')), final('relay', 'closed'));
+  ok('a transistor told to be off ends off', !/it conducts/.test(final('transistor', 'off')), final('transistor', 'off'));
+  ok('and one told to be on ends conducting', /it conducts/.test(final('transistor', 'on')), final('transistor', 'on'));
+
   // Two waves in phase and the same size lie on top of each other: one curve
   // on screen under a legend for two. The second is dashed so both show.
   const dashes = (params) => {
@@ -394,6 +413,60 @@ function record(name, params, w = 900, h = 460, progress = 1) {
   ok('a wave lying exactly on another is dashed', dashes({ mode: 'phase', angle: 0, labelA: 'V', labelB: 'I' }));
   ok('and is solid as soon as the two differ',
      !dashes({ mode: 'phase', angle: 90, labelA: 'V', labelB: 'I' }) && !dashes({ mode: 'phase', angle: 0, ratio: 1.2, labelA: 'Vs', labelB: 'Vr' }));
+}
+
+// --- the standard characteristics are the right shape ------------------------------
+// These are fixed pictures whose whole value is that the curve is the true one.
+// A torque-slip curve was once drawn as an upward quadratic and a thyristor as
+// a diode; the equations and the landmarks are held here.
+{
+  const { torqueAt, resonanceAt } = await import('./sketches-curves.ts');
+  const near = (a, b, tol = 1e-6) => Math.abs(a - b) <= tol;
+
+  // T/Tmax = 2 / (s/sm + sm/s): the maximum is 1, at s = sm, whatever sm is.
+  for (const sm of [0.1, 0.2, 0.5, 1]) {
+    let best = 0;
+    let at = 0;
+    for (let s = 0.001; s <= 1.0001; s += 0.001) if (torqueAt(s, sm) > best) { best = torqueAt(s, sm); at = s; }
+    ok('torque peaks at slip ' + sm + ', at the same height', near(best, 1, 1e-5) && near(at, sm, 0.0015), 'peak ' + best.toFixed(4) + ' at s=' + at.toFixed(3));
+  }
+  ok('with R2 = X2 the peak is at standstill', near(torqueAt(1, 1), 1));
+  ok('torque is zero at synchronous speed', torqueAt(1e-9, 0.2) < 1e-6);
+  ok('starting torque rises as rotor resistance rises, up to R2 = X2',
+     torqueAt(1, 0.2) < torqueAt(1, 0.5) && torqueAt(1, 0.5) < torqueAt(1, 1));
+
+  // Half power is 1/sqrt 2 of the peak current, and f2 - f1 = f0 / Q exactly.
+  for (const q of [2, 4, 10]) {
+    const f1 = (-1 / q + Math.sqrt(1 / (q * q) + 4)) / 2;
+    const f2 = (1 / q + Math.sqrt(1 / (q * q) + 4)) / 2;
+    ok('resonance at Q = ' + q + ': half-power points 0.707 high and f0/Q apart',
+       near(resonanceAt(f1, q), Math.SQRT1_2, 1e-9) && near(resonanceAt(f2, q), Math.SQRT1_2, 1e-9) && near(f2 - f1, 1 / q, 1e-9));
+  }
+  ok('the resonant peak is at f0', near(resonanceAt(1, 4), 1) && resonanceAt(0.9, 4) < 1 && resonanceAt(1.1, 4) < 1);
+
+  // On the drawing itself: what is higher up the canvas has the smaller y.
+  const where = (name, params, text) => {
+    const hit = record(name, params, 900, 460, 1).texts.find((t) => t.t.includes(text));
+    return hit ? hit : null;
+  };
+  const latch = where('scr-characteristic', {}, 'IL latching');
+  const hold = where('scr-characteristic', {}, 'IH holding');
+  ok('the thyristor names both currents', Boolean(latch && hold));
+  ok('and draws the latching current ABOVE the holding current', Boolean(latch && hold) && latch.y < hold.y, latch && hold ? latch.y.toFixed(0) + ' against ' + hold.y.toFixed(0) : '');
+  ok('the thyristor is not the diode: it has a breakover voltage and a reverse breakdown',
+     Boolean(where('scr-characteristic', {}, 'VBO') && where('scr-characteristic', {}, 'Breakdown')));
+
+  const said = (name, params, items = []) => {
+    const texts = [];
+    const { p } = mockP5(900, 460);
+    SKETCHES[name].draw({ p: { ...p, text: (t) => texts.push(String(t)) }, frame: 90, time: 3, progress: 1, width: 900, height: 460, params, items, colors: COLORS });
+    return texts.join(' | ');
+  };
+  // Energy is worked out from what was given, never written by the model.
+  const equal = said('power-time', {}, [{ label: 'One bulb', value: 100, symbol: '10' }, { label: 'Ten bulbs', value: 1000, symbol: '1' }]);
+  ok('100 W for 10 h and 1000 W for 1 h both come to 1 kWh', (equal.match(/1 kWh/g) || []).length === 2, equal);
+  ok('2 kW for 3 h is 6 kWh', /6 kWh/.test(said('power-time', {}, [{ label: 'Heater', value: 2000, symbol: '3' }])));
+  ok('a load with no hours is not drawn at all', said('power-time', {}, [{ label: 'Heater', value: 2000 }]) === '');
 }
 
 // --- a sketch's own caption is written whole -------------------------------------
