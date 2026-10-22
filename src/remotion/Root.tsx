@@ -2,13 +2,15 @@ import React from 'react';
 import { Composition } from 'remotion';
 import { makeDemoProps } from '../lib/demo';
 import { DEFAULT_DESIGN } from '../lib/theme';
-import { dimensionsFor, FPS, PORTRAIT } from '../lib/types';
+import { dimensionsFor, FPS, LANDSCAPE, PORTRAIT } from '../lib/types';
 import type { VideoProps } from '../lib/types';
 import { QuizVideo } from './QuizVideo';
 import { Thumbnail, THUMBNAIL_ID, thumbSizeFor, type ThumbnailProps } from './Thumbnail';
 import { CarouselSlide, CAROUSEL_FRAMES, CAROUSEL_ID } from './Carousel';
 import { planCarousel, SLIDE_SIZE } from '../lib/carousel';
 import { EngineerReel, ENGINEER_REEL_ID, reelSeconds } from './EngineerReel';
+import { Varnamale, VARNAMALE_ID, type VarnamaleProps } from './Varnamale';
+import { buildTimeline, totalFrames } from '../lib/varnamale';
 
 export const COMPOSITION_ID = 'QuizVideo';
 
@@ -87,6 +89,19 @@ export const RemotionRoot: React.FC = () => {
       fps={FPS}
       durationInFrames={Math.round(reelSeconds() * FPS)}
       defaultProps={{ mode: 'light' as const }}
+    />
+    {/* The Kannada alphabet, read aloud. tools/varnamale.mjs records the voice and renders it. */}
+    <Composition
+      id={VARNAMALE_ID}
+      component={Varnamale}
+      width={LANDSCAPE.width}
+      height={LANDSCAPE.height}
+      fps={FPS}
+      durationInFrames={totalFrames(buildTimeline(null, FPS))}
+      defaultProps={{ clips: null, music: true } satisfies VarnamaleProps}
+      calculateMetadata={({ props }: { props: VarnamaleProps }) => ({
+        durationInFrames: totalFrames(buildTimeline(props.clips, FPS)),
+      })}
     />
     </>
   );
