@@ -19,7 +19,8 @@
     "bench": "node --import ./tools/ts-resolve.mjs tools/bench.mjs score",
     "doodle:preview": "node --import ./tools/ts-resolve.mjs tools/doodle-preview.mjs",
     "engineer:preview": "node --import ./tools/ts-resolve.mjs tools/engineer-preview.mjs",
-    "varnamale": "node --import ./tools/ts-resolve.mjs tools/varnamale.mjs"
+    "varnamale": "node --import ./tools/ts-resolve.mjs tools/varnamale.mjs",
+    "import:history": "node tools/import-history.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.123.0",

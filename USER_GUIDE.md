@@ -111,7 +111,14 @@ A key typed into either studio is the key in both. History Studio keeps its own 
 own steps and its own renders; its manual is `studios/history/README.md` and
 `studios/history/docs/user-guide.html`. It used to be a separate program in the `history-studio`
 folder, started with its own window; that copy still works but is no longer needed, and your
-projects were copied across.
+projects were copied across. Projects are not kept in git, so on your other computer run these
+once, in the shorts-studio folder, after pulling the update — the first installs the map packages
+History's news graphics use, the second copies that computer's History Studio projects in:
+
+```
+npm install
+npm run import:history
+```
 
 **How long does one video take?** Roughly 3–4 minutes of your attention, most of it waiting. The very
 first video takes longer, because the tool downloads its rendering engine once.

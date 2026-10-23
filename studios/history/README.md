@@ -23,7 +23,7 @@ How it is joined on:
 | API keys | the same ones Shorts Studio stores: a key typed in either studio works in both |
 
 The old standalone copy in `C:\Users\user\history-studio` still runs on its own ports (5180 / 3040) and was
-left untouched; its projects were copied here, not moved.
+left untouched; its projects were copied here, not moved. On another computer, `npm run import:history` copies that computer's History Studio projects in the same way (it never overwrites or removes anything).
 
 ## Making a video
 
