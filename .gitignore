@@ -31,3 +31,11 @@ dist/
 # Secrets, if you ever add a .env. API keys currently live in the browser.
 .env
 .env.local
+
+# History Studio (studios/history): its projects, the pictures and clips they
+# are made of, its finished videos and its render cache. Kept on disk, not in
+# the repo, exactly as they were in the History Studio folder.
+public/projects/
+studios/history/projects/
+studios/history/out/
+studios/history/.cache/

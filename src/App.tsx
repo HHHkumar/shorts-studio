@@ -265,7 +265,11 @@ export const App: React.FC = () => {
       <header className="topbar">
         <div className="brand">
           Shorts<span>Studio</span>
-          <small>AI quiz videos, 9:16</small>
+          <small>
+            AI quiz videos, 9:16 ·{' '}
+            {/* The other studio of this app: same helper, same keys. A page of its own, so nothing here is lost. */}
+            <a className="studio-link" href="/history.html" title="Long illustrated history and news explainers, 16:9">History &amp; news →</a>
+          </small>
         </div>
         <nav className="steps">
           {STEPS.map((label, i) => (

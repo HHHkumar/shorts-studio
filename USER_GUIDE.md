@@ -87,6 +87,21 @@ The video itself is drawn on your own computer by **Remotion**, which is why ren
 Alongside either, step 7 can make a **square carousel post** of the same question — 1080 × 1080
 slides for Instagram and Facebook. See [A carousel post](#a-carousel-post).
 
+### Every studio, in one program
+
+This is one program with two studios in it, started the same way and sharing one set of keys:
+
+| Studio | Makes | How to open it |
+|---|---|---|
+| **Shorts Studio** | Quiz shorts and explainers, carousels, thumbnails — everything in this guide | It is the page that opens |
+| **History Studio** | Long illustrated history explainers (5–15 minutes, 16:9), and **news explainers** with live research, data graphics and sources | **History & news →** under the name at the top left; **Quiz shorts →** comes back |
+
+A key typed into either studio is the key in both. History Studio keeps its own projects list, its
+own steps and its own renders; its manual is `studios/history/README.md` and
+`studios/history/docs/user-guide.html`. It used to be a separate program in the `history-studio`
+folder, started with its own window; that copy still works but is no longer needed, and your
+projects were copied across.
+
 **How long does one video take?** Roughly 3–4 minutes of your attention, most of it waiting. The very
 first video takes longer, because the tool downloads its rendering engine once.
 

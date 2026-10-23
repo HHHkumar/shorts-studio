@@ -33,6 +33,20 @@ export default defineConfig({
     proxy: {
       '/api': HELPER,
       '/out': HELPER,
+      // History Studio's finished videos, and the pictures and clips its
+      // projects are made of - written while the app runs, so the helper
+      // serves them rather than Vite. '/history/out', not '/history', so the
+      // page history.html is still Vite's to serve.
+      '/history/out': HELPER,
+      '/projects': HELPER,
+    },
+    // Media landing while the app is open; watching it would only cost reloads.
+    watch: { ignored: ['**/public/projects/**', '**/studios/history/projects/**', '**/studios/history/out/**', '**/studios/history/.cache/**'] },
+  },
+  // Two pages, one app: the quiz studio, and History Studio beside it.
+  build: {
+    rolldownOptions: {
+      input: { main: 'index.html', history: 'history.html' },
     },
   },
 });

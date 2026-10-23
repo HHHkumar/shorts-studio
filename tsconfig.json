@@ -15,5 +15,5 @@
     "noUnusedLocals": false,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"]
+  "include": ["src", "studios/history/src"]
 }

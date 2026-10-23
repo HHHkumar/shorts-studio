@@ -63,6 +63,7 @@ import { generateHooks } from './hooks.mjs';
 import { LANGUAGES, translateContent } from './translate.mjs';
 import { tidySheet } from '../src/lib/formula-card.ts';
 import { energyFor, tidyDirection } from '../src/lib/doodle.ts';
+import { mountHistory } from '../studios/history/server/index.mjs';
 
 // Its own variable, deliberately not PORT. Anything that launches the studio
 // through a tool that sets PORT for the web app - as a preview panel does -
@@ -76,6 +77,10 @@ const LIBRARY_DIR = path.join(paths.ROOT, 'library');
 
 const app = express();
 app.use(cors({ origin: true }));
+// History Studio, on this same helper: its routes under /api/history. Mounted
+// before the body parser below, so its pictures and recordings meet its own
+// 80 MB limit rather than this 10 MB one. See studios/history/server/index.mjs.
+mountHistory(app);
 app.use(express.json({ limit: '10mb' }));
 
 // Finished videos are served from here.
