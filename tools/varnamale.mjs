@@ -6,13 +6,14 @@
 //
 // voice   One ElevenLabs clip per letter and per heading, into
 //         public/generated/varnamale/, with their measured lengths in
-//         manifest.json. Clips already on disk are kept, so a re-run only
-//         records what is missing; --redo l07,l12 records those again (for a
-//         letter the voice said wrongly), --redo all records everything.
+//         manifest.json. A clip is kept while its model, voice and script line
+//         are unchanged, so a re-run only records what is missing or stale;
+//         --redo l07,l12 records those again (for a letter the voice said
+//         wrongly), --redo all records everything.
 //         Needs ELEVENLABS_API_KEY and ELEVENLABS_VOICE_ID in the environment -
 //         the app keeps its keys in the browser, so this cannot borrow them.
-//         ELEVENLABS_MODEL overrides the model (default eleven_v3, the one
-//         whose language list includes Kannada).
+//         ELEVENLABS_MODEL overrides the model (default eleven_v4). What each
+//         line says, directions included, is voiceLine() in varnamale.ts.
 // still   PNGs of the given frames into stills/varnamale/, for checking the
 //         chart without rendering the whole video.
 // render  out/kannada-varnamale.mp4. Uses the voice if it has been recorded
@@ -27,7 +28,7 @@ import { fileURLToPath } from 'node:url';
 import { bundle } from '@remotion/bundler';
 import { ensureBrowser, renderMedia, renderStill, selectComposition } from '@remotion/renderer';
 import { speak } from '../server/tts.mjs';
-import { allSpoken, buildTimeline, totalFrames } from '../src/lib/varnamale.ts';
+import { allSpoken, buildTimeline, totalFrames, voiceLine } from '../src/lib/varnamale.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PUBLIC = path.join(ROOT, 'public');
@@ -60,27 +61,30 @@ async function voice() {
     console.error('Set ELEVENLABS_API_KEY and ELEVENLABS_VOICE_ID first (the same key and voice the app uses).');
     process.exit(1);
   }
-  const modelId = process.env.ELEVENLABS_MODEL || 'eleven_v3';
+  const modelId = process.env.ELEVENLABS_MODEL || 'eleven_v4';
   const redo = (option('redo') || '').split(',').filter(Boolean);
 
   fs.mkdirSync(VOICE_DIR, { recursive: true });
   const manifest = readManifest();
-  manifest.voiceId = voiceId;
-  manifest.modelId = modelId;
 
   const lines = allSpoken();
   let made = 0;
   for (const [i, line] of lines.entries()) {
     const file = path.join(VOICE_DIR, line.id + '.mp3');
+    const said = voiceLine(line, modelId);
+    const kept = manifest.clips[line.id];
+    // One video in one voice: a clip from another model, voice or wording is
+    // recorded again rather than left to sound unlike its neighbours.
+    const current = kept && kept.said === said && kept.modelId === modelId && kept.voiceId === voiceId && fs.existsSync(file);
     const again = redo.includes('all') || redo.includes(line.id);
-    if (!again && manifest.clips[line.id] && fs.existsSync(file)) continue;
+    if (current && !again) continue;
 
     process.stdout.write('  ' + String(i + 1).padStart(2) + '/' + lines.length + '  ' + line.id.padEnd(9) + line.text + ' … ');
-    // Steady rather than expressive: a learner is copying this sound. v3 takes
-    // only 0, 0.5 or 1 for stability, and the default speed, so both stay put.
-    const clip = await speak(apiKey, line.text, { voiceId, modelId, stability: 0.5, similarity: 0.8, style: 0.1 });
+    // Steady rather than expressive: a learner is copying this sound. Style and
+    // speed are left out - v4 takes neither, and speak() drops them for it.
+    const clip = await speak(apiKey, said, { voiceId, modelId, stability: 0.5, similarity: 0.8 });
     fs.writeFileSync(file, clip.buffer);
-    manifest.clips[line.id] = { src: 'generated/varnamale/' + line.id + '.mp3', duration: clip.duration, text: line.text };
+    manifest.clips[line.id] = { src: 'generated/varnamale/' + line.id + '.mp3', duration: clip.duration, text: line.text, said, modelId, voiceId };
     // Saved after every clip, so a failure halfway keeps everything before it.
     fs.writeFileSync(MANIFEST, JSON.stringify(manifest, null, 2));
     console.log(clip.duration.toFixed(2) + 's');

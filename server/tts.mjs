@@ -38,18 +38,20 @@ export async function speak(apiKey, text, settings) {
   // The voice hears "ten megawatts"; the screen keeps "10 MW". See speech.mjs.
   const { spoken, written, map } = expandForSpeech(line);
 
+  const modelId = settings.modelId || 'eleven_v4';
+  const caps = modelCaps(modelId);
   const voiceSettings = {
     stability: clamp(settings.stability, 0, 1, 0.45),
     similarity_boost: clamp(settings.similarity, 0, 1, 0.75),
-    style: clamp(settings.style, 0, 1, 0.3),
     use_speaker_boost: true,
   };
+  if (caps.style) voiceSettings.style = clamp(settings.style, 0, 1, 0.3);
   const speed = clamp(settings.speed, 0.7, 1.2, 1);
-  if (speed !== 1) voiceSettings.speed = speed;
+  if (caps.speed && speed !== 1) voiceSettings.speed = speed;
 
   const body = JSON.stringify({
     text: spoken,
-    model_id: settings.modelId || 'eleven_multilingual_v2',
+    model_id: modelId,
     voice_settings: voiceSettings,
   });
 
@@ -162,8 +164,23 @@ function explainError(status, raw) {
   return 'ElevenLabs error ' + status + ': ' + (detail || 'unknown');
 }
 
+// `style` and `speed`: whether the model takes those two settings at all. The
+// v4 family dropped both sliders, so neither is sent to it - the app hides
+// them too, rather than letting a slider do nothing.
+// `indic`: speaks Kannada, Telugu, Malayalam, Marathi, Bengali and Gujarati.
+// v2 and Flash cover Hindi and Tamil only, and read the rest with an accent
+// that is plainly wrong; the translate step offers all eight.
 export const VOICE_MODELS = [
-  { id: 'eleven_multilingual_v2', label: 'Multilingual v2 — best quality (recommended)' },
-  { id: 'eleven_turbo_v2_5', label: 'Turbo v2.5 — faster, cheaper' },
-  { id: 'eleven_flash_v2_5', label: 'Flash v2.5 — fastest, lowest cost' },
+  { id: 'eleven_v4', label: 'Eleven v4 — most natural, 90+ languages (recommended)', style: false, speed: false, indic: true },
+  { id: 'eleven_v4_turbo', label: 'Eleven v4 Turbo — faster v4', style: false, speed: false, indic: true },
+  { id: 'eleven_multilingual_v2', label: 'Multilingual v2 — previous generation', style: true, speed: true, indic: false },
+  { id: 'eleven_flash_v2_5', label: 'Flash v2.5 — fastest, lowest cost', style: true, speed: true, indic: false },
+  // Deprecated by ElevenLabs in favour of Flash, but kept: a browser that saved
+  // it would otherwise show v4 in the dropdown while still recording Turbo.
+  { id: 'eleven_turbo_v2_5', label: 'Turbo v2.5 — deprecated, use Flash', style: true, speed: true, indic: false },
 ];
+
+/** What a model accepts. A model not in the list is sent everything, as before. */
+export function modelCaps(modelId) {
+  return VOICE_MODELS.find((m) => m.id === modelId) || { style: true, speed: true };
+}

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { api, type VoiceOption, type VoiceSettings } from '../lib/api';
+import { api, type VoiceModel, type VoiceOption, type VoiceSettings } from '../lib/api';
 import { recordVoice } from '../lib/voice-run';
 import { trueDuration, type AudioResult } from '../lib/timeline';
 import type { QuizContent } from '../lib/types';
@@ -10,7 +10,7 @@ export const StepVoice: React.FC<{
   content: QuizContent;
   settings: VoiceSettings;
   setSettings: (updater: (prev: VoiceSettings) => VoiceSettings) => void;
-  voiceModels: { id: string; label: string }[];
+  voiceModels: VoiceModel[];
   audio: Record<number, AudioResult>;
   onAudio: (tracks: Record<number, AudioResult>) => void;
   onBack: () => void;
@@ -34,6 +34,18 @@ export const StepVoice: React.FC<{
     .map((line, i) => ((line.narration || '').trim() && !audio[i] ? i : -1))
     .filter((i) => i >= 0);
   const partial = haveAudio && missing.length > 0;
+
+  // Until the helper answers, assume the model takes every setting.
+  const model = voiceModels.find((m) => m.id === settings.modelId);
+  const takesStyle = model ? model.style : true;
+  const takesSpeed = model ? model.speed : true;
+  // Read from the script itself, so a script written in Kannada is caught as
+  // surely as one translated into it. Marathi shares Hindi's script, so only
+  // the label can tell the two apart.
+  const needsIndic =
+    /[ঀ-৿઀-૿ఀ-౿ಀ-೿ഀ-ൿ]/.test(content.script.map((s) => s.narration).join(' ')) ||
+    content.language === 'Marathi';
+  const indicModel = voiceModels.find((m) => m.indic);
 
   useEffect(() => {
     let cancelled = false;
@@ -137,9 +149,21 @@ export const StepVoice: React.FC<{
               value={settings.modelId}
               options={voiceModels}
               onChange={(id) => setSettings((p) => ({ ...p, modelId: id }))}
-              hint="Multilingual v2 sounds best. Flash costs the least."
+              hint="Eleven v4 sounds most natural and speaks every Indian language here. Flash costs the least."
             />
           </div>
+
+          {needsIndic && model && !model.indic ? (
+            <Note kind="warn" title="This model cannot speak this script">
+              {model.label.split(' — ')[0]} covers Hindi and Tamil only, so it will read this script with
+              the wrong accent or not at all.{' '}
+              {indicModel ? (
+                <button className="btn" onClick={() => setSettings((p) => ({ ...p, modelId: indicModel.id }))}>
+                  Switch to {indicModel.label.split(' — ')[0]}
+                </button>
+              ) : null}
+            </Note>
+          ) : null}
 
           <div className="actions" style={{ marginTop: 14 }}>
             <button className="btn" onClick={playPreview} disabled={!selected || !selected.previewUrl}>
@@ -169,26 +193,36 @@ export const StepVoice: React.FC<{
                   onChange={(v) => setSettings((p) => ({ ...p, similarity: v }))}
                   hint="How closely it copies the original voice."
                 />
-                <Slider
-                  label="Style exaggeration"
-                  value={settings.style}
-                  min={0}
-                  max={1}
-                  step={0.05}
-                  onChange={(v) => setSettings((p) => ({ ...p, style: v }))}
-                  hint="Higher is more theatrical. Above 0.6 can sound unstable."
-                />
-                <Slider
-                  label="Speaking speed"
-                  value={settings.speed}
-                  min={0.8}
-                  max={1.2}
-                  step={0.05}
-                  suffix="x"
-                  onChange={(v) => setSettings((p) => ({ ...p, speed: v }))}
-                  hint="1.05–1.1 suits short-form video. Not every model supports this."
-                />
+                {takesStyle ? (
+                  <Slider
+                    label="Style exaggeration"
+                    value={settings.style}
+                    min={0}
+                    max={1}
+                    step={0.05}
+                    onChange={(v) => setSettings((p) => ({ ...p, style: v }))}
+                    hint="Higher is more theatrical. Above 0.6 can sound unstable."
+                  />
+                ) : null}
+                {takesSpeed ? (
+                  <Slider
+                    label="Speaking speed"
+                    value={settings.speed}
+                    min={0.8}
+                    max={1.2}
+                    step={0.05}
+                    suffix="x"
+                    onChange={(v) => setSettings((p) => ({ ...p, speed: v }))}
+                    hint="1.05–1.1 suits short-form video."
+                  />
+                ) : null}
               </div>
+              {!takesStyle || !takesSpeed ? (
+                <p className="hint" style={{ marginTop: 10 }}>
+                  Eleven v4 has no style or speed setting. It takes its delivery from the words
+                  themselves: punctuation, and an ellipsis (…) for a pause.
+                </p>
+              ) : null}
             </div>
           </details>
 

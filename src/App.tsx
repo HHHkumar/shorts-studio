@@ -8,6 +8,7 @@ import {
   type TopicForm,
   type SeoPack,
   type ValidationReport,
+  type VoiceModel,
   type VoiceSettings,
 } from './lib/api';
 import { clearStored, useStoredState } from './lib/store';
@@ -120,7 +121,7 @@ export const App: React.FC = () => {
 
   const [models, setModels] = useState<{ id: string; label: string }[]>([]);
   const [claudeModels, setClaudeModels] = useState<{ id: string; label: string }[]>([]);
-  const [voiceModels, setVoiceModels] = useState<{ id: string; label: string }[]>([]);
+  const [voiceModels, setVoiceModels] = useState<VoiceModel[]>([]);
   const [musicMoods, setMusicMoods] = useState<{ id: string; label: string }[]>([]);
   const [deepseekModels, setDeepseekModels] = useState<{ id: string; label: string }[]>([]);
   const [imageModels, setImageModels] = useState<{ id: string; label: string }[]>([]);

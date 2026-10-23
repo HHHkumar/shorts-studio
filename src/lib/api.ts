@@ -45,6 +45,18 @@ export interface TopicForm {
   diagramDensity?: 'sparse' | 'balanced' | 'rich';
 }
 
+/** An ElevenLabs model and what it accepts - VOICE_MODELS in server/tts.mjs. */
+export interface VoiceModel {
+  id: string;
+  label: string;
+  /** Takes the style-exaggeration setting. */
+  style: boolean;
+  /** Takes the speaking-speed setting. */
+  speed: boolean;
+  /** Speaks all eight Indian languages the translate step offers. */
+  indic: boolean;
+}
+
 export interface VoiceSettings {
   voiceId: string;
   voiceName: string;
@@ -321,7 +333,7 @@ export const api = {
       ok: boolean;
       geminiModels: { id: string; label: string }[];
       claudeModels: { id: string; label: string }[];
-      voiceModels: { id: string; label: string }[];
+      voiceModels: VoiceModel[];
       musicMoods: { id: string; label: string }[];
       deepseekModels: { id: string; label: string }[];
       imageModels: { id: string; label: string }[];
@@ -764,7 +776,7 @@ export const DEFAULT_TOPIC_FORM: TopicForm = {
 export const DEFAULT_VOICE_SETTINGS: VoiceSettings = {
   voiceId: '',
   voiceName: '',
-  modelId: 'eleven_multilingual_v2',
+  modelId: 'eleven_v4',
   stability: 0.45,
   similarity: 0.75,
   style: 0.3,

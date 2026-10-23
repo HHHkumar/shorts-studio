@@ -3,7 +3,7 @@
 // The alphabet video is only as right as its list. A letter missing, doubled,
 // or two clips sharing an id would each still render - and teach it wrong.
 
-import { allSpoken, buildTimeline, LETTERS, lettersBefore, segmentAt, totalFrames } from './varnamale.ts';
+import { allSpoken, buildTimeline, LETTERS, lettersBefore, segmentAt, totalFrames, voiceLine } from './varnamale.ts';
 
 let failed = 0;
 const ok = (name, cond, extra = '') => {
@@ -25,6 +25,17 @@ console.log('\nthe clips');
 const spoken = allSpoken();
 ok('one clip id per line said', new Set(spoken.map((s) => s.id)).size === spoken.length);
 ok('every letter is said', LETTERS.every((l) => spoken.some((s) => s.id === l.id && s.text === l.glyph)));
+
+console.log('\nthe voiceover script');
+const strip = (s) => s.replace(/\[[^\]]*\]/g, '').trim();
+const v4 = spoken.map((s) => voiceLine(s, 'eleven_v4'));
+ok('every v4 line opens with a direction', v4.every((s) => /^\[[^\]]+\] /.test(s)));
+ok('directions never touch the Kannada', spoken.every((s, i) => strip(v4[i]).startsWith(s.text)));
+ok('every line ends on punctuation', v4.every((s) => /[.!]$/.test(s)));
+ok('a letter is said alone - no other Kannada in its line',
+   spoken.every((s, i) => s.kind !== 'letter' || strip(v4[i]) === s.text + '.'));
+ok('a model that would read tags aloud gets none', spoken.every((s) => !voiceLine(s, 'eleven_multilingual_v2').includes('[')));
+ok('v4 Turbo is directed too', voiceLine(spoken[0], 'eleven_v4_turbo').startsWith('['));
 
 console.log('\nthe timeline');
 const silent = buildTimeline(null, 30);

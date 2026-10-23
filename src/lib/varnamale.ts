@@ -80,13 +80,44 @@ export const LINES = {
   outro:    { id: 'outro',    text: 'ಕನ್ನಡ ವರ್ಣಮಾಲೆಯಲ್ಲಿ ನಲವತ್ತೊಂಬತ್ತು ಅಕ್ಷರಗಳಿವೆ' },
 } satisfies Record<string, Spoken>;
 
-/** Every clip the video can play, in the order it plays them. */
-export function allSpoken(): Spoken[] {
-  const out: Spoken[] = [];
-  for (const seg of segmentPlan()) {
-    out.push(seg.kind === 'letter' ? { id: LETTERS[seg.letter].id, text: LETTERS[seg.letter].glyph } : seg.line);
-  }
-  return out;
+// ---------------------------------------------------------------------------
+// The voiceover script: what is actually sent to ElevenLabs for each line.
+//
+// Eleven v4 has no style or speed setting. It takes its delivery from the text:
+// a bracketed direction in front of the words, which it acts on and does not
+// read out, and the punctuation after them. The directions are English because
+// that is what the model's tags are written in; the words stay Kannada, and v4
+// speaks a target language natively rather than in the voice's own accent.
+//
+// A letter on its own is the hard case - one glyph is almost no context, and a
+// voice given "ಕ" can trail off or swallow it. The full stop gives it an end
+// to land on; the direction asks for the clean, held sound a learner copies.
+// ---------------------------------------------------------------------------
+
+const DELIVERY: Record<SegmentKind, { tag: string; end: string }> = {
+  title:   { tag: '[warm and welcoming, a teacher opening a lesson]', end: '!' },
+  section: { tag: '[clear, announcing the next part of the lesson]', end: '.' },
+  letter:  { tag: '[slow and clear, a teacher saying one letter for a child to repeat]', end: '.' },
+  outro:   { tag: '[warm and proud, closing the lesson]', end: '.' },
+};
+
+/** Models that act on bracketed directions. Any other would read them aloud. */
+export const takesAudioTags = (modelId: string) => /^eleven_v[34]/.test(modelId);
+
+/** The text sent to the voice for a line - the words, directed for this model. */
+export function voiceLine(line: { text: string; kind: SegmentKind }, modelId: string): string {
+  const { tag, end } = DELIVERY[line.kind];
+  const words = line.text + end;
+  return takesAudioTags(modelId) ? tag + ' ' + words : words;
+}
+
+/** Every clip the video can play, in the order it plays them, with what kind of beat it is. */
+export function allSpoken(): (Spoken & { kind: SegmentKind })[] {
+  return segmentPlan().map((seg) =>
+    seg.kind === 'letter'
+      ? { id: LETTERS[seg.letter].id, text: LETTERS[seg.letter].glyph, kind: seg.kind }
+      : { ...seg.line, kind: seg.kind },
+  );
 }
 
 // ---------------------------------------------------------------------------
