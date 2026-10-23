@@ -338,8 +338,120 @@
    ]
   }
  },
- "checkedAt": null,
- "by": [],
- "sawFrames": false,
- "reviews": []
+ "checkedAt": "2026-10-13T14:24:49.370Z",
+ "by": [
+  "Gemini",
+  "DeepSeek"
+ ],
+ "sawFrames": true,
+ "reviews": [
+  {
+   "key": "515edd30",
+   "scene": 6,
+   "verdict": "right",
+   "reason": "Correctly shows the current thresholds with latching current greater than holding current.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "Correctly shows the current thresholds with latching current greater than holding current."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "Bar chart correctly shows latching current (50 mA) greater than holding current (20 mA), matching the line's definition of latching current."
+    }
+   ]
+  },
+  {
+   "key": "c9216828",
+   "scene": 7,
+   "verdict": "wrong",
+   "reason": "An open switch circuit does not illustrate an SCR failing to reach latching current and turning off; it shows no current path at all, not a thyristor turning off.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "unrelated",
+     "reason": "Shows an open mechanical switch circuit, which is an analogy the line does not make, rather than depicting an SCR or latching current."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "wrong",
+     "reason": "An open switch circuit does not illustrate an SCR failing to reach latching current and turning off; it shows no current path at all, not a thyristor turning off."
+    }
+   ]
+  },
+  {
+   "key": "7da5c790",
+   "scene": 9,
+   "verdict": "right",
+   "reason": "Correctly shows latching current associated with turn-on and holding current associated with turn-off.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "Correctly shows latching current associated with turn-on and holding current associated with turn-off."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "Correctly pairs latching with turn-on and holding with turn-off, exactly as the line states."
+    }
+   ]
+  },
+  {
+   "key": "c5db3ecb",
+   "scene": 11,
+   "verdict": "unrelated",
+   "reason": "The frame contains no diagram.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "unrelated",
+     "reason": "The frame contains no diagram."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "unrelated",
+     "reason": "A generic number line from 0 to 100 mA does not show the alphabetical memory aid or that latching current is higher than holding current."
+    }
+   ]
+  },
+  {
+   "key": "f5c94453",
+   "scene": 13,
+   "verdict": "wrong",
+   "reason": "Shows a diode forward I-V characteristic with knee voltage instead of a thyristor characteristic or holding current threshold.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "wrong",
+     "reason": "Shows a diode forward I-V characteristic with knee voltage instead of a thyristor characteristic or holding current threshold."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "wrong",
+     "reason": "A diode forward-conduction curve does not show anode current being forced below the holding value to turn the SCR off."
+    }
+   ]
+  },
+  {
+   "key": "e5c1bc57",
+   "scene": 14,
+   "verdict": "unrelated",
+   "reason": "The frame contains no diagram.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "unrelated",
+     "reason": "The frame contains no diagram."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "unrelated",
+     "reason": "A checklist being ticked off has nothing to do with exam papers testing the latching/holding relationship."
+    }
+   ]
+  }
+ ]
 }

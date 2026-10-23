@@ -333,8 +333,66 @@
    ]
   }
  },
- "checkedAt": null,
- "by": [],
- "sawFrames": false,
- "reviews": []
+ "checkedAt": "2026-10-13T14:21:07.360Z",
+ "by": [
+  "Gemini",
+  "DeepSeek"
+ ],
+ "sawFrames": true,
+ "reviews": [
+  {
+   "key": "5840b706",
+   "scene": 6,
+   "verdict": "right",
+   "reason": "Correctly shows that independent sources are deactivated while dependent sources remain active.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "Correctly shows that independent sources are deactivated while dependent sources remain active."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "It correctly shows independent sources turned off (crossed out) while the dependent source stays active, matching the line."
+    }
+   ]
+  },
+  {
+   "key": "3dd7cc40",
+   "scene": 10,
+   "verdict": "unsure",
+   "reason": "Gemini says wrong (Mislabels the alternative option as finding Itest instead of applying a test current, contrasting applying Vtest against finding Itest); DeepSeek does not.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "wrong",
+     "reason": "Mislabels the alternative option as finding Itest instead of applying a test current, contrasting applying Vtest against finding Itest."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "It correctly shows a test voltage applied and the resulting test current found, matching the line."
+    }
+   ]
+  },
+  {
+   "key": "adad1409",
+   "scene": 11,
+   "verdict": "unsure",
+   "reason": "Gemini says beside the point (The frame contains no diagram); DeepSeek does not.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "unrelated",
+     "reason": "The frame contains no diagram."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "unsure",
+     "reason": "The description only says a flowchart labeled 'Test Method' with no readable content, so it cannot be judged."
+    }
+   ]
+  }
+ ]
 }

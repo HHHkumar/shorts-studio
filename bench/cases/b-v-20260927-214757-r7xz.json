@@ -336,8 +336,84 @@
    ]
   }
  },
- "checkedAt": null,
- "by": [],
- "sawFrames": false,
- "reviews": []
+ "checkedAt": "2026-10-13T14:22:06.723Z",
+ "by": [
+  "Gemini",
+  "DeepSeek"
+ ],
+ "sawFrames": true,
+ "reviews": [
+  {
+   "key": "a69d6732",
+   "scene": 2,
+   "verdict": "wrong",
+   "reason": "Gives away the answer on the question scene by labeling the shunt resistor as 0.099 Ω.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "wrong",
+     "reason": "Gives away the answer on the question scene by labeling the shunt resistor as 0.099 Ω."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "wrong",
+     "reason": "On the question scene it draws the answer: the 0.099 Ω shunt resistance is shown, giving away the value the question asks for."
+    }
+   ]
+  },
+  {
+   "key": "fa961026",
+   "scene": 8,
+   "verdict": "right",
+   "reason": "Correctly shows the total current of 10 A alongside the meter full-scale deflection current of 10 mA.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "Correctly shows the total current of 10 A alongside the meter full-scale deflection current of 10 mA."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "It correctly shows the total current 10 A and the meter full-scale current 10 mA, the two values the line states."
+    }
+   ]
+  },
+  {
+   "key": "6cae8e88",
+   "scene": 13,
+   "verdict": "right",
+   "reason": "Correctly contrasts the common mistake of calculating Rm / m = 0.100 Ω with the true formula Rm / (m - 1) = 0.099 Ω.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "Correctly contrasts the common mistake of calculating Rm / m = 0.100 Ω with the true formula Rm / (m - 1) = 0.099 Ω."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "It correctly contrasts the mistaken Rm/m = 0.100 Ω with the correct Rm/(m-1) = 0.099 Ω, exactly as the line describes."
+    }
+   ]
+  },
+  {
+   "key": "8c7404d8",
+   "scene": 14,
+   "verdict": "right",
+   "reason": "Correctly illustrates the current division of 9990 mA through the shunt versus 10 mA through the meter.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "Correctly illustrates the current division of 9990 mA through the shunt versus 10 mA through the meter."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "It correctly shows the shunt carrying 9990 mA and the meter 10 mA, illustrating that the shunt bypasses almost all the current."
+    }
+   ]
+  }
+ ]
 }

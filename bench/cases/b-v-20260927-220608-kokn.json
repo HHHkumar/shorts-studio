@@ -347,8 +347,102 @@
    ]
   }
  },
- "checkedAt": null,
- "by": [],
- "sawFrames": false,
- "reviews": []
+ "checkedAt": "2026-10-13T14:23:51.781Z",
+ "by": [
+  "Gemini",
+  "DeepSeek"
+ ],
+ "sawFrames": true,
+ "reviews": [
+  {
+   "key": "2ccdea20",
+   "scene": 7,
+   "verdict": "right",
+   "reason": "correctly shows that halving the magnetic flux requires doubling the armature current to keep torque constant",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "correctly shows that halving the magnetic flux requires doubling the armature current to keep torque constant"
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "Shows flux halved and current doubled, correctly illustrating the constant torque product Φ·Ia."
+    }
+   ]
+  },
+  {
+   "key": "6287b052",
+   "scene": 8,
+   "verdict": "right",
+   "reason": "correctly illustrates the motor rotor and magnetic field poles",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "correctly illustrates the motor rotor and magnetic field poles"
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "A rotor in a magnetic field correctly depicts the motor whose shaft decelerates under torque deficit."
+    }
+   ]
+  },
+  {
+   "key": "7b8036ca",
+   "scene": 10,
+   "verdict": "wrong",
+   "reason": "draws the back EMF as a 2 Ω resistor and introduces fictitious component values not present in the question",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "wrong",
+     "reason": "draws the back EMF as a 2 Ω resistor and introduces fictitious component values not present in the question"
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "wrong",
+     "reason": "Draws the armature circuit as two series resistors (0.5 Ω and 2 Ω) with no back EMF source, so it cannot show V minus Eb."
+    }
+   ]
+  },
+  {
+   "key": "feaaf83e",
+   "scene": 12,
+   "verdict": "right",
+   "reason": "correctly shows the armature current doubling from an initial value of 1 to 2",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "correctly shows the armature current doubling from an initial value of 1 to 2"
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "Bar chart showing current going from 1 to 2 correctly shows the armature current doubling."
+    }
+   ]
+  },
+  {
+   "key": "f04d36aa",
+   "scene": 13,
+   "verdict": "unsure",
+   "reason": "DeepSeek says beside the point (A plain linear curve labeled Speed and Back EMF does not show speed climbing until back EMF satisfies the steady current demand); Gemini does not.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "correctly shows the direct linear relationship between motor speed and back EMF"
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "unrelated",
+     "reason": "A plain linear curve labeled Speed and Back EMF does not show speed climbing until back EMF satisfies the steady current demand."
+    }
+   ]
+  }
+ ]
 }

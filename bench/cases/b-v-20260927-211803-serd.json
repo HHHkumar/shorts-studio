@@ -338,8 +338,120 @@
    ]
   }
  },
- "checkedAt": null,
- "by": [],
- "sawFrames": false,
- "reviews": []
+ "checkedAt": "2026-10-13T14:19:28.386Z",
+ "by": [
+  "Gemini",
+  "DeepSeek"
+ ],
+ "sawFrames": true,
+ "reviews": [
+  {
+   "key": "c4d39e93",
+   "scene": 6,
+   "verdict": "right",
+   "reason": "Correctly summarizes deactivating independent voltage sources as short circuits and current sources as open circuits.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "Correctly summarizes deactivating independent voltage sources as short circuits and current sources as open circuits."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "Correctly shows voltage source replaced by short and current source replaced by open when deactivating independent sources."
+    }
+   ]
+  },
+  {
+   "key": "815c67e7",
+   "scene": 8,
+   "verdict": "unsure",
+   "reason": "Gemini says wrong (The label 'Keep dependent sourc' is cut off part way through the word); DeepSeek does not.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "wrong",
+     "reason": "The label 'Keep dependent sourc' is cut off part way through the word."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "Contrasts the misconception of killing all sources with the correct practice of keeping dependent sources, matching the line."
+    }
+   ]
+  },
+  {
+   "key": "afdcd2f6",
+   "scene": 9,
+   "verdict": "unrelated",
+   "reason": "Shows a generic closed switch circuit powering a lamp, which is unrelated to deactivating independent sources and applying an external test source.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "unrelated",
+     "reason": "Shows a generic closed switch circuit powering a lamp, which is unrelated to deactivating independent sources and applying an external test source."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "unrelated",
+     "reason": "A switch-circuit diagram does not illustrate deactivating independent sources and attaching an external test source."
+    }
+   ]
+  },
+  {
+   "key": "101a3dec",
+   "scene": 10,
+   "verdict": "right",
+   "reason": "Correctly illustrates the two external excitation choices of a 1 V test voltage or a 1 A test current.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "Correctly illustrates the two external excitation choices of a 1 V test voltage or a 1 A test current."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "Correctly shows the two allowed external test excitations, 1 V test voltage or 1 A test current."
+    }
+   ]
+  },
+  {
+   "key": "2d38a94d",
+   "scene": 11,
+   "verdict": "right",
+   "reason": "Correctly illustrates measuring the electrical response associated with the applied test source.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "Correctly illustrates measuring the electrical response associated with the applied test source."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "Shows a meter measuring the response of the applied test source, matching the line."
+    }
+   ]
+  },
+  {
+   "key": "f175d95d",
+   "scene": 16,
+   "verdict": "unrelated",
+   "reason": "The frame contains only text and has no diagram or illustration in it.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "unrelated",
+     "reason": "The frame contains only text and has no diagram or illustration in it."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "unrelated",
+     "reason": "A generic key-takeaways checklist does not show that a circuit with only dependent sources has zero Thevenin voltage."
+    }
+   ]
+  }
+ ]
 }

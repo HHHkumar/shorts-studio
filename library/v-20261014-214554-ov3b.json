@@ -1,0 +1,2114 @@
+{
+ "id": "v-20261014-214554-ov3b",
+ "createdAt": "2026-10-14T16:15:56.200Z",
+ "updatedAt": "2026-10-14T16:37:52.912Z",
+ "content": {
+  "subject": "Basic Electrical Engineering",
+  "topic": "AC Circuits and Net Impedance",
+  "difficulty": "Medium",
+  "hook": "Can adding another component actually lower a circuit's total opposition to current?",
+  "question": "A series circuit contains a 4 ohm resistor, a 12 ohm inductive reactance, and an 9 ohm capacitive reactance. What is the total magnitude of the impedance?",
+  "options": [
+   "25 ohms",
+   "7 ohms",
+   "5 ohms",
+   "15 ohms"
+  ],
+  "correctIndex": 2,
+  "answerLine": "The magnitude of the total impedance is 5 ohms.",
+  "explanation": [
+   "Inductive reactance opposes current by generating a back electromotive force that causes voltage to lead current by ninety degrees.",
+   "Capacitive reactance opposes current by accumulating electrostatic charge, causing voltage to lag ninety degrees behind alternating current.",
+   "Because one leads by ninety degrees and the other lags by ninety, they are exactly one hundred eighty degrees apart.",
+   "On the complex plane, inductive reactance points straight up as positive j, while capacitive reactance points downward as negative j."
+  ],
+  "funFact": "At resonance, series impedance drops to its absolute minimum, which can produce dangerously high currents.",
+  "outro": "Test your circuit instincts and subscribe for daily engineering exam breakdowns!",
+  "hashtags": [
+   "GATEEE",
+   "ElectricalEngineering",
+   "ACCircuits",
+   "Impedance",
+   "EngineeringConcepts"
+  ],
+  "motifSymbols": [
+   "⚡",
+   "Ω",
+   "〰️",
+   "🔋"
+  ],
+  "script": [
+   {
+    "kind": "intro",
+    "narration": "Ready for today’s question?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "wave",
+     "action": "waves warmly at the viewer to start the challenge",
+     "emotion": "cheerful, welcoming",
+     "props": "an empty whiteboard on an easel",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/doodle-e2k8k1/s0-0bb434.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "hook",
+    "narration": "Can adding another component actually lower a circuit's total opposition to current?",
+    "imageQuery": "electrical circuit laboratory",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "think",
+     "action": "rubs chin while studying a sketch of circuit components beside him",
+     "emotion": "curious and puzzled",
+     "props": "a zigzag resistor and a parallel-plate capacitor",
+     "gag": "tiny question marks floating between the capacitor plates"
+    },
+    "doodleSrc": "generated/doodle/doodle-e2k8k1/s1-0799e1.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "question",
+    "narration": "A series circuit contains a 4 ohm resistor, a 12 ohm inductive reactance, and an 9 ohm capacitive reactance. What is the total magnitude of the impedance?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "a series loop showing a zigzag resistor, a spiral coil, and a parallel-plate capacitor connected in a row",
+     "emotion": "calm",
+     "props": "a resistor, a coil, a capacitor, connecting wires",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/doodle-e2k8k1/s2-21a2ff.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "options",
+    "narration": "Is it 25 ohms, 7 ohms, 5 ohms, or 15 ohms?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "shrug",
+     "action": "holds hands out in a shrug toward four blank selection boxes",
+     "emotion": "quizzical",
+     "props": "four blank square boxes arranged in a neat grid",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/doodle-e2k8k1/s3-c6246f.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "countdown",
+    "narration": "",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "an hourglass tilted as sand granules trickle down swiftly into the lower chamber",
+     "emotion": "busy",
+     "props": "an hourglass",
+     "gag": "a tiny clock face drawn inside the falling sand stream"
+    },
+    "doodleSrc": "generated/doodle/doodle-e2k8k1/s4-7c2a39.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "answer",
+    "narration": "The magnitude of the total impedance is 5 ohms.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "cheer",
+     "action": "leaps in celebration beside a glowing light bulb",
+     "emotion": "triumphant, beaming",
+     "props": "a brightly glowing light bulb on a circuit branch",
+     "gag": "tiny celebratory sparkles radiating from the bulb"
+    },
+    "doodleSrc": "generated/doodle/doodle-e2k8k1/s5-13e33f.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "explain",
+    "narration": "Inductive reactance opposes current by generating a back electromotive force that causes voltage to lead current by ninety degrees.",
+    "imageQuery": "copper inductor coil",
+    "visual": {
+     "kind": "working"
+    },
+    "visualWas": {
+     "kind": "sketch",
+     "sketch": "phasor",
+     "caption": "",
+     "params": {
+      "angle": 90,
+      "mode": "phasor",
+      "labelA": "VL",
+      "labelB": "I"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Capacitive reactance opposes current by accumulating electrostatic charge, causing voltage to lag ninety degrees behind alternating current.",
+    "imageQuery": "ceramic capacitor electronic",
+    "visual": {
+     "kind": "none"
+    },
+    "pictureNote": "The phasor sketch was asked for twice in a row, so the second was not drawn.",
+    "doodle": {
+     "subject": "illustration",
+     "action": "two capacitor plates facing each other with tiny clustered pluses on one plate and minuses on the other",
+     "emotion": "calm",
+     "props": "a capacitor with thick metal plates and wire leads",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/doodle-e2k8k1/s7-6c88b1.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "explain",
+    "narration": "Because one leads by ninety degrees and the other lags by ninety, they are exactly one hundred eighty degrees apart.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "pictureNote": "The phasors sketch needs at least 2 entries with a value and was given 0, so it was not drawn.",
+    "doodle": {
+     "subject": "illustration",
+     "action": "two heavy vector arrows aligned vertically pointing directly away from each other, one up and one down",
+     "emotion": "balanced",
+     "props": "two vertical opposing arrows, a horizontal baseline",
+     "gag": "a tiny balanced seesaw perched on the horizontal baseline"
+    },
+    "doodleSrc": "generated/doodle/doodle-e2k8k1/s8-3c03ca.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "explain",
+    "narration": "On the complex plane, inductive reactance points straight up as positive j, while capacitive reactance points downward as negative j.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "X = X_L - X_C",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "When connected in series, their opposing reactances cancel each other out directly through simple algebraic subtraction.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "compare",
+     "caption": "",
+     "items": [
+      {
+       "label": "Inductive",
+       "symbol": "⚡"
+      },
+      {
+       "label": "Capacitive",
+       "symbol": "🔋"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Subtracting the 9 ohm capacitive reactance from the 12 ohm inductive reactance yields a net inductive reactance of 3 ohms.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "bars",
+     "caption": "Reactance magnitude, Ω",
+     "items": [
+      {
+       "label": "XL",
+       "value": 12
+      },
+      {
+       "label": "XC",
+       "value": 9
+      },
+      {
+       "label": "Xnet",
+       "value": 3
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Net impedance is the vector sum of real resistance and net imaginary reactance using the Pythagorean theorem.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "|Z| = \\sqrt{R^2 + (X_L - X_C)^2}",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Squaring 4 ohms resistance plus squaring 3 ohms reactance equals 25, giving a square root of 5 ohms.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "|Z| = \\sqrt{4^2 + 3^2} = 5\\,\\Omega",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "At series resonance where both reactances balance completely, net reactance collapses to zero leaving pure resistance alone.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "resonance-curve",
+     "caption": "",
+     "params": {
+      "mode": "single"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "formulas",
+    "narration": "Here are the formulas behind this one. Save it for your revision."
+   },
+   {
+    "kind": "outro",
+    "narration": "At resonance, series impedance drops to its absolute minimum, which can produce dangerously high currents. Test your circuit instincts and subscribe for daily engineering exam breakdowns!",
+    "imageQuery": "power substation transformer",
+    "visual": {
+     "kind": "icon",
+     "caption": "",
+     "items": [
+      {
+       "label": "Resonance",
+       "symbol": "⚡"
+      }
+     ]
+    }
+   }
+  ],
+  "figureCheck": {
+   "status": "mismatch",
+   "computed": "0 Ω",
+   "option": "5 ohms"
+  },
+  "pictureReview": {
+   "checkedAt": "2026-10-14T16:16:10.843Z",
+   "by": [
+    "Gemini",
+    "DeepSeek"
+   ],
+   "sawFrames": true,
+   "reviews": [
+    {
+     "scene": 6,
+     "key": "8e2bdf44",
+     "verdict": "right",
+     "reason": "shows an inductor voltage phasor leading current by ninety degrees",
+     "said": [
+      {
+       "by": "Gemini",
+       "verdict": "right",
+       "reason": "shows an inductor voltage phasor leading current by ninety degrees"
+      },
+      {
+       "by": "DeepSeek",
+       "verdict": "right",
+       "reason": "It shows voltage and current phasors at 90 degrees, correctly illustrating that inductive voltage leads current by ninety degrees."
+      }
+     ],
+     "words": "The \"phasor\" diagram: voltage and current phasors with the angle between them, or the power triangle; set to angle = 90, mode = phasor, labelA = VL, labelB = I.",
+     "narration": "Inductive reactance opposes current by generating a back electromotive force that causes voltage to lead current by ninety degrees.",
+     "frame": "/out/review-1791994554433/scene-06.jpg"
+    },
+    {
+     "scene": 10,
+     "key": "729e918b",
+     "verdict": "right",
+     "reason": "shows the two opposing reactance types, inductive and capacitive",
+     "said": [
+      {
+       "by": "Gemini",
+       "verdict": "right",
+       "reason": "shows the two opposing reactance types, inductive and capacitive"
+      },
+      {
+       "by": "DeepSeek",
+       "verdict": "right",
+       "reason": "The labels 'Inductive' and 'Capacitive' correctly name the two opposing reactances that cancel in series."
+      }
+     ],
+     "words": "Two things side by side: Inductive ⚡ | Capacitive 🔋.",
+     "narration": "When connected in series, their opposing reactances cancel each other out directly through simple algebraic subtraction.",
+     "frame": "/out/review-1791994554433/scene-10.jpg"
+    },
+    {
+     "scene": 11,
+     "key": "5021a6af",
+     "verdict": "right",
+     "reason": "correctly shows the magnitudes of inductive reactance at 12 ohms, capacitive reactance at 9 ohms, and the net reactance of 3 ohms",
+     "said": [
+      {
+       "by": "Gemini",
+       "verdict": "right",
+       "reason": "correctly shows the magnitudes of inductive reactance at 12 ohms, capacitive reactance at 9 ohms, and the net reactance of 3 ohms"
+      },
+      {
+       "by": "DeepSeek",
+       "verdict": "right",
+       "reason": "The bar chart correctly shows XL = 12, XC = 9, and net reactance 3, matching the line's subtraction."
+      }
+     ],
+     "words": "A bar chart captioned \"Reactance magnitude, Ω\": XL = 12, XC = 9, Xnet = 3.",
+     "narration": "Subtracting the 9 ohm capacitive reactance from the 12 ohm inductive reactance yields a net inductive reactance of 3 ohms.",
+     "frame": "/out/review-1791994554433/scene-11.jpg"
+    },
+    {
+     "scene": 14,
+     "key": "e857248c",
+     "verdict": "right",
+     "reason": "shows the series resonance curve where current peaks at the resonant frequency",
+     "said": [
+      {
+       "by": "Gemini",
+       "verdict": "right",
+       "reason": "shows the series resonance curve where current peaks at the resonant frequency"
+      },
+      {
+       "by": "DeepSeek",
+       "verdict": "right",
+       "reason": "The resonance curve correctly shows current peaking at resonance where net reactance is zero, leaving pure resistance."
+      }
+     ],
+     "words": "The \"resonance-curve\" diagram: the current in a series RLC circuit against frequency: the peak at the resonant frequency, the two half-power points at 0.707 of it, and the bandwidth between them; set to mode = single.",
+     "narration": "At series resonance where both reactances balance completely, net reactance collapses to zero leaving pure resistance alone.",
+     "frame": "/out/review-1791994554433/scene-14.jpg"
+    }
+   ],
+   "problems": []
+  },
+  "formulas": {
+   "title": "AC Circuits - Important Formulas",
+   "cards": [
+    {
+     "name": "Net Reactance",
+     "formula": "X = X_L - X_C",
+     "notes": [
+      "X_L = Inductive reactance (ohms)",
+      "X_C = Capacitive reactance (ohms)"
+     ],
+     "graph": {
+      "kind": "none",
+      "x": "",
+      "y": "",
+      "label": "",
+      "label2": ""
+     },
+     "icon": "inductor",
+     "art": {
+      "body": "<path fill=\"currentColor\" d=\"M11.168 9.999a1.168 1.168 0 0 0-2.334 0l-.01.1a.5.5 0 0 1-.98 0l-.01-.1l-.006-.12a1.167 1.167 0 0 0-2.327.12a.5.5 0 0 1-.5.5H1.668a.5.5 0 1 1 0-1h2.894a2.166 2.166 0 0 1 3.772-.885a2.163 2.163 0 0 1 3.333 0a2.166 2.166 0 0 1 3.773.885h2.894a.5.5 0 0 1 0 1h-3.333a.5.5 0 0 1-.5-.5a1.167 1.167 0 0 0-2.333 0a.5.5 0 0 1-1 0\"/>",
+      "width": 20,
+      "height": 20
+     }
+    },
+    {
+     "name": "Impedance Magnitude",
+     "formula": "|Z| = \\sqrt{R^2 + X^2}",
+     "notes": [
+      "R = Resistance (ohms)",
+      "Z = Total impedance (ohms)"
+     ],
+     "graph": {
+      "kind": "none",
+      "x": "",
+      "y": "",
+      "label": "",
+      "label2": ""
+     },
+     "icon": "resistor",
+     "art": {
+      "body": "<path fill=\"currentColor\" d=\"M2 11h5l3.07 4.35L13.11 4L18 11h4v2h-5l-3.07-4.35L10.89 20L6 13H2z\"/>",
+      "width": 24,
+      "height": 24
+     }
+    }
+   ],
+   "working": [
+    "|Z| = \\sqrt{R^2 + (X_L - X_C)^2}",
+    "= \\sqrt{4^2 + (12 - 9)^2}",
+    "= \\sqrt{16 + 9}",
+    "= 5\\,\\Omega"
+   ]
+  }
+ },
+ "design": {
+  "mode": "light",
+  "layout": "doodle",
+  "accent": "",
+  "showCaptions": true,
+  "showProgressBar": true,
+  "countdownSeconds": 4,
+  "scenePaddingSeconds": 0.5,
+  "trimTrailingSilence": true,
+  "showVisuals": true,
+  "showMotif": true,
+  "ambient": "auto",
+  "ambientIntensity": 0.6,
+  "motionStrength": 1,
+  "transition": "auto",
+  "textReveal": "fade",
+  "overlay": "vignette",
+  "overlayIntensity": 0.5,
+  "align": "auto",
+  "showStock": true,
+  "stockOpacity": 0.45,
+  "music": "tense",
+  "musicVolume": 0.22,
+  "customMusicSrc": "",
+  "sfx": true,
+  "sfxVolume": 0.5,
+  "orientation": "portrait",
+  "doodleEnergy": "chaotic",
+  "animatedEngineer": true
+ },
+ "audio": {
+  "0": {
+   "src": "generated/vo-323c13f3/s0.mp3",
+   "duration": 1.436734693877551,
+   "words": [
+    {
+     "word": "Ready",
+     "start": 0,
+     "end": 0.337
+    },
+    {
+     "word": "for",
+     "start": 0.372,
+     "end": 0.464
+    },
+    {
+     "word": "today’s",
+     "start": 0.499,
+     "end": 0.743
+    },
+    {
+     "word": "question?",
+     "start": 0.778,
+     "end": 1.393
+    }
+   ],
+   "measuredDuration": 1.3931875,
+   "speechStart": 0.17066666666666666,
+   "speechEnd": 1.1306666666666667,
+   "captionOffset": 0.17066666666666666
+  },
+  "1": {
+   "src": "generated/vo-323c13f3/s1.mp3",
+   "duration": 4.675918367346939,
+   "words": [
+    {
+     "word": "Can",
+     "start": 0,
+     "end": 0.279
+    },
+    {
+     "word": "adding",
+     "start": 0.36,
+     "end": 0.65
+    },
+    {
+     "word": "another",
+     "start": 0.708,
+     "end": 0.998
+    },
+    {
+     "word": "component",
+     "start": 1.057,
+     "end": 1.521
+    },
+    {
+     "word": "actually",
+     "start": 1.602,
+     "end": 1.997
+    },
+    {
+     "word": "lower",
+     "start": 2.067,
+     "end": 2.357
+    },
+    {
+     "word": "a",
+     "start": 2.426,
+     "end": 2.45
+    },
+    {
+     "word": "circuit's",
+     "start": 2.508,
+     "end": 2.926
+    },
+    {
+     "word": "total",
+     "start": 2.995,
+     "end": 3.332
+    },
+    {
+     "word": "opposition",
+     "start": 3.39,
+     "end": 3.855
+    },
+    {
+     "word": "to",
+     "start": 3.889,
+     "end": 3.947
+    },
+    {
+     "word": "current?",
+     "start": 4.005,
+     "end": 4.644
+    }
+   ],
+   "measuredDuration": 4.643979166666667,
+   "speechStart": 0.18133333333333335,
+   "speechEnd": 4.362666666666667,
+   "captionOffset": 0.18133333333333335
+  },
+  "2": {
+   "src": "generated/vo-323c13f3/s2.mp3",
+   "duration": 11.049795918367346,
+   "words": [
+    {
+     "word": "A",
+     "start": 0,
+     "end": 0.209
+    },
+    {
+     "word": "series",
+     "start": 0.302,
+     "end": 0.708
+    },
+    {
+     "word": "circuit",
+     "start": 0.731,
+     "end": 1.091
+    },
+    {
+     "word": "contains",
+     "start": 1.149,
+     "end": 1.614
+    },
+    {
+     "word": "a",
+     "start": 1.683,
+     "end": 1.741
+    },
+    {
+     "word": "4",
+     "start": 1.892,
+     "end": 2.171
+    },
+    {
+     "word": "ohm",
+     "start": 2.264,
+     "end": 2.403
+    },
+    {
+     "word": "resistor,",
+     "start": 2.473,
+     "end": 3.193
+    },
+    {
+     "word": "a",
+     "start": 3.437,
+     "end": 3.506
+    },
+    {
+     "word": "12",
+     "start": 3.599,
+     "end": 3.889
+    },
+    {
+     "word": "ohm",
+     "start": 3.971,
+     "end": 4.11
+    },
+    {
+     "word": "inductive",
+     "start": 4.191,
+     "end": 4.737
+    },
+    {
+     "word": "reactance,",
+     "start": 4.772,
+     "end": 5.48
+    },
+    {
+     "word": "and",
+     "start": 5.689,
+     "end": 5.828
+    },
+    {
+     "word": "an",
+     "start": 5.875,
+     "end": 5.944
+    },
+    {
+     "word": "9",
+     "start": 6.037,
+     "end": 6.246
+    },
+    {
+     "word": "ohm",
+     "start": 6.327,
+     "end": 6.444
+    },
+    {
+     "word": "capacitive",
+     "start": 6.502,
+     "end": 7.129
+    },
+    {
+     "word": "reactance.",
+     "start": 7.163,
+     "end": 7.767
+    },
+    {
+     "word": "What",
+     "start": 7.976,
+     "end": 8.208
+    },
+    {
+     "word": "is",
+     "start": 8.266,
+     "end": 8.359
+    },
+    {
+     "word": "the",
+     "start": 8.406,
+     "end": 8.475
+    },
+    {
+     "word": "total",
+     "start": 8.568,
+     "end": 8.998
+    },
+    {
+     "word": "magnitude",
+     "start": 9.091,
+     "end": 9.787
+    },
+    {
+     "word": "of",
+     "start": 9.845,
+     "end": 9.938
+    },
+    {
+     "word": "the",
+     "start": 9.996,
+     "end": 10.066
+    },
+    {
+     "word": "impedance?",
+     "start": 10.124,
+     "end": 11.006
+    }
+   ],
+   "measuredDuration": 11.00625,
+   "speechStart": 0.17066666666666666,
+   "speechEnd": 10.613333333333333,
+   "captionOffset": 0.17066666666666666
+  },
+  "3": {
+   "src": "generated/vo-323c13f3/s3.mp3",
+   "duration": 2.8212244897959184,
+   "words": [
+    {
+     "word": "Is",
+     "start": 0,
+     "end": 0.244
+    },
+    {
+     "word": "it",
+     "start": 0.29,
+     "end": 0.348
+    },
+    {
+     "word": "25",
+     "start": 0.418,
+     "end": 0.801
+    },
+    {
+     "word": "ohms,",
+     "start": 0.871,
+     "end": 1.057
+    },
+    {
+     "word": "7",
+     "start": 1.08,
+     "end": 1.254
+    },
+    {
+     "word": "ohms,",
+     "start": 1.324,
+     "end": 1.498
+    },
+    {
+     "word": "5",
+     "start": 1.533,
+     "end": 1.683
+    },
+    {
+     "word": "ohms,",
+     "start": 1.765,
+     "end": 1.939
+    },
+    {
+     "word": "or",
+     "start": 1.962,
+     "end": 2.02
+    },
+    {
+     "word": "15",
+     "start": 2.055,
+     "end": 2.345
+    },
+    {
+     "word": "ohms?",
+     "start": 2.403,
+     "end": 2.786
+    }
+   ],
+   "measuredDuration": 2.786375,
+   "speechStart": 0.17066666666666666,
+   "speechEnd": 2.506666666666667,
+   "captionOffset": 0.17066666666666666
+  },
+  "5": {
+   "src": "generated/vo-323c13f3/s5.mp3",
+   "duration": 2.742857142857143,
+   "words": [
+    {
+     "word": "The",
+     "start": 0,
+     "end": 0.232
+    },
+    {
+     "word": "magnitude",
+     "start": 0.302,
+     "end": 0.824
+    },
+    {
+     "word": "of",
+     "start": 0.848,
+     "end": 0.906
+    },
+    {
+     "word": "the",
+     "start": 0.952,
+     "end": 1.022
+    },
+    {
+     "word": "total",
+     "start": 1.057,
+     "end": 1.312
+    },
+    {
+     "word": "impedance",
+     "start": 1.347,
+     "end": 1.741
+    },
+    {
+     "word": "is",
+     "start": 1.788,
+     "end": 1.858
+    },
+    {
+     "word": "5",
+     "start": 1.939,
+     "end": 2.113
+    },
+    {
+     "word": "ohms.",
+     "start": 2.206,
+     "end": 2.694
+    }
+   ],
+   "measuredDuration": 2.6935,
+   "speechStart": 0.17066666666666666,
+   "speechEnd": 2.432,
+   "captionOffset": 0.17066666666666666
+  },
+  "6": {
+   "src": "generated/vo-323c13f3/s6.mp3",
+   "duration": 8.672653061224489,
+   "words": [
+    {
+     "word": "Inductive",
+     "start": 0,
+     "end": 0.743
+    },
+    {
+     "word": "reactance",
+     "start": 0.778,
+     "end": 1.324
+    },
+    {
+     "word": "opposes",
+     "start": 1.382,
+     "end": 1.927
+    },
+    {
+     "word": "current",
+     "start": 2.009,
+     "end": 2.368
+    },
+    {
+     "word": "by",
+     "start": 2.519,
+     "end": 2.67
+    },
+    {
+     "word": "generating",
+     "start": 2.74,
+     "end": 3.274
+    },
+    {
+     "word": "a",
+     "start": 3.344,
+     "end": 3.425
+    },
+    {
+     "word": "back",
+     "start": 3.541,
+     "end": 3.808
+    },
+    {
+     "word": "electromotive",
+     "start": 3.878,
+     "end": 4.563
+    },
+    {
+     "word": "force",
+     "start": 4.621,
+     "end": 5.085
+    },
+    {
+     "word": "that",
+     "start": 5.259,
+     "end": 5.457
+    },
+    {
+     "word": "causes",
+     "start": 5.515,
+     "end": 5.875
+    },
+    {
+     "word": "voltage",
+     "start": 5.944,
+     "end": 6.49
+    },
+    {
+     "word": "to",
+     "start": 6.548,
+     "end": 6.664
+    },
+    {
+     "word": "lead",
+     "start": 6.757,
+     "end": 6.966
+    },
+    {
+     "word": "current",
+     "start": 7.024,
+     "end": 7.314
+    },
+    {
+     "word": "by",
+     "start": 7.361,
+     "end": 7.465
+    },
+    {
+     "word": "ninety",
+     "start": 7.523,
+     "end": 7.848
+    },
+    {
+     "word": "degrees.",
+     "start": 7.906,
+     "end": 8.638
+    }
+   ],
+   "measuredDuration": 8.6378125,
+   "speechStart": 0.16,
+   "speechEnd": 8.213333333333333,
+   "captionOffset": 0.16
+  },
+  "7": {
+   "src": "generated/vo-323c13f3/s7.mp3",
+   "duration": 10.057142857142857,
+   "words": [
+    {
+     "word": "Capacitive",
+     "start": 0,
+     "end": 0.859
+    },
+    {
+     "word": "reactance",
+     "start": 0.929,
+     "end": 1.614
+    },
+    {
+     "word": "opposes",
+     "start": 1.73,
+     "end": 2.31
+    },
+    {
+     "word": "current",
+     "start": 2.403,
+     "end": 2.833
+    },
+    {
+     "word": "by",
+     "start": 2.949,
+     "end": 3.146
+    },
+    {
+     "word": "accumulating",
+     "start": 3.239,
+     "end": 4.052
+    },
+    {
+     "word": "electrostatic",
+     "start": 4.145,
+     "end": 4.957
+    },
+    {
+     "word": "charge,",
+     "start": 5.027,
+     "end": 5.55
+    },
+    {
+     "word": "causing",
+     "start": 5.759,
+     "end": 6.13
+    },
+    {
+     "word": "voltage",
+     "start": 6.2,
+     "end": 6.687
+    },
+    {
+     "word": "to",
+     "start": 6.722,
+     "end": 6.827
+    },
+    {
+     "word": "lag",
+     "start": 6.943,
+     "end": 7.21
+    },
+    {
+     "word": "ninety",
+     "start": 7.326,
+     "end": 7.721
+    },
+    {
+     "word": "degrees",
+     "start": 7.779,
+     "end": 8.162
+    },
+    {
+     "word": "behind",
+     "start": 8.243,
+     "end": 8.58
+    },
+    {
+     "word": "alternating",
+     "start": 8.673,
+     "end": 9.242
+    },
+    {
+     "word": "current.",
+     "start": 9.3,
+     "end": 10.031
+    }
+   ],
+   "measuredDuration": 10.031,
+   "speechStart": 0.14933333333333335,
+   "speechEnd": 9.770666666666667,
+   "captionOffset": 0.14933333333333335
+  },
+  "8": {
+   "src": "generated/vo-323c13f3/s8.mp3",
+   "duration": 7.183673469387755,
+   "words": [
+    {
+     "word": "Because",
+     "start": 0,
+     "end": 0.43
+    },
+    {
+     "word": "one",
+     "start": 0.488,
+     "end": 0.685
+    },
+    {
+     "word": "leads",
+     "start": 0.743,
+     "end": 1.01
+    },
+    {
+     "word": "by",
+     "start": 1.057,
+     "end": 1.161
+    },
+    {
+     "word": "ninety",
+     "start": 1.231,
+     "end": 1.556
+    },
+    {
+     "word": "degrees",
+     "start": 1.614,
+     "end": 2.009
+    },
+    {
+     "word": "and",
+     "start": 2.055,
+     "end": 2.171
+    },
+    {
+     "word": "the",
+     "start": 2.229,
+     "end": 2.299
+    },
+    {
+     "word": "other",
+     "start": 2.368,
+     "end": 2.612
+    },
+    {
+     "word": "lags",
+     "start": 2.682,
+     "end": 2.984
+    },
+    {
+     "word": "by",
+     "start": 3.042,
+     "end": 3.17
+    },
+    {
+     "word": "ninety,",
+     "start": 3.239,
+     "end": 3.831
+    },
+    {
+     "word": "they",
+     "start": 4.04,
+     "end": 4.191
+    },
+    {
+     "word": "are",
+     "start": 4.226,
+     "end": 4.331
+    },
+    {
+     "word": "exactly",
+     "start": 4.377,
+     "end": 4.934
+    },
+    {
+     "word": "one",
+     "start": 5.05,
+     "end": 5.294
+    },
+    {
+     "word": "hundred",
+     "start": 5.352,
+     "end": 5.7
+    },
+    {
+     "word": "eighty",
+     "start": 5.77,
+     "end": 6.049
+    },
+    {
+     "word": "degrees",
+     "start": 6.107,
+     "end": 6.502
+    },
+    {
+     "word": "apart.",
+     "start": 6.56,
+     "end": 7.152
+    }
+   ],
+   "measuredDuration": 7.151729166666667,
+   "speechStart": 0.14933333333333335,
+   "speechEnd": 6.922666666666666,
+   "captionOffset": 0.14933333333333335
+  },
+  "9": {
+   "src": "generated/vo-323c13f3/s9.mp3",
+   "duration": 7.2359183673469385,
+   "words": [
+    {
+     "word": "On",
+     "start": 0,
+     "end": 0.279
+    },
+    {
+     "word": "the",
+     "start": 0.313,
+     "end": 0.383
+    },
+    {
+     "word": "complex",
+     "start": 0.43,
+     "end": 0.813
+    },
+    {
+     "word": "plane,",
+     "start": 0.871,
+     "end": 1.149
+    },
+    {
+     "word": "inductive",
+     "start": 1.184,
+     "end": 1.672
+    },
+    {
+     "word": "reactance",
+     "start": 1.707,
+     "end": 2.183
+    },
+    {
+     "word": "points",
+     "start": 2.218,
+     "end": 2.496
+    },
+    {
+     "word": "straight",
+     "start": 2.519,
+     "end": 2.798
+    },
+    {
+     "word": "up",
+     "start": 2.833,
+     "end": 2.926
+    },
+    {
+     "word": "as",
+     "start": 2.984,
+     "end": 3.053
+    },
+    {
+     "word": "positive",
+     "start": 3.111,
+     "end": 3.483
+    },
+    {
+     "word": "j,",
+     "start": 3.518,
+     "end": 3.831
+    },
+    {
+     "word": "while",
+     "start": 4.005,
+     "end": 4.214
+    },
+    {
+     "word": "capacitive",
+     "start": 4.261,
+     "end": 4.783
+    },
+    {
+     "word": "reactance",
+     "start": 4.818,
+     "end": 5.236
+    },
+    {
+     "word": "points",
+     "start": 5.271,
+     "end": 5.515
+    },
+    {
+     "word": "downward",
+     "start": 5.573,
+     "end": 6.002
+    },
+    {
+     "word": "as",
+     "start": 6.072,
+     "end": 6.211
+    },
+    {
+     "word": "negative",
+     "start": 6.293,
+     "end": 6.687
+    },
+    {
+     "word": "j.",
+     "start": 6.722,
+     "end": 7.198
+    }
+   ],
+   "measuredDuration": 7.198166666666666,
+   "speechStart": 0.17066666666666666,
+   "speechEnd": 6.944,
+   "captionOffset": 0.17066666666666666
+  },
+  "10": {
+   "src": "generated/vo-323c13f3/s10.mp3",
+   "duration": 7.183673469387755,
+   "words": [
+    {
+     "word": "When",
+     "start": 0,
+     "end": 0.337
+    },
+    {
+     "word": "connected",
+     "start": 0.395,
+     "end": 0.813
+    },
+    {
+     "word": "in",
+     "start": 0.871,
+     "end": 0.929
+    },
+    {
+     "word": "series,",
+     "start": 0.998,
+     "end": 1.567
+    },
+    {
+     "word": "their",
+     "start": 1.776,
+     "end": 1.974
+    },
+    {
+     "word": "opposing",
+     "start": 2.02,
+     "end": 2.45
+    },
+    {
+     "word": "reactances",
+     "start": 2.519,
+     "end": 3.158
+    },
+    {
+     "word": "cancel",
+     "start": 3.251,
+     "end": 3.692
+    },
+    {
+     "word": "each",
+     "start": 3.75,
+     "end": 3.878
+    },
+    {
+     "word": "other",
+     "start": 3.924,
+     "end": 4.098
+    },
+    {
+     "word": "out",
+     "start": 4.168,
+     "end": 4.331
+    },
+    {
+     "word": "directly",
+     "start": 4.4,
+     "end": 4.923
+    },
+    {
+     "word": "through",
+     "start": 4.969,
+     "end": 5.19
+    },
+    {
+     "word": "simple",
+     "start": 5.259,
+     "end": 5.689
+    },
+    {
+     "word": "algebraic",
+     "start": 5.735,
+     "end": 6.258
+    },
+    {
+     "word": "subtraction.",
+     "start": 6.304,
+     "end": 7.152
+    }
+   ],
+   "measuredDuration": 7.151729166666667,
+   "speechStart": 0.17066666666666666,
+   "speechEnd": 6.816,
+   "captionOffset": 0.17066666666666666
+  },
+  "11": {
+   "src": "generated/vo-323c13f3/s11.mp3",
+   "duration": 7.888979591836734,
+   "words": [
+    {
+     "word": "Subtracting",
+     "start": 0,
+     "end": 0.871
+    },
+    {
+     "word": "the",
+     "start": 0.929,
+     "end": 1.01
+    },
+    {
+     "word": "9",
+     "start": 1.126,
+     "end": 1.37
+    },
+    {
+     "word": "ohm",
+     "start": 1.486,
+     "end": 1.672
+    },
+    {
+     "word": "capacitive",
+     "start": 1.73,
+     "end": 2.299
+    },
+    {
+     "word": "reactance",
+     "start": 2.334,
+     "end": 2.879
+    },
+    {
+     "word": "from",
+     "start": 2.902,
+     "end": 3.077
+    },
+    {
+     "word": "the",
+     "start": 3.123,
+     "end": 3.193
+    },
+    {
+     "word": "12",
+     "start": 3.262,
+     "end": 3.564
+    },
+    {
+     "word": "ohm",
+     "start": 3.646,
+     "end": 3.785
+    },
+    {
+     "word": "inductive",
+     "start": 3.843,
+     "end": 4.319
+    },
+    {
+     "word": "reactance",
+     "start": 4.365,
+     "end": 4.923
+    },
+    {
+     "word": "yields",
+     "start": 4.992,
+     "end": 5.341
+    },
+    {
+     "word": "a",
+     "start": 5.387,
+     "end": 5.422
+    },
+    {
+     "word": "net",
+     "start": 5.515,
+     "end": 5.712
+    },
+    {
+     "word": "inductive",
+     "start": 5.77,
+     "end": 6.258
+    },
+    {
+     "word": "reactance",
+     "start": 6.293,
+     "end": 6.792
+    },
+    {
+     "word": "of",
+     "start": 6.827,
+     "end": 6.908
+    },
+    {
+     "word": "3",
+     "start": 7.001,
+     "end": 7.175
+    },
+    {
+     "word": "ohms.",
+     "start": 7.256,
+     "end": 7.848
+    }
+   ],
+   "measuredDuration": 7.848333333333334,
+   "speechStart": 0.16,
+   "speechEnd": 7.584,
+   "captionOffset": 0.16
+  },
+  "12": {
+   "src": "generated/vo-323c13f3/s12.mp3",
+   "duration": 7.053061224489796,
+   "words": [
+    {
+     "word": "Net",
+     "start": 0,
+     "end": 0.43
+    },
+    {
+     "word": "impedance",
+     "start": 0.522,
+     "end": 1.161
+    },
+    {
+     "word": "is",
+     "start": 1.207,
+     "end": 1.382
+    },
+    {
+     "word": "the",
+     "start": 1.428,
+     "end": 1.509
+    },
+    {
+     "word": "vector",
+     "start": 1.579,
+     "end": 1.939
+    },
+    {
+     "word": "sum",
+     "start": 2.009,
+     "end": 2.194
+    },
+    {
+     "word": "of",
+     "start": 2.287,
+     "end": 2.415
+    },
+    {
+     "word": "real",
+     "start": 2.531,
+     "end": 2.763
+    },
+    {
+     "word": "resistance",
+     "start": 2.821,
+     "end": 3.448
+    },
+    {
+     "word": "and",
+     "start": 3.518,
+     "end": 3.692
+    },
+    {
+     "word": "net",
+     "start": 3.808,
+     "end": 4.017
+    },
+    {
+     "word": "imaginary",
+     "start": 4.133,
+     "end": 4.725
+    },
+    {
+     "word": "reactance",
+     "start": 4.795,
+     "end": 5.399
+    },
+    {
+     "word": "using",
+     "start": 5.468,
+     "end": 5.747
+    },
+    {
+     "word": "the",
+     "start": 5.793,
+     "end": 5.863
+    },
+    {
+     "word": "Pythagorean",
+     "start": 5.909,
+     "end": 6.444
+    },
+    {
+     "word": "theorem.",
+     "start": 6.502,
+     "end": 7.012
+    }
+   ],
+   "measuredDuration": 7.012416666666667,
+   "speechStart": 0.16,
+   "speechEnd": 6.794666666666667,
+   "captionOffset": 0.16
+  },
+  "13": {
+   "src": "generated/vo-323c13f3/s13.mp3",
+   "duration": 7.000816326530612,
+   "words": [
+    {
+     "word": "Squaring",
+     "start": 0,
+     "end": 0.639
+    },
+    {
+     "word": "4",
+     "start": 0.755,
+     "end": 0.906
+    },
+    {
+     "word": "ohms",
+     "start": 0.987,
+     "end": 1.173
+    },
+    {
+     "word": "resistance",
+     "start": 1.219,
+     "end": 1.765
+    },
+    {
+     "word": "plus",
+     "start": 1.811,
+     "end": 2.009
+    },
+    {
+     "word": "squaring",
+     "start": 2.043,
+     "end": 2.496
+    },
+    {
+     "word": "3",
+     "start": 2.612,
+     "end": 2.763
+    },
+    {
+     "word": "ohms",
+     "start": 2.856,
+     "end": 3.042
+    },
+    {
+     "word": "reactance",
+     "start": 3.111,
+     "end": 3.68
+    },
+    {
+     "word": "equals",
+     "start": 3.75,
+     "end": 4.156
+    },
+    {
+     "word": "25,",
+     "start": 4.238,
+     "end": 4.899
+    },
+    {
+     "word": "giving",
+     "start": 4.946,
+     "end": 5.201
+    },
+    {
+     "word": "a",
+     "start": 5.259,
+     "end": 5.283
+    },
+    {
+     "word": "square",
+     "start": 5.341,
+     "end": 5.677
+    },
+    {
+     "word": "root",
+     "start": 5.7,
+     "end": 5.875
+    },
+    {
+     "word": "of",
+     "start": 5.921,
+     "end": 5.991
+    },
+    {
+     "word": "5",
+     "start": 6.072,
+     "end": 6.246
+    },
+    {
+     "word": "ohms.",
+     "start": 6.362,
+     "end": 6.966
+    }
+   ],
+   "measuredDuration": 6.965979166666667,
+   "speechStart": 0.17066666666666666,
+   "speechEnd": 6.624,
+   "captionOffset": 0.17066666666666666
+  },
+  "14": {
+   "src": "generated/vo-323c13f3/s14.mp3",
+   "duration": 8.071836734693878,
+   "words": [
+    {
+     "word": "At",
+     "start": 0,
+     "end": 0.313
+    },
+    {
+     "word": "series",
+     "start": 0.383,
+     "end": 0.766
+    },
+    {
+     "word": "resonance",
+     "start": 0.836,
+     "end": 1.324
+    },
+    {
+     "word": "where",
+     "start": 1.358,
+     "end": 1.544
+    },
+    {
+     "word": "both",
+     "start": 1.602,
+     "end": 1.892
+    },
+    {
+     "word": "reactances",
+     "start": 1.962,
+     "end": 2.612
+    },
+    {
+     "word": "balance",
+     "start": 2.682,
+     "end": 3.019
+    },
+    {
+     "word": "completely,",
+     "start": 3.053,
+     "end": 3.82
+    },
+    {
+     "word": "net",
+     "start": 4.145,
+     "end": 4.377
+    },
+    {
+     "word": "reactance",
+     "start": 4.458,
+     "end": 4.992
+    },
+    {
+     "word": "collapses",
+     "start": 5.039,
+     "end": 5.584
+    },
+    {
+     "word": "to",
+     "start": 5.642,
+     "end": 5.724
+    },
+    {
+     "word": "zero",
+     "start": 5.817,
+     "end": 6.188
+    },
+    {
+     "word": "leaving",
+     "start": 6.258,
+     "end": 6.548
+    },
+    {
+     "word": "pure",
+     "start": 6.629,
+     "end": 6.896
+    },
+    {
+     "word": "resistance",
+     "start": 6.931,
+     "end": 7.442
+    },
+    {
+     "word": "alone.",
+     "start": 7.477,
+     "end": 8.034
+    }
+   ],
+   "measuredDuration": 8.034104166666667,
+   "speechStart": 0.16,
+   "speechEnd": 7.765333333333333,
+   "captionOffset": 0.16
+  },
+  "15": {
+   "src": "generated/vo-323c13f3/s15.mp3",
+   "duration": 3.186938775510204,
+   "words": [
+    {
+     "word": "Here",
+     "start": 0,
+     "end": 0.267
+    },
+    {
+     "word": "are",
+     "start": 0.29,
+     "end": 0.372
+    },
+    {
+     "word": "the",
+     "start": 0.395,
+     "end": 0.464
+    },
+    {
+     "word": "formulas",
+     "start": 0.511,
+     "end": 0.917
+    },
+    {
+     "word": "behind",
+     "start": 0.975,
+     "end": 1.231
+    },
+    {
+     "word": "this",
+     "start": 1.265,
+     "end": 1.393
+    },
+    {
+     "word": "one.",
+     "start": 1.463,
+     "end": 1.683
+    },
+    {
+     "word": "Save",
+     "start": 1.892,
+     "end": 2.136
+    },
+    {
+     "word": "it",
+     "start": 2.171,
+     "end": 2.229
+    },
+    {
+     "word": "for",
+     "start": 2.264,
+     "end": 2.368
+    },
+    {
+     "word": "your",
+     "start": 2.403,
+     "end": 2.508
+    },
+    {
+     "word": "revision.",
+     "start": 2.554,
+     "end": 3.158
+    }
+   ],
+   "measuredDuration": 3.1578958333333333,
+   "speechStart": 0.18133333333333335,
+   "speechEnd": 2.8693333333333335,
+   "captionOffset": 0.18133333333333335
+  },
+  "16": {
+   "src": "generated/vo-323c13f3/s16.mp3",
+   "duration": 11.415510204081633,
+   "words": [
+    {
+     "word": "At",
+     "start": 0,
+     "end": 0.29
+    },
+    {
+     "word": "resonance,",
+     "start": 0.337,
+     "end": 0.813
+    },
+    {
+     "word": "series",
+     "start": 0.848,
+     "end": 1.207
+    },
+    {
+     "word": "impedance",
+     "start": 1.254,
+     "end": 1.66
+    },
+    {
+     "word": "drops",
+     "start": 1.695,
+     "end": 1.985
+    },
+    {
+     "word": "to",
+     "start": 2.032,
+     "end": 2.101
+    },
+    {
+     "word": "its",
+     "start": 2.159,
+     "end": 2.287
+    },
+    {
+     "word": "absolute",
+     "start": 2.357,
+     "end": 2.868
+    },
+    {
+     "word": "minimum,",
+     "start": 2.902,
+     "end": 3.367
+    },
+    {
+     "word": "which",
+     "start": 3.425,
+     "end": 3.622
+    },
+    {
+     "word": "can",
+     "start": 3.669,
+     "end": 3.808
+    },
+    {
+     "word": "produce",
+     "start": 3.866,
+     "end": 4.249
+    },
+    {
+     "word": "dangerously",
+     "start": 4.319,
+     "end": 4.946
+    },
+    {
+     "word": "high",
+     "start": 5.027,
+     "end": 5.224
+    },
+    {
+     "word": "currents.",
+     "start": 5.283,
+     "end": 5.898
+    },
+    {
+     "word": "Test",
+     "start": 6.223,
+     "end": 6.536
+    },
+    {
+     "word": "your",
+     "start": 6.594,
+     "end": 6.745
+    },
+    {
+     "word": "circuit",
+     "start": 6.827,
+     "end": 7.198
+    },
+    {
+     "word": "instincts",
+     "start": 7.256,
+     "end": 7.767
+    },
+    {
+     "word": "and",
+     "start": 7.86,
+     "end": 8.034
+    },
+    {
+     "word": "subscribe",
+     "start": 8.104,
+     "end": 8.719
+    },
+    {
+     "word": "for",
+     "start": 8.766,
+     "end": 8.905
+    },
+    {
+     "word": "daily",
+     "start": 8.986,
+     "end": 9.323
+    },
+    {
+     "word": "engineering",
+     "start": 9.392,
+     "end": 9.927
+    },
+    {
+     "word": "exam",
+     "start": 9.996,
+     "end": 10.333
+    },
+    {
+     "word": "breakdowns!",
+     "start": 10.403,
+     "end": 11.378
+    }
+   ],
+   "measuredDuration": 11.377770833333333,
+   "speechStart": 0.17066666666666666,
+   "speechEnd": 11.104,
+   "captionOffset": 0.17066666666666666
+  }
+ },
+ "seo": {
+  "titles": [
+   "Net Impedance in Series RLC Circuits | Basic Electrical",
+   "How Do You Calculate Net Impedance in an AC Circuit?",
+   "Can You Find the Net Impedance in This Series Circuit?",
+   "GATE EE: Series RLC Circuit Net Impedance Solved",
+   "Series RLC Impedance: Combining Resistance and Reactance"
+  ],
+  "description": "Calculate net impedance in series AC circuits for GATE EE preparation.\n\nLearn how inductive and capacitive reactances interact in an alternating current series circuit. We explain why reactances cancel each other on the complex plane and how to determine total impedance magnitude using the Pythagorean theorem.\n\n- Phase relationships of inductive and capacitive reactance\n- Calculating net reactance via algebraic subtraction\n- Combining resistance and reactance for total impedance\n- Minimum impedance conditions at series resonance\n\n#Shorts #GATEEE #ElectricalEngineering #ACCircuits",
+  "tags": [
+   "gate ee",
+   "electrical engineering",
+   "net impedance",
+   "series rlc circuit",
+   "ac circuits",
+   "impedance calculation",
+   "inductive reactance",
+   "capacitive reactance",
+   "rlc series circuit",
+   "alternating current",
+   "basic electrical engineering",
+   "impedance formula",
+   "gate electrical",
+   "ac circuit analysis",
+   "series resonance",
+   "circuit theory",
+   "phasor diagram basics",
+   "complex impedance",
+   "ee exam prep"
+  ],
+  "hashtags": [
+   "Shorts",
+   "GATEEE",
+   "ElectricalEngineering",
+   "ACCircuits"
+  ],
+  "thumbnailText": "CALCULATE NET IMPEDANCE",
+  "pinnedComment": "What would the total impedance be if capacitive reactance increased to 12 ohms? Share your answer below!",
+  "instagram": {
+   "caption": "Can you calculate the net impedance of this series RLC circuit?\n\nInductive and capacitive reactances point in opposite directions on the complex plane, so they directly subtract.\nCombine net reactance with real resistance using the Pythagorean theorem to find total magnitude.\nNotice how series resonance causes reactances to cancel completely, leaving pure resistance.\n\nSave this post for your electrical engineering revision!",
+   "hashtags": [
+    "ACCircuits",
+    "GATEEE",
+    "ElectricalEngineering",
+    "CircuitTheory"
+   ],
+   "altText": "Series RLC circuit diagram showing resistance and net impedance calculation in AC circuits.",
+   "post": "Can you calculate the net impedance of this series RLC circuit?\n\nInductive and capacitive reactances point in opposite directions on the complex plane, so they directly subtract.\nCombine net reactance with real resistance using the Pythagorean theorem to find total magnitude.\nNotice how series resonance causes reactances to cancel completely, leaving pure resistance.\n\nSave this post for your electrical engineering revision!\n\n#ACCircuits #GATEEE #ElectricalEngineering #CircuitTheory",
+   "hookLength": 63
+  },
+  "facebook": {
+   "title": "How to Calculate Net Impedance in Series AC Circuits",
+   "caption": "Master net impedance in series RLC circuits for electrical engineering. See how inductive and capacitive reactances oppose each other and combine with resistance. Can you solve it before the reveal?",
+   "hashtags": [
+    "ACCircuits",
+    "ElectricalEngineering",
+    "GATEEE"
+   ],
+   "keywords": [
+    "ac circuits",
+    "net impedance",
+    "series rlc circuit",
+    "gate ee",
+    "electrical engineering",
+    "inductive reactance",
+    "capacitive reactance"
+   ],
+   "post": "Master net impedance in series RLC circuits for electrical engineering. See how inductive and capacitive reactances oppose each other and combine with resistance. Can you solve it before the reveal?\n\n#ACCircuits #ElectricalEngineering #GATEEE"
+  },
+  "tagsLength": 345,
+  "generatedAt": "2026-10-14T16:37:45.704Z",
+  "fingerprint": "A series circuit contains a 4 ohm resistor, a 12 ohm inductive reactance, and an 9 ohm capacitive reactance. What is the total magnitude of the impedance?~~25 ohms|7 ohms|5 ohms|15 ohms~~2~~Inductive reactance opposes current by generating a back electromotive force that causes voltage to lead current by ninety degrees.|Capacitive reactance opposes current by accumulating electrostatic charge, causing voltage to lag ninety degrees behind alternating current.|Because one leads by ninety degrees and the other lags by ninety, they are exactly one hundred eighty degrees apart.|On the complex plane, inductive reactance points straight up as positive j, while capacitive reactance points downward as negative j.~~Inductive reactance opposes current by generating a back electromotive force that causes voltage to lead current by ninety degrees.|Capacitive reactance opposes current by accumulating electrostatic charge, causing voltage to lag ninety degrees behind alternating current.|Because one leads by ninety degrees and the other lags by ninety, they are exactly one hundred eighty degrees apart.|On the complex plane, inductive reactance points straight up as positive j, while capacitive reactance points downward as negative j.|When connected in series, their opposing reactances cancel each other out directly through simple algebraic subtraction.|Subtracting the 9 ohm capacitive reactance from the 12 ohm inductive reactance yields a net inductive reactance of 3 ohms.|Net impedance is the vector sum of real resistance and net imaginary reactance using the Pythagorean theorem.|Squaring 4 ohms resistance plus squaring 3 ohms reactance equals 25, giving a square root of 5 ohms.|At series resonance where both reactances balance completely, net reactance collapses to zero leaving pure resistance alone."
+ },
+ "ledger": [
+  {
+   "what": "Voiceover",
+   "characters": 1701,
+   "at": "2026-10-14T16:20:09.128Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-14T16:31:19.243Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-14T16:31:19.714Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-14T16:31:19.786Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-14T16:31:33.045Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-14T16:31:34.644Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-14T16:31:34.772Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-14T16:31:48.193Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-14T16:31:48.321Z"
+  },
+  {
+   "what": "Thumbnail picture",
+   "cents": 3,
+   "at": "2026-10-14T16:37:51.691Z"
+  }
+ ],
+ "renders": [
+  {
+   "jobId": "video-2026-10-14T16-33-05",
+   "url": "/out/video-2026-10-14T16-33-05.mp4",
+   "quality": "medium",
+   "at": "2026-10-14T16:35:57.971Z"
+  }
+ ],
+ "published": {}
+}

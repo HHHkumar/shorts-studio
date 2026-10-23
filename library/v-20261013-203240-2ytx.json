@@ -1,0 +1,4384 @@
+{
+ "id": "v-20261013-203240-2ytx",
+ "createdAt": "2026-10-13T15:02:42.251Z",
+ "updatedAt": "2026-10-14T16:08:30.947Z",
+ "content": {
+  "videoKind": "explainer",
+  "subject": "Basic Electrical Engineering",
+  "topic": "Resistance vs Impedance: DC and AC Circuits",
+  "difficulty": "Medium",
+  "hook": "Wires can fight back in two completely different ways depending on which way current flows.",
+  "question": "Why does AC call opposition impedance instead of resistance?",
+  "options": [],
+  "correctIndex": 0,
+  "answerLine": "",
+  "explanation": [],
+  "funFact": "",
+  "outro": "Thanks for watching. Next time you see alternating current, you will know exactly why impedance rules the circuit.",
+  "hashtags": [
+   "#ElectricalEngineering",
+   "#PhysicsExplained",
+   "#Circuits101",
+   "#STEMEducation"
+  ],
+  "motifSymbols": [
+   "⚡",
+   "🧲",
+   "〰️",
+   "🔋"
+  ],
+  "script": [
+   {
+    "kind": "intro",
+    "narration": "Hi, ready for an explainer? here we go!",
+    "imageQuery": "",
+    "onScreen": "",
+    "doodle": {
+     "subject": "mascot",
+     "pose": "wave",
+     "action": "waves warmly with a welcoming grin to begin the lesson",
+     "emotion": "friendly, excited",
+     "props": "light bulb",
+     "gag": "light bulb glowing with little radiant eyelashes"
+    },
+    "doodleSrc": "generated/doodle/doodle-dtn5mk/s0-a24075.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "title",
+    "narration": "Every electric circuit pushes back against moving electric charges. But why do we say resistance in direct current circuits and impedance in alternating current circuits?",
+    "imageQuery": "glowing electrical circuit",
+    "panel": {
+     "title": "Resistance Versus Impedance in Circuits",
+     "subtitle": ""
+    },
+    "doodle": {
+     "subject": "mascot",
+     "pose": "think",
+     "action": "rubs chin thoughtfully while looking back and forth between two power sources",
+     "emotion": "puzzled, curious",
+     "props": "battery, wall socket",
+     "gag": "wall socket looks surprised with two wide round slot eyes"
+    },
+    "doodleSrc": "generated/doodle/doodle-dtn5mk/s1-a0bb71.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "explain",
+    "narration": "When charges march in a single steady direction, we call it direct current. Batteries deliver this steady push, keeping electrons flowing in one continuous unbroken loop.",
+    "imageQuery": "direct current battery wire",
+    "visual": {
+     "kind": "working"
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Alternating current behaves completely differently. Instead of marching ahead, wall outlets shake electrons back and forth fifty or sixty times every single second without stopping.",
+    "imageQuery": "alternating current wall outlet",
+    "doodle": {
+     "subject": "illustration",
+     "action": "a row of circular charge particles vibrating rapidly back and forth inside a wire section",
+     "emotion": "restless",
+     "props": "wire loop, round charge particles",
+     "gag": "one charge particle wearing tiny running shoes skidding to a halt"
+    },
+    "doodleSrc": "generated/doodle/doodle-dtn5mk/s3-0d8480.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "metaphor",
+    "narration": "Think of resistance like walking through deep friction mud. Every single step collides with obstacles, turning your forward energy straight into wasted thermal heat.",
+    "imageQuery": "walking in thick mud",
+    "panel": {
+     "leftLabel": "Walking in Mud",
+     "rightLabel": "Electrical Resistance",
+     "leftSymbol": "👢",
+     "rightSymbol": "⚡",
+     "leftPoints": [],
+     "rightPoints": []
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "a pair of heavy boots trudging through thick sticky mud with heat ripples rising upward",
+     "emotion": "exhausted",
+     "props": "boots, mud puddle, steam wisps",
+     "gag": "a tiny wilted flower drooping in the mud"
+    },
+    "doodleSrc": "generated/doodle/doodle-dtn5mk/s4-9566fd.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "diagram",
+    "narration": "Inside a classic resistor, moving charges constantly smash into metal atoms. This pure collisions friction simply burns up electric voltage regardless of current flow direction.",
+    "imageQuery": "metal crystal lattice electron collision",
+    "panel": {
+     "nodes": [
+      {
+       "id": "battery",
+       "label": "DC Battery",
+       "symbol": "🔋",
+       "icon": "battery",
+       "row": 0,
+       "art": {
+        "body": "<path fill=\"currentColor\" d=\"M16.67 4H15V2H9v2H7.33A1.33 1.33 0 0 0 6 5.33v15.34C6 21.4 6.6 22 7.33 22h9.34A1.33 1.33 0 0 0 18 20.67V5.33C18 4.6 17.4 4 16.67 4\"/>",
+        "width": 24,
+        "height": 24
+       },
+       "iconName": "mdi:battery"
+      },
+      {
+       "id": "resistor",
+       "label": "Resistor",
+       "symbol": "〰️",
+       "icon": "resistor",
+       "row": 0,
+       "art": {
+        "body": "<path fill=\"currentColor\" d=\"M2 11h5l3.07 4.35L13.11 4L18 11h4v2h-5l-3.07-4.35L10.89 20L6 13H2z\"/>",
+        "width": 24,
+        "height": 24
+       },
+       "iconName": "mdi:resistor"
+      }
+     ],
+     "edges": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Because direct current never changes direction, resistors are the only components offering permanent steady opposition. That simple opposition is what we formally call resistance.",
+    "imageQuery": "multimeter measuring ohms",
+    "doodle": {
+     "subject": "mascot",
+     "pose": "teach",
+     "action": "gestures toward a tidy direct-current loop containing a battery and a single resistor",
+     "emotion": "calm, clear",
+     "props": "battery, zigzag resistor",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/doodle-dtn5mk/s6-461e19.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "explain",
+    "narration": "Yet alternating current introduces a brand new kind of opposition called reactance. Total opposition becomes impedance, combining ordinary resistive friction with reactive timing pushback.",
+    "imageQuery": "vector impedance triangle",
+    "doodle": {
+     "subject": "illustration",
+     "action": "a flowing wavy current path hitting a barrier made of a rough brick block and a coiled metal spring",
+     "emotion": "cluttered",
+     "props": "wavy current line, brick block, spring",
+     "gag": "spring squashed completely flat against the brick"
+    },
+    "doodleSrc": "generated/doodle/doodle-dtn5mk/s7-a47b89.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "diagram",
+    "narration": "Impedance is the grand total hurdle that an alternating circuit presents. It bundles ordinary resistance together with the stubborn magnetic and electric fields of other components.",
+    "imageQuery": "electronic components circuit board",
+    "panel": {
+     "nodes": [
+      {
+       "id": "imp",
+       "label": "Total Impedance",
+       "symbol": "Z",
+       "icon": "speedometer",
+       "row": 0,
+       "art": {
+        "body": "<path fill=\"currentColor\" d=\"M12 16a3 3 0 0 1-3-3c0-1.12.61-2.1 1.5-2.61l9.71-5.62l-5.53 9.58c-.5.98-1.51 1.65-2.68 1.65m0-13c1.81 0 3.5.5 4.97 1.32l-2.1 1.21C14 5.19 13 5 12 5a8 8 0 0 0-8 8c0 2.21.89 4.21 2.34 5.65h.01c.39.39.39 1.02 0 1.41s-1.03.39-1.42.01A9.97 9.97 0 0 1 2 13A10 10 0 0 1 12 3m10 10c0 2.76-1.12 5.26-2.93 7.07c-.39.38-1.02.38-1.41-.01a.996.996 0 0 1 0-1.41A7.95 7.95 0 0 0 20 13c0-1-.19-2-.54-2.9L20.67 8C21.5 9.5 22 11.18 22 13\"/>",
+        "width": 24,
+        "height": 24
+       },
+       "iconName": "mdi:speedometer"
+      },
+      {
+       "id": "res",
+       "label": "Resistance",
+       "symbol": "R",
+       "icon": "flame",
+       "row": 1,
+       "art": {
+        "body": "<path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 10.941c2.333-3.308.167-7.823-1-8.941c0 3.395-2.235 5.299-3.667 6.706C5.903 10.114 5 12 5 14.294C5 17.998 8.134 21 12 21s7-3.002 7-6.706c0-1.712-1.232-4.403-2.333-5.588c-2.084 3.353-3.257 3.353-4.667 2.235\"/>",
+        "width": 24,
+        "height": 24
+       },
+       "iconName": "tabler:flame"
+      },
+      {
+       "id": "rea",
+       "label": "Reactance",
+       "symbol": "X",
+       "icon": "magnet",
+       "row": 1,
+       "art": {
+        "body": "<path fill=\"currentColor\" d=\"M3 7v6a9 9 0 0 0 9 9a9 9 0 0 0 9-9V7h-4v6a5 5 0 0 1-5 5a5 5 0 0 1-5-5V7m10-2h4V2h-4M3 5h4V2H3\"/>",
+        "width": 24,
+        "height": 24
+       },
+       "iconName": "mdi:magnet"
+      }
+     ],
+     "edges": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "To understand where this new reactance comes from, look at two everyday parts: inductors and capacitors. Both behave radically differently in DC compared to AC.",
+    "imageQuery": "inductor coil and capacitor",
+    "doodle": {
+     "subject": "mascot",
+     "pose": "point",
+     "action": "points outward comparing a coiled wire inductor side by side with a two-plate capacitor",
+     "emotion": "focused",
+     "props": "wire coil, parallel metal plates",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/doodle-dtn5mk/s9-0a279b.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "diagram",
+    "narration": "An inductor is simply a wire coiled in loops. When electric current flows through these tight turns, it builds an invisible magnetic field around itself.",
+    "imageQuery": "copper wire inductor coil",
+    "panel": {
+     "nodes": [
+      {
+       "id": "wire",
+       "label": "Coiled Wire",
+       "symbol": "🌀",
+       "icon": "cable",
+       "row": 0,
+       "art": {
+        "body": "<path fill=\"currentColor\" d=\"M5 21q-.425 0-.712-.288T4 20v-1H3v-4q0-.425.288-.712T4 14h1V7q0-1.65 1.175-2.825T9 3t2.825 1.175T13 7v10q0 .825.588 1.413T15 19t1.413-.587T17 17v-7h-1q-.425 0-.712-.288T15 9V5h1V4q0-.425.288-.712T17 3h2q.425 0 .713.288T20 4v1h1v4q0 .425-.288.713T20 10h-1v7q0 1.65-1.175 2.825T15 21t-2.825-1.175T11 17V7q0-.825-.587-1.412T9 5t-1.412.588T7 7v7h1q.425 0 .713.288T9 15v4H8v1q0 .425-.288.713T7 21z\"/>",
+        "width": 24,
+        "height": 24
+       },
+       "iconName": "material-symbols:cable"
+      },
+      {
+       "id": "mag",
+       "label": "Magnetic Field",
+       "symbol": "🧲",
+       "icon": "magnet",
+       "row": 0,
+       "art": {
+        "body": "<path fill=\"currentColor\" d=\"M3 7v6a9 9 0 0 0 9 9a9 9 0 0 0 9-9V7h-4v6a5 5 0 0 1-5 5a5 5 0 0 1-5-5V7m10-2h4V2h-4M3 5h4V2H3\"/>",
+        "width": 24,
+        "height": 24
+       },
+       "iconName": "mdi:magnet"
+      }
+     ],
+     "edges": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "In a direct current circuit, an inductor acts like a stubborn flywheel. It momentarily delays initial turn on, but then settles into an easy passage.",
+    "imageQuery": "steady current in coil",
+    "doodle": {
+     "subject": "illustration",
+     "action": "a steady straight arrow gliding effortlessly through a coiled wire looped around a flywheel",
+     "emotion": "smooth, steady",
+     "props": "heavy flywheel, wire coil, battery",
+     "gag": "a tiny snail cruising easily along the smooth wire path"
+    },
+    "doodleSrc": "generated/doodle/doodle-dtn5mk/s11-f64c5e.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "motion",
+    "narration": "Steady DC electrons glide smoothly through the inductor copper wire. Once the magnetic field stabilizes, the coil turns into an ordinary path with zero special opposition.",
+    "imageQuery": "electron flow smooth wire",
+    "panel": {
+     "actors": [
+      {
+       "id": "electron",
+       "icon": "circle",
+       "x": 0.15,
+       "y": 0.5,
+       "label": "DC Electron",
+       "scale": 1,
+       "art": {
+        "body": "<path fill=\"currentColor\" d=\"M12 2A10 10 0 0 0 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2\"/>",
+        "width": 24,
+        "height": 24
+       },
+       "iconName": "mdi:circle"
+      },
+      {
+       "id": "coil",
+       "icon": "spring",
+       "x": 0.65,
+       "y": 0.5,
+       "label": "Inductor Coil",
+       "scale": 1.2,
+       "art": {
+        "body": "<path fill=\"currentColor\" d=\"M326.4 26.52c-.7 0-1.7.14-2.9.44c-3.4.82-8 3.38-11.7 6.89c-3.8 3.51-6.7 7.92-7.9 11.34c-1.1 3.41-.8 4.92.5 6.57c27.4 33.77 52.6 72.04 71.9 105.74c19.3 33.8 32.7 62.2 36.6 79.9c.4 1.8.7 2 .7 1.9c1.2 0 5.7-1.7 9.9-5.2c4.3-3.5 8.6-8.6 11.1-13.3c2.6-4.7 3.1-8.8 2.6-10.4c-15.1-55.3-42.6-116.41-107.9-182.57c-.7-.67-1.3-1.09-2.2-1.24c-.2 0-.4-.1-.7-.1zm53.2 30.97c11 13.92 20.6 27.66 28.9 41.17c13 7.24 28.5 16.34 43.9 26.04c15.2 9.4 29.4 18.9 40.9 27.4l-1.8-28.2c-16.4-16.3-45-33.55-74.1-48.31c-13.1-6.65-25.8-12.61-37.8-18.1M247.1 105.8c-.7 0-1.7.1-2.9.4c-3.4.8-7.9 3.4-11.7 6.9c-3.7 3.5-6.6 7.9-7.7 11.3c-1.1 3.3-.9 4.8.5 6.5c27.4 33.8 52.6 72 71.9 105.7c19.3 33.8 32.6 62.3 36.6 79.8v.1c.4 1.8.7 2 .7 1.9c1.1 0 5.6-1.7 9.9-5.2s8.5-8.6 11.1-13.3c2.5-4.7 3-8.9 2.6-10.4c-15.3-55.2-42.8-116.2-108.1-182.4c-.7-.7-1.3-1.1-2.2-1.2c-.2-.1-.4-.1-.7-.1m53.1 30.9c11.1 14 20.7 27.8 29.1 41.3c13 7.3 28.5 16.4 43.9 26c3.5 2.2 7 4.4 10.4 6.6c-5.8-12.7-13.6-27.7-22.7-43.7c-7.4-4.2-15-8.2-22.7-12.1c-13.2-6.6-25.9-12.6-38-18.1m-126.5 57.1c-.7 0-1.7.1-2.9.4c-3.4.8-8 3.4-11.7 6.9c-3.8 3.5-6.7 7.9-7.9 11.3c-1.1 3.4-.8 4.9.5 6.5c27.4 33.7 52.6 71.9 71.9 105.7s32.7 62.2 36.6 79.9c.4 1.8.7 2 .7 1.9c1.1 0 5.7-1.7 9.9-5.2c4.3-3.5 8.6-8.6 11.1-13.3c2.6-4.8 3.1-8.9 2.6-10.5c-15.2-55.1-42.6-116.1-107.9-182.4c-.7-.6-1.3-1-2.2-1.2zm53.1 30.9c11.1 13.9 20.6 27.7 29 41.2c13 7.3 28.5 16.4 43.9 26c2.7 1.7 5.4 3.4 8 5c-5.2-11.9-12.5-26.6-21.3-42.5c-7.1-4-14.4-7.9-21.8-11.6c-13.1-6.7-25.8-12.6-37.8-18.1M94.5 272.9c-.77 0-1.71.2-2.97.5c-3.34.8-7.91 3.3-11.67 6.8s-6.68 7.9-7.79 11.3c-1.1 3.4-.86 4.9.48 6.5c27.43 33.8 52.65 72 71.95 105.7c19.3 33.8 32.7 62.2 36.6 79.8v.1c.4 1.8.7 2 .7 1.9c1.2 0 5.7-1.7 9.9-5.2c4.3-3.5 8.6-8.6 11.1-13.3c2.6-4.7 3.1-8.8 2.6-10.4c-15.3-55.1-42.7-116.1-108.02-182.4c-.7-.6-1.3-1.1-2.17-1.2c-.22-.1-.46-.1-.71-.1m53.1 30.9c11.1 14 20.7 27.8 29 41.3c13 7.3 28.5 16.4 43.9 26c3.5 2.2 7 4.4 10.4 6.6c-5.8-12.7-13.5-27.7-22.6-43.7c-7.4-4.1-15.1-8.2-22.8-12.1c-13.1-6.6-25.8-12.6-37.9-18.1M18.72 353c.34 2.1 1.03 4.8 2.88 8.4c5.75 11.3 20.09 27.8 46.74 42.6c23.89 13.3 46.86 28.4 85.06 56.4c-6-13.5-14.4-30.1-24.5-47.7l-.3-.6C92.89 388 46.1 366 18.72 353\"/>",
+        "width": 512,
+        "height": 512
+       },
+       "iconName": "game-icons:spring"
+      }
+     ],
+     "beats": [
+      {
+       "actor": "electron",
+       "action": "move",
+       "to": "coil",
+       "cue": "glide smoothly"
+      },
+      {
+       "actor": "coil",
+       "action": "pulse",
+       "cue": "magnetic field"
+      },
+      {
+       "actor": "electron",
+       "action": "move",
+       "x": 0.95,
+       "y": 0.5,
+       "cue": "zero special"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Now connect alternating current to that same inductor. The current constantly changes direction, forcing the magnetic field to expand and collapse without a moment of peace.",
+    "imageQuery": "oscillating magnetic lines",
+    "doodle": {
+     "subject": "mascot",
+     "pose": "worried",
+     "action": "looks wide-eyed at an inductor coil surrounded by rapid pulsating concentric field rings",
+     "emotion": "alarmed, startled",
+     "props": "wire coil, concentric field loops",
+     "gag": "field loops puffed up like an overinflated balloon ready to burst"
+    },
+    "doodleSrc": "generated/doodle/doodle-dtn5mk/s13-ce6a5a.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "motion",
+    "narration": "Every rapid reversal produces a counter voltage that chokes changing current. The incoming wave is blocked repeatedly, creating massive inductive reactance against high frequency alternating current.",
+    "imageQuery": "choking magnetic field",
+    "panel": {
+     "actors": [
+      {
+       "id": "acWave",
+       "icon": "zap",
+       "x": 0.2,
+       "y": 0.5,
+       "label": "Rapid AC",
+       "scale": 1,
+       "art": {
+        "body": "<path fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M15.914 4a1.5 1.5 0 0 0-2.474-1.561l-9 9A1.5 1.5 0 0 0 5.5 14h4.002a.5.5 0 0 1 .471.666L8.086 20a1.5 1.5 0 0 0 2.475 1.56l9-9A1.5 1.5 0 0 0 18.5 10h-3.997a.5.5 0 0 1-.472-.667z\"/>",
+        "width": 24,
+        "height": 24
+       },
+       "iconName": "lucide:zap"
+      },
+      {
+       "id": "choke",
+       "icon": "shield",
+       "x": 0.6,
+       "y": 0.5,
+       "label": "Back EMF",
+       "scale": 1.3,
+       "art": {
+        "body": "<path fill=\"currentColor\" d=\"M12 1L3 5v6c0 5.55 3.84 10.74 9 12c5.16-1.26 9-6.45 9-12V5z\"/>",
+        "width": 24,
+        "height": 24
+       },
+       "iconName": "mdi:shield"
+      }
+     ],
+     "beats": [
+      {
+       "actor": "acWave",
+       "action": "move",
+       "to": "choke",
+       "cue": "rapid reversal"
+      },
+      {
+       "actor": "acWave",
+       "action": "blocked",
+       "to": "choke",
+       "cue": "blocked repeatedly"
+      },
+      {
+       "actor": "choke",
+       "action": "pulse",
+       "cue": "inductive reactance"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "diagram",
+    "narration": "Now look at a capacitor, which consists of two parallel metal plates separated by an insulator gap. Air or plastic prevents electrons from crossing directly across.",
+    "imageQuery": "parallel plate capacitor diagram",
+    "panel": {
+     "nodes": [
+      {
+       "id": "plate1",
+       "label": "Metal Plate 1",
+       "symbol": "⬛",
+       "icon": "square",
+       "row": 0,
+       "art": {
+        "body": "<path fill=\"currentColor\" d=\"M3 21V3h18v18z\"/>",
+        "width": 24,
+        "height": 24
+       },
+       "iconName": "material-symbols:square"
+      },
+      {
+       "id": "gap",
+       "label": "Insulating Gap",
+       "symbol": "🚫",
+       "icon": "barrier",
+       "row": 0,
+       "art": {
+        "body": "<path fill=\"currentColor\" d=\"M112 41c-21.65 0-39 17.35-39 39c0 21.6 17.35 39 39 39c21.6 0 39-17.4 39-39c0-21.65-17.4-39-39-39m288 0c-21.6 0-39 17.35-39 39c0 21.6 17.4 39 39 39s39-17.4 39-39c0-21.65-17.4-39-39-39M112 55c13.7 0 25 11.3 25 25s-11.3 25-25 25s-25-11.3-25-25s11.3-25 25-25m288 0c13.7 0 25 11.3 25 25s-11.3 25-25 25s-25-11.3-25-25s11.3-25 25-25M83.38 129.2L80.87 151h45.83l1.9-16.5c-5.2 1.6-10.8 2.5-16.6 2.5c-10.4 0-20.2-2.8-28.62-7.8m345.22.1c-8.4 4.9-18.2 7.7-28.6 7.7c-5.8 0-11.4-.9-16.7-2.5l1.9 16.5h45.9zM41 169v57.3L79.18 169zm59.8 0l-51.98 78h42.36l52.02-78zm64 0l-52 78h42.4l52-78zm64 0l-52 78h42.4l52-78zm64 0l-52 78h42.4l52-78zm64 0l-52 78h42.4l52-78zm64 0l-52 78h42.4l52-78zm50.2 20.8L432.8 247H471zM67.71 265l-7.15 62h45.84l7.2-62zm330.69 0l7.1 62h45.9l-7.1-62zM41 345v16h430v-16zm13.56 34L42.1 487h45.88l12.42-108zm356.94 0L424 487h45.9l-12.5-108z\"/>",
+        "width": 512,
+        "height": 512
+       },
+       "iconName": "game-icons:barrier"
+      },
+      {
+       "id": "plate2",
+       "label": "Metal Plate 2",
+       "symbol": "⬛",
+       "icon": "square",
+       "row": 0,
+       "art": {
+        "body": "<path fill=\"currentColor\" d=\"M3 21V3h18v18z\"/>",
+        "width": 24,
+        "height": 24
+       },
+       "iconName": "material-symbols:square"
+      }
+     ],
+     "edges": []
+    }
+   },
+   {
+    "kind": "motion",
+    "narration": "Feed direct current into this capacitor. Electrons rush onto one plate until it fills up completely, whereupon the open barrier stops all further current completely dead.",
+    "imageQuery": "charging capacitor saturation",
+    "panel": {
+     "actors": [
+      {
+       "id": "charge",
+       "icon": "circle",
+       "x": 0.15,
+       "y": 0.5,
+       "label": "DC Current",
+       "scale": 1,
+       "art": {
+        "body": "<path fill=\"currentColor\" d=\"M12 2A10 10 0 0 0 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2\"/>",
+        "width": 24,
+        "height": 24
+       },
+       "iconName": "mdi:circle"
+      },
+      {
+       "id": "plate",
+       "icon": "wall",
+       "x": 0.55,
+       "y": 0.5,
+       "label": "Insulator Barrier",
+       "scale": 1.2,
+       "art": {
+        "body": "<path fill=\"currentColor\" d=\"M3 16h9v5H3zm-1-6h6v5H2zm7 0h6v5H9zm7 0h6v5h-6zm-3 6h8v5h-8zM3 4h8v5H3zm9 0h9v5h-9z\"/>",
+        "width": 24,
+        "height": 24
+       },
+       "iconName": "mdi:wall"
+      }
+     ],
+     "beats": [
+      {
+       "actor": "charge",
+       "action": "move",
+       "to": "plate",
+       "cue": "rush onto"
+      },
+      {
+       "actor": "charge",
+       "action": "blocked",
+       "to": "plate",
+       "cue": "open barrier"
+      },
+      {
+       "actor": "plate",
+       "action": "pulse",
+       "cue": "completely dead"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "So in a DC circuit, a capacitor behaves like an open broken switch. Its resistance to steady current is essentially infinite once its plates are fully charged.",
+    "imageQuery": "open switch broken connection",
+    "doodle": {
+     "subject": "illustration",
+     "action": "two parallel plates blocking a circuit like an open drawbridge with halted charges piled up",
+     "emotion": "deadlock",
+     "props": "capacitor plates, circuit wire, battery",
+     "gag": "a tiny striped railway crossing barrier arm lowered across the wire gap"
+    },
+    "doodleSrc": "generated/doodle/doodle-dtn5mk/s17-6f2817.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "process",
+    "narration": "Yet alternating current tricks the capacitor entirely. Electrons pour in to charge one side, quickly drain away as polarity flips, and fill the other side instead.",
+    "imageQuery": "sloshing liquid in tanks",
+    "panel": {
+     "steps": [
+      {
+       "label": "Electrons charge first plate",
+       "detail": "",
+       "symbol": "",
+       "when": ""
+      },
+      {
+       "label": "Voltage reverses direction",
+       "detail": "",
+       "symbol": "",
+       "when": ""
+      },
+      {
+       "label": "Opposite plate charges up",
+       "detail": "",
+       "symbol": "",
+       "when": ""
+      }
+     ]
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "charges sloshing smoothly into one capacitor plate, emptying out, and filling the opposite plate",
+     "emotion": "rhythmic",
+     "props": "capacitor plates, connecting wires",
+     "gag": "charges look like water tilting inside two balanced buckets"
+    },
+    "doodleSrc": "generated/doodle/doodle-dtn5mk/s18-2c9ca7.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "explain",
+    "narration": "No electron ever jumps the insulating gap between plates. But because charges slosh continuously in the outside connecting wires, alternating current flows through with minimal opposition.",
+    "imageQuery": "alternating current displacement",
+    "doodle": {
+     "subject": "mascot",
+     "pose": "idea",
+     "action": "snaps fingers in sudden realization beside a capacitor with continuous external wire motion",
+     "emotion": "delighted, eureka",
+     "props": "capacitor, external loop wire",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/doodle-dtn5mk/s19-3aeb17.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "grid",
+    "narration": "Notice the beautiful mirror symmetry between them. Inductors love steady direct current but choke alternating current, while capacitors block DC entirely and happily conduct alternating signals.",
+    "imageQuery": "inductor and capacitor comparison",
+    "panel": {
+     "steps": [
+      {
+       "label": "Inductor with DC",
+       "detail": "Passes easily like wire",
+       "symbol": "",
+       "when": "",
+       "icon": "check",
+       "art": {
+        "body": "<path fill=\"currentColor\" d=\"M21 7L9 19l-5.5-5.5l1.41-1.41L9 16.17L19.59 5.59z\"/>",
+        "width": 24,
+        "height": 24
+       },
+       "iconName": "mdi:check"
+      },
+      {
+       "label": "Inductor with AC",
+       "detail": "Fights back magnetically",
+       "symbol": "",
+       "when": "",
+       "icon": "shield",
+       "art": {
+        "body": "<path fill=\"currentColor\" d=\"M12 1L3 5v6c0 5.55 3.84 10.74 9 12c5.16-1.26 9-6.45 9-12V5z\"/>",
+        "width": 24,
+        "height": 24
+       },
+       "iconName": "mdi:shield"
+      },
+      {
+       "label": "Capacitor with DC",
+       "detail": "Blocks flow completely",
+       "symbol": "",
+       "when": "",
+       "icon": "lock",
+       "art": {
+        "body": "<path fill=\"currentColor\" d=\"M12 17a2 2 0 0 0 2-2a2 2 0 0 0-2-2a2 2 0 0 0-2 2a2 2 0 0 0 2 2m6-9a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2h1V6a5 5 0 0 1 5-5a5 5 0 0 1 5 5v2zm-6-5a3 3 0 0 0-3 3v2h6V6a3 3 0 0 0-3-3\"/>",
+        "width": 24,
+        "height": 24
+       },
+       "iconName": "mdi:lock"
+      },
+      {
+       "label": "Capacitor with AC",
+       "detail": "Passes signal by sloshing",
+       "symbol": "",
+       "when": "",
+       "icon": "refresh",
+       "art": {
+        "body": "<path fill=\"currentColor\" d=\"M17.65 6.35A7.96 7.96 0 0 0 12 4a8 8 0 0 0-8 8a8 8 0 0 0 8 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18a6 6 0 0 1-6-6a6 6 0 0 1 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4z\"/>",
+        "width": 24,
+        "height": 24
+       },
+       "iconName": "mdi:refresh"
+      }
+     ]
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "a split mirror comparison showing a coil easily passing DC while choking AC, beside a capacitor doing the exact opposite",
+     "emotion": "balanced",
+     "props": "inductor coil, capacitor, straight and wavy arrows",
+     "gag": "coil smiling at straight arrow and frowning at wavy arrow"
+    },
+    "doodleSrc": "generated/doodle/doodle-dtn5mk/s20-17524d.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "explain",
+    "narration": "Resistance wastes energy as heat while reactance merely stores and releases energy in fields. When both forces work together in AC, we need the unified term impedance.",
+    "imageQuery": "heat versus electromagnetic energy",
+    "doodle": {
+     "subject": "mascot",
+     "pose": "teach",
+     "action": "balances hands apart showing rising heat waves beside an expanding energy storage bubble",
+     "emotion": "thoughtful",
+     "props": "resistor, field bubble",
+     "gag": "resistor wearing tiny sweat drops from working hard"
+    },
+    "doodleSrc": "generated/doodle/doodle-dtn5mk/s21-b9f014.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "explain",
+    "narration": "Engineers measure both resistance and impedance in ohms. But impedance reminds us that frequency, magnetic pushback, and electrostatic storage all dictate how much current actually flows.",
+    "imageQuery": "ohm symbol electrical measurement",
+    "doodle": {
+     "subject": "mascot",
+     "pose": "shrug",
+     "action": "palms up playfully comparing two identical round meter dials with matching needle angles",
+     "emotion": "amused, humble",
+     "props": "two round meters",
+     "gag": "none"
+    },
+    "doodleSrc": "generated/doodle/doodle-dtn5mk/s22-aeb61e.jpg",
+    "doodleProps": true
+   },
+   {
+    "kind": "recap",
+    "narration": "Direct current only faces simple resistance from collisions. Alternating current encounters impedance, which adds the magnetic resistance of inductors and electrostatic behavior of capacitors into total opposition.",
+    "imageQuery": "summary of electrical formulas",
+    "panel": {
+     "title": "",
+     "steps": [
+      {
+       "label": "DC faces pure Resistance",
+       "detail": "",
+       "symbol": "",
+       "when": ""
+      },
+      {
+       "label": "Inductors fight changing AC",
+       "detail": "",
+       "symbol": "",
+       "when": ""
+      },
+      {
+       "label": "Capacitors block steady DC",
+       "detail": "",
+       "symbol": "",
+       "when": ""
+      },
+      {
+       "label": "AC total opposition is Impedance",
+       "detail": "",
+       "symbol": "",
+       "when": ""
+      }
+     ]
+    },
+    "doodle": {
+     "subject": "illustration",
+     "action": "a straight easy single-speed track beside a wavy obstacle course featuring a resistor hill, coil loop, and plate gap",
+     "emotion": "adventurous",
+     "props": "straight track, obstacle course track, coil, capacitor",
+     "gag": "wavy course resembles a looping wooden roller coaster"
+    },
+    "doodleSrc": "generated/doodle/doodle-dtn5mk/s23-c27cf4.jpg",
+    "doodleProps": false
+   },
+   {
+    "kind": "formulas",
+    "narration": "Here are the formulas behind this one. Save it for your revision."
+   },
+   {
+    "kind": "outro",
+    "narration": "Next time you look at a power supply or audio speaker, remember that alternating current is a dance, and impedance choreographs every single move.",
+    "imageQuery": "audio speaker crossover electronics",
+    "doodle": {
+     "subject": "mascot",
+     "pose": "cheer",
+     "action": "raises one hand in victory beneath a sweeping alternating wave curving through the air",
+     "emotion": "triumphant, energetic",
+     "props": "curved sine wave line",
+     "gag": "sine wave accented with tiny dancing musical notes"
+    },
+    "doodleSrc": "generated/doodle/doodle-dtn5mk/s25-871307.jpg",
+    "doodleProps": true
+   }
+  ],
+  "formulas": {
+   "title": "Resistance vs Impedance - Important Formulas",
+   "cards": [
+    {
+     "name": "Impedance Magnitude",
+     "formula": "Z = \\sqrt{R^2 + X^2}",
+     "notes": [
+      "R = Resistance (\\Omega)",
+      "X = Net Reactance (\\Omega)"
+     ],
+     "graph": {
+      "kind": "none",
+      "x": "",
+      "y": "",
+      "label": "",
+      "label2": ""
+     },
+     "icon": "multimeter",
+     "art": {
+      "body": "<g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\"><rect width=\"14.5\" height=\"18.5\" x=\"4.75\" y=\"2.75\" rx=\"2.5\"/><path d=\"M7.75 5.75h8.5V9.5h-8.5Z\"/><circle cx=\"12\" cy=\"15.25\" r=\"3.25\"/><path d=\"m12 15.25l1.5-1.5\"/></g>",
+      "width": 24,
+      "height": 24
+     }
+    },
+    {
+     "name": "Inductive Reactance",
+     "formula": "X_L = 2\\pi f L",
+     "notes": [
+      "f = Frequency (Hz)",
+      "L = Inductance (H)"
+     ],
+     "graph": {
+      "kind": "linear",
+      "x": "f",
+      "y": "X_L",
+      "label": "2\\pi L",
+      "label2": ""
+     },
+     "icon": "magnet",
+     "art": {
+      "body": "<path fill=\"currentColor\" d=\"M3 7v6a9 9 0 0 0 9 9a9 9 0 0 0 9-9V7h-4v6a5 5 0 0 1-5 5a5 5 0 0 1-5-5V7m10-2h4V2h-4M3 5h4V2H3\"/>",
+      "width": 24,
+      "height": 24
+     }
+    },
+    {
+     "name": "Capacitive Reactance",
+     "formula": "X_C = \\frac{1}{2\\pi f C}",
+     "notes": [
+      "C = Capacitance (F)"
+     ],
+     "graph": {
+      "kind": "inverse",
+      "x": "f",
+      "y": "X_C",
+      "label": "X_C",
+      "label2": ""
+     },
+     "icon": "battery",
+     "art": {
+      "body": "<path fill=\"currentColor\" d=\"M16.67 4H15V2H9v2H7.33A1.33 1.33 0 0 0 6 5.33v15.34C6 21.4 6.6 22 7.33 22h9.34A1.33 1.33 0 0 0 18 20.67V5.33C18 4.6 17.4 4 16.67 4\"/>",
+      "width": 24,
+      "height": 24
+     }
+    }
+   ]
+  }
+ },
+ "design": {
+  "mode": "light",
+  "layout": "doodle",
+  "accent": "",
+  "showCaptions": true,
+  "showProgressBar": true,
+  "countdownSeconds": 4,
+  "scenePaddingSeconds": 0.5,
+  "trimTrailingSilence": true,
+  "showVisuals": true,
+  "showMotif": true,
+  "ambient": "auto",
+  "ambientIntensity": 0.6,
+  "motionStrength": 1,
+  "transition": "auto",
+  "textReveal": "fade",
+  "overlay": "vignette",
+  "overlayIntensity": 0.5,
+  "align": "auto",
+  "showStock": true,
+  "stockOpacity": 0.45,
+  "music": "tense",
+  "musicVolume": 0.22,
+  "customMusicSrc": "",
+  "sfx": true,
+  "sfxVolume": 0.5,
+  "orientation": "portrait",
+  "doodleEnergy": "lively",
+  "animatedEngineer": true
+ },
+ "audio": {
+  "0": {
+   "src": "generated/vo-0d03f16b/s0.mp3",
+   "duration": 2.089795918367347,
+   "words": [
+    {
+     "word": "Hi,",
+     "start": 0,
+     "end": 0.325
+    },
+    {
+     "word": "ready",
+     "start": 0.36,
+     "end": 0.569
+    },
+    {
+     "word": "for",
+     "start": 0.604,
+     "end": 0.697
+    },
+    {
+     "word": "an",
+     "start": 0.743,
+     "end": 0.789
+    },
+    {
+     "word": "explainer?",
+     "start": 0.836,
+     "end": 1.335
+    },
+    {
+     "word": "here",
+     "start": 1.382,
+     "end": 1.533
+    },
+    {
+     "word": "we",
+     "start": 1.556,
+     "end": 1.614
+    },
+    {
+     "word": "go!",
+     "start": 1.649,
+     "end": 2.043
+    }
+   ],
+   "measuredDuration": 2.043356009070295,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 1.787936507936508,
+   "captionOffset": 0.17414965986394557
+  },
+  "1": {
+   "src": "generated/vo-0d03f16b/s1.mp3",
+   "duration": 10.579591836734695,
+   "words": [
+    {
+     "word": "Every",
+     "start": 0,
+     "end": 0.511
+    },
+    {
+     "word": "electric",
+     "start": 0.58,
+     "end": 1.01
+    },
+    {
+     "word": "circuit",
+     "start": 1.08,
+     "end": 1.44
+    },
+    {
+     "word": "pushes",
+     "start": 1.509,
+     "end": 1.881
+    },
+    {
+     "word": "back",
+     "start": 1.962,
+     "end": 2.194
+    },
+    {
+     "word": "against",
+     "start": 2.264,
+     "end": 2.647
+    },
+    {
+     "word": "moving",
+     "start": 2.728,
+     "end": 3.03
+    },
+    {
+     "word": "electric",
+     "start": 3.088,
+     "end": 3.506
+    },
+    {
+     "word": "charges.",
+     "start": 3.564,
+     "end": 4.191
+    },
+    {
+     "word": "But",
+     "start": 4.319,
+     "end": 4.47
+    },
+    {
+     "word": "why",
+     "start": 4.505,
+     "end": 4.656
+    },
+    {
+     "word": "do",
+     "start": 4.725,
+     "end": 4.807
+    },
+    {
+     "word": "we",
+     "start": 4.865,
+     "end": 4.946
+    },
+    {
+     "word": "say",
+     "start": 4.992,
+     "end": 5.143
+    },
+    {
+     "word": "resistance",
+     "start": 5.224,
+     "end": 5.898
+    },
+    {
+     "word": "in",
+     "start": 5.956,
+     "end": 6.049
+    },
+    {
+     "word": "direct",
+     "start": 6.107,
+     "end": 6.467
+    },
+    {
+     "word": "current",
+     "start": 6.536,
+     "end": 6.827
+    },
+    {
+     "word": "circuits",
+     "start": 6.896,
+     "end": 7.384
+    },
+    {
+     "word": "and",
+     "start": 7.593,
+     "end": 7.755
+    },
+    {
+     "word": "impedance",
+     "start": 7.814,
+     "end": 8.336
+    },
+    {
+     "word": "in",
+     "start": 8.371,
+     "end": 8.44
+    },
+    {
+     "word": "alternating",
+     "start": 8.51,
+     "end": 9.16
+    },
+    {
+     "word": "current",
+     "start": 9.369,
+     "end": 9.706
+    },
+    {
+     "word": "circuits?",
+     "start": 9.752,
+     "end": 10.542
+    }
+   ],
+   "measuredDuration": 10.541859410430838,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 10.251609977324263,
+   "captionOffset": 0.16253968253968254
+  },
+  "2": {
+   "src": "generated/vo-0d03f16b/s2.mp3",
+   "duration": 11.23265306122449,
+   "words": [
+    {
+     "word": "When",
+     "start": 0,
+     "end": 0.348
+    },
+    {
+     "word": "charges",
+     "start": 0.406,
+     "end": 0.813
+    },
+    {
+     "word": "march",
+     "start": 0.929,
+     "end": 1.3
+    },
+    {
+     "word": "in",
+     "start": 1.382,
+     "end": 1.509
+    },
+    {
+     "word": "a",
+     "start": 1.556,
+     "end": 1.591
+    },
+    {
+     "word": "single",
+     "start": 1.683,
+     "end": 2.125
+    },
+    {
+     "word": "steady",
+     "start": 2.183,
+     "end": 2.508
+    },
+    {
+     "word": "direction,",
+     "start": 2.589,
+     "end": 3.228
+    },
+    {
+     "word": "we",
+     "start": 3.344,
+     "end": 3.495
+    },
+    {
+     "word": "call",
+     "start": 3.564,
+     "end": 3.785
+    },
+    {
+     "word": "it",
+     "start": 3.855,
+     "end": 3.971
+    },
+    {
+     "word": "direct",
+     "start": 4.087,
+     "end": 4.505
+    },
+    {
+     "word": "current.",
+     "start": 4.574,
+     "end": 5.062
+    },
+    {
+     "word": "Batteries",
+     "start": 5.306,
+     "end": 5.759
+    },
+    {
+     "word": "deliver",
+     "start": 5.805,
+     "end": 6.177
+    },
+    {
+     "word": "this",
+     "start": 6.246,
+     "end": 6.397
+    },
+    {
+     "word": "steady",
+     "start": 6.432,
+     "end": 6.78
+    },
+    {
+     "word": "push,",
+     "start": 6.873,
+     "end": 7.268
+    },
+    {
+     "word": "keeping",
+     "start": 7.361,
+     "end": 7.686
+    },
+    {
+     "word": "electrons",
+     "start": 7.755,
+     "end": 8.243
+    },
+    {
+     "word": "flowing",
+     "start": 8.301,
+     "end": 8.707
+    },
+    {
+     "word": "in",
+     "start": 8.777,
+     "end": 8.905
+    },
+    {
+     "word": "one",
+     "start": 9.021,
+     "end": 9.288
+    },
+    {
+     "word": "continuous",
+     "start": 9.358,
+     "end": 9.973
+    },
+    {
+     "word": "unbroken",
+     "start": 10.089,
+     "end": 10.612
+    },
+    {
+     "word": "loop.",
+     "start": 10.681,
+     "end": 11.192
+    }
+   ],
+   "measuredDuration": 11.19201814058957,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 10.95981859410431,
+   "captionOffset": 0.17414965986394557
+  },
+  "3": {
+   "src": "generated/vo-0d03f16b/s3.mp3",
+   "duration": 9.508571428571429,
+   "words": [
+    {
+     "word": "Alternating",
+     "start": 0,
+     "end": 0.743
+    },
+    {
+     "word": "current",
+     "start": 0.789,
+     "end": 1.057
+    },
+    {
+     "word": "behaves",
+     "start": 1.103,
+     "end": 1.451
+    },
+    {
+     "word": "completely",
+     "start": 1.509,
+     "end": 1.939
+    },
+    {
+     "word": "differently.",
+     "start": 1.974,
+     "end": 2.473
+    },
+    {
+     "word": "Instead",
+     "start": 2.717,
+     "end": 3.065
+    },
+    {
+     "word": "of",
+     "start": 3.1,
+     "end": 3.158
+    },
+    {
+     "word": "marching",
+     "start": 3.228,
+     "end": 3.576
+    },
+    {
+     "word": "ahead,",
+     "start": 3.634,
+     "end": 3.982
+    },
+    {
+     "word": "wall",
+     "start": 4.04,
+     "end": 4.284
+    },
+    {
+     "word": "outlets",
+     "start": 4.342,
+     "end": 4.69
+    },
+    {
+     "word": "shake",
+     "start": 4.737,
+     "end": 4.969
+    },
+    {
+     "word": "electrons",
+     "start": 5.004,
+     "end": 5.538
+    },
+    {
+     "word": "back",
+     "start": 5.596,
+     "end": 5.793
+    },
+    {
+     "word": "and",
+     "start": 5.84,
+     "end": 5.921
+    },
+    {
+     "word": "forth",
+     "start": 5.979,
+     "end": 6.235
+    },
+    {
+     "word": "fifty",
+     "start": 6.281,
+     "end": 6.653
+    },
+    {
+     "word": "or",
+     "start": 6.722,
+     "end": 6.792
+    },
+    {
+     "word": "sixty",
+     "start": 6.861,
+     "end": 7.175
+    },
+    {
+     "word": "times",
+     "start": 7.221,
+     "end": 7.512
+    },
+    {
+     "word": "every",
+     "start": 7.581,
+     "end": 7.802
+    },
+    {
+     "word": "single",
+     "start": 7.86,
+     "end": 8.139
+    },
+    {
+     "word": "second",
+     "start": 8.173,
+     "end": 8.464
+    },
+    {
+     "word": "without",
+     "start": 8.522,
+     "end": 8.8
+    },
+    {
+     "word": "stopping.",
+     "start": 8.835,
+     "end": 9.474
+    }
+   ],
+   "measuredDuration": 9.47374149659864,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 9.160272108843538,
+   "captionOffset": 0.17414965986394557
+  },
+  "4": {
+   "src": "generated/vo-0d03f16b/s4.mp3",
+   "duration": 9.795918367346939,
+   "words": [
+    {
+     "word": "Think",
+     "start": 0,
+     "end": 0.337
+    },
+    {
+     "word": "of",
+     "start": 0.395,
+     "end": 0.476
+    },
+    {
+     "word": "resistance",
+     "start": 0.557,
+     "end": 1.161
+    },
+    {
+     "word": "like",
+     "start": 1.196,
+     "end": 1.37
+    },
+    {
+     "word": "walking",
+     "start": 1.416,
+     "end": 1.741
+    },
+    {
+     "word": "through",
+     "start": 1.788,
+     "end": 2.009
+    },
+    {
+     "word": "deep",
+     "start": 2.067,
+     "end": 2.264
+    },
+    {
+     "word": "friction",
+     "start": 2.334,
+     "end": 2.74
+    },
+    {
+     "word": "mud.",
+     "start": 2.798,
+     "end": 3.193
+    },
+    {
+     "word": "Every",
+     "start": 3.634,
+     "end": 3.982
+    },
+    {
+     "word": "single",
+     "start": 4.04,
+     "end": 4.389
+    },
+    {
+     "word": "step",
+     "start": 4.435,
+     "end": 4.725
+    },
+    {
+     "word": "collides",
+     "start": 4.795,
+     "end": 5.19
+    },
+    {
+     "word": "with",
+     "start": 5.224,
+     "end": 5.364
+    },
+    {
+     "word": "obstacles,",
+     "start": 5.433,
+     "end": 6.13
+    },
+    {
+     "word": "turning",
+     "start": 6.304,
+     "end": 6.653
+    },
+    {
+     "word": "your",
+     "start": 6.699,
+     "end": 6.815
+    },
+    {
+     "word": "forward",
+     "start": 6.861,
+     "end": 7.198
+    },
+    {
+     "word": "energy",
+     "start": 7.256,
+     "end": 7.616
+    },
+    {
+     "word": "straight",
+     "start": 7.686,
+     "end": 7.999
+    },
+    {
+     "word": "into",
+     "start": 8.034,
+     "end": 8.243
+    },
+    {
+     "word": "wasted",
+     "start": 8.336,
+     "end": 8.719
+    },
+    {
+     "word": "thermal",
+     "start": 8.766,
+     "end": 9.114
+    },
+    {
+     "word": "heat.",
+     "start": 9.172,
+     "end": 9.752
+    }
+   ],
+   "measuredDuration": 9.752380952380953,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 9.47374149659864,
+   "captionOffset": 0.16253968253968254
+  },
+  "5": {
+   "src": "generated/vo-0d03f16b/s5.mp3",
+   "duration": 10.579591836734695,
+   "words": [
+    {
+     "word": "Inside",
+     "start": 0,
+     "end": 0.557
+    },
+    {
+     "word": "a",
+     "start": 0.592,
+     "end": 0.615
+    },
+    {
+     "word": "classic",
+     "start": 0.662,
+     "end": 1.01
+    },
+    {
+     "word": "resistor,",
+     "start": 1.068,
+     "end": 1.591
+    },
+    {
+     "word": "moving",
+     "start": 1.707,
+     "end": 2.032
+    },
+    {
+     "word": "charges",
+     "start": 2.09,
+     "end": 2.531
+    },
+    {
+     "word": "constantly",
+     "start": 2.624,
+     "end": 3.262
+    },
+    {
+     "word": "smash",
+     "start": 3.32,
+     "end": 3.657
+    },
+    {
+     "word": "into",
+     "start": 3.704,
+     "end": 3.866
+    },
+    {
+     "word": "metal",
+     "start": 3.936,
+     "end": 4.156
+    },
+    {
+     "word": "atoms.",
+     "start": 4.203,
+     "end": 4.644
+    },
+    {
+     "word": "This",
+     "start": 4.853,
+     "end": 5.062
+    },
+    {
+     "word": "pure",
+     "start": 5.19,
+     "end": 5.538
+    },
+    {
+     "word": "collisions",
+     "start": 5.596,
+     "end": 6.06
+    },
+    {
+     "word": "friction",
+     "start": 6.13,
+     "end": 6.513
+    },
+    {
+     "word": "simply",
+     "start": 6.594,
+     "end": 6.943
+    },
+    {
+     "word": "burns",
+     "start": 7.012,
+     "end": 7.338
+    },
+    {
+     "word": "up",
+     "start": 7.384,
+     "end": 7.477
+    },
+    {
+     "word": "electric",
+     "start": 7.546,
+     "end": 7.906
+    },
+    {
+     "word": "voltage",
+     "start": 7.964,
+     "end": 8.406
+    },
+    {
+     "word": "regardless",
+     "start": 8.464,
+     "end": 9.021
+    },
+    {
+     "word": "of",
+     "start": 9.056,
+     "end": 9.125
+    },
+    {
+     "word": "current",
+     "start": 9.207,
+     "end": 9.497
+    },
+    {
+     "word": "flow",
+     "start": 9.555,
+     "end": 9.764
+    },
+    {
+     "word": "direction.",
+     "start": 9.81,
+     "end": 10.542
+    }
+   ],
+   "measuredDuration": 10.541859410430838,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 10.251609977324263,
+   "captionOffset": 0.16253968253968254
+  },
+  "6": {
+   "src": "generated/vo-0d03f16b/s6.mp3",
+   "duration": 11.598367346938776,
+   "words": [
+    {
+     "word": "Because",
+     "start": 0,
+     "end": 0.418
+    },
+    {
+     "word": "direct",
+     "start": 0.453,
+     "end": 0.755
+    },
+    {
+     "word": "current",
+     "start": 0.801,
+     "end": 1.126
+    },
+    {
+     "word": "never",
+     "start": 1.219,
+     "end": 1.486
+    },
+    {
+     "word": "changes",
+     "start": 1.544,
+     "end": 1.916
+    },
+    {
+     "word": "direction,",
+     "start": 1.974,
+     "end": 2.612
+    },
+    {
+     "word": "resistors",
+     "start": 2.856,
+     "end": 3.483
+    },
+    {
+     "word": "are",
+     "start": 3.553,
+     "end": 3.704
+    },
+    {
+     "word": "the",
+     "start": 3.738,
+     "end": 3.808
+    },
+    {
+     "word": "only",
+     "start": 3.901,
+     "end": 4.261
+    },
+    {
+     "word": "components",
+     "start": 4.342,
+     "end": 4.957
+    },
+    {
+     "word": "offering",
+     "start": 5.074,
+     "end": 5.48
+    },
+    {
+     "word": "permanent",
+     "start": 5.596,
+     "end": 6.118
+    },
+    {
+     "word": "steady",
+     "start": 6.188,
+     "end": 6.525
+    },
+    {
+     "word": "opposition.",
+     "start": 6.583,
+     "end": 7.256
+    },
+    {
+     "word": "That",
+     "start": 7.581,
+     "end": 7.814
+    },
+    {
+     "word": "simple",
+     "start": 7.895,
+     "end": 8.243
+    },
+    {
+     "word": "opposition",
+     "start": 8.278,
+     "end": 8.835
+    },
+    {
+     "word": "is",
+     "start": 8.916,
+     "end": 9.056
+    },
+    {
+     "word": "what",
+     "start": 9.114,
+     "end": 9.3
+    },
+    {
+     "word": "we",
+     "start": 9.369,
+     "end": 9.497
+    },
+    {
+     "word": "formally",
+     "start": 9.59,
+     "end": 10.054
+    },
+    {
+     "word": "call",
+     "start": 10.112,
+     "end": 10.403
+    },
+    {
+     "word": "resistance.",
+     "start": 10.577,
+     "end": 11.564
+    }
+   ],
+   "measuredDuration": 11.563537414965987,
+   "speechStart": 0.1509297052154195,
+   "speechEnd": 11.284897959183674,
+   "captionOffset": 0.1509297052154195
+  },
+  "7": {
+   "src": "generated/vo-0d03f16b/s7.mp3",
+   "duration": 11.728979591836735,
+   "words": [
+    {
+     "word": "Yet",
+     "start": 0,
+     "end": 0.348
+    },
+    {
+     "word": "alternating",
+     "start": 0.418,
+     "end": 1.045
+    },
+    {
+     "word": "current",
+     "start": 1.103,
+     "end": 1.509
+    },
+    {
+     "word": "introduces",
+     "start": 1.602,
+     "end": 2.334
+    },
+    {
+     "word": "a",
+     "start": 2.415,
+     "end": 2.473
+    },
+    {
+     "word": "brand",
+     "start": 2.543,
+     "end": 2.821
+    },
+    {
+     "word": "new",
+     "start": 2.891,
+     "end": 3.007
+    },
+    {
+     "word": "kind",
+     "start": 3.065,
+     "end": 3.239
+    },
+    {
+     "word": "of",
+     "start": 3.286,
+     "end": 3.344
+    },
+    {
+     "word": "opposition",
+     "start": 3.425,
+     "end": 3.971
+    },
+    {
+     "word": "called",
+     "start": 4.052,
+     "end": 4.342
+    },
+    {
+     "word": "reactance.",
+     "start": 4.423,
+     "end": 5.097
+    },
+    {
+     "word": "Total",
+     "start": 5.213,
+     "end": 5.561
+    },
+    {
+     "word": "opposition",
+     "start": 5.608,
+     "end": 6.06
+    },
+    {
+     "word": "becomes",
+     "start": 6.118,
+     "end": 6.502
+    },
+    {
+     "word": "impedance,",
+     "start": 6.594,
+     "end": 7.279
+    },
+    {
+     "word": "combining",
+     "start": 7.488,
+     "end": 8.022
+    },
+    {
+     "word": "ordinary",
+     "start": 8.104,
+     "end": 8.649
+    },
+    {
+     "word": "resistive",
+     "start": 8.766,
+     "end": 9.288
+    },
+    {
+     "word": "friction",
+     "start": 9.323,
+     "end": 9.741
+    },
+    {
+     "word": "with",
+     "start": 9.81,
+     "end": 9.996
+    },
+    {
+     "word": "reactive",
+     "start": 10.054,
+     "end": 10.53
+    },
+    {
+     "word": "timing",
+     "start": 10.565,
+     "end": 10.913
+    },
+    {
+     "word": "pushback.",
+     "start": 10.995,
+     "end": 11.703
+    }
+   ],
+   "measuredDuration": 11.702857142857143,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 11.366167800453514,
+   "captionOffset": 0.17414965986394557
+  },
+  "8": {
+   "src": "generated/vo-0d03f16b/s8.mp3",
+   "duration": 11.781224489795918,
+   "words": [
+    {
+     "word": "Impedance",
+     "start": 0,
+     "end": 0.813
+    },
+    {
+     "word": "is",
+     "start": 0.859,
+     "end": 0.964
+    },
+    {
+     "word": "the",
+     "start": 1.022,
+     "end": 1.103
+    },
+    {
+     "word": "grand",
+     "start": 1.173,
+     "end": 1.521
+    },
+    {
+     "word": "total",
+     "start": 1.579,
+     "end": 1.95
+    },
+    {
+     "word": "hurdle",
+     "start": 2.02,
+     "end": 2.531
+    },
+    {
+     "word": "that",
+     "start": 2.705,
+     "end": 2.902
+    },
+    {
+     "word": "an",
+     "start": 2.961,
+     "end": 3.042
+    },
+    {
+     "word": "alternating",
+     "start": 3.123,
+     "end": 3.785
+    },
+    {
+     "word": "circuit",
+     "start": 3.866,
+     "end": 4.261
+    },
+    {
+     "word": "presents.",
+     "start": 4.307,
+     "end": 4.946
+    },
+    {
+     "word": "It",
+     "start": 5.155,
+     "end": 5.317
+    },
+    {
+     "word": "bundles",
+     "start": 5.387,
+     "end": 5.863
+    },
+    {
+     "word": "ordinary",
+     "start": 5.956,
+     "end": 6.502
+    },
+    {
+     "word": "resistance",
+     "start": 6.583,
+     "end": 7.152
+    },
+    {
+     "word": "together",
+     "start": 7.187,
+     "end": 7.593
+    },
+    {
+     "word": "with",
+     "start": 7.651,
+     "end": 7.802
+    },
+    {
+     "word": "the",
+     "start": 7.848,
+     "end": 7.93
+    },
+    {
+     "word": "stubborn",
+     "start": 8.011,
+     "end": 8.522
+    },
+    {
+     "word": "magnetic",
+     "start": 8.591,
+     "end": 9.114
+    },
+    {
+     "word": "and",
+     "start": 9.183,
+     "end": 9.288
+    },
+    {
+     "word": "electric",
+     "start": 9.369,
+     "end": 9.799
+    },
+    {
+     "word": "fields",
+     "start": 9.88,
+     "end": 10.24
+    },
+    {
+     "word": "of",
+     "start": 10.298,
+     "end": 10.403
+    },
+    {
+     "word": "other",
+     "start": 10.495,
+     "end": 10.739
+    },
+    {
+     "word": "components.",
+     "start": 10.786,
+     "end": 11.749
+    }
+   ],
+   "measuredDuration": 11.749297052154194,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 11.482267573696145,
+   "captionOffset": 0.17414965986394557
+  },
+  "9": {
+   "src": "generated/vo-0d03f16b/s9.mp3",
+   "duration": 10.109387755102041,
+   "words": [
+    {
+     "word": "To",
+     "start": 0,
+     "end": 0.209
+    },
+    {
+     "word": "understand",
+     "start": 0.29,
+     "end": 0.801
+    },
+    {
+     "word": "where",
+     "start": 0.859,
+     "end": 1.068
+    },
+    {
+     "word": "this",
+     "start": 1.103,
+     "end": 1.242
+    },
+    {
+     "word": "new",
+     "start": 1.324,
+     "end": 1.486
+    },
+    {
+     "word": "reactance",
+     "start": 1.556,
+     "end": 2.078
+    },
+    {
+     "word": "comes",
+     "start": 2.113,
+     "end": 2.334
+    },
+    {
+     "word": "from,",
+     "start": 2.38,
+     "end": 2.728
+    },
+    {
+     "word": "look",
+     "start": 2.821,
+     "end": 3.007
+    },
+    {
+     "word": "at",
+     "start": 3.053,
+     "end": 3.123
+    },
+    {
+     "word": "two",
+     "start": 3.17,
+     "end": 3.355
+    },
+    {
+     "word": "everyday",
+     "start": 3.437,
+     "end": 3.785
+    },
+    {
+     "word": "parts:",
+     "start": 3.855,
+     "end": 4.307
+    },
+    {
+     "word": "inductors",
+     "start": 4.481,
+     "end": 5.108
+    },
+    {
+     "word": "and",
+     "start": 5.178,
+     "end": 5.341
+    },
+    {
+     "word": "capacitors.",
+     "start": 5.422,
+     "end": 6.153
+    },
+    {
+     "word": "Both",
+     "start": 6.397,
+     "end": 6.699
+    },
+    {
+     "word": "behave",
+     "start": 6.769,
+     "end": 7.129
+    },
+    {
+     "word": "radically",
+     "start": 7.187,
+     "end": 7.686
+    },
+    {
+     "word": "differently",
+     "start": 7.744,
+     "end": 8.255
+    },
+    {
+     "word": "in",
+     "start": 8.348,
+     "end": 8.464
+    },
+    {
+     "word": "DC",
+     "start": 8.533,
+     "end": 8.8
+    },
+    {
+     "word": "compared",
+     "start": 8.951,
+     "end": 9.334
+    },
+    {
+     "word": "to",
+     "start": 9.369,
+     "end": 9.427
+    },
+    {
+     "word": "AC.",
+     "start": 9.509,
+     "end": 10.077
+    }
+   ],
+   "measuredDuration": 10.077460317460318,
+   "speechStart": 0.1509297052154195,
+   "speechEnd": 9.810430839002267,
+   "captionOffset": 0.1509297052154195
+  },
+  "10": {
+   "src": "generated/vo-0d03f16b/s10.mp3",
+   "duration": 9.926530612244898,
+   "words": [
+    {
+     "word": "An",
+     "start": 0,
+     "end": 0.267
+    },
+    {
+     "word": "inductor",
+     "start": 0.325,
+     "end": 0.766
+    },
+    {
+     "word": "is",
+     "start": 0.824,
+     "end": 0.906
+    },
+    {
+     "word": "simply",
+     "start": 0.952,
+     "end": 1.347
+    },
+    {
+     "word": "a",
+     "start": 1.405,
+     "end": 1.463
+    },
+    {
+     "word": "wire",
+     "start": 1.556,
+     "end": 1.881
+    },
+    {
+     "word": "coiled",
+     "start": 1.939,
+     "end": 2.276
+    },
+    {
+     "word": "in",
+     "start": 2.322,
+     "end": 2.392
+    },
+    {
+     "word": "loops.",
+     "start": 2.473,
+     "end": 2.972
+    },
+    {
+     "word": "When",
+     "start": 3.088,
+     "end": 3.309
+    },
+    {
+     "word": "electric",
+     "start": 3.402,
+     "end": 3.889
+    },
+    {
+     "word": "current",
+     "start": 3.947,
+     "end": 4.261
+    },
+    {
+     "word": "flows",
+     "start": 4.331,
+     "end": 4.69
+    },
+    {
+     "word": "through",
+     "start": 4.737,
+     "end": 4.992
+    },
+    {
+     "word": "these",
+     "start": 5.027,
+     "end": 5.213
+    },
+    {
+     "word": "tight",
+     "start": 5.248,
+     "end": 5.515
+    },
+    {
+     "word": "turns,",
+     "start": 5.561,
+     "end": 6.002
+    },
+    {
+     "word": "it",
+     "start": 6.211,
+     "end": 6.374
+    },
+    {
+     "word": "builds",
+     "start": 6.455,
+     "end": 6.78
+    },
+    {
+     "word": "an",
+     "start": 6.861,
+     "end": 6.989
+    },
+    {
+     "word": "invisible",
+     "start": 7.105,
+     "end": 7.779
+    },
+    {
+     "word": "magnetic",
+     "start": 7.825,
+     "end": 8.348
+    },
+    {
+     "word": "field",
+     "start": 8.417,
+     "end": 8.731
+    },
+    {
+     "word": "around",
+     "start": 8.8,
+     "end": 9.16
+    },
+    {
+     "word": "itself.",
+     "start": 9.218,
+     "end": 9.892
+    }
+   ],
+   "measuredDuration": 9.891700680272109,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 9.520181405895691,
+   "captionOffset": 0.16253968253968254
+  },
+  "11": {
+   "src": "generated/vo-0d03f16b/s11.mp3",
+   "duration": 9.978775510204082,
+   "words": [
+    {
+     "word": "In",
+     "start": 0,
+     "end": 0.29
+    },
+    {
+     "word": "a",
+     "start": 0.337,
+     "end": 0.36
+    },
+    {
+     "word": "direct",
+     "start": 0.43,
+     "end": 0.824
+    },
+    {
+     "word": "current",
+     "start": 0.906,
+     "end": 1.231
+    },
+    {
+     "word": "circuit,",
+     "start": 1.289,
+     "end": 1.776
+    },
+    {
+     "word": "an",
+     "start": 1.823,
+     "end": 1.962
+    },
+    {
+     "word": "inductor",
+     "start": 2.032,
+     "end": 2.496
+    },
+    {
+     "word": "acts",
+     "start": 2.577,
+     "end": 2.879
+    },
+    {
+     "word": "like",
+     "start": 2.926,
+     "end": 3.088
+    },
+    {
+     "word": "a",
+     "start": 3.111,
+     "end": 3.146
+    },
+    {
+     "word": "stubborn",
+     "start": 3.193,
+     "end": 3.541
+    },
+    {
+     "word": "flywheel.",
+     "start": 3.599,
+     "end": 4.272
+    },
+    {
+     "word": "It",
+     "start": 4.516,
+     "end": 4.69
+    },
+    {
+     "word": "momentarily",
+     "start": 4.772,
+     "end": 5.387
+    },
+    {
+     "word": "delays",
+     "start": 5.457,
+     "end": 5.84
+    },
+    {
+     "word": "initial",
+     "start": 5.909,
+     "end": 6.269
+    },
+    {
+     "word": "turn",
+     "start": 6.339,
+     "end": 6.594
+    },
+    {
+     "word": "on,",
+     "start": 6.676,
+     "end": 7.036
+    },
+    {
+     "word": "but",
+     "start": 7.21,
+     "end": 7.384
+    },
+    {
+     "word": "then",
+     "start": 7.43,
+     "end": 7.605
+    },
+    {
+     "word": "settles",
+     "start": 7.721,
+     "end": 8.162
+    },
+    {
+     "word": "into",
+     "start": 8.243,
+     "end": 8.475
+    },
+    {
+     "word": "an",
+     "start": 8.545,
+     "end": 8.615
+    },
+    {
+     "word": "easy",
+     "start": 8.707,
+     "end": 9.033
+    },
+    {
+     "word": "passage.",
+     "start": 9.114,
+     "end": 9.938
+    }
+   ],
+   "measuredDuration": 9.93814058956916,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 9.624671201814058,
+   "captionOffset": 0.16253968253968254
+  },
+  "12": {
+   "src": "generated/vo-0d03f16b/s12.mp3",
+   "duration": 11.10204081632653,
+   "words": [
+    {
+     "word": "Steady",
+     "start": 0,
+     "end": 0.546
+    },
+    {
+     "word": "DC",
+     "start": 0.604,
+     "end": 0.801
+    },
+    {
+     "word": "electrons",
+     "start": 0.952,
+     "end": 1.579
+    },
+    {
+     "word": "glide",
+     "start": 1.695,
+     "end": 2.043
+    },
+    {
+     "word": "smoothly",
+     "start": 2.078,
+     "end": 2.566
+    },
+    {
+     "word": "through",
+     "start": 2.635,
+     "end": 2.856
+    },
+    {
+     "word": "the",
+     "start": 2.891,
+     "end": 2.961
+    },
+    {
+     "word": "inductor",
+     "start": 3.042,
+     "end": 3.587
+    },
+    {
+     "word": "copper",
+     "start": 3.646,
+     "end": 3.959
+    },
+    {
+     "word": "wire.",
+     "start": 4.005,
+     "end": 4.447
+    },
+    {
+     "word": "Once",
+     "start": 4.772,
+     "end": 5.108
+    },
+    {
+     "word": "the",
+     "start": 5.143,
+     "end": 5.224
+    },
+    {
+     "word": "magnetic",
+     "start": 5.283,
+     "end": 5.735
+    },
+    {
+     "word": "field",
+     "start": 5.793,
+     "end": 6.026
+    },
+    {
+     "word": "stabilizes,",
+     "start": 6.072,
+     "end": 6.85
+    },
+    {
+     "word": "the",
+     "start": 6.885,
+     "end": 6.978
+    },
+    {
+     "word": "coil",
+     "start": 7.047,
+     "end": 7.338
+    },
+    {
+     "word": "turns",
+     "start": 7.396,
+     "end": 7.674
+    },
+    {
+     "word": "into",
+     "start": 7.755,
+     "end": 7.976
+    },
+    {
+     "word": "an",
+     "start": 8.057,
+     "end": 8.115
+    },
+    {
+     "word": "ordinary",
+     "start": 8.197,
+     "end": 8.603
+    },
+    {
+     "word": "path",
+     "start": 8.684,
+     "end": 9.044
+    },
+    {
+     "word": "with",
+     "start": 9.102,
+     "end": 9.276
+    },
+    {
+     "word": "zero",
+     "start": 9.346,
+     "end": 9.752
+    },
+    {
+     "word": "special",
+     "start": 9.81,
+     "end": 10.159
+    },
+    {
+     "word": "opposition.",
+     "start": 10.217,
+     "end": 11.053
+    }
+   ],
+   "measuredDuration": 11.052698412698414,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 10.750839002267574,
+   "captionOffset": 0.17414965986394557
+  },
+  "13": {
+   "src": "generated/vo-0d03f16b/s13.mp3",
+   "duration": 10.344489795918367,
+   "words": [
+    {
+     "word": "Now",
+     "start": 0,
+     "end": 0.325
+    },
+    {
+     "word": "connect",
+     "start": 0.406,
+     "end": 0.755
+    },
+    {
+     "word": "alternating",
+     "start": 0.824,
+     "end": 1.37
+    },
+    {
+     "word": "current",
+     "start": 1.451,
+     "end": 1.788
+    },
+    {
+     "word": "to",
+     "start": 1.823,
+     "end": 1.881
+    },
+    {
+     "word": "that",
+     "start": 1.939,
+     "end": 2.078
+    },
+    {
+     "word": "same",
+     "start": 2.148,
+     "end": 2.392
+    },
+    {
+     "word": "inductor.",
+     "start": 2.438,
+     "end": 2.995
+    },
+    {
+     "word": "The",
+     "start": 3.204,
+     "end": 3.344
+    },
+    {
+     "word": "current",
+     "start": 3.425,
+     "end": 3.773
+    },
+    {
+     "word": "constantly",
+     "start": 3.889,
+     "end": 4.54
+    },
+    {
+     "word": "changes",
+     "start": 4.598,
+     "end": 4.969
+    },
+    {
+     "word": "direction,",
+     "start": 5.039,
+     "end": 5.712
+    },
+    {
+     "word": "forcing",
+     "start": 5.921,
+     "end": 6.339
+    },
+    {
+     "word": "the",
+     "start": 6.397,
+     "end": 6.467
+    },
+    {
+     "word": "magnetic",
+     "start": 6.525,
+     "end": 6.943
+    },
+    {
+     "word": "field",
+     "start": 7.012,
+     "end": 7.233
+    },
+    {
+     "word": "to",
+     "start": 7.279,
+     "end": 7.338
+    },
+    {
+     "word": "expand",
+     "start": 7.43,
+     "end": 7.988
+    },
+    {
+     "word": "and",
+     "start": 8.046,
+     "end": 8.139
+    },
+    {
+     "word": "collapse",
+     "start": 8.22,
+     "end": 8.696
+    },
+    {
+     "word": "without",
+     "start": 8.742,
+     "end": 9.056
+    },
+    {
+     "word": "a",
+     "start": 9.102,
+     "end": 9.125
+    },
+    {
+     "word": "moment",
+     "start": 9.195,
+     "end": 9.509
+    },
+    {
+     "word": "of",
+     "start": 9.555,
+     "end": 9.625
+    },
+    {
+     "word": "peace.",
+     "start": 9.718,
+     "end": 10.31
+    }
+   ],
+   "measuredDuration": 10.309659863945578,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 9.903310657596371,
+   "captionOffset": 0.17414965986394557
+  },
+  "14": {
+   "src": "generated/vo-0d03f16b/s14.mp3",
+   "duration": 12.016326530612245,
+   "words": [
+    {
+     "word": "Every",
+     "start": 0,
+     "end": 0.534
+    },
+    {
+     "word": "rapid",
+     "start": 0.615,
+     "end": 0.94
+    },
+    {
+     "word": "reversal",
+     "start": 0.998,
+     "end": 1.463
+    },
+    {
+     "word": "produces",
+     "start": 1.533,
+     "end": 2.055
+    },
+    {
+     "word": "a",
+     "start": 2.113,
+     "end": 2.136
+    },
+    {
+     "word": "counter",
+     "start": 2.206,
+     "end": 2.554
+    },
+    {
+     "word": "voltage",
+     "start": 2.601,
+     "end": 3.077
+    },
+    {
+     "word": "that",
+     "start": 3.111,
+     "end": 3.286
+    },
+    {
+     "word": "chokes",
+     "start": 3.355,
+     "end": 3.75
+    },
+    {
+     "word": "changing",
+     "start": 3.808,
+     "end": 4.214
+    },
+    {
+     "word": "current.",
+     "start": 4.284,
+     "end": 4.76
+    },
+    {
+     "word": "The",
+     "start": 5.039,
+     "end": 5.155
+    },
+    {
+     "word": "incoming",
+     "start": 5.224,
+     "end": 5.619
+    },
+    {
+     "word": "wave",
+     "start": 5.677,
+     "end": 5.898
+    },
+    {
+     "word": "is",
+     "start": 5.933,
+     "end": 6.014
+    },
+    {
+     "word": "blocked",
+     "start": 6.084,
+     "end": 6.409
+    },
+    {
+     "word": "repeatedly,",
+     "start": 6.49,
+     "end": 7.163
+    },
+    {
+     "word": "creating",
+     "start": 7.198,
+     "end": 7.674
+    },
+    {
+     "word": "massive",
+     "start": 7.79,
+     "end": 8.29
+    },
+    {
+     "word": "inductive",
+     "start": 8.348,
+     "end": 8.882
+    },
+    {
+     "word": "reactance",
+     "start": 8.928,
+     "end": 9.52
+    },
+    {
+     "word": "against",
+     "start": 9.555,
+     "end": 9.938
+    },
+    {
+     "word": "high",
+     "start": 9.996,
+     "end": 10.159
+    },
+    {
+     "word": "frequency",
+     "start": 10.205,
+     "end": 10.705
+    },
+    {
+     "word": "alternating",
+     "start": 10.774,
+     "end": 11.273
+    },
+    {
+     "word": "current.",
+     "start": 11.32,
+     "end": 11.982
+    }
+   ],
+   "measuredDuration": 11.981496598639456,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 11.679637188208616,
+   "captionOffset": 0.17414965986394557
+  },
+  "15": {
+   "src": "generated/vo-0d03f16b/s15.mp3",
+   "duration": 10.893061224489795,
+   "words": [
+    {
+     "word": "Now",
+     "start": 0,
+     "end": 0.348
+    },
+    {
+     "word": "look",
+     "start": 0.406,
+     "end": 0.592
+    },
+    {
+     "word": "at",
+     "start": 0.639,
+     "end": 0.708
+    },
+    {
+     "word": "a",
+     "start": 0.755,
+     "end": 0.778
+    },
+    {
+     "word": "capacitor,",
+     "start": 0.824,
+     "end": 1.591
+    },
+    {
+     "word": "which",
+     "start": 1.625,
+     "end": 1.823
+    },
+    {
+     "word": "consists",
+     "start": 1.881,
+     "end": 2.287
+    },
+    {
+     "word": "of",
+     "start": 2.322,
+     "end": 2.403
+    },
+    {
+     "word": "two",
+     "start": 2.485,
+     "end": 2.682
+    },
+    {
+     "word": "parallel",
+     "start": 2.752,
+     "end": 3.228
+    },
+    {
+     "word": "metal",
+     "start": 3.286,
+     "end": 3.541
+    },
+    {
+     "word": "plates",
+     "start": 3.599,
+     "end": 3.971
+    },
+    {
+     "word": "separated",
+     "start": 4.296,
+     "end": 4.888
+    },
+    {
+     "word": "by",
+     "start": 4.934,
+     "end": 5.05
+    },
+    {
+     "word": "an",
+     "start": 5.097,
+     "end": 5.166
+    },
+    {
+     "word": "insulator",
+     "start": 5.236,
+     "end": 5.793
+    },
+    {
+     "word": "gap.",
+     "start": 5.863,
+     "end": 6.2
+    },
+    {
+     "word": "Air",
+     "start": 6.444,
+     "end": 6.745
+    },
+    {
+     "word": "or",
+     "start": 6.861,
+     "end": 7.024
+    },
+    {
+     "word": "plastic",
+     "start": 7.082,
+     "end": 7.593
+    },
+    {
+     "word": "prevents",
+     "start": 7.709,
+     "end": 8.139
+    },
+    {
+     "word": "electrons",
+     "start": 8.197,
+     "end": 8.742
+    },
+    {
+     "word": "from",
+     "start": 8.789,
+     "end": 8.963
+    },
+    {
+     "word": "crossing",
+     "start": 9.033,
+     "end": 9.439
+    },
+    {
+     "word": "directly",
+     "start": 9.509,
+     "end": 10.043
+    },
+    {
+     "word": "across.",
+     "start": 10.101,
+     "end": 10.867
+    }
+   ],
+   "measuredDuration": 10.866938775510205,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 10.576689342403627,
+   "captionOffset": 0.16253968253968254
+  },
+  "16": {
+   "src": "generated/vo-0d03f16b/s16.mp3",
+   "duration": 9.978775510204082,
+   "words": [
+    {
+     "word": "Feed",
+     "start": 0,
+     "end": 0.395
+    },
+    {
+     "word": "direct",
+     "start": 0.488,
+     "end": 0.859
+    },
+    {
+     "word": "current",
+     "start": 0.917,
+     "end": 1.184
+    },
+    {
+     "word": "into",
+     "start": 1.242,
+     "end": 1.405
+    },
+    {
+     "word": "this",
+     "start": 1.474,
+     "end": 1.602
+    },
+    {
+     "word": "capacitor.",
+     "start": 1.66,
+     "end": 2.31
+    },
+    {
+     "word": "Electrons",
+     "start": 2.519,
+     "end": 3.065
+    },
+    {
+     "word": "rush",
+     "start": 3.146,
+     "end": 3.344
+    },
+    {
+     "word": "onto",
+     "start": 3.402,
+     "end": 3.576
+    },
+    {
+     "word": "one",
+     "start": 3.657,
+     "end": 3.808
+    },
+    {
+     "word": "plate",
+     "start": 3.855,
+     "end": 4.098
+    },
+    {
+     "word": "until",
+     "start": 4.145,
+     "end": 4.389
+    },
+    {
+     "word": "it",
+     "start": 4.447,
+     "end": 4.505
+    },
+    {
+     "word": "fills",
+     "start": 4.563,
+     "end": 4.841
+    },
+    {
+     "word": "up",
+     "start": 4.888,
+     "end": 4.981
+    },
+    {
+     "word": "completely,",
+     "start": 5.039,
+     "end": 5.689
+    },
+    {
+     "word": "whereupon",
+     "start": 5.805,
+     "end": 6.304
+    },
+    {
+     "word": "the",
+     "start": 6.362,
+     "end": 6.432
+    },
+    {
+     "word": "open",
+     "start": 6.513,
+     "end": 6.78
+    },
+    {
+     "word": "barrier",
+     "start": 6.861,
+     "end": 7.221
+    },
+    {
+     "word": "stops",
+     "start": 7.291,
+     "end": 7.651
+    },
+    {
+     "word": "all",
+     "start": 7.767,
+     "end": 8.046
+    },
+    {
+     "word": "further",
+     "start": 8.127,
+     "end": 8.429
+    },
+    {
+     "word": "current",
+     "start": 8.475,
+     "end": 8.742
+    },
+    {
+     "word": "completely",
+     "start": 8.812,
+     "end": 9.323
+    },
+    {
+     "word": "dead.",
+     "start": 9.392,
+     "end": 9.938
+    }
+   ],
+   "measuredDuration": 9.93814058956916,
+   "speechStart": 0.10448979591836735,
+   "speechEnd": 9.613061224489796,
+   "captionOffset": 0.10448979591836735
+  },
+  "17": {
+   "src": "generated/vo-0d03f16b/s17.mp3",
+   "duration": 11.546122448979592,
+   "words": [
+    {
+     "word": "So",
+     "start": 0,
+     "end": 0.325
+    },
+    {
+     "word": "in",
+     "start": 0.406,
+     "end": 0.511
+    },
+    {
+     "word": "a",
+     "start": 0.569,
+     "end": 0.592
+    },
+    {
+     "word": "DC",
+     "start": 0.662,
+     "end": 0.952
+    },
+    {
+     "word": "circuit,",
+     "start": 1.161,
+     "end": 1.672
+    },
+    {
+     "word": "a",
+     "start": 1.718,
+     "end": 1.776
+    },
+    {
+     "word": "capacitor",
+     "start": 1.892,
+     "end": 2.601
+    },
+    {
+     "word": "behaves",
+     "start": 2.717,
+     "end": 3.228
+    },
+    {
+     "word": "like",
+     "start": 3.309,
+     "end": 3.553
+    },
+    {
+     "word": "an",
+     "start": 3.587,
+     "end": 3.657
+    },
+    {
+     "word": "open",
+     "start": 3.785,
+     "end": 4.156
+    },
+    {
+     "word": "broken",
+     "start": 4.238,
+     "end": 4.609
+    },
+    {
+     "word": "switch.",
+     "start": 4.667,
+     "end": 5.12
+    },
+    {
+     "word": "Its",
+     "start": 5.445,
+     "end": 5.666
+    },
+    {
+     "word": "resistance",
+     "start": 5.747,
+     "end": 6.42
+    },
+    {
+     "word": "to",
+     "start": 6.467,
+     "end": 6.56
+    },
+    {
+     "word": "steady",
+     "start": 6.641,
+     "end": 7.001
+    },
+    {
+     "word": "current",
+     "start": 7.059,
+     "end": 7.361
+    },
+    {
+     "word": "is",
+     "start": 7.419,
+     "end": 7.535
+    },
+    {
+     "word": "essentially",
+     "start": 7.616,
+     "end": 8.301
+    },
+    {
+     "word": "infinite",
+     "start": 8.394,
+     "end": 8.986
+    },
+    {
+     "word": "once",
+     "start": 9.16,
+     "end": 9.474
+    },
+    {
+     "word": "its",
+     "start": 9.52,
+     "end": 9.66
+    },
+    {
+     "word": "plates",
+     "start": 9.741,
+     "end": 10.124
+    },
+    {
+     "word": "are",
+     "start": 10.182,
+     "end": 10.356
+    },
+    {
+     "word": "fully",
+     "start": 10.426,
+     "end": 10.739
+    },
+    {
+     "word": "charged.",
+     "start": 10.809,
+     "end": 11.517
+    }
+   ],
+   "measuredDuration": 11.517097505668934,
+   "speechStart": 0.1509297052154195,
+   "speechEnd": 11.226848072562358,
+   "captionOffset": 0.1509297052154195
+  },
+  "18": {
+   "src": "generated/vo-0d03f16b/s18.mp3",
+   "duration": 10.475102040816326,
+   "words": [
+    {
+     "word": "Yet",
+     "start": 0,
+     "end": 0.453
+    },
+    {
+     "word": "alternating",
+     "start": 0.569,
+     "end": 1.196
+    },
+    {
+     "word": "current",
+     "start": 1.277,
+     "end": 1.591
+    },
+    {
+     "word": "tricks",
+     "start": 1.625,
+     "end": 1.904
+    },
+    {
+     "word": "the",
+     "start": 1.939,
+     "end": 2.02
+    },
+    {
+     "word": "capacitor",
+     "start": 2.078,
+     "end": 2.647
+    },
+    {
+     "word": "entirely.",
+     "start": 2.728,
+     "end": 3.437
+    },
+    {
+     "word": "Electrons",
+     "start": 3.611,
+     "end": 4.18
+    },
+    {
+     "word": "pour",
+     "start": 4.261,
+     "end": 4.551
+    },
+    {
+     "word": "in",
+     "start": 4.621,
+     "end": 4.69
+    },
+    {
+     "word": "to",
+     "start": 4.748,
+     "end": 4.83
+    },
+    {
+     "word": "charge",
+     "start": 4.923,
+     "end": 5.294
+    },
+    {
+     "word": "one",
+     "start": 5.364,
+     "end": 5.596
+    },
+    {
+     "word": "side,",
+     "start": 5.642,
+     "end": 5.979
+    },
+    {
+     "word": "quickly",
+     "start": 6.06,
+     "end": 6.42
+    },
+    {
+     "word": "drain",
+     "start": 6.49,
+     "end": 6.815
+    },
+    {
+     "word": "away",
+     "start": 6.873,
+     "end": 7.105
+    },
+    {
+     "word": "as",
+     "start": 7.187,
+     "end": 7.349
+    },
+    {
+     "word": "polarity",
+     "start": 7.43,
+     "end": 7.976
+    },
+    {
+     "word": "flips,",
+     "start": 8.046,
+     "end": 8.522
+    },
+    {
+     "word": "and",
+     "start": 8.58,
+     "end": 8.777
+    },
+    {
+     "word": "fill",
+     "start": 8.858,
+     "end": 9.056
+    },
+    {
+     "word": "the",
+     "start": 9.125,
+     "end": 9.195
+    },
+    {
+     "word": "other",
+     "start": 9.242,
+     "end": 9.427
+    },
+    {
+     "word": "side",
+     "start": 9.474,
+     "end": 9.706
+    },
+    {
+     "word": "instead.",
+     "start": 9.741,
+     "end": 10.449
+    }
+   ],
+   "measuredDuration": 10.448979591836734,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 10.170340136054422,
+   "captionOffset": 0.16253968253968254
+  },
+  "19": {
+   "src": "generated/vo-0d03f16b/s19.mp3",
+   "duration": 11.937959183673469,
+   "words": [
+    {
+     "word": "No",
+     "start": 0,
+     "end": 0.302
+    },
+    {
+     "word": "electron",
+     "start": 0.372,
+     "end": 0.871
+    },
+    {
+     "word": "ever",
+     "start": 0.94,
+     "end": 1.149
+    },
+    {
+     "word": "jumps",
+     "start": 1.219,
+     "end": 1.474
+    },
+    {
+     "word": "the",
+     "start": 1.521,
+     "end": 1.591
+    },
+    {
+     "word": "insulating",
+     "start": 1.66,
+     "end": 2.206
+    },
+    {
+     "word": "gap",
+     "start": 2.264,
+     "end": 2.485
+    },
+    {
+     "word": "between",
+     "start": 2.543,
+     "end": 2.868
+    },
+    {
+     "word": "plates.",
+     "start": 2.937,
+     "end": 3.413
+    },
+    {
+     "word": "But",
+     "start": 3.738,
+     "end": 3.924
+    },
+    {
+     "word": "because",
+     "start": 3.982,
+     "end": 4.354
+    },
+    {
+     "word": "charges",
+     "start": 4.4,
+     "end": 4.957
+    },
+    {
+     "word": "slosh",
+     "start": 5.004,
+     "end": 5.399
+    },
+    {
+     "word": "continuously",
+     "start": 5.468,
+     "end": 6.293
+    },
+    {
+     "word": "in",
+     "start": 6.374,
+     "end": 6.49
+    },
+    {
+     "word": "the",
+     "start": 6.548,
+     "end": 6.629
+    },
+    {
+     "word": "outside",
+     "start": 6.699,
+     "end": 7.152
+    },
+    {
+     "word": "connecting",
+     "start": 7.187,
+     "end": 7.628
+    },
+    {
+     "word": "wires,",
+     "start": 7.686,
+     "end": 8.197
+    },
+    {
+     "word": "alternating",
+     "start": 8.522,
+     "end": 9.183
+    },
+    {
+     "word": "current",
+     "start": 9.242,
+     "end": 9.543
+    },
+    {
+     "word": "flows",
+     "start": 9.601,
+     "end": 9.938
+    },
+    {
+     "word": "through",
+     "start": 10.008,
+     "end": 10.286
+    },
+    {
+     "word": "with",
+     "start": 10.321,
+     "end": 10.472
+    },
+    {
+     "word": "minimal",
+     "start": 10.553,
+     "end": 10.948
+    },
+    {
+     "word": "opposition.",
+     "start": 11.006,
+     "end": 11.889
+    }
+   ],
+   "measuredDuration": 11.888616780045352,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 11.656417233560092,
+   "captionOffset": 0.17414965986394557
+  },
+  "20": {
+   "src": "generated/vo-0d03f16b/s20.mp3",
+   "duration": 12.904489795918368,
+   "words": [
+    {
+     "word": "Notice",
+     "start": 0,
+     "end": 0.569
+    },
+    {
+     "word": "the",
+     "start": 0.604,
+     "end": 0.673
+    },
+    {
+     "word": "beautiful",
+     "start": 0.731,
+     "end": 1.219
+    },
+    {
+     "word": "mirror",
+     "start": 1.335,
+     "end": 1.602
+    },
+    {
+     "word": "symmetry",
+     "start": 1.649,
+     "end": 2.055
+    },
+    {
+     "word": "between",
+     "start": 2.113,
+     "end": 2.438
+    },
+    {
+     "word": "them.",
+     "start": 2.496,
+     "end": 2.798
+    },
+    {
+     "word": "Inductors",
+     "start": 3.007,
+     "end": 3.704
+    },
+    {
+     "word": "love",
+     "start": 3.82,
+     "end": 4.122
+    },
+    {
+     "word": "steady",
+     "start": 4.156,
+     "end": 4.528
+    },
+    {
+     "word": "direct",
+     "start": 4.609,
+     "end": 4.969
+    },
+    {
+     "word": "current",
+     "start": 5.016,
+     "end": 5.317
+    },
+    {
+     "word": "but",
+     "start": 5.375,
+     "end": 5.55
+    },
+    {
+     "word": "choke",
+     "start": 5.619,
+     "end": 6.014
+    },
+    {
+     "word": "alternating",
+     "start": 6.084,
+     "end": 6.722
+    },
+    {
+     "word": "current,",
+     "start": 6.792,
+     "end": 7.279
+    },
+    {
+     "word": "while",
+     "start": 7.488,
+     "end": 7.709
+    },
+    {
+     "word": "capacitors",
+     "start": 7.755,
+     "end": 8.44
+    },
+    {
+     "word": "block",
+     "start": 8.533,
+     "end": 8.858
+    },
+    {
+     "word": "DC",
+     "start": 8.94,
+     "end": 9.276
+    },
+    {
+     "word": "entirely",
+     "start": 9.451,
+     "end": 10.043
+    },
+    {
+     "word": "and",
+     "start": 10.112,
+     "end": 10.24
+    },
+    {
+     "word": "happily",
+     "start": 10.356,
+     "end": 10.832
+    },
+    {
+     "word": "conduct",
+     "start": 10.913,
+     "end": 11.331
+    },
+    {
+     "word": "alternating",
+     "start": 11.413,
+     "end": 12.005
+    },
+    {
+     "word": "signals.",
+     "start": 12.074,
+     "end": 12.864
+    }
+   ],
+   "measuredDuration": 12.863854875283447,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 12.57360544217687,
+   "captionOffset": 0.16253968253968254
+  },
+  "21": {
+   "src": "generated/vo-0d03f16b/s21.mp3",
+   "duration": 10.109387755102041,
+   "words": [
+    {
+     "word": "Resistance",
+     "start": 0,
+     "end": 0.731
+    },
+    {
+     "word": "wastes",
+     "start": 0.778,
+     "end": 1.08
+    },
+    {
+     "word": "energy",
+     "start": 1.126,
+     "end": 1.405
+    },
+    {
+     "word": "as",
+     "start": 1.44,
+     "end": 1.521
+    },
+    {
+     "word": "heat",
+     "start": 1.591,
+     "end": 1.788
+    },
+    {
+     "word": "while",
+     "start": 1.846,
+     "end": 2.067
+    },
+    {
+     "word": "reactance",
+     "start": 2.125,
+     "end": 2.659
+    },
+    {
+     "word": "merely",
+     "start": 2.694,
+     "end": 2.949
+    },
+    {
+     "word": "stores",
+     "start": 2.995,
+     "end": 3.39
+    },
+    {
+     "word": "and",
+     "start": 3.437,
+     "end": 3.518
+    },
+    {
+     "word": "releases",
+     "start": 3.576,
+     "end": 3.994
+    },
+    {
+     "word": "energy",
+     "start": 4.063,
+     "end": 4.342
+    },
+    {
+     "word": "in",
+     "start": 4.377,
+     "end": 4.435
+    },
+    {
+     "word": "fields.",
+     "start": 4.505,
+     "end": 4.923
+    },
+    {
+     "word": "When",
+     "start": 5.074,
+     "end": 5.259
+    },
+    {
+     "word": "both",
+     "start": 5.329,
+     "end": 5.596
+    },
+    {
+     "word": "forces",
+     "start": 5.642,
+     "end": 6.049
+    },
+    {
+     "word": "work",
+     "start": 6.107,
+     "end": 6.339
+    },
+    {
+     "word": "together",
+     "start": 6.397,
+     "end": 6.803
+    },
+    {
+     "word": "in",
+     "start": 6.861,
+     "end": 6.943
+    },
+    {
+     "word": "AC,",
+     "start": 7.024,
+     "end": 7.558
+    },
+    {
+     "word": "we",
+     "start": 7.651,
+     "end": 7.79
+    },
+    {
+     "word": "need",
+     "start": 7.848,
+     "end": 8.046
+    },
+    {
+     "word": "the",
+     "start": 8.092,
+     "end": 8.173
+    },
+    {
+     "word": "unified",
+     "start": 8.243,
+     "end": 8.696
+    },
+    {
+     "word": "term",
+     "start": 8.754,
+     "end": 8.998
+    },
+    {
+     "word": "impedance.",
+     "start": 9.114,
+     "end": 10.077
+    }
+   ],
+   "measuredDuration": 10.077460317460318,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 9.775600907029478,
+   "captionOffset": 0.17414965986394557
+  },
+  "22": {
+   "src": "generated/vo-0d03f16b/s22.mp3",
+   "duration": 12.120816326530612,
+   "words": [
+    {
+     "word": "Engineers",
+     "start": 0,
+     "end": 0.685
+    },
+    {
+     "word": "measure",
+     "start": 0.755,
+     "end": 1.115
+    },
+    {
+     "word": "both",
+     "start": 1.184,
+     "end": 1.474
+    },
+    {
+     "word": "resistance",
+     "start": 1.544,
+     "end": 2.125
+    },
+    {
+     "word": "and",
+     "start": 2.183,
+     "end": 2.426
+    },
+    {
+     "word": "impedance",
+     "start": 2.496,
+     "end": 2.972
+    },
+    {
+     "word": "in",
+     "start": 3.007,
+     "end": 3.088
+    },
+    {
+     "word": "ohms.",
+     "start": 3.17,
+     "end": 3.553
+    },
+    {
+     "word": "But",
+     "start": 3.704,
+     "end": 3.878
+    },
+    {
+     "word": "impedance",
+     "start": 3.936,
+     "end": 4.435
+    },
+    {
+     "word": "reminds",
+     "start": 4.47,
+     "end": 4.876
+    },
+    {
+     "word": "us",
+     "start": 4.923,
+     "end": 5.027
+    },
+    {
+     "word": "that",
+     "start": 5.074,
+     "end": 5.224
+    },
+    {
+     "word": "frequency,",
+     "start": 5.294,
+     "end": 6.107
+    },
+    {
+     "word": "magnetic",
+     "start": 6.281,
+     "end": 6.792
+    },
+    {
+     "word": "pushback,",
+     "start": 6.838,
+     "end": 7.488
+    },
+    {
+     "word": "and",
+     "start": 7.57,
+     "end": 7.755
+    },
+    {
+     "word": "electrostatic",
+     "start": 7.825,
+     "end": 8.591
+    },
+    {
+     "word": "storage",
+     "start": 8.638,
+     "end": 9.067
+    },
+    {
+     "word": "all",
+     "start": 9.149,
+     "end": 9.427
+    },
+    {
+     "word": "dictate",
+     "start": 9.497,
+     "end": 9.927
+    },
+    {
+     "word": "how",
+     "start": 9.996,
+     "end": 10.217
+    },
+    {
+     "word": "much",
+     "start": 10.298,
+     "end": 10.507
+    },
+    {
+     "word": "current",
+     "start": 10.565,
+     "end": 10.867
+    },
+    {
+     "word": "actually",
+     "start": 10.925,
+     "end": 11.343
+    },
+    {
+     "word": "flows.",
+     "start": 11.389,
+     "end": 12.074
+    }
+   ],
+   "measuredDuration": 12.07437641723356,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 11.6215873015873,
+   "captionOffset": 0.17414965986394557
+  },
+  "23": {
+   "src": "generated/vo-0d03f16b/s23.mp3",
+   "duration": 13.035102040816327,
+   "words": [
+    {
+     "word": "Direct",
+     "start": 0,
+     "end": 0.522
+    },
+    {
+     "word": "current",
+     "start": 0.569,
+     "end": 0.871
+    },
+    {
+     "word": "only",
+     "start": 0.94,
+     "end": 1.161
+    },
+    {
+     "word": "faces",
+     "start": 1.242,
+     "end": 1.591
+    },
+    {
+     "word": "simple",
+     "start": 1.649,
+     "end": 2.02
+    },
+    {
+     "word": "resistance",
+     "start": 2.067,
+     "end": 2.577
+    },
+    {
+     "word": "from",
+     "start": 2.612,
+     "end": 2.775
+    },
+    {
+     "word": "collisions.",
+     "start": 2.856,
+     "end": 3.541
+    },
+    {
+     "word": "Alternating",
+     "start": 3.982,
+     "end": 4.656
+    },
+    {
+     "word": "current",
+     "start": 4.725,
+     "end": 5.039
+    },
+    {
+     "word": "encounters",
+     "start": 5.097,
+     "end": 5.642
+    },
+    {
+     "word": "impedance,",
+     "start": 5.724,
+     "end": 6.455
+    },
+    {
+     "word": "which",
+     "start": 6.699,
+     "end": 6.92
+    },
+    {
+     "word": "adds",
+     "start": 6.989,
+     "end": 7.245
+    },
+    {
+     "word": "the",
+     "start": 7.279,
+     "end": 7.349
+    },
+    {
+     "word": "magnetic",
+     "start": 7.419,
+     "end": 7.883
+    },
+    {
+     "word": "resistance",
+     "start": 7.953,
+     "end": 8.475
+    },
+    {
+     "word": "of",
+     "start": 8.51,
+     "end": 8.591
+    },
+    {
+     "word": "inductors",
+     "start": 8.707,
+     "end": 9.288
+    },
+    {
+     "word": "and",
+     "start": 9.334,
+     "end": 9.404
+    },
+    {
+     "word": "electrostatic",
+     "start": 9.45,
+     "end": 10.1
+    },
+    {
+     "word": "behavior",
+     "start": 10.158,
+     "end": 10.576
+    },
+    {
+     "word": "of",
+     "start": 10.623,
+     "end": 10.692
+    },
+    {
+     "word": "capacitors",
+     "start": 10.762,
+     "end": 11.366
+    },
+    {
+     "word": "into",
+     "start": 11.435,
+     "end": 11.691
+    },
+    {
+     "word": "total",
+     "start": 11.807,
+     "end": 12.167
+    },
+    {
+     "word": "opposition.",
+     "start": 12.213,
+     "end": 13.003
+    }
+   ],
+   "measuredDuration": 13.003174603174603,
+   "speechStart": 0.16253968253968254,
+   "speechEnd": 12.712925170068027,
+   "captionOffset": 0.16253968253968254
+  },
+  "25": {
+   "src": "generated/vo-0d03f16b/s24.mp3",
+   "duration": 9.195102040816327,
+   "words": [
+    {
+     "word": "Next",
+     "start": 0,
+     "end": 0.418
+    },
+    {
+     "word": "time",
+     "start": 0.453,
+     "end": 0.65
+    },
+    {
+     "word": "you",
+     "start": 0.685,
+     "end": 0.766
+    },
+    {
+     "word": "look",
+     "start": 0.824,
+     "end": 0.987
+    },
+    {
+     "word": "at",
+     "start": 1.033,
+     "end": 1.103
+    },
+    {
+     "word": "a",
+     "start": 1.149,
+     "end": 1.173
+    },
+    {
+     "word": "power",
+     "start": 1.265,
+     "end": 1.567
+    },
+    {
+     "word": "supply",
+     "start": 1.625,
+     "end": 2.067
+    },
+    {
+     "word": "or",
+     "start": 2.183,
+     "end": 2.31
+    },
+    {
+     "word": "audio",
+     "start": 2.38,
+     "end": 2.682
+    },
+    {
+     "word": "speaker,",
+     "start": 2.717,
+     "end": 3.216
+    },
+    {
+     "word": "remember",
+     "start": 3.332,
+     "end": 3.785
+    },
+    {
+     "word": "that",
+     "start": 3.855,
+     "end": 3.982
+    },
+    {
+     "word": "alternating",
+     "start": 4.04,
+     "end": 4.598
+    },
+    {
+     "word": "current",
+     "start": 4.667,
+     "end": 4.957
+    },
+    {
+     "word": "is",
+     "start": 5.016,
+     "end": 5.108
+    },
+    {
+     "word": "a",
+     "start": 5.166,
+     "end": 5.19
+    },
+    {
+     "word": "dance,",
+     "start": 5.259,
+     "end": 5.817
+    },
+    {
+     "word": "and",
+     "start": 5.991,
+     "end": 6.177
+    },
+    {
+     "word": "impedance",
+     "start": 6.246,
+     "end": 6.92
+    },
+    {
+     "word": "choreographs",
+     "start": 6.966,
+     "end": 7.697
+    },
+    {
+     "word": "every",
+     "start": 7.79,
+     "end": 8.115
+    },
+    {
+     "word": "single",
+     "start": 8.173,
+     "end": 8.522
+    },
+    {
+     "word": "move.",
+     "start": 8.568,
+     "end": 9.149
+    }
+   ],
+   "measuredDuration": 9.148662131519274,
+   "speechStart": 0.17414965986394557,
+   "speechEnd": 8.823582766439909,
+   "captionOffset": 0.17414965986394557
+  }
+ },
+ "seo": {
+  "titles": [
+   "Resistance vs Impedance in DC and AC Circuits Explained",
+   "Why Does AC Use Impedance Instead of Resistance?",
+   "Think AC Only Has Resistance? Here Is Why Impedance Matters",
+   "Resistance vs Impedance for State AE JE Electrical Exam",
+   "Understanding Reactance and Impedance in AC Circuits"
+  ],
+  "description": "Master Resistance vs Impedance in DC and AC circuits for State AE and JE Electrical exams. This video explains why direct current encounters pure resistance while alternating current faces the combined opposition of impedance. Learn how inductors and capacitors react differently across DC and AC sources, creating inductive and capacitive reactance. - Difference between direct current and alternating current - Why DC circuits only experience resistance - Role of inductors and capacitors in AC circuits - How reactance combines with resistance to form impedance - Why impedance and resistance are both measured in ohms. Subscribe for more State AE and JE Electrical concept lessons. #ResistanceVsImpedance #BasicElectricalEngineering #StateJEElectrical #ACCircuits",
+  "tags": [
+   "resistance vs impedance",
+   "ac circuits",
+   "dc circuits",
+   "state ae electrical",
+   "state je electrical",
+   "basic electrical engineering",
+   "electrical engineering",
+   "inductive reactance",
+   "capacitive reactance",
+   "impedance explained",
+   "what is impedance",
+   "what is resistance",
+   "ac circuit basics",
+   "capacitor in dc circuit",
+   "inductor in ac circuit",
+   "ssc je electrical",
+   "electrical engineering concepts",
+   "ohms law ac circuits",
+   "impedance in ohms"
+  ],
+  "hashtags": [
+   "ResistanceVsImpedance",
+   "BasicElectricalEngineering",
+   "StateJEElectrical",
+   "ACCircuits"
+  ],
+  "thumbnailText": "Resistance vs Impedance",
+  "pinnedComment": "Can you explain why a capacitor blocks DC current but allows AC current to pass? Drop your explanation below!",
+  "instagram": {
+   "caption": "Why do AC circuits have impedance while DC circuits only have resistance? Test your knowledge in the comments. In direct current, resistors offer the only steady opposition. Alternating current shakes electrons back and forth, activating inductors and capacitors. Inductive and capacitive reactance combine with resistance to produce total impedance. Save this post for your State AE and JE Electrical revision.",
+   "hashtags": [
+    "ResistanceVsImpedance",
+    "StateJEElectrical",
+    "BasicElectricalEngineering",
+    "ElectricalEngineering"
+   ],
+   "altText": "Diagram showing resistance in a DC circuit compared to impedance in an AC circuit.",
+   "post": "Why do AC circuits have impedance while DC circuits only have resistance? Test your knowledge in the comments. In direct current, resistors offer the only steady opposition. Alternating current shakes electrons back and forth, activating inductors and capacitors. Inductive and capacitive reactance combine with resistance to produce total impedance. Save this post for your State AE and JE Electrical revision.\n\n#ResistanceVsImpedance #StateJEElectrical #BasicElectricalEngineering #ElectricalEngineering",
+   "hookLength": 411
+  },
+  "facebook": {
+   "title": "Resistance vs Impedance: DC and AC Circuits",
+   "caption": "Why does alternating current face impedance instead of simple resistance? Discover how inductors and capacitors create reactance in AC circuits. Which component blocks DC completely? Share your answer below.",
+   "hashtags": [
+    "ResistanceVsImpedance",
+    "ElectricalEngineering",
+    "StateJEElectrical"
+   ],
+   "keywords": [
+    "resistance vs impedance",
+    "ac circuits basics",
+    "state je electrical",
+    "reactance explained",
+    "basic electrical engineering",
+    "inductor in ac",
+    "capacitor in dc"
+   ],
+   "post": "Why does alternating current face impedance instead of simple resistance? Discover how inductors and capacitors create reactance in AC circuits. Which component blocks DC completely? Share your answer below.\n\n#ResistanceVsImpedance #ElectricalEngineering #StateJEElectrical"
+  },
+  "tagsLength": 391,
+  "generatedAt": "2026-10-13T15:35:05.667Z",
+  "fingerprint": "Why does AC call opposition impedance instead of resistance?~~~~0~~~~When charges march in a single steady direction, we call it direct current. Batteries deliver this steady push, keeping electrons flowing in one continuous unbroken loop.|Alternating current behaves completely differently. Instead of marching ahead, wall outlets shake electrons back and forth fifty or sixty times every single second without stopping.|Because direct current never changes direction, resistors are the only components offering permanent steady opposition. That simple opposition is what we formally call resistance.|Yet alternating current introduces a brand new kind of opposition called reactance. Total opposition becomes impedance, combining ordinary resistive friction with reactive timing pushback.|To understand where this new reactance comes from, look at two everyday parts: inductors and capacitors. Both behave radically differently in DC compared to AC.|In a direct current circuit, an inductor acts like a stubborn flywheel. It momentarily delays initial turn on, but then settles into an easy passage.|Now connect alternating current to that same inductor. The current constantly changes direction, forcing the magnetic field to expand and collapse without a moment of peace.|So in a DC circuit, a capacitor behaves like an open broken switch. Its resistance to steady current is essentially infinite once its plates are fully charged.|No electron ever jumps the insulating gap between plates. But because charges slosh continuously in the outside connecting wires, alternating current flows through with minimal opposition.|Resistance wastes energy as heat while reactance merely stores and releases energy in fields. When both forces work together in AC, we need the unified term impedance.|Engineers measure both resistance and impedance in ohms. But impedance reminds us that frequency, magnetic pushback, and electrostatic storage all dictate how much current actually flows."
+ },
+ "ledger": [
+  {
+   "what": "Voiceover",
+   "characters": 4207,
+   "at": "2026-10-13T15:04:53.230Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-13T15:10:36.610Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-13T15:10:36.992Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-13T15:10:37.982Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-13T15:10:51.501Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-13T15:10:52.119Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-13T15:10:54.166Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-13T15:11:05.628Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-13T15:11:06.177Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-13T15:11:11.250Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-13T15:11:20.311Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-13T15:11:20.405Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-13T15:11:26.187Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-13T15:11:34.590Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-13T15:11:35.300Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-13T15:11:39.982Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-13T15:11:48.984Z"
+  },
+  {
+   "what": "Doodle drawing",
+   "cents": 4,
+   "at": "2026-10-13T15:11:50.146Z"
+  },
+  {
+   "what": "Thumbnail picture",
+   "cents": 3,
+   "at": "2026-10-13T15:34:58.486Z"
+  }
+ ],
+ "renders": [
+  {
+   "jobId": "video-2026-10-13T15-25-16",
+   "url": "/out/video-2026-10-13T15-25-16.mp4",
+   "quality": "medium",
+   "at": "2026-10-13T15:33:53.693Z"
+  }
+ ],
+ "published": {}
+}

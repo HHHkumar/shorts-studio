@@ -357,8 +357,138 @@
    ]
   }
  },
- "checkedAt": null,
- "by": [],
- "sawFrames": false,
- "reviews": []
+ "checkedAt": "2026-10-13T14:20:17.908Z",
+ "by": [
+  "Gemini",
+  "DeepSeek"
+ ],
+ "sawFrames": true,
+ "reviews": [
+  {
+   "key": "520ba378",
+   "scene": 8,
+   "verdict": "right",
+   "reason": "correctly contrasts the two geometric parameters, conductor spacing d and conductor radius r.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "correctly contrasts the two geometric parameters, conductor spacing d and conductor radius r."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "It correctly labels the spacing between conductors as d and the conductor radius as r, matching the line."
+    }
+   ]
+  },
+  {
+   "key": "39ecee07",
+   "scene": 9,
+   "verdict": "right",
+   "reason": "correctly shows the logarithmic term ln(d/r) increasing as conductor spacing d increases.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "correctly shows the logarithmic term ln(d/r) increasing as conductor spacing d increases."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "It shows a logarithmic curve with spacing d and ln(d/r), correctly illustrating that increasing d raises the logarithmic term."
+    }
+   ]
+  },
+  {
+   "key": "45c1affb",
+   "scene": 10,
+   "verdict": "right",
+   "reason": "correctly shows that wider spacing increases the critical disruptive voltage Vd.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "correctly shows that wider spacing increases the critical disruptive voltage Vd."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "The bar chart correctly shows higher critical disruptive voltage for wider spacing, consistent with the line."
+    }
+   ]
+  },
+  {
+   "key": "c9ae6c73",
+   "scene": 11,
+   "verdict": "unsure",
+   "reason": "Gemini says wrong (shows field arrows that shrink toward the center instead of concentrating in intensity near the conductor surface); DeepSeek does not.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "wrong",
+     "reason": "shows field arrows that shrink toward the center instead of concentrating in intensity near the conductor surface."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "A radial field pattern around a conductor correctly illustrates field concentration when radius decreases."
+    }
+   ]
+  },
+  {
+   "key": "3e4e5082",
+   "scene": 12,
+   "verdict": "right",
+   "reason": "correctly shows a lower irregularity factor m₀ for stranded conductors compared to smooth solid conductors.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "correctly shows a lower irregularity factor m₀ for stranded conductors compared to smooth solid conductors."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "It correctly shows smooth solid m₀ = 1 and stranded m₀ = 0.85, matching the line's statement."
+    }
+   ]
+  },
+  {
+   "key": "6c417bf6",
+   "scene": 13,
+   "verdict": "right",
+   "reason": "correctly illustrates fair weather versus stormy atmospheric conditions.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "correctly illustrates fair weather versus stormy atmospheric conditions."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "It correctly contrasts fair and stormy weather, matching the line about delta dropping in stormy conditions."
+    }
+   ]
+  },
+  {
+   "key": "728c58ed",
+   "scene": 14,
+   "verdict": "wrong",
+   "reason": "misrepresents bundled or hollow conductors as a random cloud of particles scattered inside a circle.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "wrong",
+     "reason": "misrepresents bundled or hollow conductors as a random cloud of particles scattered inside a circle."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "wrong",
+     "reason": "The particles scattering diagram does not show bundled conductors or larger diameter hollow conductors raising r; it is unrelated to the line's content."
+    }
+   ]
+  }
+ ]
 }

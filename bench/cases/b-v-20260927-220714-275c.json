@@ -343,8 +343,66 @@
    ]
   }
  },
- "checkedAt": null,
- "by": [],
- "sawFrames": false,
- "reviews": []
+ "checkedAt": "2026-10-13T14:24:08.423Z",
+ "by": [
+  "Gemini",
+  "DeepSeek"
+ ],
+ "sawFrames": true,
+ "reviews": [
+  {
+   "key": "244810f8",
+   "scene": 10,
+   "verdict": "right",
+   "reason": "correctly shows a power triangle with a 60-degree angle corresponding to a power factor of 0.50",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "correctly shows a power triangle with a 60-degree angle corresponding to a power factor of 0.50"
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "Shows the power triangle with angle 60°, correctly giving cos φ = 0.5 as the line states."
+    }
+   ]
+  },
+  {
+   "key": "a0fd1ad5",
+   "scene": 13,
+   "verdict": "right",
+   "reason": "correctly summarizes the phase angle of 60 degrees and corresponding power factor of 0.5",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "correctly summarizes the phase angle of 60 degrees and corresponding power factor of 0.5"
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "Correctly states φ = 60° and cos φ = 0.5, exactly matching the line."
+    }
+   ]
+  },
+  {
+   "key": "cdb0654a",
+   "scene": 14,
+   "verdict": "wrong",
+   "reason": "The line is about W₂ going negative below 0.5 pf and reversing its current coil, but the picture shows a V-I phasor at 60° with no wattmeter or reversal shown.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "unrelated",
+     "reason": "shows a standard 60-degree phasor diagram rather than illustrating the condition below 0.5 power factor or the reversal of wattmeter current coil connections"
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "wrong",
+     "reason": "The line is about W₂ going negative below 0.5 pf and reversing its current coil, but the picture shows a V-I phasor at 60° with no wattmeter or reversal shown."
+    }
+   ]
+  }
+ ]
 }

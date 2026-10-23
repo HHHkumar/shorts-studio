@@ -361,8 +361,84 @@
    ]
   }
  },
- "checkedAt": null,
- "by": [],
- "sawFrames": false,
- "reviews": []
+ "checkedAt": "2026-10-13T14:21:53.814Z",
+ "by": [
+  "Gemini",
+  "DeepSeek"
+ ],
+ "sawFrames": true,
+ "reviews": [
+  {
+   "key": "7ff71369",
+   "scene": 7,
+   "verdict": "wrong",
+   "reason": "The label is cut off part way through a word, reading \"Constant L\" instead of the full label.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "wrong",
+     "reason": "The label is cut off part way through a word, reading \"Constant L\" instead of the full label."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "unrelated",
+     "reason": "A generic lever/force-at-a-distance diagram does not illustrate the electromagnetic torque of a DC machine or the constancy of load torque."
+    }
+   ]
+  },
+  {
+   "key": "63d0ffe5",
+   "scene": 8,
+   "verdict": "right",
+   "reason": "Accurately presents the halved magnetic flux alongside the doubled armature current.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "Accurately presents the halved magnetic flux alongside the doubled armature current."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "It correctly shows flux halved to 0.5Φ and armature current doubled to 2Ia, matching the line's torque-balance relationship."
+    }
+   ]
+  },
+  {
+   "key": "31f0c248",
+   "scene": 10,
+   "verdict": "right",
+   "reason": "Correctly illustrates a motor rotor rotating within a magnetic field.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "Correctly illustrates a motor rotor rotating within a magnetic field."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "A rotor turning in a magnetic field correctly illustrates the motor speeding up under accelerating torque."
+    }
+   ]
+  },
+  {
+   "key": "ca5f1e3a",
+   "scene": 12,
+   "verdict": "right",
+   "reason": "Correctly shows the relative motor speed doubling from 1.00 at rated flux to 2.00 at half flux.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "Correctly shows the relative motor speed doubling from 1.00 at rated flux to 2.00 at half flux."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "The bar chart correctly shows relative speed doubling from 1 at rated flux to 2 at half flux, matching the inverse speed-flux relationship."
+    }
+   ]
+  }
+ ]
 }

@@ -1,0 +1,402 @@
+{
+ "id": "v-20261014-214326-gt9i",
+ "createdAt": "2026-10-14T16:13:28.148Z",
+ "updatedAt": "2026-10-14T16:14:24.126Z",
+ "content": {
+  "subject": "Basic Electrical Engineering",
+  "topic": "Reactance and Impedance in AC Circuits",
+  "difficulty": "Easy",
+  "hook": "Can adding another component actually reduce total AC circuit impedance?",
+  "question": "In a series RLC circuit, what is the net reactance and its effect on total impedance?",
+  "options": [
+   "XL plus XC, increasing total impedance",
+   "XL minus XC, opposing each other to reduce net reactance",
+   "Square root of XL times XC, keeping impedance constant",
+   "Zero under all operating frequencies, leaving only resistance"
+  ],
+  "correctIndex": 1,
+  "answerLine": "The net reactance is the difference between inductive reactance and capacitive reactance, opposing each other.",
+  "explanation": [
+   "Inductive reactance causes the alternating current to lag the voltage across the inductor by ninety degrees.",
+   "Capacitive reactance acts completely opposite, causing the alternating current to lead the voltage by ninety degrees.",
+   "Because their voltages are exactly one hundred and eighty degrees apart, they directly oppose each other.",
+   "This means the net reactance of the series branch equals inductive reactance minus capacitive reactance."
+  ],
+  "funFact": "At series resonance, the inductor and capacitor can each develop voltages vastly higher than the total supply voltage!",
+  "outro": "Master your electrical fundamentals and hit subscribe for more exam preparation questions!",
+  "hashtags": [
+   "ElectricalEngineering",
+   "EngineeringJE",
+   "CircuitTheory",
+   "RLCCircuit",
+   "ExamPrep"
+  ],
+  "motifSymbols": [
+   "⚡",
+   "Ω",
+   "🔌",
+   "🔄",
+   "📊"
+  ],
+  "script": [
+   {
+    "kind": "intro",
+    "narration": "Ready for today’s question?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    }
+   },
+   {
+    "kind": "hook",
+    "narration": "Can adding another component actually reduce total AC circuit impedance?",
+    "imageQuery": "power substation transformers",
+    "visual": {
+     "kind": "none"
+    }
+   },
+   {
+    "kind": "question",
+    "narration": "In a series RLC circuit, what is the net reactance and its effect on total impedance?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "figure",
+     "caption": "",
+     "reveal": false,
+     "highlight": "L1"
+    }
+   },
+   {
+    "kind": "options",
+    "narration": "Is it XL plus XC, increasing total impedance; XL minus XC, opposing each other to reduce net reactance; Square root of XL times XC, keeping impedance constant; or Zero under all operating frequencies, leaving only resistance?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    }
+   },
+   {
+    "kind": "countdown",
+    "narration": "",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    }
+   },
+   {
+    "kind": "answer",
+    "narration": "The net reactance is the difference between inductive reactance and capacitive reactance, opposing each other.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Inductive reactance causes the alternating current to lag the voltage across the inductor by ninety degrees.",
+    "imageQuery": "copper wire inductor coil",
+    "visual": {
+     "kind": "formula",
+     "formula": "X_L = 2\\pi f L",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Capacitive reactance acts completely opposite, causing the alternating current to lead the voltage by ninety degrees.",
+    "imageQuery": "electronic capacitors components",
+    "visual": {
+     "kind": "formula",
+     "formula": "X_C = \\frac{1}{2\\pi f C}",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Because their voltages are exactly one hundred and eighty degrees apart, they directly oppose each other.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "compare",
+     "caption": "",
+     "items": [
+      {
+       "label": "Inductor (+90°)",
+       "symbol": "🔺"
+      },
+      {
+       "label": "Capacitor (-90°)",
+       "symbol": "🔻"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "This means the net reactance of the series branch equals inductive reactance minus capacitive reactance.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "X = X_L - X_C",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Total impedance is calculated as the square root of resistance squared plus net reactance squared.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "Z = \\sqrt{R^2 + (X_L - X_C)^2}",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "When you add a capacitor to an inductive circuit, the opposing reactances cancel each other out.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    },
+    "pictureNote": "The phasors sketch needs at least 2 entries with a value and was given 0, so it was not drawn."
+   },
+   {
+    "kind": "explain",
+    "narration": "As the net reactance decreases toward zero, the overall circuit impedance drops to a minimum value.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "resonance-curve",
+     "caption": "",
+     "params": {
+      "mode": "single"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "At series resonance, both reactances become equal, completely cancelling out and leaving only circuit resistance.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "Z_{min} = R \\text{ when } X_L = X_C",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Therefore, inductive and capacitive reactances always pull in opposite directions, reducing net circuit opposition.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "icon",
+     "caption": "",
+     "items": [
+      {
+       "label": "Net Opposition",
+       "symbol": "⚖️"
+      }
+     ]
+    }
+   },
+   {
+    "kind": "outro",
+    "narration": "At resonance, component voltages can vastly exceed supply voltage. Subscribe for more electrical engineering concepts!",
+    "imageQuery": "electrical engineering laboratory",
+    "visual": {
+     "kind": "none"
+    }
+   }
+  ],
+  "figureCheck": {
+   "status": "unchecked",
+   "computed": "0 Ω",
+   "option": "XL minus XC, opposing each other to reduce net reactance"
+  },
+  "figure": {
+   "type": "circuit",
+   "title": "",
+   "frequency": 50,
+   "nodes": [
+    {
+     "id": "A",
+     "col": 0,
+     "row": 0
+    },
+    {
+     "id": "B",
+     "col": 1,
+     "row": 0
+    },
+    {
+     "id": "C",
+     "col": 2,
+     "row": 0
+    },
+    {
+     "id": "D",
+     "col": 3,
+     "row": 0
+    },
+    {
+     "id": "E",
+     "col": 3,
+     "row": 2
+    },
+    {
+     "id": "F",
+     "col": 0,
+     "row": 2
+    }
+   ],
+   "elements": [
+    {
+     "id": "V1",
+     "kind": "voltage",
+     "from": "F",
+     "to": "A",
+     "value": 230,
+     "unknown": false,
+     "label": "V1"
+    },
+    {
+     "id": "R1",
+     "kind": "resistor",
+     "from": "A",
+     "to": "B",
+     "value": 10,
+     "unknown": false,
+     "label": "R1"
+    },
+    {
+     "id": "L1",
+     "kind": "inductor",
+     "from": "B",
+     "to": "C",
+     "value": 0.0318,
+     "unknown": false,
+     "label": "L1"
+    },
+    {
+     "id": "C1",
+     "kind": "capacitor",
+     "from": "C",
+     "to": "D",
+     "value": 0.000318,
+     "unknown": false,
+     "label": "C1"
+    },
+    {
+     "id": "W1",
+     "kind": "wire",
+     "from": "D",
+     "to": "E",
+     "value": 0,
+     "unknown": false,
+     "label": "W1"
+    },
+    {
+     "id": "W2",
+     "kind": "wire",
+     "from": "E",
+     "to": "F",
+     "value": 0,
+     "unknown": false,
+     "label": "W2"
+    }
+   ],
+   "ask": {
+    "quantity": "impedance",
+    "from": "A",
+    "to": "D"
+   }
+  },
+  "pictureReview": {
+   "checkedAt": "2026-10-14T16:13:52.937Z",
+   "by": [
+    "Gemini",
+    "DeepSeek"
+   ],
+   "sawFrames": true,
+   "reviews": [
+    {
+     "scene": 8,
+     "key": "eefd9b36",
+     "verdict": "right",
+     "reason": "Correctly shows the opposing +90° and -90° phase angles of an inductor and capacitor that place their voltages 180° apart.",
+     "said": [
+      {
+       "by": "Gemini",
+       "verdict": "right",
+       "reason": "Correctly shows the opposing +90° and -90° phase angles of an inductor and capacitor that place their voltages 180° apart."
+      },
+      {
+       "by": "DeepSeek",
+       "verdict": "right",
+       "reason": "Shows inductor at +90° and capacitor at -90°, correctly depicting the 180° opposition of their voltages."
+      }
+     ],
+     "words": "Two things side by side: Inductor (+90°) 🔺 | Capacitor (-90°) 🔻.",
+     "narration": "Because their voltages are exactly one hundred and eighty degrees apart, they directly oppose each other.",
+     "frame": "/out/review-1791994406201/scene-08.jpg"
+    },
+    {
+     "scene": 12,
+     "key": "b45fab27",
+     "verdict": "wrong",
+     "reason": "The line is about impedance dropping to a minimum as net reactance decreases, but the picture shows a current-versus-frequency resonance curve peaking at resonance, which is a different relationship.",
+     "said": [
+      {
+       "by": "Gemini",
+       "verdict": "unrelated",
+       "reason": "Shows a series resonance current curve with bandwidth and half-power points, which is a different topic from the chapter rather than illustrating circuit impedance dropping to a minimum."
+      },
+      {
+       "by": "DeepSeek",
+       "verdict": "wrong",
+       "reason": "The line is about impedance dropping to a minimum as net reactance decreases, but the picture shows a current-versus-frequency resonance curve peaking at resonance, which is a different relationship."
+      }
+     ],
+     "words": "The \"resonance-curve\" diagram: the current in a series RLC circuit against frequency: the peak at the resonant frequency, the two half-power points at 0.707 of it, and the bandwidth between them; set to mode = single.",
+     "narration": "As the net reactance decreases toward zero, the overall circuit impedance drops to a minimum value.",
+     "frame": "/out/review-1791994406201/scene-12.jpg",
+     "kept": true
+    }
+   ],
+   "problems": []
+  }
+ },
+ "design": {
+  "mode": "light",
+  "layout": "doodle",
+  "accent": "",
+  "showCaptions": true,
+  "showProgressBar": true,
+  "countdownSeconds": 4,
+  "scenePaddingSeconds": 0.5,
+  "trimTrailingSilence": true,
+  "showVisuals": true,
+  "showMotif": true,
+  "ambient": "auto",
+  "ambientIntensity": 0.6,
+  "motionStrength": 1,
+  "transition": "auto",
+  "textReveal": "fade",
+  "overlay": "vignette",
+  "overlayIntensity": 0.5,
+  "align": "auto",
+  "showStock": true,
+  "stockOpacity": 0.45,
+  "music": "tense",
+  "musicVolume": 0.22,
+  "customMusicSrc": "",
+  "sfx": true,
+  "sfxVolume": 0.5,
+  "orientation": "portrait",
+  "doodleEnergy": "lively",
+  "animatedEngineer": true
+ },
+ "audio": {},
+ "seo": null,
+ "ledger": [],
+ "renders": [],
+ "published": {}
+}

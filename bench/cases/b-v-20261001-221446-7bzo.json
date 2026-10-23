@@ -315,8 +315,66 @@
    ]
   }
  },
- "checkedAt": null,
- "by": [],
- "sawFrames": false,
- "reviews": []
+ "checkedAt": "2026-10-13T14:25:02.120Z",
+ "by": [
+  "Gemini",
+  "DeepSeek"
+ ],
+ "sawFrames": true,
+ "reviews": [
+  {
+   "key": "04991aa4",
+   "scene": 8,
+   "verdict": "wrong",
+   "reason": "shows an increasing function with Riemann sum rectangles rather than constant power of 100 W over time.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "wrong",
+     "reason": "shows an increasing function with Riemann sum rectangles rather than constant power of 100 W over time."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "wrong",
+     "reason": "The line describes a single 100 W lamp running steadily for 10 hours, but the picture shows a rising curve with shaded area, implying power increasing over time rather than the constant 100 W load."
+    }
+   ]
+  },
+  {
+   "key": "02a47ed0",
+   "scene": 13,
+   "verdict": "right",
+   "reason": "correctly shows both cases resulting in equal total energy of 1 kWh.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "correctly shows both cases resulting in equal total energy of 1 kWh."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "It correctly shows both cases consuming 1 kWh, matching the line that the numerical energy totals are identical."
+    }
+   ]
+  },
+  {
+   "key": "181c6716",
+   "scene": 14,
+   "verdict": "right",
+   "reason": "correctly compares the equal 1.00 kWh energy consumed by 1 bulb over 10 hours versus 10 bulbs over 1 hour.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "correctly compares the equal 1.00 kWh energy consumed by 1 bulb over 10 hours versus 10 bulbs over 1 hour."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "The bar chart correctly shows 1 Bulb × 10h = 1 kWh and 10 Bulbs × 1h = 1 kWh, illustrating that high power for a short interval equals low power for a long interval."
+    }
+   ]
+  }
+ ]
 }

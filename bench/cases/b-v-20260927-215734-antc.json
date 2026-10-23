@@ -337,8 +337,102 @@
    ]
   }
  },
- "checkedAt": null,
- "by": [],
- "sawFrames": false,
- "reviews": []
+ "checkedAt": "2026-10-13T14:22:51.028Z",
+ "by": [
+  "Gemini",
+  "DeepSeek"
+ ],
+ "sawFrames": true,
+ "reviews": [
+  {
+   "key": "f66a3585",
+   "scene": 2,
+   "verdict": "wrong",
+   "reason": "Draws three resistors in series instead of a series RLC circuit with an inductor and a capacitor.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "wrong",
+     "reason": "Draws three resistors in series instead of a series RLC circuit with an inductor and a capacitor."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "wrong",
+     "reason": "The question scene shows three resistors (10 Ω, 20 Ω, 30 Ω) instead of a series RLC circuit with an inductor and capacitor, and the resistor values are not given by the question."
+    }
+   ]
+  },
+  {
+   "key": "3c8648de",
+   "scene": 7,
+   "verdict": "right",
+   "reason": "Correctly shows the collapsed power triangle with zero reactive power and unity power factor where the reactive part vanishes.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "Correctly shows the collapsed power triangle with zero reactive power and unity power factor where the reactive part vanishes."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "At resonance the net reactance vanishes and impedance is purely resistive, correctly shown by the power triangle with zero phase angle."
+    }
+   ]
+  },
+  {
+   "key": "3d39ead3",
+   "scene": 9,
+   "verdict": "right",
+   "reason": "Correctly displays the band-pass frequency response curve for a resonant circuit.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "Correctly displays the band-pass frequency response curve for a resonant circuit."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "A band-mode filter response correctly illustrates the frequency spread between the two half-power points."
+    }
+   ]
+  },
+  {
+   "key": "75b25a74",
+   "scene": 12,
+   "verdict": "right",
+   "reason": "Correctly plots the resonant frequency of 1000 rad/s alongside the calculated bandwidth of 100 rad/s.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "Correctly plots the resonant frequency of 1000 rad/s alongside the calculated bandwidth of 100 rad/s."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "The bar chart correctly shows BW = 100 rad/s and ω₀ = 1000 rad/s, matching the working."
+    }
+   ]
+  },
+  {
+   "key": "fbc8c9f4",
+   "scene": 14,
+   "verdict": "right",
+   "reason": "Correctly contrasts the true bandwidth of 100 rad/s with the common multiplication error of 10000 rad/s.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "Correctly contrasts the true bandwidth of 100 rad/s with the common multiplication error of 10000 rad/s."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "It correctly contrasts the correct answer 100 with the multiplication trap 10000."
+    }
+   ]
+  }
+ ]
 }

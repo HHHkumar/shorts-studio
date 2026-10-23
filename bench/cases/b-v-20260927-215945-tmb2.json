@@ -337,8 +337,66 @@
    ]
   }
  },
- "checkedAt": null,
- "by": [],
- "sawFrames": false,
- "reviews": []
+ "checkedAt": "2026-10-13T14:23:14.325Z",
+ "by": [
+  "Gemini",
+  "DeepSeek"
+ ],
+ "sawFrames": true,
+ "reviews": [
+  {
+   "key": "cc7063bb",
+   "scene": 7,
+   "verdict": "unrelated",
+   "reason": "The frame contains no diagram, leaving only blank space below the text.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "unrelated",
+     "reason": "The frame contains no diagram, leaving only blank space below the text."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "unrelated",
+     "reason": "A generic flowchart of boxes and arrows does not show the Routh array rows from s cubed down to s zero that the line describes."
+    }
+   ]
+  },
+  {
+   "key": "537a9ace",
+   "scene": 13,
+   "verdict": "unsure",
+   "reason": "Gemini says wrong (Plots the negative value -18 as a positive bar extending to the right); DeepSeek does not.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "wrong",
+     "reason": "Plots the negative value -18 as a positive bar extending to the right."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "The bar chart correctly shows the first-column values 1, 2, -18, and 40 for rows s³, s², s¹, and s⁰."
+    }
+   ]
+  },
+  {
+   "key": "765079e8",
+   "scene": 14,
+   "verdict": "wrong",
+   "reason": "Shows only a single root plotted in the right-half plane instead of two.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "wrong",
+     "reason": "Shows only a single root plotted in the right-half plane instead of two."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "unrelated",
+     "reason": "A single point on real and imaginary axes does not show the two sign changes or the two right-half-plane roots the line states."
+    }
+   ]
+  }
+ ]
 }

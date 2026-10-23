@@ -1,0 +1,345 @@
+{
+ "id": "v-20261014-214051-dygq",
+ "createdAt": "2026-10-14T16:10:59.136Z",
+ "updatedAt": "2026-10-14T16:11:51.179Z",
+ "content": {
+  "subject": "Basic Electrical Engineering",
+  "topic": "AC Circuits: Reactance and Impedance",
+  "difficulty": "Medium",
+  "hook": "Why does adding a capacitor actually reduce total circuit impedance?",
+  "question": "A series RLC circuit has a resistance of 4 ohms, an inductive reactance of 7 ohms, and a capacitive reactance of 4 ohms. What is the total impedance of the circuit?",
+  "options": [
+   "5 ohms",
+   "15 ohms",
+   "7 ohms",
+   "3 ohms"
+  ],
+  "correctIndex": 0,
+  "answerLine": "The total impedance of the series circuit is exactly 5 ohms.",
+  "explanation": [
+   "Inductive reactance opposes alternating current by storing energy in magnetic fields, causing voltage to lead current.",
+   "Capacitive reactance opposes current by storing electrostatic energy in electric fields, making current lead voltage instead.",
+   "Because current leads in capacitors and lags in inductors, their reactances act exactly 180 degrees apart.",
+   "This opposite phase relationship means inductive and capacitive reactances directly cancel each other along the imaginary axis."
+  ],
+  "funFact": "At resonance, the voltages across the inductor and capacitor can each be many times higher than the supply voltage.",
+  "outro": "Mastering phasor opposition is the key to cracking AC circuit problems on your exam.",
+  "hashtags": [
+   "ElectricalEngineering",
+   "JEexam",
+   "StateAE",
+   "ACCircuits",
+   "CircuitAnalysis"
+  ],
+  "motifSymbols": [
+   "⚡",
+   "Ω",
+   "🔌",
+   "〰️",
+   "🔄"
+  ],
+  "script": [
+   {
+    "kind": "intro",
+    "narration": "Ready for today’s question?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    }
+   },
+   {
+    "kind": "hook",
+    "narration": "Why does adding a capacitor actually reduce total circuit impedance?",
+    "imageQuery": "high voltage substation transformers",
+    "visual": {
+     "kind": "none"
+    }
+   },
+   {
+    "kind": "question",
+    "narration": "A series RLC circuit has a resistance of 4 ohms, an inductive reactance of 7 ohms, and a capacitive reactance of 4 ohms. What is the total impedance of the circuit?",
+    "imageQuery": "electronic circuit board components",
+    "visual": {
+     "kind": "none"
+    }
+   },
+   {
+    "kind": "options",
+    "narration": "Is it 5 ohms, 15 ohms, 7 ohms, or 3 ohms?",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    }
+   },
+   {
+    "kind": "countdown",
+    "narration": "",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    }
+   },
+   {
+    "kind": "answer",
+    "narration": "The total impedance of the series circuit is exactly 5 ohms.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "none"
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Inductive reactance opposes alternating current by storing energy in magnetic fields, causing voltage to lead current.",
+    "imageQuery": "copper inductor coil",
+    "visual": {
+     "kind": "working"
+    },
+    "visualWas": {
+     "kind": "formula",
+     "formula": "X_L = 2\\pi f L",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Capacitive reactance opposes current by storing electrostatic energy in electric fields, making current lead voltage instead.",
+    "imageQuery": "ceramic film capacitors",
+    "visual": {
+     "kind": "formula",
+     "formula": "X_C = \\frac{1}{2\\pi f C}",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Because current leads in capacitors and lags in inductors, their reactances act exactly 180 degrees apart.",
+    "imageQuery": "oscilloscope screen display",
+    "visual": {
+     "kind": "none"
+    },
+    "pictureNote": "The phasors sketch needs at least 2 entries with a value and was given 0, so it was not drawn."
+   },
+   {
+    "kind": "explain",
+    "narration": "This opposite phase relationship means inductive and capacitive reactances directly cancel each other along the imaginary axis.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "X = X_L - X_C",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Net reactance equals the difference between inductive and capacitive reactance, leaving 7 minus 4, which is 3 ohms.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "bars",
+     "caption": "Reactance values in ohms",
+     "items": [
+      {
+       "label": "XL",
+       "value": 7
+      },
+      {
+       "label": "XC",
+       "value": 4
+      },
+      {
+       "label": "Xnet",
+       "value": 3
+      }
+     ]
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Total impedance is not a simple arithmetic sum, but the phasor sum of resistance and net reactance.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "Z = \\sqrt{R^2 + (X_L - X_C)^2}",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "Using the impedance formula, we calculate the square root of 4 squared plus 3 squared.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "Z = \\sqrt{4^2 + 3^2}",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "This gives the square root of 16 plus 9, which evaluates exactly to 5 ohms.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "formula",
+     "formula": "Z = \\sqrt{25} = 5\\,\\Omega",
+     "caption": ""
+    }
+   },
+   {
+    "kind": "explain",
+    "narration": "When inductive and capacitive reactance are equal, they cancel completely, leaving pure resistance at series resonance.",
+    "imageQuery": "",
+    "visual": {
+     "kind": "sketch",
+     "sketch": "resonance-curve",
+     "caption": "",
+     "params": {
+      "mode": "single"
+     },
+     "items": []
+    }
+   },
+   {
+    "kind": "formulas",
+    "narration": "Here are the formulas behind this one. Save it for your revision."
+   },
+   {
+    "kind": "outro",
+    "narration": "At resonance, voltages across reactive components can skyrocket. Master phasor opposition to ace your engineering exams!",
+    "imageQuery": "power distribution grid",
+    "visual": {
+     "kind": "icon",
+     "caption": "",
+     "items": [
+      {
+       "label": "Resonance",
+       "symbol": "⚡"
+      }
+     ]
+    }
+   }
+  ],
+  "figureCheck": {
+   "status": "mismatch",
+   "computed": "0 Ω",
+   "option": "5 ohms"
+  },
+  "pictureReview": {
+   "checkedAt": "2026-10-14T16:11:15.058Z",
+   "by": [
+    "Gemini",
+    "DeepSeek"
+   ],
+   "sawFrames": true,
+   "reviews": [
+    {
+     "scene": 10,
+     "key": "67f34d10",
+     "verdict": "right",
+     "reason": "correctly compares the inductive, capacitive, and net reactance values with proportional horizontal bars",
+     "said": [
+      {
+       "by": "Gemini",
+       "verdict": "right",
+       "reason": "correctly compares the inductive, capacitive, and net reactance values with proportional horizontal bars"
+      },
+      {
+       "by": "DeepSeek",
+       "verdict": "right",
+       "reason": "The bar chart correctly shows XL = 7, XC = 4, and Xnet = 3, matching the line's 7 minus 4 equals 3."
+      }
+     ],
+     "words": "A bar chart captioned \"Reactance values in ohms\": XL = 7, XC = 4, Xnet = 3.",
+     "narration": "Net reactance equals the difference between inductive and capacitive reactance, leaving 7 minus 4, which is 3 ohms.",
+     "frame": "/out/review-1791994251286/scene-10.jpg"
+    },
+    {
+     "scene": 14,
+     "key": "d16c374b",
+     "verdict": "right",
+     "reason": "correctly illustrates series resonance with a plot of circuit current peaking at the resonant frequency",
+     "said": [
+      {
+       "by": "Gemini",
+       "verdict": "right",
+       "reason": "correctly illustrates series resonance with a plot of circuit current peaking at the resonant frequency"
+      },
+      {
+       "by": "DeepSeek",
+       "verdict": "right",
+       "reason": "The resonance curve correctly illustrates series resonance where XL and XC cancel, leaving pure resistance and maximum current at the resonant frequency."
+      }
+     ],
+     "words": "The \"resonance-curve\" diagram: the current in a series RLC circuit against frequency: the peak at the resonant frequency, the two half-power points at 0.707 of it, and the bandwidth between them; set to mode = single.",
+     "narration": "When inductive and capacitive reactance are equal, they cancel completely, leaving pure resistance at series resonance.",
+     "frame": "/out/review-1791994251286/scene-14.jpg"
+    }
+   ],
+   "problems": []
+  },
+  "formulas": {
+   "title": "Reactance and Impedance - Important Formulas",
+   "cards": [
+    {
+     "name": "Total Impedance",
+     "formula": "Z = \\sqrt{R^2 + (X_L - X_C)^2}",
+     "notes": [
+      "X_L = Inductive reactance (ohms)",
+      "X_C = Capacitive reactance (ohms)"
+     ],
+     "graph": {
+      "kind": "none",
+      "x": "",
+      "y": "",
+      "label": "",
+      "label2": ""
+     },
+     "icon": "multimeter",
+     "art": {
+      "body": "<g fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\"><rect width=\"14.5\" height=\"18.5\" x=\"4.75\" y=\"2.75\" rx=\"2.5\"/><path d=\"M7.75 5.75h8.5V9.5h-8.5Z\"/><circle cx=\"12\" cy=\"15.25\" r=\"3.25\"/><path d=\"m12 15.25l1.5-1.5\"/></g>",
+      "width": 24,
+      "height": 24
+     }
+    }
+   ],
+   "working": [
+    "Z = \\sqrt{R^2 + (X_L - X_C)^2}",
+    "= \\sqrt{4^2 + (7 - 4)^2}",
+    "= \\sqrt{16 + 9}",
+    "= 5\\,\\Omega"
+   ]
+  }
+ },
+ "design": {
+  "mode": "light",
+  "layout": "doodle",
+  "accent": "",
+  "showCaptions": true,
+  "showProgressBar": true,
+  "countdownSeconds": 4,
+  "scenePaddingSeconds": 0.5,
+  "trimTrailingSilence": true,
+  "showVisuals": true,
+  "showMotif": true,
+  "ambient": "auto",
+  "ambientIntensity": 0.6,
+  "motionStrength": 1,
+  "transition": "auto",
+  "textReveal": "fade",
+  "overlay": "vignette",
+  "overlayIntensity": 0.5,
+  "align": "auto",
+  "showStock": true,
+  "stockOpacity": 0.45,
+  "music": "tense",
+  "musicVolume": 0.22,
+  "customMusicSrc": "",
+  "sfx": true,
+  "sfxVolume": 0.5,
+  "orientation": "portrait",
+  "doodleEnergy": "lively",
+  "animatedEngineer": true
+ },
+ "audio": {},
+ "seo": null,
+ "ledger": [],
+ "renders": [],
+ "published": {}
+}

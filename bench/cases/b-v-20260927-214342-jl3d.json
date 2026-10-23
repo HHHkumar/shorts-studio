@@ -342,8 +342,120 @@
    ]
   }
  },
- "checkedAt": null,
- "by": [],
- "sawFrames": false,
- "reviews": []
+ "checkedAt": "2026-10-13T14:21:30.786Z",
+ "by": [
+  "Gemini",
+  "DeepSeek"
+ ],
+ "sawFrames": true,
+ "reviews": [
+  {
+   "key": "91d24bba",
+   "scene": 2,
+   "verdict": "wrong",
+   "reason": "Draws three series resistors instead of a series RLC circuit with an inductor and a capacitor.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "wrong",
+     "reason": "Draws three series resistors instead of a series RLC circuit with an inductor and a capacitor."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "wrong",
+     "reason": "The question scene shows three resistors (10 Ω, 20 Ω, 30 Ω) instead of a series RLC circuit with an inductor and capacitor, and the resistor values are not given in the question."
+    }
+   ]
+  },
+  {
+   "key": "331f11ca",
+   "scene": 8,
+   "verdict": "right",
+   "reason": "Correctly illustrates the peak power and the half-power level (0.5 Pmax) defining the half-power bandwidth.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "Correctly illustrates the peak power and the half-power level (0.5 Pmax) defining the half-power bandwidth."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "It correctly shows the peak power Pmax and the half-power point 0.5 Pmax, illustrating the half-power bandwidth definition."
+    }
+   ]
+  },
+  {
+   "key": "4fce9aa4",
+   "scene": 10,
+   "verdict": "unrelated",
+   "reason": "The frame contains no diagram.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "unrelated",
+     "reason": "The frame contains no diagram."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "unrelated",
+     "reason": "A generic ratio-bar diagram labeled 'Bandwidth Division / Ratio' does not show the substitution 1000/10 or any circuit quantity."
+    }
+   ]
+  },
+  {
+   "key": "da0f58c4",
+   "scene": 12,
+   "verdict": "wrong",
+   "reason": "It labels cutoff frequencies ω1 = 951.2 and ω2 = 1051.2, values not given by the question and inconsistent with the stated 100 rad/s bandwidth.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "unrelated",
+     "reason": "The frame contains no diagram."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "wrong",
+     "reason": "It labels cutoff frequencies ω1 = 951.2 and ω2 = 1051.2, values not given by the question and inconsistent with the stated 100 rad/s bandwidth."
+    }
+   ]
+  },
+  {
+   "key": "ce6751d0",
+   "scene": 13,
+   "verdict": "right",
+   "reason": "Correctly contrasts a high Q yielding a narrow bandwidth against a low Q yielding a broad bandwidth.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "Correctly contrasts a high Q yielding a narrow bandwidth against a low Q yielding a broad bandwidth."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "It correctly illustrates that higher Q gives a narrower bandwidth and sharper selectivity."
+    }
+   ]
+  },
+  {
+   "key": "8444dfab",
+   "scene": 16,
+   "verdict": "unrelated",
+   "reason": "Shows in-phase voltage and current waveforms, which is not mentioned in the spoken sign-off line.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "unrelated",
+     "reason": "Shows in-phase voltage and current waveforms, which is not mentioned in the spoken sign-off line."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "unrelated",
+     "reason": "A closing motivational line about exam confidence is illustrated with a voltage/current waveform, which is not about what the line says."
+    }
+   ]
+  }
+ ]
 }

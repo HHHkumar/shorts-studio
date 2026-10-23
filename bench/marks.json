@@ -29,8 +29,8 @@
   "afdcd2f6": {
    "mark": "unrelated",
    "note": "A battery, a switch and a lamp. The line is about attaching a test source to a dead network.",
-   "by": "claude",
-   "at": "2026-10-11T15:41:19.069Z"
+   "by": "you",
+   "at": "2026-10-13T14:18:16.800Z"
   },
   "101a3dec": {
    "mark": "right",
@@ -39,10 +39,10 @@
    "at": "2026-10-12T15:26:04.749Z"
   },
   "2d38a94d": {
-   "mark": "unrelated",
+   "mark": "wrong",
    "note": "The meter's display reads the word 'Measure' - the label was cut - instead of a reading.",
-   "by": "claude",
-   "at": "2026-10-11T15:41:19.071Z"
+   "by": "you",
+   "at": "2026-10-13T14:18:28.687Z"
   },
   "f175d95d": {
    "mark": "unrelated",
@@ -273,26 +273,26 @@
   "4b151bc0": {
    "mark": "right",
    "note": "",
-   "by": "claude",
-   "at": "2026-10-11T15:41:19.105Z"
+   "by": "you",
+   "at": "2026-10-13T14:19:24.543Z"
   },
   "2b736a94": {
    "mark": "right",
    "note": "Ic leading Vr by 90 degrees.",
-   "by": "claude",
-   "at": "2026-10-11T15:41:19.106Z"
+   "by": "you",
+   "at": "2026-10-13T14:19:30.334Z"
   },
   "8abb490f": {
    "mark": "wrong",
    "note": "Unreadable: three small arrows on top of each other with the labels overlapping. The drop at 180 degrees to Vr is not shown as a subtraction.",
-   "by": "claude",
-   "at": "2026-10-11T15:41:19.107Z"
+   "by": "you",
+   "at": "2026-10-13T14:19:34.997Z"
   },
   "9401464c": {
    "mark": "right",
    "note": "",
-   "by": "claude",
-   "at": "2026-10-11T15:41:19.108Z"
+   "by": "you",
+   "at": "2026-10-13T14:19:37.341Z"
   },
   "fb464897": {
    "mark": "wrong",

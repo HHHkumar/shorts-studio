@@ -343,8 +343,138 @@
    ]
   }
  },
- "checkedAt": null,
- "by": [],
- "sawFrames": false,
- "reviews": []
+ "checkedAt": "2026-10-13T14:22:27.600Z",
+ "by": [
+  "Gemini",
+  "DeepSeek"
+ ],
+ "sawFrames": true,
+ "reviews": [
+  {
+   "key": "07b60f38",
+   "scene": 2,
+   "verdict": "unsure",
+   "reason": "DeepSeek says wrong (On the question scene it shows Vr in phase with Vs and larger, which gives away the answer and is false since the rise comes from a leading charging current, not an in-phase voltage); Gemini does not.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "Correctly illustrates the question's premise showing the receiving end voltage Vr exceeding the sending end voltage Vs."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "wrong",
+     "reason": "On the question scene it shows Vr in phase with Vs and larger, which gives away the answer and is false since the rise comes from a leading charging current, not an in-phase voltage."
+    }
+   ]
+  },
+  {
+   "key": "4754101f",
+   "scene": 6,
+   "verdict": "wrong",
+   "reason": "Draws an AC transmission line drawing charging current as a DC circuit with resistors.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "wrong",
+     "reason": "Draws an AC transmission line drawing charging current as a DC circuit with resistors."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "wrong",
+     "reason": "Draws the line's shunt capacitance and series inductance as resistors (10 Ω, 50 Ω || 50 Ω) fed by a DC source, so the charging current through capacitance is not shown."
+    }
+   ]
+  },
+  {
+   "key": "4b151bc0",
+   "scene": 7,
+   "verdict": "right",
+   "reason": "Correctly illustrates the principle of capacitance across an air dielectric.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "Correctly illustrates the principle of capacitance across an air dielectric."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "Shows two plates with a field between them, correctly illustrating the shunt capacitance between overhead conductors and ground."
+    }
+   ]
+  },
+  {
+   "key": "2b736a94",
+   "scene": 8,
+   "verdict": "right",
+   "reason": "Correctly shows charging current Ic leading receiving end voltage Vr by 90 degrees on a phasor diagram.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "Correctly shows charging current Ic leading receiving end voltage Vr by 90 degrees on a phasor diagram."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "Shows Vr and Ic phasors with a -90° angle, correctly illustrating that the charging current leads the receiving-end voltage by ninety degrees."
+    }
+   ]
+  },
+  {
+   "key": "8abb490f",
+   "scene": 10,
+   "verdict": "wrong",
+   "reason": "The vector diagram is drawn far too small to clearly read and the arrows and labels overlap illegibly.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "wrong",
+     "reason": "The vector diagram is drawn far too small to clearly read and the arrows and labels overlap illegibly."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "wrong",
+     "reason": "The vector-add diagram uses angle = 180, drawing j·Ic·X opposite to Vr, whereas the line says the drop is in phase with the sending voltage."
+    }
+   ]
+  },
+  {
+   "key": "9401464c",
+   "scene": 11,
+   "verdict": "right",
+   "reason": "Correctly presents the comparison between sending and receiving end voltages under no-load conditions.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "right",
+     "reason": "Correctly presents the comparison between sending and receiving end voltages under no-load conditions."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "right",
+     "reason": "The two labels correctly state that under no-load the receiving voltage Vr is higher than the sending voltage Vs."
+    }
+   ]
+  },
+  {
+   "key": "fb464897",
+   "scene": 14,
+   "verdict": "wrong",
+   "reason": "Draws shunt reactors as parallel resistors connected to a DC source labeled Reactor.",
+   "said": [
+    {
+     "by": "Gemini",
+     "verdict": "wrong",
+     "reason": "Draws shunt reactors as parallel resistors connected to a DC source labeled Reactor."
+    },
+    {
+     "by": "DeepSeek",
+     "verdict": "wrong",
+     "reason": "Draws the shunt reactor as resistors (10 Ω, 50 Ω || 50 Ω || 50 Ω) fed by a DC source, not as an inductor absorbing leading vars."
+    }
+   ]
+  }
+ ]
 }
