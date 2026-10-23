@@ -291,6 +291,45 @@ export const BenchView: React.FC<{
         </Note>
       ) : null}
 
+      {view.drawings && view.drawings.length ? (
+        <details className="help" open>
+          <summary>
+            Doodles you reported wrong: {view.drawings.length}
+            {(() => {
+              const still = view.drawings.filter((d) => d.today.outcome === 'draw').length;
+              const approved = view.drawings.filter((d) => d.today.outcome === 'approved').length;
+              if (!still && !approved) return ' · the picture rule now refuses every one';
+              return [still ? ' · ' + still + ' the picture rule would still draw' : '', approved ? ' · ' + approved + ' would show an approved drawing' : ''].join('');
+            })()}
+          </summary>
+          <div className="inner">
+            <p className="hint" style={{ marginTop: 10 }}>
+              Each &ldquo;Wrong picture&rdquo; pressed on a doodle. One the rule would still draw is one it has not learned from
+              yet — its words are what the next rule has to catch.
+            </p>
+            <div className="drawing-reports">
+              {view.drawings.map((d) => (
+                <div key={d.at} className={'drawing-report ' + (d.today.outcome === 'draw' ? 'bad' : 'ok')}>
+                  {d.src ? <img src={'/' + d.src} alt="" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} /> : null}
+                  <div>
+                    <div><b>{d.topic || 'A video'}</b> · scene {d.scene + 1}</div>
+                    <div className="hint">Asked for: {d.direction.subject === 'illustration' ? d.direction.action : d.direction.props || d.direction.action}</div>
+                    {d.note ? <div>You said: {d.note}</div> : null}
+                    <div className={d.today.outcome === 'none' ? 'hint' : 'warn-text'}>
+                      Today: {d.today.outcome === 'draw'
+                        ? 'it would still be drawn.'
+                        : d.today.outcome === 'approved'
+                          ? 'it would show the approved drawing of ' + d.today.equipment.toLowerCase() + ' — if that drawing is what is wrong, withdraw its approval on the Drawings page.'
+                          : 'refused — it asked for ' + d.today.why + '.'}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </details>
+      ) : null}
+
       <div className="actions">
         <button className="btn" onClick={addLibrary} disabled={!!busy}>Add my library videos</button>
         <span className="bench-add">

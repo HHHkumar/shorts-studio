@@ -638,7 +638,18 @@ ul.issues .sev-low .sev { background: rgba(108,140,255,.16); color: var(--accent
   font-size: 11.5px; font-weight: 700; padding: 2px 8px; border-radius: 99px;
   background: rgba(255,196,0,.14); color: #ffc400;
 }
+.doodle-head .ok-tag {
+  font-size: 11.5px; font-weight: 700; padding: 2px 8px; border-radius: 99px;
+  background: rgba(61,220,151,.14); color: var(--good);
+}
 .doodle-said { margin: 6px 0 8px; color: var(--dim); font-size: 13.5px; line-height: 1.45; }
+/* A scene the picture rule would not draw: the reason, and the way round it. */
+.doodle-refused {
+  display: flex; gap: 10px; align-items: flex-start; justify-content: space-between; flex-wrap: wrap;
+  margin: 0 0 8px; padding: 8px 10px; border-radius: 8px; font-size: 13px; line-height: 1.45;
+  background: rgba(255,196,0,.08); border: 1px solid rgba(255,196,0,.3);
+}
+.doodle-refused span { flex: 1 1 260px; }
 .doodle-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
 .doodle-fields .field > label { font-size: 12px; }
 .doodle-fields input { padding: 8px 10px; font-size: 13.5px; }
@@ -802,3 +813,34 @@ ul.issues .sev-low .sev { background: rgba(108,140,255,.16); color: var(--accent
 
 /* The Kannada alphabet page: its preview is the 16:9 chart, full width. */
 .alphabet-preview { margin-top: 18px; aspect-ratio: 16 / 9; width: 100%; border-radius: 12px; overflow: hidden; background: #000; }
+
+/* The equipment drawings page. */
+.drawing-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 14px; margin-top: 14px; }
+.drawing-card { border: 1px solid var(--line); border-radius: 12px; padding: 14px; background: var(--panel-2, rgba(255,255,255,.02)); }
+.drawing-card.approved { border-color: rgba(61,220,151,.45); }
+.drawing-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.drawing-tag { font-size: 11.5px; font-weight: 700; padding: 2px 8px; border-radius: 99px; border: 1px solid var(--line); color: var(--dim); }
+.drawing-tag.wanted { color: var(--warn); border-color: rgba(255,200,87,.45); }
+.drawing-tag.ok { color: var(--good); border-color: rgba(61,220,151,.45); }
+.drawing-body { display: grid; grid-template-columns: 150px 1fr; gap: 12px; margin-top: 10px; }
+.drawing-current img, .drawing-candidate img { width: 100%; aspect-ratio: 1; object-fit: contain; background: #fff; border-radius: 8px; }
+.drawing-empty { aspect-ratio: 1; display: grid; place-items: center; text-align: center; padding: 10px; font-size: 12px; color: var(--dim); border: 1px dashed var(--line); border-radius: 8px; }
+.drawing-words { display: flex; flex-direction: column; gap: 6px; font-size: 13px; line-height: 1.45; }
+.drawing-check { font-size: 13px; padding: 6px 8px; border-radius: 6px; background: rgba(61,220,151,.07); }
+.drawing-candidates { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+@media (max-width: 560px) {
+  .drawing-list { grid-template-columns: 1fr; }
+  .drawing-body { grid-template-columns: 1fr; }
+}
+
+/* "Wrong picture": a note, and the button that takes it out. */
+.picture-report { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; max-width: 360px; }
+.picture-report input { flex: 1 1 180px; padding: 6px 9px; font-size: 13px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: inherit; }
+.doodle-report-link { font-size: 12.5px; margin: -2px 0 8px; display: inline-block; }
+
+/* The doodles reported wrong, on the test bench. */
+.drawing-reports { display: grid; gap: 10px; margin-top: 10px; }
+.drawing-report { display: grid; grid-template-columns: 96px 1fr; gap: 10px; padding: 8px; border-radius: 8px; border: 1px solid var(--line); font-size: 13px; line-height: 1.45; }
+.drawing-report.bad { border-color: rgba(255,200,87,.5); }
+.drawing-report img { width: 96px; height: 96px; object-fit: contain; background: #fff; border-radius: 6px; }
+.warn-text { color: var(--warn); }

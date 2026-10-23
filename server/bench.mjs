@@ -28,6 +28,8 @@ import { answerShown, sourceNumbers, unsourcedInVisual } from './number-source.m
 import { isFlagged, settle } from './picture-review.mjs';
 import { cutLabels } from './sketch-fit.mjs';
 import { workedOutProblems } from './sketch-checks.mjs';
+import { approvedDrawings, kindsFor } from './equipment.mjs';
+import { drawnText, judgeDrawing } from '../src/lib/drawable.ts';
 
 /** The only ids this module reads or writes - no path can be smuggled in. */
 export const CASE_ID = /^b-[a-z0-9]+(?:-[a-z0-9]+){0,12}$/;
@@ -193,6 +195,91 @@ export function setMark(root, id, key, { mark, note = '', by = 'you' }) {
   return forCase[key] || null;
 }
 
+// --- reported from a video in progress ------------------------------------------
+//
+// The "Wrong picture" button. The picture is taken out of the video by the
+// browser; here it is kept, so the mistake is not made again unnoticed: a
+// diagram becomes a bench case with the creator's mark on it, and a doodle is
+// written to bench/drawings.json, which the picture rule is measured against.
+
+const drawingsFile = (root) => path.join(root, 'bench', 'drawings.json');
+
+/** A diagram the creator says is wrong: its video on the bench, the picture marked wrong by them. */
+export function reportPicture(root, { videoId, content, design, scene, note = '' }) {
+  const line = content && Array.isArray(content.script) ? content.script[scene] : null;
+  if (!line || !line.visual || line.visual.kind === 'none') throw new Error('That scene has no picture to report.');
+  const picture = picturesIn(content).find((p) => p.scene === scene);
+  if (!picture) throw new Error('That picture is not one the test bench checks.');
+
+  // The video's own case when it already holds this picture; otherwise a case
+  // for the script as it is now, so the mark always lands on a picture it has.
+  const base = 'b-' + String(videoId || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  let caseId = CASE_ID.test(base) && base.length > 2 ? base : '';
+  const holds = (id) => {
+    try { return picturesIn(readCase(root, id).content).some((p) => p.key === picture.key); } catch { return false; }
+  };
+  if (!caseId || !fs.existsSync(fileOf(root, caseId)) || !holds(caseId)) {
+    if (caseId && fs.existsSync(fileOf(root, caseId))) {
+      let n = 2;
+      while (fs.existsSync(fileOf(root, caseId + '-' + n)) && !holds(caseId + '-' + n)) n++;
+      caseId = caseId + '-' + n;
+    }
+    if (!caseId || !fs.existsSync(fileOf(root, caseId))) caseId = addCase(root, { id: caseId || undefined, source: 'report', content, design }).id;
+  }
+  setMark(root, caseId, picture.key, { mark: 'wrong', note: String(note || '').slice(0, 400), by: 'you' });
+  return { caseId, key: picture.key };
+}
+
+/** Every doodle the creator has reported, oldest first. */
+export function readDrawingReports(root) {
+  const list = readJson(drawingsFile(root), []);
+  return Array.isArray(list) ? list : [];
+}
+
+/** A doodle the creator says is wrong: what was asked for, what it showed, and what they said. */
+export function reportDrawing(root, { videoId = '', topic = '', scene, line, animated = true, note = '', now = new Date() }) {
+  if (!line || !line.doodle || !line.doodleSrc) throw new Error('That scene has no drawing to report.');
+  const d = line.doodle;
+  const entry = {
+    at: now.toISOString(),
+    videoId: String(videoId || '').slice(0, 60),
+    topic: String(topic || '').slice(0, 160),
+    scene: Number(scene) || 0,
+    kind: String(line.kind || ''),
+    narration: String(line.narration || '').slice(0, 400),
+    direction: {
+      subject: d.subject || 'mascot', action: String(d.action || ''), props: String(d.props || ''), gag: String(d.gag || ''),
+    },
+    animated: animated !== false,
+    src: String(line.doodleSrc || ''),
+    approved: String(line.doodleApproved || ''),
+    unchecked: Boolean(line.doodleUnchecked),
+    note: String(note || '').slice(0, 400),
+    by: 'you',
+  };
+  const list = readDrawingReports(root);
+  list.push(entry);
+  fs.mkdirSync(path.dirname(drawingsFile(root)), { recursive: true });
+  fs.writeFileSync(drawingsFile(root), JSON.stringify(list, null, 1));
+  return entry;
+}
+
+/**
+ * The reported doodles, newest first, each with what the picture rule would
+ * do with it today: a report the rule would still draw is one it has not
+ * learned from yet, and the list says so.
+ */
+export function drawingReportsView(root) {
+  const publicDir = path.join(root, 'public');
+  const { ids } = approvedDrawings(publicDir);
+  const kinds = kindsFor(publicDir);
+  return readDrawingReports(root).slice().reverse().map((r) => {
+    const today = judgeDrawing(drawnText(r.direction, r.animated !== false), ids, kinds);
+    const kind = today.equipment ? kinds.find((k) => k.id === today.equipment) : null;
+    return { ...r, today: { outcome: today.outcome, why: today.why, equipment: kind ? kind.name : '' } };
+  });
+}
+
 /** Why the rules would not draw this picture today. Empty when they would. */
 export function refusedToday(visual, source, orientation = 'portrait', question = null) {
   const reasons = visual.kind === 'sketch' ? checkSketch(visual.sketch, visual.params || {}, visual.items || []) : [];
@@ -272,7 +359,7 @@ export function benchView(root, frameUrl = () => '') {
   });
   // `provisional` counts a first pass by Claude as though it were confirmed:
   // a picture of where things stand before a person has been through them.
-  return { cases, score: scoreBench(cases), provisional: scoreBench(cases, { includeSuggested: true }) };
+  return { cases, score: scoreBench(cases), provisional: scoreBench(cases, { includeSuggested: true }), drawings: drawingReportsView(root) };
 }
 
 const share = (part, whole) => (whole ? Math.round((part / whole) * 1000) / 10 : null);

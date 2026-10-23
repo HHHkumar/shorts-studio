@@ -6,3 +6,5 @@
 *.mp3 binary
 *.mp4 binary
 *.wav binary
+# Windows batch files run under cmd.exe, which wants CRLF.
+*.cmd text eol=crlf

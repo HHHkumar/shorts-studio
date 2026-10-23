@@ -4,7 +4,7 @@
 // taken back out of the answers before anything is drawn.
 
 import {
-  ANIMATED_LINES, buildDirectionRequest, DIRECTION_SYSTEM, directionSystem, MAX_DIRECTED, normalizeDirections,
+  ANIMATED_LINES, approvedNames, buildDirectionRequest, DIRECTION_SYSTEM, directionSystem, MAX_DIRECTED, normalizeDirections,
 } from './doodle-directions.mjs';
 import { ENGINEER_POSES } from '../src/lib/doodle.ts';
 
@@ -35,8 +35,10 @@ const quiz = {
   ],
 };
 
+// Beside him, something everyday: equipment is only ever an approved drawing,
+// and that rule has tests of its own below.
 const direction = (scene, extra = {}) => ({
-  scene, action: 'points at the meter', emotion: 'puzzled', props: 'an energy meter', gag: 'none', ...extra,
+  scene, action: 'points at the meter', emotion: 'puzzled', props: 'a light bulb', gag: 'none', ...extra,
 });
 
 console.log('\nthe request');
@@ -128,13 +130,48 @@ test('markdown and quotes are stripped from every field', () => {
 });
 
 test('the subject Gemini chose comes through', () => {
-  const out = normalizeDirections({ directions: [direction(3, { subject: 'illustration', action: 'a meter disc with a small magnet', emotion: '' })] }, quiz, [3]);
+  const out = normalizeDirections({ directions: [direction(3, { subject: 'illustration', action: 'a spinning aluminium disc with a small magnet', emotion: '' })] }, quiz, [3]);
   assert(out.directions[3].subject === 'illustration' && out.directions[3].emotion === '');
 });
 
 test('the model is told to mix the engineer with illustrations', () => {
-  assert(/"illustration": the thing itself/.test(DIRECTION_SYSTEM));
+  assert(/"illustration": an everyday picture of the idea/.test(DIRECTION_SYSTEM));
   assert(/never choose the\s+same subject for more than three scenes in a row/.test(DIRECTION_SYSTEM));
+});
+
+console.log('\nwhat may be drawn');
+
+test('the model is told what an image model cannot be trusted with, and that the engineer alone is right', () => {
+  for (const words of ['a circuit', 'a graph or a curve', 'a meter reading', 'APPROVED DRAWINGS list', 'the engineer on his own']) {
+    assert(DIRECTION_SYSTEM.includes(words), 'the prompt no longer says: ' + words);
+  }
+});
+
+test('the request names the approved drawings, or says there are none', () => {
+  assert(/APPROVED DRAWINGS: none yet/.test(buildDirectionRequest(quiz, [0], 'lively')));
+  const req = buildDirectionRequest(quiz, [0], 'lively', approvedNames(['analog-meter', 'motor', 'no-such-kind']));
+  assert(/APPROVED DRAWINGS: analog meter, motor\./.test(req), req.split('\n').find((l) => l.startsWith('APPROVED')));
+});
+
+test('an illustration of a circuit becomes the engineer explaining, and says why', () => {
+  const out = normalizeDirections({
+    directions: [direction(3, { subject: 'illustration', action: 'two wattmeters connected to three supply lines', emotion: '' })],
+  }, quiz, [3]);
+  assert(out.directions[3].subject === 'mascot' && out.directions[3].props === '', JSON.stringify(out.directions[3]));
+  assert(out.directions[3].pose === 'teach', 'an explain scene should have him teaching, got ' + out.directions[3].pose);
+  assert(out.notes.some((n) => /^Scene 3: the illustration asked for a circuit/.test(n)), out.notes.join(' | '));
+});
+
+test('equipment nobody has approved is not drawn beside him', () => {
+  const out = normalizeDirections({ directions: [direction(0, { props: 'an energy meter' })] }, quiz, [0]);
+  assert(out.directions[0].props === '' && out.directions[0].action === 'points at the meter');
+  assert(out.notes.some((n) => /energy meter, and no drawing of one has been approved/.test(n)), out.notes.join(' | '));
+  assert(!out.pictures[0]);
+});
+
+test('approved equipment is kept, and listed to be shown as its drawing', () => {
+  const out = normalizeDirections({ directions: [direction(0, { props: 'an energy meter' })] }, quiz, [0], { approved: ['energy-meter'] });
+  assert(out.directions[0].props === 'an energy meter' && out.pictures[0] === 'energy-meter' && !out.notes.length);
 });
 
 test('a reply with no directions array gives nothing, not a crash', () => {

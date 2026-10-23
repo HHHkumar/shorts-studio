@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import {
   api,
   DEFAULT_TOPIC_FORM,
@@ -24,11 +24,16 @@ import { StepScript } from './ui/StepScript';
 import { StepStyle } from './ui/StepStyle';
 import { StepTopic } from './ui/StepTopic';
 import { StepVoice } from './ui/StepVoice';
-import { MascotLab } from './ui/MascotLab';
-import { LibraryView } from './ui/LibraryView';
-import { PlannerView } from './ui/PlannerView';
-import { BenchView } from './ui/BenchView';
-import { AlphabetView } from './ui/AlphabetView';
+// The side pages load the first time they are opened: most sessions never
+// open the bench or the alphabet, and they need not pay for them at start-up.
+const MascotLab = lazy(() => import('./ui/MascotLab').then((m) => ({ default: m.MascotLab })));
+const LibraryView = lazy(() => import('./ui/LibraryView').then((m) => ({ default: m.LibraryView })));
+const PlannerView = lazy(() => import('./ui/PlannerView').then((m) => ({ default: m.PlannerView })));
+const BenchView = lazy(() => import('./ui/BenchView').then((m) => ({ default: m.BenchView })));
+const AlphabetView = lazy(() => import('./ui/AlphabetView').then((m) => ({ default: m.AlphabetView })));
+const DrawingsView = lazy(() => import('./ui/DrawingsView').then((m) => ({ default: m.DrawingsView })));
+
+type SidePage = 'lab' | 'library' | 'planner' | 'bench' | 'alphabet' | 'drawings' | null;
 import { Note } from './ui/controls';
 import { tidySheet } from './lib/formula-card';
 import { shiftAudio } from './lib/script-edit';
@@ -39,7 +44,17 @@ export const App: React.FC = () => {
   const [step, setStep] = useState(0);
   // The mascot lab sits outside the steps: the character is designed once for
   // the channel, not per video, so it must be reachable with no video open.
-  const [lab, setLab] = useState(false);
+  // Which side page is open, if any: the mascot lab, the library, the planner,
+  // the test bench, the Kannada alphabet or the equipment drawings. One at a time.
+  const [side, setSide] = useState<SidePage>(null);
+  const toggleSide = (page: Exclude<SidePage, null>) => setSide((cur) => (cur === page ? null : page));
+  const closeSide = (page: Exclude<SidePage, null>) => setSide((cur) => (cur === page ? null : cur));
+  const lab = side === 'lab';
+  const libraryOpen = side === 'library';
+  const plannerOpen = side === 'planner';
+  const benchOpen = side === 'bench';
+  const alphabetOpen = side === 'alphabet';
+  const drawingsOpen = side === 'drawings';
 
   const [geminiKey, setGeminiKey] = useStoredState('geminiKey', '');
   const [elevenKey, setElevenKey] = useStoredState('elevenKey', '');
@@ -60,10 +75,6 @@ export const App: React.FC = () => {
   // The video being worked on, in the library (server/library.mjs), and what it has cost.
   const [videoId, setVideoId] = useStoredState('videoId', '');
   const [ledger, setLedger] = useStoredState<Spend[]>('ledger', []);
-  const [libraryOpen, setLibraryOpen] = useState(false);
-  const [plannerOpen, setPlannerOpen] = useState(false);
-  const [benchOpen, setBenchOpen] = useState(false);
-  const [alphabetOpen, setAlphabetOpen] = useState(false);
   // A planned question being made by hand: marked done once its video has an id.
   // Armed only once its question is generated: before that, the video open is a different one.
   const [pendingPlanItem, setPendingPlanItem] = useState<{ planId: string; itemId: string; armed: boolean } | null>(null);
@@ -117,7 +128,7 @@ export const App: React.FC = () => {
     setLedger(video.ledger || []);
     setReport(null);
     setLibraryNotes(video.notes || []);
-    setLibraryOpen(false);
+    closeSide('library');
     go(2);
   };
 
@@ -280,7 +291,7 @@ export const App: React.FC = () => {
               className={'step-chip' + (step === i ? ' active' : i < step && unlocked(i) ? ' done' : '')}
               disabled={!unlocked(i)}
               // A step is a way back to the video: whichever side page is open closes.
-              onClick={() => { setLab(false); setLibraryOpen(false); setPlannerOpen(false); setAlphabetOpen(false); setBenchOpen(false); go(i); }}
+              onClick={() => { setSide(null); go(i); }}
             >
               <span className="num">{i + 1}</span>
               {label}
@@ -288,43 +299,50 @@ export const App: React.FC = () => {
           ))}
           <button
             className={'step-chip mascot-chip' + (plannerOpen ? ' active' : '')}
-            onClick={() => { setLab(false); setLibraryOpen(false); setBenchOpen(false); setAlphabetOpen(false); setPlannerOpen((on) => !on); }}
+            onClick={() => toggleSide('planner')}
             title="Plan a series across an exam's syllabus, and make several at once"
           >
             Planner
           </button>
           <button
             className={'step-chip mascot-chip' + (libraryOpen ? ' active' : '')}
-            onClick={() => { setLab(false); setPlannerOpen(false); setAlphabetOpen(false); setBenchOpen(false); setLibraryOpen((on) => !on); }}
+            onClick={() => toggleSide('library')}
             title="Every video you have made"
           >
             Library
           </button>
           <button
             className={'step-chip mascot-chip' + (lab ? ' active' : '')}
-            onClick={() => { setLibraryOpen(false); setPlannerOpen(false); setAlphabetOpen(false); setBenchOpen(false); setLab((on) => !on); }}
+            onClick={() => toggleSide('lab')}
             title="Design and test the doodle mascot"
           >
             Mascot
           </button>
           <button
             className={'step-chip mascot-chip' + (benchOpen ? ' active' : '')}
-            onClick={() => { setLab(false); setLibraryOpen(false); setPlannerOpen(false); setAlphabetOpen(false); setBenchOpen((on) => !on); }}
+            onClick={() => toggleSide('bench')}
             title="The test bench: mark every picture right or wrong, and watch the score"
           >
             Accuracy
           </button>
           <button
             className={'step-chip mascot-chip' + (alphabetOpen ? ' active' : '')}
-            onClick={() => { setLab(false); setLibraryOpen(false); setPlannerOpen(false); setBenchOpen(false); setAlphabetOpen((on) => !on); }}
+            onClick={() => toggleSide('alphabet')}
             title="The Kannada alphabet video: the varnamale chart, read aloud letter by letter"
           >
             ಅ Alphabet
           </button>
+          <button
+            className={'step-chip mascot-chip' + (drawingsOpen ? ' active' : '')}
+            onClick={() => toggleSide('drawings')}
+            title="The equipment drawings a doodle may show: each one checked and approved by you"
+          >
+            Drawings
+          </button>
         </nav>
       </header>
 
-      <div className={libraryOpen || plannerOpen || benchOpen || alphabetOpen ? 'main wide' : 'main'}>
+      <div className={(side !== null && side !== 'lab') ? 'main wide' : 'main'}>
         <div>
           {waitingForServer ? (
             <Note kind="info" title="Starting up…">
@@ -338,7 +356,9 @@ export const App: React.FC = () => {
             </Note>
           ) : null}
 
-          {lab ? <MascotLab geminiKey={geminiKey} onClose={() => setLab(false)} /> : null}
+          {/* The side pages arrive the first time they are opened; this shows for that half second. */}
+          <Suspense fallback={side ? <Note kind="info" title="Opening…">Loading this page.</Note> : null}>
+          {lab ? <MascotLab geminiKey={geminiKey} onClose={() => closeSide('lab')} /> : null}
 
           {libraryOpen ? (
             <LibraryView
@@ -354,7 +374,7 @@ export const App: React.FC = () => {
                 await openVideo(newId);
               }}
               onNew={() => {
-                setLibraryOpen(false);
+                closeSide('library');
                 startFresh();
                 setContent(null);
                 setAudio({});
@@ -362,7 +382,7 @@ export const App: React.FC = () => {
                 setSeo(null);
                 go(1);
               }}
-              onClose={() => setLibraryOpen(false)}
+              onClose={() => closeSide('library')}
             />
           ) : null}
 
@@ -381,11 +401,11 @@ export const App: React.FC = () => {
                   topic: item.topic, difficulty: item.difficulty || form.difficulty,
                   extra: item.angle ? 'The question should test: ' + item.angle : form.extra });
                 setPendingPlanItem({ planId: plan.id, itemId: item.id, armed: false });
-                setPlannerOpen(false);
+                closeSide('planner');
                 go(1);
               }}
-              onOpenVideo={(id) => { openVideo(id).then(() => setPlannerOpen(false)).catch((e) => alert(e instanceof Error ? e.message : String(e))); }}
-              onClose={() => setPlannerOpen(false)}
+              onOpenVideo={(id) => { openVideo(id).then(() => closeSide('planner')).catch((e) => alert(e instanceof Error ? e.message : String(e))); }}
+              onClose={() => closeSide('planner')}
             />
           ) : null}
 
@@ -397,7 +417,7 @@ export const App: React.FC = () => {
               deepseekModel={deepseekModel}
               form={form}
               design={design}
-              onClose={() => setBenchOpen(false)}
+              onClose={() => closeSide('bench')}
             />
           ) : null}
 
@@ -406,11 +426,14 @@ export const App: React.FC = () => {
               elevenKey={elevenKey}
               voiceModels={voiceModels}
               settings={voiceSettings}
-              onClose={() => setAlphabetOpen(false)}
+              onClose={() => closeSide('alphabet')}
             />
           ) : null}
 
-          {libraryNotes.length && !libraryOpen && !lab && !benchOpen && !alphabetOpen ? (
+          {drawingsOpen ? <DrawingsView geminiKey={geminiKey} onClose={() => closeSide('drawings')} /> : null}
+          </Suspense>
+
+          {libraryNotes.length && side === null ? (
             <Note kind="warn" title="Opened from the library">
               {libraryNotes.map((n) => <div key={n}>{n}</div>)}
             </Note>
@@ -418,7 +441,7 @@ export const App: React.FC = () => {
 
           {/* Hidden rather than unmounted while the lab is open, so anything
               half-done on a step is still there on the way back. */}
-          <div hidden={lab || libraryOpen || plannerOpen || benchOpen || alphabetOpen}>
+          <div hidden={side !== null}>
           {step === 0 ? (
             <StepKeys
               geminiKey={geminiKey}
@@ -489,6 +512,7 @@ export const App: React.FC = () => {
               report={report}
               setReport={setReport}
               videoProps={videoProps}
+              videoId={videoId}
               onBack={() => go(1)}
               onNext={() => go(3)}
             />
@@ -523,7 +547,7 @@ export const App: React.FC = () => {
               googleImageModels={googleImageModels}
               geminiKey={geminiKey}
               geminiModel={geminiModel}
-              onOpenMascot={() => setLab(true)}
+              onOpenMascot={() => setSide('lab')}
               onBack={() => go(3)}
               onNext={() => go(5)}
             />
@@ -567,7 +591,7 @@ export const App: React.FC = () => {
           </div>
         </div>
 
-        {libraryOpen || plannerOpen || benchOpen || alphabetOpen ? null : <Preview props={step >= 2 ? videoProps : null} hasAudio={hasAudio} />}
+        {(side !== null && side !== 'lab') ? null : <Preview props={step >= 2 ? videoProps : null} hasAudio={hasAudio} />}
       </div>
     </div>
   );

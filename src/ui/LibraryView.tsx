@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { api, type LibraryVideo } from '../lib/api';
+import { api, type HistoryProject, type LibraryVideo } from '../lib/api';
 import { ErrorNote, Note, Spinner } from './controls';
 import { LANGUAGES } from '../lib/languages';
 
@@ -37,10 +37,14 @@ export const LibraryView: React.FC<{
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState('');
 
+  const [history, setHistory] = useState<HistoryProject[] | null>(null);
+
   const load = () => {
     api.library()
       .then((r) => setVideos(r.videos))
       .catch((e) => setError(e instanceof Error ? e.message : String(e)));
+    // History Studio's videos too: one program, one list. Missing is not an error here.
+    api.historyProjects().then(setHistory).catch(() => setHistory([]));
   };
   useEffect(load, []);
 
@@ -133,6 +137,45 @@ export const LibraryView: React.FC<{
           </div>
         ))}
       </div>
+
+      {history && history.length ? (
+        <>
+          <div className="section-title" style={{ marginTop: 22 }}>History &amp; news videos</div>
+          <p className="hint" style={{ marginTop: 0 }}>
+            Made in History Studio, the other studio of this app. They open there, with their own steps.
+          </p>
+          <div className="library-list">
+            {history
+              .filter((p) => !filter.trim() || p.title.toLowerCase().includes(filter.trim().toLowerCase()))
+              .map((p) => (
+                <div className="library-row" key={p.id}>
+                  <div className="library-main">
+                    <div className="library-title">{p.title}</div>
+                    <div className="hint">
+                      History Studio · {p.scenes} scenes · {p.pictures} pictures · {p.voiced} voiced · {when(p.updatedAt)}
+                    </div>
+                  </div>
+                  <div className="library-actions">
+                    <button className="btn small" onClick={() => openInHistory(p.id)}>Open in History Studio →</button>
+                  </div>
+                </div>
+              ))}
+          </div>
+        </>
+      ) : null}
     </div>
   );
 };
+
+/**
+ * Open a project in History Studio. It is another page of this app, on the same
+ * address, so the project it should open can be left where it looks for it.
+ */
+function openInHistory(id: string) {
+  try {
+    localStorage.setItem('history-studio:projectId', JSON.stringify(id));
+  } catch {
+    // storage blocked: the page opens on its project list instead
+  }
+  window.location.href = '/history.html';
+}

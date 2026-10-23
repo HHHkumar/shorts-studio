@@ -52,6 +52,15 @@ export const StepVoice: React.FC<{
 
   useEffect(() => {
     let cancelled = false;
+    // No key, no point asking: say what is missing instead of passing on the
+    // helper's refusal as an error.
+    if (elevenKey.trim().length < 6) {
+      setVoices([]);
+      setLoadingVoices(false);
+      setError(null);
+      return undefined;
+    }
+    setLoadingVoices(true);
     (async () => {
       try {
         const list = await api.voices(elevenKey.trim());
@@ -122,6 +131,11 @@ export const StepVoice: React.FC<{
       {loadingVoices ? (
         <Note kind="info">
           <Spinner /> Loading the voices on your ElevenLabs account…
+        </Note>
+      ) : elevenKey.trim().length < 6 ? (
+        <Note kind="warn" title="No ElevenLabs key yet">
+          The voice is made with ElevenLabs. Add your ElevenLabs API key on step 1 (Keys), then come back
+          here: your voices are listed as soon as it is in.
         </Note>
       ) : voices.length === 0 ? (
         <Note kind="warn" title="No voices found">

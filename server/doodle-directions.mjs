@@ -20,7 +20,13 @@
 import { fetchRetrying } from './retry.mjs';
 import { givesAnswerAway, stripLettering } from './thumbnail-brief.mjs';
 import { answerSceneIndex } from './scene-prompts.mjs';
-import { ENGINEER_POSES, energyFor, tidyDirection } from '../src/lib/doodle.ts';
+import { ENGINEER_POSES, energyFor, poseFor, tidyDirection } from '../src/lib/doodle.ts';
+import { settleDirection } from '../src/lib/drawable.ts';
+import { EQUIPMENT } from '../src/lib/equipment.ts';
+
+/** The approved kinds as the model is told them: by the name a direction would use. */
+export const approvedNames = (approved, kinds = EQUIPMENT) =>
+  approved.map((id) => kinds.find((k) => k.id === id)).filter(Boolean).map((k) => k.words[0]);
 
 const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models';
 
@@ -58,22 +64,35 @@ export const DIRECTION_SYSTEM = [
   'For each scene you are asked about, first choose its subject:',
   '- "mascot": the engineer, reacting or doing something. Best for moments that need a face -',
   '  the hook, the question, the moment of doubt, the reveal, the sign-off.',
-  '- "illustration": the thing itself, with no person in it - a transformer on a pole, electrons',
-  '  drifting through a wire, the inside of a meter, water in pipes as a picture of current. Best',
-  '  for scenes that explain, compare or describe how something works.',
+  '- "illustration": an everyday picture of the idea, with no person in it - water in pipes as a',
+  '  picture of current, an hourglass for time, a seesaw finding its balance, a row of light bulbs.',
+  '  Best for an analogy, or for a scene that names a piece of equipment on the approved list below.',
   'Mix them. A video that is only the engineer is a video about the engineer; never choose the',
   'same subject for more than three scenes in a row.',
   '',
   'Then write:',
-  '- action: for the mascot, what the engineer is doing, starting with a verb, e.g. "points at a',
-  '  transformer on a pole". For an illustration, what the picture shows, e.g. "a step-down',
-  '  transformer on a pole with thick wires in and thin wires out". Tie it to what the scene says.',
+  '- action: for the mascot, what the engineer is doing, starting with a verb, e.g. "points at the',
+  '  light bulb". For an illustration, what the picture shows, e.g. "water rushing through a narrow',
+  '  pipe". Tie it to what the scene says.',
   '- emotion: for the mascot, a few words, e.g. "puzzled", "delighted, huge grin". For an',
   '  illustration, a mood such as "busy" or "calm", or an empty string.',
-  '- props: anything else in the picture - concrete, drawable, few. Name only real things: a meter,',
-  '  a motor, a coil of wire, a light bulb, a battery.',
+  '- props: anything else in the picture - concrete, drawable, few: a light bulb, a battery, a coil',
+  '  of wire, a wall switch, a stopwatch.',
   '- gag: one small visual joke that suits the scene, or "none". An illustration can have one',
   '  too - a light bulb wearing sunglasses, a tired battery with sweat drops.',
+  '',
+  'WHAT MAY BE DRAWN. These pictures are drawn by an image model, and it cannot be trusted with',
+  'anything technical: asked for a circuit it invents one. So:',
+  '- Everyday objects and analogies only.',
+  '- Never a circuit, a wiring connection, a diagram, a graph or a curve, a circuit symbol, field or',
+  '  flux lines, arrows, a meter reading or a needle at a value, a cross-section or the inside of',
+  '  anything, several panels, or more than four of anything. The video draws those itself, checked,',
+  '  in other scenes - a doodle that tries to will be thrown away.',
+  '- Electrical equipment only from the APPROVED DRAWINGS list in the request, named the way it is',
+  '  written there, one per scene. Those are drawings a person has checked, and they are shown as',
+  '  they are. Anything else - a transformer, a motor, a meter not on the list - is not drawn.',
+  '- When nothing everyday fits a scene, choose "mascot" with empty props: the engineer on his own is',
+  '  always right.',
   '',
   'Rules:',
   '- Each scene is marked with an energy. calm: a relaxed pose and gag "none" or something gentle.',
@@ -115,13 +134,16 @@ export const directionSystem = (animated = true) => (animated ? DIRECTION_SYSTEM
  * The script as the model sees it: every scene for context, the ones to
  * direct marked WRITE with their energy, and any before the answer marked so.
  */
-export function buildDirectionRequest(content, scenes, energy) {
+export function buildDirectionRequest(content, scenes, energy, names = []) {
   const script = Array.isArray(content && content.script) ? content.script : [];
   const answerAt = answerSceneIndex(content);
   const wanted = new Set(scenes);
   const lines = ['SUBJECT: ' + (content.subject || ''), 'TOPIC: ' + (content.topic || '')];
   if (content.question) lines.push('QUESTION: ' + content.question);
   if (Array.isArray(content.options) && content.options.length) lines.push('OPTIONS: ' + content.options.join(' | '));
+  lines.push('APPROVED DRAWINGS: ' + (names.length
+    ? names.join(', ') + '. Name one of these exactly to show it; no other equipment is drawn.'
+    : 'none yet - so no electrical equipment at all, only everyday things and the engineer.'));
   lines.push('', 'THE SCRIPT, scene by scene (direct only the scenes marked WRITE):');
   script.forEach((line, i) => {
     const said = String((line && (line.narration || line.onScreen)) || '').replace(/\s+/g, ' ').trim();
@@ -144,12 +166,20 @@ const scrub = (s) => stripLettering(String(s || '').replace(/[*_`#"]/g, ''));
  * A field that gives the answer away before the reveal is not fixed - it is
  * dropped, and a whole direction whose ACTION spoils is dropped, because a
  * spoiler with its noun removed is usually still a spoiler.
+ *
+ * Then each direction is held to what an image model may draw
+ * (src/lib/drawable.ts): a circuit, a curve, a reading or equipment nobody has
+ * approved becomes the engineer explaining, and named approved equipment is
+ * listed in `pictures`, to be shown as its approved drawing.
  */
-export function normalizeDirections(raw, content, scenes) {
+export function normalizeDirections(raw, content, scenes, { approved = [], kinds = EQUIPMENT, animated = true } = {}) {
   const wanted = new Set(scenes);
   const answerAt = answerSceneIndex(content);
   const correct = Array.isArray(content.options) ? content.options[content.correctIndex] : undefined;
+  const script = Array.isArray(content && content.script) ? content.script : [];
   const directions = {};
+  /** scene -> the approved equipment it shows */
+  const pictures = {};
   const notes = [];
 
   const list = raw && Array.isArray(raw.directions) ? raw.directions : [];
@@ -176,12 +206,20 @@ export function normalizeDirections(raw, content, scenes) {
       if (spoils(direction.gag)) { direction.gag = 'none'; notes.push('Scene ' + scene + ': the gag gave the answer away and was removed.'); }
       if (spoils(direction.emotion)) direction.emotion = 'curious';
     }
-    directions[scene] = direction;
+    const kind = script[scene] && script[scene].kind;
+    const settled = settleDirection(direction, { approved, kinds, animated, pose: poseFor(null, kind) });
+    if (settled.note) notes.push('Scene ' + scene + ': ' + settled.note);
+    if (settled.equipment) pictures[scene] = settled.equipment;
+    directions[scene] = settled.direction;
   }
-  return { directions, notes };
+  return { directions, pictures, notes };
 }
 
-export async function generateDoodleDirections({ apiKey, model, content, scenes, energy, animated = true }) {
+/**
+ * `approved` and `kinds` are the equipment drawings a person has approved
+ * (server/equipment.mjs): their names go to the model, and only they are shown.
+ */
+export async function generateDoodleDirections({ apiKey, model, content, scenes, energy, animated = true, approved = [], kinds = EQUIPMENT }) {
   if (!apiKey) throw new Error('No Gemini API key was sent. Add it on the Keys step.');
   const script = Array.isArray(content && content.script) ? content.script : [];
   const valid = [...new Set((Array.isArray(scenes) ? scenes : []).map(Number))]
@@ -191,7 +229,7 @@ export async function generateDoodleDirections({ apiKey, model, content, scenes,
 
   const body = {
     systemInstruction: { parts: [{ text: directionSystem(animated) }] },
-    contents: [{ role: 'user', parts: [{ text: buildDirectionRequest(content, valid, energy) }] }],
+    contents: [{ role: 'user', parts: [{ text: buildDirectionRequest(content, valid, energy, approvedNames(approved, kinds)) }] }],
     generationConfig: { temperature: 0.9, responseMimeType: 'application/json', responseSchema: RESPONSE_SCHEMA },
   };
   const res = await fetchRetrying(ENDPOINT + '/' + encodeURIComponent(model || 'gemini-2.5-flash') + ':generateContent', {
@@ -218,7 +256,7 @@ export async function generateDoodleDirections({ apiKey, model, content, scenes,
   } catch {
     throw new Error('Gemini sent directions that could not be read. Try again.');
   }
-  const out = normalizeDirections(parsed, content, valid);
+  const out = normalizeDirections(parsed, content, valid, { approved, kinds, animated });
   const missing = valid.filter((i) => out.directions[i] === undefined);
   if (missing.length) {
     out.notes.push('No direction for scene' + (missing.length > 1 ? 's ' : ' ') + missing.join(', ')

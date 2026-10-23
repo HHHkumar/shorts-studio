@@ -51,8 +51,9 @@ function getBundle(onStage) {
  *               leave the carousel and the thumbnail drawing the old engineer
  *               until the helper was restarted
  *   fonts     - small, and the Doodle look is wrong without them
+ *   equipment - drawings approved on the Drawings page while the helper runs
  */
-const LIVE_FOLDERS = ['generated', 'mascot', 'fonts'];
+const LIVE_FOLDERS = ['generated', 'mascot', 'fonts', 'equipment'];
 
 function syncAudioIntoBundle(bundleDir) {
   for (const folder of LIVE_FOLDERS) {
@@ -215,7 +216,7 @@ export function startRender(jobId, inputProps, quality, { videoId = '', onDone }
  * are not a quiz, such as the Kannada alphabet. It shares the bundle with every
  * other render, so it costs no second minute of bundling.
  */
-export async function renderComposition({ id, inputProps, output, crf = 18, onStage = () => undefined, onProgress = () => undefined }) {
+export async function renderComposition({ id, inputProps, output, crf = 18, frameRange = null, onStage = () => undefined, onProgress = () => undefined }) {
   onStage('Checking the rendering browser…');
   await ensureBrowser();
   const serveUrl = await getBundle(onStage);
@@ -227,6 +228,7 @@ export async function renderComposition({ id, inputProps, output, crf = 18, onSt
   try {
     await renderMedia({
       composition, serveUrl, codec: 'h264', audioCodec: 'aac', crf, outputLocation: output, inputProps,
+      ...(frameRange ? { frameRange } : {}),
       onProgress: ({ progress }) => onProgress(progress),
     });
   } catch (err) {

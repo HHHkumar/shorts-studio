@@ -9,13 +9,14 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { drawnText, judgeDrawing } from '../src/lib/drawable.ts';
-import { allKinds } from '../src/lib/equipment.ts';
+import { approvedDrawings, kindsFor } from '../server/equipment.mjs';
+import { drawingReportsView } from '../server/bench.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const all = process.argv.includes('--all');
-// Nothing is approved yet: the store of approved drawings is not built.
-const kinds = allKinds([]);
-const approved = [];
+// The drawings approved on the Drawings page, and the kinds the creator added.
+const kinds = kindsFor(path.join(ROOT, 'public'));
+const approved = approvedDrawings(path.join(ROOT, 'public')).ids;
 
 const tally = { draw: 0, approved: 0, none: 0 };
 const wanted = new Map();
@@ -47,4 +48,15 @@ const most = [...wanted.entries()].sort((a, b) => b[1] - a[1]);
 if (most.length) {
   console.log('\nEquipment named, with no approved drawing (scenes):');
   for (const [name, n] of most) console.log('  ' + String(n).padStart(3) + '  ' + name);
+}
+
+// The doodles reported wrong with the button, and what the rule does with each today.
+const reports = drawingReportsView(ROOT);
+if (reports.length) {
+  console.log('\nReported wrong (' + reports.length + '):');
+  for (const r of reports) {
+    const asked = r.direction.subject === 'illustration' ? r.direction.action : r.direction.props || r.direction.action;
+    console.log('  ' + (r.today.outcome === 'draw' ? 'STILL DRAWN ' : r.today.outcome === 'approved' ? 'APPROVED    ' : 'REFUSED     ')
+      + asked.slice(0, 80) + (r.note ? '  - you said: ' + r.note.slice(0, 60) : ''));
+  }
 }

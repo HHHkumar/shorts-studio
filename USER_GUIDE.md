@@ -225,6 +225,9 @@ This takes one to three minutes. Yellow warnings are normal — only a red `ERR!
 
 ## 3. Starting it, every time
 
+The quickest way: **double-click `Start Video Studio.cmd`** in the shorts-studio folder. It installs
+the packages on the very first run, starts the studio and opens the browser. Or, from a terminal:
+
 ```bash
 cd C:\Projects\shorts-studio
 ```
@@ -232,6 +235,10 @@ cd C:\Projects\shorts-studio
 ```bash
 npm start
 ```
+
+**After a `git pull` that brought new packages**, the start stops before anything is launched and
+names them, with the one command that fixes it — `npm install` — instead of failing somewhere deep
+inside.
 
 Two things start together: the **helper**, which talks to Gemini and ElevenLabs and does the
 rendering, and the **web page** you actually use. The helper opens your browser once it is ready, so
@@ -673,6 +680,8 @@ was published.
   step, to fix, render again or publish. What you were working on is already saved.
 - **Start a new video** begins a fresh one. So does generating a new question.
 - **Search** by question or topic; **✕** deletes a video from the list (its MP4 files are kept).
+- **History & news videos** are listed below the quiz videos: the ones made in History Studio, the
+  other studio of this program. **Open in History Studio →** opens one there, on its own steps.
 
 The list lives in the `library` folder and is **committed with the code**, so after a `git pull` your
 other computer has it too. The voice clips and drawings are not committed — they are large — so a
@@ -886,6 +895,17 @@ to-do list; *Reviewer disagrees with me* is where the reviewer needs teaching.
 Cases and marks are saved in the `bench` folder and are committed with the code, so they reach your
 other computer with a push. The frames are drawn into `out\bench` and are not; **Draw and
 check** makes them again.
+
+**Wrong picture, from a video in progress.** Every picture in the *Picture check* on step 3 has a
+**Wrong picture** button, for the ones the reviewers passed and you did not. Say what is wrong (or
+not) and press **Take it out**: it leaves the video, and the video joins the bench with that picture
+marked wrong by you, so from then on it counts against the rules and the reviewer. **Put it back**
+undoes the first, not the mark.
+
+**The back test.** `npm run backtest` draws one frame of every scene of every video in the library,
+timed by its own voice where the clips are still on disk, plus frames of every History Studio
+project and of the Kannada alphabet — and fails if anything breaks or comes out blank. Run it after
+any change to the tool: it is the check that a video you made last month still renders.
 
 From a terminal, without the app:
 
@@ -1517,7 +1537,7 @@ this again if you want a different mascot.
   can go fully chaotic. Each scene shows the energy it will actually be drawn at.
 - **Direct N scenes** — Gemini chooses, for each scene, **the engineer or an illustration**, then
   writes it: for the engineer, what they are *doing*, *feeling*, what they are *with* and the *gag*;
-  for an illustration, what it *shows* — a transformer on a pole, electrons drifting through a wire —
+  for an illustration, what it *shows* — water rushing through a narrow pipe, an hourglass running out —
   with nobody in it. The engineer suits the hook, the question and the reveal; illustrations suit
   the explaining. Text only, one request. Switch any scene's subject, or edit any field, afterwards.
 - **Draw N scenes** — draws every directed scene against the model sheet, three at a time, each
@@ -1525,6 +1545,33 @@ this again if you want a different mascot.
   part way.
 - **Redraw** on any one scene draws just that scene again, for one picture's price. No rule stops an
   image model misbehaving every time, so the fix for one bad drawing is one more drawing.
+
+**What a doodle may show.** These pictures are drawn by an image model, which cannot be trusted with
+anything technical: asked for "two wattmeters connected to three supply lines" it invents a hook-up.
+So it draws **everyday things only** — a light bulb, an hourglass, water in pipes, a seesaw. It is
+never asked for a circuit, a connection, a diagram, a graph or curve, a circuit symbol, field lines,
+arrows, a meter reading, the inside of a machine, several panels or more than four of anything —
+the video draws those itself, checked, in other scenes. A scene that asked for one shows the
+engineer on his own, explaining, and the panel says why: *Not drawn. This asks for a circuit or a
+connection.* **Draw it anyway** draws that one scene regardless — marked *not checked*, and yours to
+look at — but a batch never does.
+
+**Equipment is shown only as a drawing you approved.** Press **Drawings** in the top bar. Each piece
+of equipment — the analog meter, transformer, motor, tower, breaker, thyristor and about thirty more —
+has a card with what its drawing must show and a **checklist to look at before approving** (*one
+needle, resting at zero; no numbers on the scale*). The ones your own videos asked for most are at
+the top, with how many scenes went without a picture for want of one. **Draw one** (about 4c) or
+**Upload my own**, look at it against the checklist, and **Approve** it. From then on every scene
+that names that equipment shows exactly that drawing, in every video, for nothing — beside the
+animated engineer, or as the whole picture. **Withdraw approval** stops it being used in new scenes;
+videos already made with it keep it. Missing from the list? **Add equipment that is not on the
+list**, by the name your scripts use. Approved drawings live in `public/equipment/` and are
+committed, like the mascot, so both computers show the same ones.
+
+**Wrong picture.** Every drawn scene has a **Wrong picture** link. It takes the drawing out at once
+and keeps it on the test bench — what was asked for, what came back and what you said — so the rule
+can be measured against it. The **Accuracy** page lists them, each with what the rule would do with
+it today: one it would *still draw* is one it has not learned from yet.
 
 **The animated engineer** (the *Animated engineer* switch, on by default). The engineer is no longer
 drawn into each picture: he stands beside it and **moves**. He is the model sheet rebuilt from lines,
@@ -1535,7 +1582,7 @@ so he is exactly the same engineer in every video, and he costs nothing.
   chosen by Gemini and changeable from the drop-down on the scene. He appears in the preview the
   moment directing is done; nothing has to be drawn.
 - **Only what stands beside him is drawn.** The *Beside him* field names the things on the page next
-  to him — a meter, a lamp, a tired battery — and *Draw* draws just those, with no engineer in the
+  to him — a lamp, a tired battery, or an approved meter — and *Draw* draws just those, with no engineer in the
   picture. A scene that is only his reaction has nothing beside him, says *Nothing to draw*, and
   costs nothing. A typical short now needs two or three pictures instead of eight.
 - **He is one character through the whole video.** He does not fade out and back in at every cut:
@@ -1788,6 +1835,28 @@ Git deliberately ignores three things: `node_modules` (hundreds of megabytes, re
 `npm install`), your finished videos, and generated audio. Everything that matters is tracked.
 
 ### The only commands you need
+
+Run everything the tool checks — the rules, the formats, every saved video:
+
+```bash
+npm test
+```
+
+```bash
+npm run backtest
+```
+
+See how much space scratch work takes (preview stills, back-test frames, History Studio's render
+cache), and free it. Finished videos, the library, voice clips and drawings are only listed, never
+touched:
+
+```bash
+npm run tidy
+```
+
+```bash
+npm run tidy -- --yes
+```
 
 See what you have changed:
 

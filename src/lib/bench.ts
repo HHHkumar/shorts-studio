@@ -70,6 +70,24 @@ export interface BenchView {
   score: BenchScore;
   /** The score with Claude's unconfirmed first pass counted as well. */
   provisional: BenchScore;
+  /** Doodles reported wrong, newest first, each with what the picture rule would do with it today. */
+  drawings?: DrawingReport[];
+}
+
+/** One doodle the creator said was wrong (server/bench.mjs reportDrawing). */
+export interface DrawingReport {
+  at: string;
+  topic: string;
+  scene: number;
+  kind: string;
+  narration: string;
+  direction: { subject: string; action: string; props: string; gag: string };
+  src: string;
+  approved: string;
+  unchecked: boolean;
+  note: string;
+  /** draw: the rule would still have it drawn - it has not learned from this one. */
+  today: { outcome: 'draw' | 'approved' | 'none'; why: string; equipment: string };
 }
 
 export interface BenchQuestion {

@@ -9,6 +9,63 @@ import { directedText } from './delivery';
 
 export type ContentType = 'general' | 'electrical' | 'aptitude';
 
+/** One History Studio project, as its project list gives it. */
+export interface HistoryProject {
+  id: string;
+  title: string;
+  updatedAt: string;
+  scenes: number;
+  pictures: number;
+  voiced: number;
+  cover: string;
+}
+
+/** A scene whose picture is an approved equipment drawing. */
+export interface ApprovedPicture {
+  src: string;
+  equipment: string;
+  /** Stands beside the animated engineer, rather than being the whole picture. */
+  props: boolean;
+}
+
+/** What the draw route gives back for one doodle scene. */
+export interface DoodleDrawn {
+  src?: string;
+  referenced?: boolean;
+  energy?: string;
+  prompt?: string;
+  cents?: number;
+  props?: boolean;
+  /** The approved kind shown, when it is an approved drawing. */
+  approved?: string;
+  /** Drawn because the creator asked, although the rule refused it. */
+  unchecked?: boolean;
+  /** Not drawn: the rule refused it. */
+  refused?: boolean;
+  why?: string;
+  wanted?: string[];
+}
+
+export interface EquipmentKindView {
+  id: string;
+  name: string;
+  words: string[];
+  draw: string;
+  check: string;
+  custom: boolean;
+  approved: { src: string; at: string; source: 'drawn' | 'uploaded' } | null;
+  candidates: string[];
+  /** Scenes in saved videos that named it and found no approved drawing. */
+  wanted: number;
+}
+
+export interface EquipmentView {
+  kinds: EquipmentKindView[];
+  /** Names that came up in saved videos with no kind at all. */
+  unlisted: { name: string; count: number }[];
+  approvedCount: number;
+}
+
 /** Where the Kannada alphabet video stands, for one voice and model. */
 export interface VarnamaleStatus {
   /** Clips the video plays: one per letter and per heading. */
@@ -614,10 +671,19 @@ export const api = {
   doodleDirections(body: {
     apiKey: string; model: string; content: QuizContent; scenes: number[]; energy: string; animated: boolean;
   }) {
-    return post<{ directions: Record<string, DoodleDirection>; notes: string[] }>('/api/doodle/directions', body);
+    return post<{
+      directions: Record<string, DoodleDirection>;
+      /** Scenes that show an approved equipment drawing as their picture: nothing to draw. */
+      pictures: Record<string, ApprovedPicture>;
+      notes: string[];
+    }>('/api/doodle/directions', body);
   },
 
-  /** One scene, drawn against the model sheet. Spends one picture of credits. */
+  /**
+   * One scene, drawn against the model sheet. Spends one picture of credits -
+   * unless it shows an approved drawing (free), or the picture rule refuses it
+   * (`refused`, with why). `force` draws a refused one anyway, marked unchecked.
+   */
   doodleDraw(body: {
     apiKey: string;
     modelId: string;
@@ -629,10 +695,49 @@ export const api = {
     orientation: string;
     /** Draw only what stands beside the animated engineer, not him. */
     animated: boolean;
+    force?: boolean;
   }) {
-    return post<{ src: string; referenced: boolean; energy: string; prompt: string; cents: number; props: boolean }>(
-      '/api/doodle/draw', body,
-    ).then((r) => { spent({ what: 'Doodle drawing', cents: r.cents }); return r; });
+    return post<DoodleDrawn>('/api/doodle/draw', body)
+      .then((r) => { if (r.cents) spent({ what: 'Doodle drawing', cents: r.cents }); return r; });
+  },
+
+  /** History Studio's projects, for the one library list (studios/history/server). */
+  historyProjects() {
+    return getJson<{ projects: HistoryProject[] }>('/api/history/projects').then((r) => r.projects || []);
+  },
+
+  // --- "Wrong picture": kept on the test bench (server/bench.mjs) -------------
+
+  reportPicture(body: { videoId: string; content: QuizContent; design: DesignSettings; scene: number; note: string }) {
+    return post<{ caseId: string; key: string }>('/api/bench/report-picture', body);
+  },
+  reportDrawing(body: { videoId: string; topic: string; scene: number; line: ScriptLine; animated: boolean; note: string }) {
+    return post<{ ok: boolean }>('/api/bench/report-drawing', body);
+  },
+
+  // --- approved equipment drawings (server/equipment.mjs) --------------------
+
+  equipment() {
+    return getJson<EquipmentView>('/api/equipment');
+  },
+  equipmentDraw(apiKey: string, modelId: string, id: string) {
+    return post<{ src: string; cents: number }>('/api/equipment/draw', { apiKey, modelId, id })
+      .then((r) => { spent({ what: 'Equipment drawing', cents: r.cents }); return r; });
+  },
+  equipmentUpload(id: string, dataUrl: string) {
+    return post<{ src: string }>('/api/equipment/upload', { id, dataUrl });
+  },
+  equipmentApprove(id: string, src: string) {
+    return post<EquipmentView>('/api/equipment/approve', { id, src });
+  },
+  equipmentWithdraw(id: string) {
+    return post<EquipmentView>('/api/equipment/withdraw', { id });
+  },
+  equipmentDiscard(id: string, src: string) {
+    return post<EquipmentView>('/api/equipment/discard', { id, src });
+  },
+  equipmentAdd(body: { name: string; draw: string; check: string }) {
+    return post<EquipmentView>('/api/equipment/custom', body);
   },
 
   seo(

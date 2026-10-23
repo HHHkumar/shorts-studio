@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { api } from '../lib/api';
 import type { QuizContent, VideoProps } from '../lib/types';
+import { DEFAULT_DESIGN } from '../lib/theme';
 import {
   applyPictureReview, isFlagged, restorePicture, tally, uncheckedPictures, type PictureReview,
 } from '../lib/picture-review';
@@ -30,13 +31,19 @@ export const PictureCheck: React.FC<{
   content: QuizContent;
   setContent: (updater: (prev: QuizContent) => QuizContent) => void;
   videoProps: VideoProps | null;
+  /** The library id of this video, so a reported picture lands on its own bench case. */
+  videoId?: string;
   geminiKey: string;
   geminiModel: string;
   deepseekKey: string;
   deepseekModel: string;
-}> = ({ content, setContent, videoProps, geminiKey, geminiModel, deepseekKey, deepseekModel }) => {
+}> = ({ content, setContent, videoProps, videoId = '', geminiKey, geminiModel, deepseekKey, deepseekModel }) => {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // "Wrong picture": which row is open for a note, the note, and which is being sent.
+  const [reporting, setReporting] = useState<string | null>(null);
+  const [reportNote, setReportNote] = useState('');
+  const [sending, setSending] = useState(false);
   // What has been tried on its own already, so a failed check is not retried in a loop.
   const tried = useRef(new Set<string>());
 
@@ -97,10 +104,43 @@ export const PictureCheck: React.FC<{
       return { ...prev, script: out.script, pictureReview: { ...prev.pictureReview, reviews: out.reviews } };
     });
 
+  /**
+   * The person says a picture is wrong - whatever the reviewers said. It is
+   * taken out at once, and kept on the test bench marked wrong by them, so the
+   * rules and the reviewer are measured against it from now on. Put it back
+   * undoes the first; the mark stays, because it was true when it was made.
+   */
+  const reportWrong = async (r: PictureReview) => {
+    const line = content.script[r.scene];
+    if (!line || !line.visual || line.visual.kind === 'none') return;
+    setSending(true);
+    setError(null);
+    const note = reportNote.trim();
+    try {
+      await api.reportPicture({ videoId, content, design: videoProps ? videoProps.design : DEFAULT_DESIGN, scene: r.scene, note });
+      setContent((prev) => {
+        const now = prev.script[r.scene];
+        if (!now || !now.visual || now.visual.kind === 'none' || !prev.pictureReview) return prev;
+        const script = prev.script.slice();
+        script[r.scene] = { ...now, visual: { kind: 'none' }, pictureNote: 'Taken out by you: ' + (note || 'marked wrong.') };
+        const reviews = prev.pictureReview.reviews.map((x) => (x.key === r.key
+          ? { ...x, removed: now.visual, verdict: 'wrong' as const, reason: 'You: ' + (note || 'marked wrong.'), kept: false, reported: true }
+          : x));
+        return { ...prev, script, pictureReview: { ...prev.pictureReview, reviews } };
+      });
+      setReporting(null);
+      setReportNote('');
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setSending(false);
+    }
+  };
+
   // Pictures the rules never let through: said here so a bare scene has a reason.
   const notDrawn = content.script
     .map((line, i) => ({ i, note: line.pictureNote || '', none: !line.visual || line.visual.kind === 'none' }))
-    .filter((x) => x.note && x.none && !/^Taken out by the picture check/.test(x.note));
+    .filter((x) => x.note && x.none && !/^Taken out by (the picture check|you)/.test(x.note));
 
   const shown = reviews.slice().sort((a, b) => a.scene - b.scene);
   const t = tally(shown);
@@ -144,7 +184,7 @@ export const PictureCheck: React.FC<{
                   ) : null}
                   <div className="picture-main">
                     <div>
-                      <span className={'picture-chip ' + v.cls}>{r.removed ? 'Taken out' : r.kept && isFlagged(r.verdict) ? 'Kept by you' : v.label}</span>{' '}
+                      <span className={'picture-chip ' + v.cls}>{r.removed ? (r.reported ? 'Taken out by you' : 'Taken out') : r.kept && isFlagged(r.verdict) ? 'Kept by you' : v.label}</span>{' '}
                       <span className="hint">Scene {r.scene + 1}</span>
                     </div>
                     <div className="picture-words">{r.words}</div>
@@ -155,10 +195,30 @@ export const PictureCheck: React.FC<{
                     ) : null}
                   </div>
                   {r.removed ? (
-                    <button className="btn ghost" onClick={() => putBack(r.key)} title="The reviewer was wrong: show this picture after all">
+                    <button className="btn ghost" onClick={() => putBack(r.key)} title={r.reported ? 'Show this picture after all. Your mark on the test bench stays.' : 'The reviewer was wrong: show this picture after all'}>
                       Put it back
                     </button>
-                  ) : null}
+                  ) : reporting === r.key ? (
+                    <div className="picture-report">
+                      <input
+                        type="text"
+                        value={reportNote}
+                        autoFocus
+                        placeholder="What is wrong with it? (optional)"
+                        onChange={(e) => setReportNote(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') void reportWrong(r); if (e.key === 'Escape') setReporting(null); }}
+                      />
+                      <button className="btn small danger" disabled={sending} onClick={() => reportWrong(r)}>
+                        {sending ? <Spinner /> : null} Take it out
+                      </button>
+                      <button className="btn small ghost" disabled={sending} onClick={() => setReporting(null)}>Cancel</button>
+                    </div>
+                  ) : (
+                    <button className="btn ghost" onClick={() => { setReporting(r.key); setReportNote(''); }}
+                      title="It is wrong, whatever the reviewers said: take it out, and keep it on the test bench as a wrong picture">
+                      Wrong picture
+                    </button>
+                  )}
                 </div>
               );
             })}

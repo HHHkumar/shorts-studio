@@ -32,6 +32,8 @@ export interface PictureReview {
   removed?: SceneVisual;
   /** The person said the reviewer was wrong: do not take it out again. */
   kept?: boolean;
+  /** The person said it was wrong, with "Wrong picture": taken out by them, and kept on the test bench. */
+  reported?: boolean;
 }
 
 export interface PictureReviewRecord {

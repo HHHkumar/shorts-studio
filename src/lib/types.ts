@@ -382,6 +382,16 @@ export interface ScriptLine {
    * engineer was animated has him in the picture, and is shown as a still.
    */
   doodleProps?: boolean;
+  /**
+   * Doodle look only: doodleSrc is the approved drawing of this equipment kind
+   * (src/lib/equipment.ts), shown as a person approved it - not drawn for this video.
+   */
+  doodleApproved?: string;
+  /**
+   * Doodle look only: the creator had this one drawn although the picture rule
+   * refused it (src/lib/drawable.ts). Nobody but them has looked at it.
+   */
+  doodleUnchecked?: boolean;
   /** The visual this scene had before the worked solution took its place, to put back. */
   visualWas?: SceneVisual;
 }

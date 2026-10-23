@@ -57,13 +57,18 @@ import { liveCheck } from './live-check.mjs';
 import { reviewPictures } from './picture-review.mjs';
 import { picturesIn } from './picture-words.mjs';
 import {
-  addCase, addLibraryVideos, benchView, deleteCase, readCase, saveReviews, setMark,
+  addCase, addLibraryVideos, benchView, deleteCase, readCase, reportDrawing, reportPicture, saveReviews, setMark,
 } from './bench.mjs';
 import { generateHooks } from './hooks.mjs';
 import { LANGUAGES, translateContent } from './translate.mjs';
 import { tidySheet } from '../src/lib/formula-card.ts';
 import { energyFor, tidyDirection } from '../src/lib/doodle.ts';
 import { mountHistory } from '../studios/history/server/index.mjs';
+import { drawnText, judgeDrawing } from '../src/lib/drawable.ts';
+import {
+  addCustomKind, approveCandidate, approvedDrawings, discardCandidate, drawCandidate, equipmentView, kindsFor, saveUpload,
+  withdrawApproval,
+} from './equipment.mjs';
 import {
   COMPOSITION_ID as VARNAMALE_COMPOSITION, recordVarnamale, redoIds, VIDEO_FILE as VARNAMALE_VIDEO, varnamaleProps,
   varnamaleStatus,
@@ -522,12 +527,23 @@ app.post('/api/mascot/test', ok(async (req, res) => {
 app.post('/api/doodle/directions', ok(async (req, res) => {
   const { apiKey, model, content, scenes, energy, animated } = req.body || {};
   if (!content || !Array.isArray(content.script)) throw new Error('Generate a script before directing the doodles.');
+  // Only equipment a person has approved a drawing of may appear (server/equipment.mjs).
+  const drawings = approvedDrawings(paths.PUBLIC_DIR);
+  const beside = animated !== false;
   const out = await generateDoodleDirections({
-    apiKey, model: model || 'gemini-2.5-flash', content, scenes, energy, animated: animated !== false,
+    apiKey, model: model || 'gemini-2.5-flash', content, scenes, energy, animated: beside,
+    approved: drawings.ids, kinds: kindsFor(paths.PUBLIC_DIR),
   });
+  // An approved drawing is the picture, as it is: nothing to draw, nothing to pay.
+  const pictures = {};
+  for (const [scene, id] of Object.entries(out.pictures || {})) {
+    const d = out.directions[scene];
+    pictures[scene] = { src: drawings.srcFor(id), equipment: id, props: beside && d && (d.subject || 'mascot') === 'mascot' };
+  }
   console.log('[doodle] directed ' + Object.keys(out.directions).length + ' scenes'
+    + (Object.keys(pictures).length ? ', ' + Object.keys(pictures).length + ' approved drawings' : '')
     + (out.notes.length ? ' (' + out.notes.length + ' notes)' : ''));
-  res.json(out);
+  res.json({ directions: out.directions, pictures, notes: out.notes });
 }));
 
 // --- the video library ------------------------------------------------------
@@ -652,6 +668,25 @@ app.post('/api/bench/mark', ok(async (req, res) => {
   res.json({ score: view.score, provisional: view.provisional });
 }));
 
+/**
+ * The "Wrong picture" button on a diagram: the browser takes it out of the
+ * video; here the video goes on the bench with that picture marked wrong by you.
+ */
+app.post('/api/bench/report-picture', ok(async (req, res) => {
+  const { videoId, content, design, scene, note } = req.body || {};
+  const out = reportPicture(paths.ROOT, { videoId, content, design, scene: Number(scene), note });
+  console.log('[bench] reported a wrong picture: ' + out.caseId + ' scene ' + (Number(scene) + 1));
+  res.json(out);
+}));
+
+/** The same, for a doodle: kept in bench/drawings.json, which the picture rule is measured against. */
+app.post('/api/bench/report-drawing', ok(async (req, res) => {
+  const { videoId, topic, scene, line, animated, note } = req.body || {};
+  const entry = reportDrawing(paths.ROOT, { videoId, topic, scene, line, animated, note });
+  console.log('[bench] reported a wrong drawing: scene ' + (entry.scene + 1) + ' of ' + (entry.videoId || entry.topic));
+  res.json({ ok: true });
+}));
+
 app.delete('/api/bench/:id', ok(async (req, res) => {
   deleteCase(paths.ROOT, req.params.id);
   fs.rmSync(path.join(paths.OUT_DIR, 'bench', req.params.id), { recursive: true, force: true });
@@ -700,21 +735,39 @@ app.post('/api/live-check', ok(async (req, res) => {
 }));
 
 app.post('/api/doodle/draw', ok(async (req, res) => {
-  const { apiKey, modelId, jobId, direction, kind, energy, orientation, scene, animated } = req.body || {};
-  if (!apiKey) throw new Error('No Gemini API key was sent. Add it on the Keys step.');
-  const mascot = readMascot(paths.PUBLIC_DIR);
-  const sheet = readMascotImage(paths.PUBLIC_DIR);
-  if (!mascot || !sheet) throw new Error('There is no mascot yet. Design one in the Mascot lab first.');
+  const { apiKey, modelId, jobId, direction, kind, energy, orientation, scene, animated, force } = req.body || {};
 
   // The direction comes from the browser, where the creator may have edited
   // it, so it is held to the same shape and lengths as one Gemini wrote.
   const directed = tidyDirection(direction);
   if (!directed) throw new Error('Say what the engineer is doing in this scene, then draw it.');
 
+  // Held to what may be drawn (src/lib/drawable.ts), as the directions were:
+  // an approved drawing is shown as it is, free; anything an image model cannot
+  // be trusted with is refused - unless the creator asked for this one scene
+  // anyway, in which case it is theirs to look at, and is marked unchecked.
+  const animatedNow = animated !== false;
+  const drawings = approvedDrawings(paths.PUBLIC_DIR);
+  const verdict = judgeDrawing(drawnText(directed, animatedNow), drawings.ids, kindsFor(paths.PUBLIC_DIR));
+  if (verdict.outcome === 'approved') {
+    const besideHim = animatedNow && (directed.subject || 'mascot') === 'mascot';
+    res.json({ src: drawings.srcFor(verdict.equipment), approved: verdict.equipment, props: besideHim, cents: 0, referenced: true });
+    return;
+  }
+  if (verdict.outcome === 'none' && !force) {
+    res.json({ refused: true, why: 'This asks for ' + verdict.why + '.', wanted: verdict.wanted });
+    return;
+  }
+
+  if (!apiKey) throw new Error('No Gemini API key was sent. Add it on the Keys step.');
+  const mascot = readMascot(paths.PUBLIC_DIR);
+  const sheet = readMascotImage(paths.PUBLIC_DIR);
+  if (!mascot || !sheet) throw new Error('There is no mascot yet. Design one in the Mascot lab first.');
+
   const level = energyFor(String(kind || ''), energy);
   // The animated engineer is drawn by the renderer; the picture is only what
   // stands beside him, with no engineer in it.
-  const beside = animated !== false && directed.subject !== 'illustration';
+  const beside = animatedNow && directed.subject !== 'illustration';
   const prompt = beside
     ? doodlePropsPrompt(directed, { energy: level })
     : doodleScenePrompt(directed, mascot.variant, { energy: level, framing: 'square' });
@@ -740,7 +793,55 @@ app.post('/api/doodle/draw', ok(async (req, res) => {
   });
   console.log('[doodle] scene ' + index + ' (' + (beside ? 'beside the engineer' : directed.subject) + ', ' + level + ') '
     + (referenced ? '' : 'WITHOUT the model sheet ') + '-> ' + saved.src);
-  res.json({ src: saved.src, referenced, energy: level, prompt, cents: centsOf(model), props: beside });
+  res.json({
+    src: saved.src, referenced, energy: level, prompt, cents: centsOf(model), props: beside,
+    ...(verdict.outcome === 'none' ? { unchecked: true } : {}),
+  });
+}));
+
+// --- approved equipment drawings (server/equipment.mjs) ----------------------
+
+app.get('/api/equipment', (_req, res) => {
+  res.json(equipmentView(paths.PUBLIC_DIR, LIBRARY_DIR));
+});
+
+/** One candidate drawing of one kind. One press, one picture, one charge. */
+app.post('/api/equipment/draw', ok(async (req, res) => {
+  const { apiKey, modelId, id } = req.body || {};
+  if (!apiKey) throw new Error('No Gemini API key was sent. Add it on the Keys step.');
+  const model = modelOr(modelId, 'gemini-3.1-flash-image');
+  const out = await drawCandidate({ apiKey, modelId: model, id: String(id || ''), publicDir: paths.PUBLIC_DIR });
+  console.log('[equipment] drew a candidate for ' + id + ' -> ' + out.src);
+  res.json({ src: out.src, cents: centsOf(model) });
+}));
+
+app.post('/api/equipment/upload', ok(async (req, res) => {
+  const { id, dataUrl } = req.body || {};
+  res.json(saveUpload({ id: String(id || ''), dataUrl, publicDir: paths.PUBLIC_DIR }));
+}));
+
+app.post('/api/equipment/approve', ok(async (req, res) => {
+  const { id, src } = req.body || {};
+  const approved = approveCandidate({ id: String(id || ''), src, publicDir: paths.PUBLIC_DIR });
+  console.log('[equipment] approved ' + id + ' -> ' + approved.src);
+  res.json(equipmentView(paths.PUBLIC_DIR, LIBRARY_DIR));
+}));
+
+app.post('/api/equipment/withdraw', ok(async (req, res) => {
+  withdrawApproval({ id: String((req.body || {}).id || ''), publicDir: paths.PUBLIC_DIR });
+  res.json(equipmentView(paths.PUBLIC_DIR, LIBRARY_DIR));
+}));
+
+app.post('/api/equipment/discard', ok(async (req, res) => {
+  const { id, src } = req.body || {};
+  discardCandidate({ id: String(id || ''), src, publicDir: paths.PUBLIC_DIR });
+  res.json(equipmentView(paths.PUBLIC_DIR, LIBRARY_DIR));
+}));
+
+app.post('/api/equipment/custom', ok(async (req, res) => {
+  const { name, draw, check } = req.body || {};
+  addCustomKind({ name, draw, check, publicDir: paths.PUBLIC_DIR });
+  res.json(equipmentView(paths.PUBLIC_DIR, LIBRARY_DIR));
 }));
 
 // --- what the model is actually going to be asked --------------------------
@@ -1307,7 +1408,7 @@ const server = app.listen(PORT, '127.0.0.1', () => {
   announce = setTimeout(() => {
     console.log('');
     console.log('  Shorts Studio helper is running (port ' + PORT + ').');
-    console.log('  Opening ' + APP_URL + ' in your browser.');
+    console.log(process.env.NO_OPEN ? '  Open ' + APP_URL + ' in your browser.' : '  Opening ' + APP_URL + ' in your browser.');
     console.log('  If it does not appear, paste that address in yourself.');
     console.log('  Finished videos are saved in:  ' + paths.OUT_DIR);
     console.log('');

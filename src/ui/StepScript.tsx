@@ -352,6 +352,8 @@ export const StepScript: React.FC<{
   setReport: (r: ValidationReport | null) => void;
   /** The video as it stands, so the picture check can look at real frames. */
   videoProps: VideoProps | null;
+  /** The library id, so a picture reported wrong lands on this video's own bench case. */
+  videoId?: string;
   onBack: () => void;
   onNext: () => void;
 }> = ({
@@ -372,6 +374,7 @@ export const StepScript: React.FC<{
   report,
   setReport,
   videoProps,
+  videoId = '',
   onBack,
   onNext,
 }) => {
@@ -545,6 +548,7 @@ export const StepScript: React.FC<{
           content={content}
           setContent={setContent}
           videoProps={videoProps}
+          videoId={videoId}
           geminiKey={geminiKey}
           geminiModel={geminiModel}
           deepseekKey={deepseekKey}

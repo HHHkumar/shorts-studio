@@ -149,7 +149,18 @@ export async function makeVideo(
       const out = await api.doodleDirections({
         apiKey: s.geminiKey.trim(), model: s.geminiModel, content, scenes, energy: s.design.doodleEnergy || 'lively', animated,
       });
-      content = { ...content, script: content.script.map((line, i) => (out.directions[String(i)] ? { ...line, doodle: out.directions[String(i)] } : line)) };
+      // A scene the rule gave an approved equipment drawing shows it as it is: nothing to draw.
+      content = {
+        ...content,
+        script: content.script.map((line, i) => {
+          const d = out.directions[String(i)];
+          if (!d) return line;
+          const pic = out.pictures && out.pictures[String(i)];
+          return pic
+            ? { ...line, doodle: d, doodleSrc: pic.src, doodleProps: pic.props, doodleApproved: pic.equipment, doodleUnchecked: false }
+            : { ...line, doodle: d, doodleApproved: undefined, doodleUnchecked: false };
+        }),
+      };
       await save();
 
       if (s.drawPictures) {
@@ -163,7 +174,14 @@ export async function makeVideo(
             apiKey: s.geminiKey.trim(), modelId: 'gemini-3.1-flash-image', jobId: videoId, scene: i, kind: line.kind,
             direction, energy: s.design.doodleEnergy || 'lively', orientation: s.design.orientation, animated,
           });
-          content = { ...content, script: content.script.map((l, j) => (j === i ? { ...l, doodleSrc: drawn.src, doodleProps: drawn.props === true } : l)) };
+          // A batch never forces a refused picture: nobody is there to look at it.
+          if (drawn.refused || !drawn.src) continue;
+          content = {
+            ...content,
+            script: content.script.map((l, j) => (j === i
+              ? { ...l, doodleSrc: drawn.src, doodleProps: drawn.props === true, doodleApproved: drawn.approved, doodleUnchecked: false }
+              : l)),
+          };
         }
         await save();
       }
