@@ -15,6 +15,10 @@
 // the voice and the composition that draws it read the same list.
 // ---------------------------------------------------------------------------
 
+// Which models act on a bracketed direction is decided in one place, for the
+// app's narration and this video alike.
+import { takesAudioTags } from './delivery';
+
 export type GroupId = 'svara' | 'yogavaha' | 'ka' | 'cha' | 'tta' | 'ta' | 'pa' | 'avargiya';
 
 export interface LetterGroup {
@@ -100,9 +104,6 @@ const DELIVERY: Record<SegmentKind, { tag: string; end: string }> = {
   letter:  { tag: '[slow and clear, a teacher saying one letter for a child to repeat]', end: '.' },
   outro:   { tag: '[warm and proud, closing the lesson]', end: '.' },
 };
-
-/** Models that act on bracketed directions. Any other would read them aloud. */
-export const takesAudioTags = (modelId: string) => /^eleven_v[34]/.test(modelId);
 
 /** The text sent to the voice for a line - the words, directed for this model. */
 export function voiceLine(line: { text: string; kind: SegmentKind }, modelId: string): string {
