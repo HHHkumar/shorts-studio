@@ -15,10 +15,17 @@ const ok = (name, cond, extra = '') => {
 
 const sent = [];
 globalThis.fetch = async (url, init) => {
-  sent.push({ url: String(url), body: JSON.parse(init.body) });
+  const body = JSON.parse(init.body);
+  sent.push({ url: String(url), body });
+  // Timed the way ElevenLabs times it: every character SENT, tags included.
+  const characters = [...body.text];
   const payload = {
     audio_base64: Buffer.from('not really an mp3').toString('base64'),
-    alignment: { characters: ['h', 'i'], character_start_times_seconds: [0, 0.1], character_end_times_seconds: [0.1, 0.4] },
+    alignment: {
+      characters,
+      character_start_times_seconds: characters.map((_, i) => i * 0.05),
+      character_end_times_seconds: characters.map((_, i) => (i + 1) * 0.05),
+    },
   };
   return new Response(JSON.stringify(payload), { status: 200, headers: { 'Content-Type': 'application/json' } });
 };
@@ -53,6 +60,34 @@ ok('v2 still gets speed', v2.voice_settings.speed === 1.1);
 
 const unset = await bodyFor(undefined);
 ok('no model chosen means v4', unset.model_id === 'eleven_v4' && !('style' in unset.voice_settings));
+
+console.log('\nhow each line is said');
+const sayLine = async (modelId, text, scene) => {
+  sent.length = 0;
+  const out = await speak('key', text, { ...settings, modelId }, scene);
+  return { text: sent[0].body.text, words: out.words.map((w) => w.word) };
+};
+
+const hook = await sayLine('eleven_v4', 'Most people get this wrong.', { kind: 'hook', delivery: 'intrigued' });
+ok('v4 hears the scene\'s direction in front of its words', hook.text === '[intrigued] Most people get this wrong.', hook.text);
+ok('the captions never show it', hook.words.join(' ') === 'Most people get this wrong.', hook.words.join(' '));
+
+const usual = await sayLine('eleven_v4_turbo', 'Is it heat?', { kind: 'question' });
+ok('a scene with no direction is said the usual way for its kind', /^\[curious, clear\] Is it heat\?$/.test(usual.text), usual.text);
+
+const units = await sayLine('eleven_v4', 'It draws 10 MW.', { kind: 'explain', delivery: 'warm, clear' });
+ok('units are still expanded for the voice, after the direction', units.text === '[warm, clear] It draws 10 megawatts.', units.text);
+ok('and folded back on screen, the tag gone and every word on its own time', units.words.join(' ') === 'It draws 10 MW.', units.words.join(' '));
+
+const old = await sayLine('eleven_multilingual_v2', 'Most people get this wrong.', { kind: 'hook', delivery: 'intrigued' });
+ok('v2 is never sent a tag: it would read "intrigued" out loud', old.text === 'Most people get this wrong.', old.text);
+
+const own = await sayLine('eleven_v4', '[slow and clear, like a teacher] ಕ.', null);
+ok('text that already carries a direction is sent as it is', own.text === '[slow and clear, like a teacher] ಕ.', own.text);
+ok('and its words are timed without it', own.words.join(' ') === 'ಕ.', own.words.join(' '));
+
+const bare = await sayLine('eleven_v4', 'ಕ', undefined);
+ok('a bare word with no scene gets no direction', bare.text === 'ಕ', bare.text);
 
 console.log(failed ? '\n' + failed + ' failed\n' : '\nall passed\n');
 process.exit(failed ? 1 : 0);

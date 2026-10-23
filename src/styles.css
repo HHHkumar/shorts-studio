@@ -789,3 +789,9 @@ ul.issues .sev-low .sev { background: rgba(108,140,255,.16); color: var(--accent
 .bench-mark.wrong.suggested { border-color: #ff8a7a; }
 .bench-mark.unrelated.suggested { border-color: #ffc857; }
 .bench-note { flex: 1; min-width: 220px; padding: 7px 10px; }
+
+/* How the voice says a scene: one short row under the narration. */
+.delivery-field { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.delivery-field > label { font-size: 12.5px; font-weight: 600; color: var(--dim); }
+.field .delivery-field input[type='text'] { flex: 0 1 260px; padding: 6px 10px; font-size: 13px; }
+.delivery-field .warn-text { color: var(--warn); }

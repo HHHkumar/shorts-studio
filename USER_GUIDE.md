@@ -445,6 +445,29 @@ is empty, add any voice from the [Voice Library](https://elevenlabs.io/app/voice
 
 The cost is shown before you spend anything. Press **Make the voiceover**.
 
+**The voice model is Eleven v4** unless you pick another. It sounds the most natural, speaks every
+Indian language the translate step offers, and — the reason it changes how a script is written — it
+*performs* a line rather than reading it. Two things steer it:
+
+- **A direction for each scene.** Under every line on step 3 there is a box, **How it is said**:
+  a few words such as *curious*, *confident, pleased* or *playful, building suspense*. Gemini fills
+  it in when it writes the script — intrigued on the hook, curious on the question, clear while the
+  options are read, confident on the answer, warm while it explains — and it is sent to the voice
+  in front of the line as an audio tag, `[curious] What happens to the current when…`. It is never
+  on screen: the captions are timed without it. Leave a box empty and the scene gets the usual one
+  for its kind, shown greyed in the box. Changing one re-records only that scene.
+- **Punctuation.** v4 reads it as performance, so the script writer now uses it on purpose: an
+  ellipsis for a beat before a surprise (*"And the current… doubles."*), a dash for a turn, one word
+  in capitals for stress (*"It is NOT the rated current"*) — sparingly, because every mark is on
+  screen too.
+
+Directions are held to a fixed vocabulary of a teacher's tones and paces. A word outside it —
+*thunder*, *British accent*, *shouts*, *laughs*, *pause* — is not sent, because v4 was also trained on
+sound effects and can turn a stray word into a noise, an accent or a laugh nobody wrote into the
+captions; the box says so when it happens. v4 has no **Style** or **Speed** slider, so those are
+hidden for it, and it takes no SSML pause tags. Pick **Multilingual v2** or **Flash** and the
+directions are simply not sent: those models would read them out loud.
+
 > **This is where sync happens.** Every clip is decoded in your browser and measured for real — exact
 > length, where sound starts, where it stops. Each scene is then made exactly as long as its own clip,
 > always rounding *up*, so a line can never be cut off. The subtitles are nudged by the few

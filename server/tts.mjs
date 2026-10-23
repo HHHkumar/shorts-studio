@@ -7,6 +7,7 @@
 // ---------------------------------------------------------------------------
 
 import { collapseTimings, expandForSpeech } from './speech.mjs';
+import { directedText, dropBracketed, splitLeadingTags } from '../src/lib/delivery.ts';
 import { parseBuffer } from 'music-metadata';
 import { fetchRetrying } from './retry.mjs';
 
@@ -30,15 +31,25 @@ export async function listVoices(apiKey) {
 
 /**
  * Speak one line. Returns { buffer, duration, words } or null for empty text.
+ *
+ * `scene`, when given, is the script line the text came from: its kind and its
+ * `delivery` decide the audio tag a v3 or v4 voice is directed with (see
+ * src/lib/delivery.ts). Text that already starts with a tag keeps its own.
  */
-export async function speak(apiKey, text, settings) {
-  const line = (text || '').trim();
+export async function speak(apiKey, text, settings, scene = null) {
+  const modelId = settings.modelId || 'eleven_v4';
+  const line = directedText((text || '').trim(), scene, modelId);
   if (!line) return null;
 
+  // The direction goes to the voice as it is; only the words after it are
+  // expanded, and only they are on screen.
+  const { tags, rest } = splitLeadingTags(line);
+  if (!rest) return null;
   // The voice hears "ten megawatts"; the screen keeps "10 MW". See speech.mjs.
-  const { spoken, written, map } = expandForSpeech(line);
+  const expanded = expandForSpeech(rest);
+  const { written, map } = expanded;
+  const spoken = tags ? tags + ' ' + expanded.spoken : expanded.spoken;
 
-  const modelId = settings.modelId || 'eleven_v4';
   const caps = modelCaps(modelId);
   const voiceSettings = {
     stability: clamp(settings.stability, 0, 1, 0.45),
@@ -95,12 +106,16 @@ export async function speak(apiKey, text, settings) {
   let words = [];
   let alignmentEnd = 0;
   if (alignment && Array.isArray(alignment.characters)) {
-    const starts = alignment.character_start_times_seconds || [];
-    const ends = alignment.character_end_times_seconds || [];
+    const allEnds = alignment.character_end_times_seconds || [];
+    // The timings cover the characters sent, tags and all; a tag is a
+    // direction, not words, so it comes out before anything is grouped.
+    const { characters, starts, ends } = dropBracketed(
+      alignment.characters, alignment.character_start_times_seconds || [], allEnds,
+    );
     // Timed against the spoken text, then folded back onto the written words,
     // so a caption never shows the expansion the voice needed.
-    words = collapseTimings(charsToWords(alignment.characters, starts, ends), written, map);
-    alignmentEnd = ends.length ? ends[ends.length - 1] : 0;
+    words = collapseTimings(charsToWords(characters, starts, ends), written, map);
+    alignmentEnd = allEnds.length ? allEnds[allEnds.length - 1] : 0;
   }
 
   return { buffer, duration: await measure(buffer, alignmentEnd), words };

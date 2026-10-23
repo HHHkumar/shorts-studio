@@ -1087,7 +1087,8 @@ app.post('/api/voiceover', ok(async (req, res) => {
         if (!text) continue;
 
         job.stage = 'Recording line ' + (job.done + 1) + ' of ' + job.total + '…';
-        const result = await speak(apiKey, text, settings);
+        // The line goes with its words: its kind and `delivery` direct a v4 voice.
+        const result = await speak(apiKey, text, settings, line);
         if (!result) continue;
 
         const fileName = 's' + i + '.mp3';

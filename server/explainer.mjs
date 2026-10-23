@@ -18,6 +18,7 @@
 // ---------------------------------------------------------------------------
 
 import { callModel } from './gemini.mjs';
+import { cleanDelivery, deliveryPromptWords } from '../src/lib/delivery.ts';
 // The renderer's own cue matcher, so a warning here agrees with what the video
 // actually does. Node strips the types on import; there is no second copy.
 import { missingCues } from '../src/lib/options-timing.ts';
@@ -70,6 +71,7 @@ const RESPONSE_SCHEMA = {
         properties: {
           kind: { type: 'STRING', enum: SCENE_KINDS },
           narration: { type: 'STRING', description: 'Exactly what the voice says. Plain words.' },
+          delivery: { type: 'STRING', description: 'How the voice says it: 1 to 3 short directions, e.g. "thoughtful, warm". Never shown.' },
           imageQuery: { type: 'STRING', description: '2-4 concrete words for a backdrop photo.' },
           panel: {
             type: 'OBJECT',
@@ -189,6 +191,16 @@ export const STORYBOARD_SYSTEM = [
   '- Do not restate what you just said. Only the recap looks backwards.',
   '- The first scene has to earn the next four minutes. Open on something surprising or something',
   '  the viewer already half-believes and is about to find out is wrong.',
+  '',
+  'DELIVERY. The voice is Eleven v4, which performs a direction given in front of each line. Give',
+  'every scene "delivery": 1 to 3 short directions separated by commas, no brackets, e.g.',
+  '"curious", "thoughtful, warm", "playful, building suspense". It is never shown. Use only these',
+  'words, joined where needed by a, with, slightly, very, and: ' + deliveryPromptWords().join(', ') + '.',
+  'Four minutes in one tone is a lecture: let it follow the story - intrigued at the opening, warm',
+  'through the analogy, steady through a process, confident at the recap - and keep it calm',
+  'wherever the viewer is following a chain of reasoning. Never put a direction in the narration.',
+  'Eleven v4 also performs punctuation: an ellipsis (...) for a beat before a surprise, a dash for',
+  'a turn, a question mark that lifts. Use them on purpose and sparingly.',
   '',
   'NARRATION MECHANICS.',
   '- Write it to be spoken, not read. Say "about a thousand", not "1,000".',
@@ -660,8 +672,10 @@ export function normalizeStoryboard(input, options = {}) {
       const o = line && typeof line === 'object' ? line : {};
       let kind = clean(o.kind, 20).toLowerCase();
       if (!SCENE_KINDS.includes(kind)) kind = 'explain';
-      const narration = clean(o.narration, 900);
+      // A direction written into the narration would be shown and read out.
+      const narration = clean(o.narration, 900).replace(/\s*\[[^\]]{0,80}\]\s*/g, ' ').trim();
       if (!narration) return null;
+      const delivery = cleanDelivery(o.delivery);
 
       const panel = PANEL_SET.has(kind) ? normalizePanel(o.panel, kind) : null;
       // A layout scene with nothing to lay out is just a talking beat. Better a
@@ -669,6 +683,7 @@ export function normalizeStoryboard(input, options = {}) {
       const finalKind = PANEL_SET.has(kind) && !panel ? 'explain' : kind;
 
       const entry = { kind: finalKind, narration, imageQuery: clean(o.imageQuery, 60) };
+      if (delivery) entry.delivery = delivery;
       if (panel) entry.panel = panel;
       return entry;
     })

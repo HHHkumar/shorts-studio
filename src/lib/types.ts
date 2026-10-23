@@ -331,6 +331,13 @@ export interface ScriptLine {
   kind: SceneKind;
   /** Exactly what the voice should say. Plain words — no markdown, no LaTeX. */
   narration: string;
+  /**
+   * How the voice says it: an Eleven v4 audio tag without its brackets, e.g.
+   * "curious" or "confident, pleased". Sent in front of the narration to v3 and
+   * v4 voices only, and never shown. Empty means the usual one for the kind of
+   * scene. See src/lib/delivery.ts.
+   */
+  delivery?: string;
   /** Legacy: older saved videos carried a separate headline. No longer written. */
   onScreen?: string;
   /** Legacy: extra lines nobody narrated. No longer written. */

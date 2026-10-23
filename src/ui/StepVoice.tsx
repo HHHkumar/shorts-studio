@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { api, type VoiceModel, type VoiceOption, type VoiceSettings } from '../lib/api';
 import { recordVoice } from '../lib/voice-run';
+import { deliveryFor, directedText, takesAudioTags } from '../lib/delivery';
 import { trueDuration, type AudioResult } from '../lib/timeline';
 import type { QuizContent } from '../lib/types';
 import { ErrorNote, Note, Select, Slider, Spinner } from './controls';
@@ -26,7 +27,9 @@ export const StepVoice: React.FC<{
   const previewRef = useRef<HTMLAudioElement | null>(null);
 
   const spokenLines = content.script.filter((s) => s.narration.trim()).length;
-  const characters = content.script.reduce((n, s) => n + s.narration.trim().length, 0);
+  // Counted as sent: a v4 voice is also sent each scene's direction, and ElevenLabs bills those characters too.
+  const characters = content.script.reduce((n, s) => n + directedText(s.narration, s, settings.modelId).length, 0);
+  const directed = takesAudioTags(settings.modelId);
   const haveAudio = Object.keys(audio).length > 0;
   // Scenes with words but no clip: their words were edited after the voiceover.
   // Recording just these is a scene's worth of credits, not the whole video's.
@@ -220,7 +223,8 @@ export const StepVoice: React.FC<{
               {!takesStyle || !takesSpeed ? (
                 <p className="hint" style={{ marginTop: 10 }}>
                   Eleven v4 has no style or speed setting. It takes its delivery from the words
-                  themselves: punctuation, and an ellipsis (…) for a pause.
+                  themselves: punctuation, an ellipsis (…) for a pause, and the direction each scene
+                  is given on the Script step.
                 </p>
               ) : null}
             </div>
@@ -230,6 +234,16 @@ export const StepVoice: React.FC<{
             {spokenLines} lines, {characters.toLocaleString()} characters. ElevenLabs charges roughly one
             credit per character, so this is about {characters.toLocaleString()} credits.
           </Note>
+
+          {directed ? (
+            <Note kind="info" title="Each scene is performed, not just read">
+              Eleven v4 is sent a direction in front of every scene — the hook{' '}
+              <b>[{deliveryFor(content.script.find((s) => s.kind === 'hook') || { kind: 'hook' })}]</b>, the answer{' '}
+              <b>[{deliveryFor(content.script.find((s) => s.kind === 'answer') || { kind: 'answer' })}]</b> — so a quiz
+              sounds like one: curious on the question, sure of itself on the answer. The captions never show
+              it. Change any scene&rsquo;s direction under its words on the Script step.
+            </Note>
+          ) : null}
 
           <Note kind="info" title="Units are spoken in full">
             Left alone, the voice reads <b>10 MW</b> as “ten mili wag”. Any unit symbol with a number

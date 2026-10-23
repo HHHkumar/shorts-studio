@@ -12,6 +12,7 @@ import { workedOutProblems } from './sketch-checks.mjs';
 import { isNotation, mathWidth, mendFormula, parseMath } from '../src/lib/formula-card.ts';
 import { fetchRetrying } from './retry.mjs';
 import { callClaude } from './claude.mjs';
+import { cleanDelivery, deliveryPromptWords } from '../src/lib/delivery.ts';
 // Loaded straight from the app's TypeScript: Node strips the types itself, and
 // sharing the one module means the server checks a figure with exactly the
 // arithmetic the renderer will draw it with.
@@ -52,6 +53,7 @@ const RESPONSE_SCHEMA = {
         properties: {
           kind: { type: 'STRING', enum: SCENE_KINDS },
           narration: { type: 'STRING' },
+          delivery: { type: 'STRING', description: 'How the voice says this line: 1 to 3 short directions, e.g. "curious" or "confident, pleased". Never shown.' },
           imageQuery: { type: 'STRING' },
           visual: {
             type: 'OBJECT',
@@ -112,7 +114,7 @@ const RESPONSE_SCHEMA = {
           },
         },
         required: ['kind', 'narration'],
-        propertyOrdering: ['kind', 'narration', 'imageQuery', 'visual'],
+        propertyOrdering: ['kind', 'narration', 'delivery', 'imageQuery', 'visual'],
       },
     },
   },
@@ -150,6 +152,27 @@ export const quizSystemFor = (options) => [
   '  because it is what decides whether the finished video hits its target length.',
   '- Short sentences inside that. Conversational, second person. No filler like "In this video".',
   '- Never refer to options by letter ("option A"); say the option text itself.',
+  '- No brackets of any kind, and no stage directions. How a line is said goes in "delivery".',
+  '',
+  'THE VOICE IS ELEVEN V4, WHICH PERFORMS PUNCTUATION. Use it on purpose, and sparingly - every mark',
+  'is on screen too:',
+  '- A question mark only on a real question, and the voice lifts for it.',
+  '- An ellipsis (...) for a beat before something surprising: "And the current... doubles."',
+  '  At most one per scene.',
+  '- A dash for an aside or a turn: "It looks like a short circuit - it is not."',
+  '- An exclamation mark only where the line earns it, at most once in the video outside the hook',
+  '  and the answer.',
+  '- To stress one word, write it in capitals: "It is NOT the rated current." At most one word per',
+  '  scene, and never in the question, the options or the answer, whose wording is shown exactly.',
+  '',
+  'DELIVERY. Every scene with narration also gets "delivery": how the voice says it, as 1 to 3',
+  'short directions separated by commas, with no brackets, e.g. "curious", "confident, pleased",',
+  '"playful, building suspense". It is sent to the voice in front of the line and never shown.',
+  'Use only these words, joined where needed by a, with, slightly, very, and: ' + deliveryPromptWords().join(', ') + '.',
+  'Give the video a shape. The hook intrigued or playful; the question curious; the options clear',
+  'and measured; the answer confident; the explanation warm and clear; the outro upbeat. Let the',
+  'content move it - a common mistake can be "teasing", a surprising fact "amazed" - but never make',
+  'every line excited, and keep the explaining calm: a viewer is following working.',
   '',
   'SCENE ORDER, exactly once each unless noted:',
   '1. hook      - one scroll-stopping line, under 12 words.',
@@ -1032,9 +1055,13 @@ export function normalizeContent(input, options) {
       // the creator sees a reason and not just a gap.
       const why = [];
       const visual = normalizeVisual(s && s.visual, kind, content.figure, why, options.orientation);
+      // The narration is on screen: a direction written into it would be shown
+      // and read out. Directions live in `delivery`, held to its vocabulary.
+      const delivery = cleanDelivery(s && s.delivery);
       return {
         kind,
-        narration: clean(s && s.narration),
+        narration: clean(s && s.narration).replace(/\s*\[[^\]]{0,80}\]\s*/g, ' ').trim(),
+        ...(delivery ? { delivery } : {}),
         imageQuery: clean(s && s.imageQuery).slice(0, 60),
         visual,
         ...(why.length ? { pictureNote: why[0] } : {}),

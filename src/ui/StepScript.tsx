@@ -14,6 +14,7 @@ import { PictureCheck } from './PictureCheck';
 import { motionWordsIn } from '../lib/motion-lexicon';
 import { scriptSeconds } from '../lib/blank-script';
 import { closingScene, factIsSpoken, speakFunFact, withFunFact } from '../lib/fun-fact';
+import { cleanDelivery, deliveryFor } from '../lib/delivery';
 import { ErrorNote, Note, Select, Spinner } from './controls';
 
 const LETTERS = ['A', 'B', 'C', 'D'];
@@ -70,6 +71,35 @@ function panelLabels(panel: ScenePanel | undefined): string[] {
  * turbine" to "the steam FLOWS into the turbine" and the scene gains a flow.
  * Without this row nobody would ever discover that.
  */
+/**
+ * How the voice says this scene: the Eleven v4 audio tag sent in front of its
+ * words and never shown. Empty means the usual one for this kind of scene, and
+ * the box says which; a direction outside the vocabulary says so too, rather
+ * than being dropped without a word.
+ */
+const DeliveryField: React.FC<{ line: ScriptLine; onChange: (v: string) => void }> = ({ line, onChange }) => {
+  const typed = line.delivery || '';
+  const used = deliveryFor(line);
+  const refused = typed.trim() !== '' && cleanDelivery(typed) === '';
+  return (
+    <div className="delivery-field">
+      <label>How it is said</label>
+      <input
+        type="text"
+        value={typed}
+        placeholder={used}
+        onChange={(e) => onChange(e.target.value)}
+        title="Read by Eleven v4 and v3 as a direction, e.g. curious, confident, playful. Other voice models ignore it."
+      />
+      {refused ? (
+        <span className="hint warn-text">Not a direction the voice is given, so it says it [{used}].</span>
+      ) : typed.trim() && cleanDelivery(typed) !== typed.trim().toLowerCase() ? (
+        <span className="hint">Sent as [{used}].</span>
+      ) : null}
+    </div>
+  );
+};
+
 const MotionSummary: React.FC<{ line: ScriptLine }> = ({ line }) => {
   const found = motionWordsIn(line.narration);
   if (!found.length) return null;
@@ -659,6 +689,7 @@ export const StepScript: React.FC<{
                 onChange={(e) => setScriptLine(i, { narration: e.target.value }, true)}
               />
               <div className="hint">Write it exactly as it should sound. No symbols like ^ or *.</div>
+              {line.narration.trim() ? <DeliveryField line={line} onChange={(v) => setScriptLine(i, { delivery: v }, true)} /> : null}
               {line.kind === 'hook' ? (
                 <HookIdeas
                   content={content}
