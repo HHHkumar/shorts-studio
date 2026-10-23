@@ -24,7 +24,18 @@ export const PROJECTS_DIR = path.join(ROOT, 'projects');
 // the same synthesised sounds, byte for byte, and the one folder its page and
 // its renderer read from. This studio lives at studios/history inside it.
 export const PUBLIC_DIR = path.resolve(ROOT, '..', '..', 'public');
-export const MEDIA_DIR = path.join(PUBLIC_DIR, 'projects');
+// The pictures, recordings and clips projects are made of: here, NOT under
+// public/. Shorts Studio's renderer copies the whole of public/ into its
+// bundle, and a few long videos' AI clips run to gigabytes. They are still
+// addressed as projects/<id>/..., which the helper serves at /projects and the
+// History renderer copies into its own small bundle folder (render.mjs).
+export const MEDIA_DIR = path.join(ROOT, 'media');
+
+/** The file on disk for a public/-style path: projects/... is media, anything else is public/. */
+export function mediaFile(relative) {
+  const parts = String(relative || '').replace(/^\/+/, '').split('/');
+  return parts[0] === 'projects' ? path.join(MEDIA_DIR, ...parts.slice(1)) : path.join(PUBLIC_DIR, ...parts);
+}
 
 export const PROJECT_ID = /^[a-z0-9]{6,24}$/;
 const SCENE_ID = /^[a-z0-9]{1,40}$/;
@@ -125,7 +136,7 @@ export function saveMedia(projectId, kind, sceneId, ext, buffer) {
 export function readMedia(relative) {
   const rel = String(relative || '');
   if (!/^projects\/[a-z0-9]{6,24}\/(images|audio|music|video)\/[a-z0-9-]+\.[a-z0-9]+$/.test(rel)) return null;
-  const file = path.join(PUBLIC_DIR, ...rel.split('/'));
+  const file = mediaFile(rel);
   if (!fs.existsSync(file)) return null;
   return fs.readFileSync(file);
 }

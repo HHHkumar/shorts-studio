@@ -4,8 +4,37 @@ import type { DoodleDirection } from './doodle';
 import type { FormulaSheet } from './formula-card';
 import type { PictureReview } from './picture-review';
 import type { BenchMark, BenchScore, BenchView } from './bench';
+import type { Clips } from './varnamale';
+import { directedText } from './delivery';
 
 export type ContentType = 'general' | 'electrical' | 'aptitude';
+
+/** Where the Kannada alphabet video stands, for one voice and model. */
+export interface VarnamaleStatus {
+  /** Clips the video plays: one per letter and per heading. */
+  lines: number;
+  letters: number;
+  /** Clips on disk, in any voice. */
+  recorded: number;
+  /** Clips on disk in this voice and model, with today's wording. */
+  current: number;
+  /** Characters the next recording would send. */
+  toSend: number;
+  clips: Clips | null;
+  seconds: number;
+  video: { url: string; at: string; bytes: number } | null;
+}
+
+export interface VarnamaleJob {
+  kind: 'voice' | 'render';
+  status: 'running' | 'done' | 'error';
+  done: number;
+  total: number;
+  stage: string;
+  progress: number;
+  error: string;
+  url: string;
+}
 
 /** Which model writes the content. Everything else is unaffected by this. */
 export type Provider = 'gemini' | 'claude';
@@ -649,11 +678,29 @@ export const api = {
     return data.voices as VoiceOption[];
   },
 
+  // --- the Kannada alphabet video (server/varnamale.mjs) ---------------------
+
+  varnamaleStatus(voiceId: string, modelId: string) {
+    return getJson<VarnamaleStatus>('/api/varnamale?voiceId=' + encodeURIComponent(voiceId) + '&modelId=' + encodeURIComponent(modelId));
+  },
+  /** `redo`: letters to record again although they are current - "ಕ, ಖ", "ka", "l07" or "all". */
+  varnamaleVoice(body: { apiKey: string; voiceId: string; modelId: string; redo: string }, characters: number) {
+    return post<{ jobId: string }>('/api/varnamale/voice', body)
+      .then((r) => { spent({ what: 'Kannada alphabet voice', characters }); return r; });
+  },
+  varnamaleRender(music: boolean) {
+    return post<{ jobId: string }>('/api/varnamale/render', { music });
+  },
+  varnamaleJob(id: string) {
+    return getJson<VarnamaleJob>('/api/varnamale/job/' + encodeURIComponent(id));
+  },
+
   /** `only`: record just these scene numbers, keeping the rest of the voiceover. */
   startVoiceover(apiKey: string, settings: VoiceSettings, script: ScriptLine[], only?: number[]) {
-    // Counted when the job is accepted: ElevenLabs charges per character sent.
+    // Counted when the job is accepted: ElevenLabs charges per character sent,
+    // and a v4 voice is sent each scene's direction as well as its words.
     const which = only && only.length ? only : script.map((_, i) => i);
-    const characters = which.reduce((n, i) => n + (script[i] ? script[i].narration.trim().length : 0), 0);
+    const characters = which.reduce((n, i) => n + (script[i] ? directedText(script[i].narration, script[i], settings.modelId).length : 0), 0);
     return post<{ jobId: string; total: number }>('/api/voiceover', { apiKey, settings, script, only })
       .then((r) => { spent({ what: only && only.length ? 'Voiceover (' + only.length + ' scenes)' : 'Voiceover', characters }); return r; });
   },

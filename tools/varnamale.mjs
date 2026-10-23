@@ -27,15 +27,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { bundle } from '@remotion/bundler';
 import { ensureBrowser, renderMedia, renderStill, selectComposition } from '@remotion/renderer';
-import { speak } from '../server/tts.mjs';
-import { allSpoken, buildTimeline, totalFrames, voiceLine } from '../src/lib/varnamale.ts';
+import { readManifest, recordVarnamale, redoIds, COMPOSITION_ID as ID } from '../server/varnamale.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PUBLIC = path.join(ROOT, 'public');
-const VOICE_DIR = path.join(PUBLIC, 'generated', 'varnamale');
-const MANIFEST = path.join(VOICE_DIR, 'manifest.json');
 const FPS = 30;
-const ID = 'Varnamale';
 
 const [command, ...rest] = process.argv.slice(2);
 const flag = (name) => rest.includes('--' + name);
@@ -43,14 +39,6 @@ const option = (name) => {
   const at = rest.indexOf('--' + name);
   return at >= 0 ? rest[at + 1] : undefined;
 };
-
-function readManifest() {
-  try {
-    return JSON.parse(fs.readFileSync(MANIFEST, 'utf8'));
-  } catch {
-    return { clips: {} };
-  }
-}
 
 // --- voice -------------------------------------------------------------------
 
@@ -62,36 +50,18 @@ async function voice() {
     process.exit(1);
   }
   const modelId = process.env.ELEVENLABS_MODEL || 'eleven_v4';
-  const redo = (option('redo') || '').split(',').filter(Boolean);
-
-  fs.mkdirSync(VOICE_DIR, { recursive: true });
-  const manifest = readManifest();
-
-  const lines = allSpoken();
-  let made = 0;
-  for (const [i, line] of lines.entries()) {
-    const file = path.join(VOICE_DIR, line.id + '.mp3');
-    const said = voiceLine(line, modelId);
-    const kept = manifest.clips[line.id];
-    // One video in one voice: a clip from another model, voice or wording is
-    // recorded again rather than left to sound unlike its neighbours.
-    const current = kept && kept.said === said && kept.modelId === modelId && kept.voiceId === voiceId && fs.existsSync(file);
-    const again = redo.includes('all') || redo.includes(line.id);
-    if (current && !again) continue;
-
-    process.stdout.write('  ' + String(i + 1).padStart(2) + '/' + lines.length + '  ' + line.id.padEnd(9) + line.text + ' … ');
-    // Steady rather than expressive: a learner is copying this sound. Style and
-    // speed are left out - v4 takes neither, and speak() drops them for it.
-    const clip = await speak(apiKey, said, { voiceId, modelId, stability: 0.5, similarity: 0.8 });
-    fs.writeFileSync(file, clip.buffer);
-    manifest.clips[line.id] = { src: 'generated/varnamale/' + line.id + '.mp3', duration: clip.duration, text: line.text, said, modelId, voiceId };
-    // Saved after every clip, so a failure halfway keeps everything before it.
-    fs.writeFileSync(MANIFEST, JSON.stringify(manifest, null, 2));
-    console.log(clip.duration.toFixed(2) + 's');
-    made++;
+  // The same recording the app's Alphabet page makes (server/varnamale.mjs):
+  // one clip per line, kept while its voice, model and wording are unchanged.
+  const { ids, unknown } = redoIds(option('redo') || '');
+  if (unknown.length) {
+    console.error('Not a letter of the chart: ' + unknown.join(', '));
+    process.exit(1);
   }
-  const seconds = totalFrames(buildTimeline(manifest.clips, FPS)) / FPS;
-  console.log('\n' + made + ' recorded, ' + (lines.length - made) + ' kept. The video will run ' + seconds.toFixed(1) + 's.');
+  const out = await recordVarnamale({
+    apiKey, voiceId, modelId, redo: ids,
+    onProgress: (p) => { if (p.done < p.total) console.log('  ' + p.stage); },
+  });
+  console.log('\n' + out.made + ' recorded, ' + out.kept + ' kept. The video will run ' + out.seconds.toFixed(1) + 's.');
 }
 
 // --- still / render ------------------------------------------------------------

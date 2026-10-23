@@ -14,7 +14,7 @@ import path from 'node:path';
 import { getVideoMetadata } from '@remotion/renderer';
 import { fetchRetrying } from './retry.mjs';
 import { measure } from './tts.mjs';
-import { PUBLIC_DIR } from './projects.mjs';
+import { mediaFile } from './projects.mjs';
 
 /**
  * A clip's true length. Read with Remotion's own video reader - the engine that
@@ -23,7 +23,7 @@ import { PUBLIC_DIR } from './projects.mjs';
  */
 export async function clipSeconds(src, buffer, fallback = 0) {
   try {
-    const meta = await getVideoMetadata(path.join(PUBLIC_DIR, ...String(src).split('/')));
+    const meta = await getVideoMetadata(mediaFile(src));
     if (meta && meta.durationInSeconds > 0) return meta.durationInSeconds;
   } catch {
     // not readable that way; try the other

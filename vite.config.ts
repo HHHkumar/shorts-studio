@@ -41,7 +41,7 @@ export default defineConfig({
       '/projects': HELPER,
     },
     // Media landing while the app is open; watching it would only cost reloads.
-    watch: { ignored: ['**/public/projects/**', '**/studios/history/projects/**', '**/studios/history/out/**', '**/studios/history/.cache/**'] },
+    watch: { ignored: ['**/studios/history/media/**', '**/studios/history/projects/**', '**/studios/history/out/**', '**/studios/history/.cache/**'] },
   },
   // Two pages, one app: the quiz studio, and History Studio beside it.
   build: {

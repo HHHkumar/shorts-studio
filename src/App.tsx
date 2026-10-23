@@ -28,6 +28,7 @@ import { MascotLab } from './ui/MascotLab';
 import { LibraryView } from './ui/LibraryView';
 import { PlannerView } from './ui/PlannerView';
 import { BenchView } from './ui/BenchView';
+import { AlphabetView } from './ui/AlphabetView';
 import { Note } from './ui/controls';
 import { tidySheet } from './lib/formula-card';
 import { shiftAudio } from './lib/script-edit';
@@ -62,6 +63,7 @@ export const App: React.FC = () => {
   const [libraryOpen, setLibraryOpen] = useState(false);
   const [plannerOpen, setPlannerOpen] = useState(false);
   const [benchOpen, setBenchOpen] = useState(false);
+  const [alphabetOpen, setAlphabetOpen] = useState(false);
   // A planned question being made by hand: marked done once its video has an id.
   // Armed only once its question is generated: before that, the video open is a different one.
   const [pendingPlanItem, setPendingPlanItem] = useState<{ planId: string; itemId: string; armed: boolean } | null>(null);
@@ -278,7 +280,7 @@ export const App: React.FC = () => {
               className={'step-chip' + (step === i ? ' active' : i < step && unlocked(i) ? ' done' : '')}
               disabled={!unlocked(i)}
               // A step is a way back to the video: whichever side page is open closes.
-              onClick={() => { setLab(false); setLibraryOpen(false); setPlannerOpen(false); setBenchOpen(false); go(i); }}
+              onClick={() => { setLab(false); setLibraryOpen(false); setPlannerOpen(false); setAlphabetOpen(false); setBenchOpen(false); go(i); }}
             >
               <span className="num">{i + 1}</span>
               {label}
@@ -286,36 +288,43 @@ export const App: React.FC = () => {
           ))}
           <button
             className={'step-chip mascot-chip' + (plannerOpen ? ' active' : '')}
-            onClick={() => { setLab(false); setLibraryOpen(false); setBenchOpen(false); setPlannerOpen((on) => !on); }}
+            onClick={() => { setLab(false); setLibraryOpen(false); setBenchOpen(false); setAlphabetOpen(false); setPlannerOpen((on) => !on); }}
             title="Plan a series across an exam's syllabus, and make several at once"
           >
             Planner
           </button>
           <button
             className={'step-chip mascot-chip' + (libraryOpen ? ' active' : '')}
-            onClick={() => { setLab(false); setPlannerOpen(false); setBenchOpen(false); setLibraryOpen((on) => !on); }}
+            onClick={() => { setLab(false); setPlannerOpen(false); setAlphabetOpen(false); setBenchOpen(false); setLibraryOpen((on) => !on); }}
             title="Every video you have made"
           >
             Library
           </button>
           <button
             className={'step-chip mascot-chip' + (lab ? ' active' : '')}
-            onClick={() => { setLibraryOpen(false); setPlannerOpen(false); setBenchOpen(false); setLab((on) => !on); }}
+            onClick={() => { setLibraryOpen(false); setPlannerOpen(false); setAlphabetOpen(false); setBenchOpen(false); setLab((on) => !on); }}
             title="Design and test the doodle mascot"
           >
             Mascot
           </button>
           <button
             className={'step-chip mascot-chip' + (benchOpen ? ' active' : '')}
-            onClick={() => { setLab(false); setLibraryOpen(false); setPlannerOpen(false); setBenchOpen((on) => !on); }}
+            onClick={() => { setLab(false); setLibraryOpen(false); setPlannerOpen(false); setAlphabetOpen(false); setBenchOpen((on) => !on); }}
             title="The test bench: mark every picture right or wrong, and watch the score"
           >
             Accuracy
           </button>
+          <button
+            className={'step-chip mascot-chip' + (alphabetOpen ? ' active' : '')}
+            onClick={() => { setLab(false); setLibraryOpen(false); setPlannerOpen(false); setBenchOpen(false); setAlphabetOpen((on) => !on); }}
+            title="The Kannada alphabet video: the varnamale chart, read aloud letter by letter"
+          >
+            ಅ Alphabet
+          </button>
         </nav>
       </header>
 
-      <div className={libraryOpen || plannerOpen || benchOpen ? 'main wide' : 'main'}>
+      <div className={libraryOpen || plannerOpen || benchOpen || alphabetOpen ? 'main wide' : 'main'}>
         <div>
           {waitingForServer ? (
             <Note kind="info" title="Starting up…">
@@ -392,7 +401,16 @@ export const App: React.FC = () => {
             />
           ) : null}
 
-          {libraryNotes.length && !libraryOpen && !lab && !benchOpen ? (
+          {alphabetOpen ? (
+            <AlphabetView
+              elevenKey={elevenKey}
+              voiceModels={voiceModels}
+              settings={voiceSettings}
+              onClose={() => setAlphabetOpen(false)}
+            />
+          ) : null}
+
+          {libraryNotes.length && !libraryOpen && !lab && !benchOpen && !alphabetOpen ? (
             <Note kind="warn" title="Opened from the library">
               {libraryNotes.map((n) => <div key={n}>{n}</div>)}
             </Note>
@@ -400,7 +418,7 @@ export const App: React.FC = () => {
 
           {/* Hidden rather than unmounted while the lab is open, so anything
               half-done on a step is still there on the way back. */}
-          <div hidden={lab || libraryOpen || plannerOpen || benchOpen}>
+          <div hidden={lab || libraryOpen || plannerOpen || benchOpen || alphabetOpen}>
           {step === 0 ? (
             <StepKeys
               geminiKey={geminiKey}
@@ -549,7 +567,7 @@ export const App: React.FC = () => {
           </div>
         </div>
 
-        {libraryOpen || plannerOpen || benchOpen ? null : <Preview props={step >= 2 ? videoProps : null} hasAudio={hasAudio} />}
+        {libraryOpen || plannerOpen || benchOpen || alphabetOpen ? null : <Preview props={step >= 2 ? videoProps : null} hasAudio={hasAudio} />}
       </div>
     </div>
   );

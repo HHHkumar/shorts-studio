@@ -8,7 +8,7 @@ import { bundle } from '@remotion/bundler';
 import { renderStill, selectComposition } from '@remotion/renderer';
 import { buildTimeline } from '../src/lib/timeline.ts';
 import { migrateProject } from '../src/lib/migrate.ts';
-import { MEDIA_DIR, readProject, ROOT } from '../server/projects.mjs';
+import { MEDIA_DIR, PUBLIC_DIR, readProject, ROOT } from '../server/projects.mjs';
 
 const [id, outDir, ...times] = process.argv.slice(2);
 if (!id || !outDir) {
@@ -26,7 +26,7 @@ const folders = new Set([id, ...(JSON.stringify(project).match(/projects\/[A-Za-
 for (const f of folders) {
   if (fs.existsSync(path.join(MEDIA_DIR, f))) fs.cpSync(path.join(MEDIA_DIR, f), path.join(pub, 'projects', f), { recursive: true });
 }
-fs.cpSync(path.join(ROOT, 'public', 'audio'), path.join(pub, 'audio'), { recursive: true });
+for (const folder of ['audio', 'fonts']) fs.cpSync(path.join(PUBLIC_DIR, folder), path.join(pub, folder), { recursive: true });
 
 const serveUrl = await bundle({ entryPoint: path.join(ROOT, 'src', 'remotion', 'index.ts'), publicDir: pub });
 const composition = await selectComposition({ serveUrl, id: 'HistoryVideo', inputProps: props });

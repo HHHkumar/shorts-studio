@@ -17,7 +17,7 @@
 
 // Which models act on a bracketed direction is decided in one place, for the
 // app's narration and this video alike.
-import { takesAudioTags } from './delivery';
+import { takesAudioTags } from './delivery.ts';
 
 export type GroupId = 'svara' | 'yogavaha' | 'ka' | 'cha' | 'tta' | 'ta' | 'pa' | 'avargiya';
 

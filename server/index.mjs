@@ -27,7 +27,7 @@ import { planCarousel } from '../src/lib/carousel.ts';
 import { CLAUDE_MODELS, DEFAULT_CLAUDE_MODEL, listClaudeModels } from './claude.mjs';
 import { listVoices, speak, VOICE_MODELS } from './tts.mjs';
 import {
-  jobs as renderJobs, readCarousel, recentRenders, recoverJobs, renderCarousel, renderSceneFrames, renderThumbnail, retryRender, startRender, paths,
+  jobs as renderJobs, readCarousel, recentRenders, recoverJobs, renderCarousel, renderComposition, renderSceneFrames, renderThumbnail, retryRender, startRender, paths,
 } from './render.mjs';
 import {
   allVideos, deleteVideo, listVideos, mediaInUse, newVideoId, openVideo, recordOnVideo, saveVideo, VIDEO_ID,
@@ -64,6 +64,10 @@ import { LANGUAGES, translateContent } from './translate.mjs';
 import { tidySheet } from '../src/lib/formula-card.ts';
 import { energyFor, tidyDirection } from '../src/lib/doodle.ts';
 import { mountHistory } from '../studios/history/server/index.mjs';
+import {
+  COMPOSITION_ID as VARNAMALE_COMPOSITION, recordVarnamale, redoIds, VIDEO_FILE as VARNAMALE_VIDEO, varnamaleProps,
+  varnamaleStatus,
+} from './varnamale.mjs';
 
 // Its own variable, deliberately not PORT. Anything that launches the studio
 // through a tool that sets PORT for the web app - as a preview panel does -
@@ -1118,6 +1122,64 @@ app.post('/api/voiceover', ok(async (req, res) => {
 app.get('/api/voiceover/:id', (req, res) => {
   const job = ttsJobs.get(req.params.id);
   if (!job) return res.status(404).json({ error: 'That voiceover job is not running any more.' });
+  res.json(job);
+});
+
+// --- the Kannada alphabet video ---------------------------------------------
+//
+// A fixed video with nothing to write: its voice is recorded once per voice
+// and model, then it is rendered. See server/varnamale.mjs.
+
+/** jobId -> { kind, status, done, total, stage, progress, error, url } */
+const alphabetJobs = new Map();
+const alphabetBusy = () => [...alphabetJobs.values()].some((j) => j.status === 'running');
+
+app.get('/api/varnamale', (req, res) => {
+  res.json(varnamaleStatus({ voiceId: String(req.query.voiceId || ''), modelId: String(req.query.modelId || '') }));
+});
+
+app.post('/api/varnamale/voice', ok(async (req, res) => {
+  const { apiKey, voiceId, modelId, redo } = req.body || {};
+  if (!apiKey) throw new Error('No ElevenLabs API key was sent. Add it on the Keys step.');
+  if (!voiceId) throw new Error('Pick a voice first.');
+  // One at a time: two recordings would write the same manifest.
+  if (alphabetBusy()) throw new Error('The alphabet video is already recording or rendering. Wait for it to finish.');
+  const { ids, unknown } = redoIds(redo);
+  if (unknown.length) throw new Error('Not a letter of the chart: ' + unknown.join(', ') + '. Name letters as ಕ, as ka, or as l07.');
+  const jobId = 'abc-' + randomUUID().slice(0, 8);
+  const job = { kind: 'voice', status: 'running', done: 0, total: 0, stage: 'Starting…', progress: 0, error: '', url: '' };
+  alphabetJobs.set(jobId, job);
+  res.json({ jobId });
+  recordVarnamale({
+    apiKey, voiceId, modelId: modelId || 'eleven_v4', redo: ids,
+    onProgress: (p) => { job.done = p.done; job.total = p.total; job.stage = p.stage; job.progress = p.total ? p.done / p.total : 1; },
+  })
+    .then((out) => { job.status = 'done'; job.stage = out.made + ' recorded, ' + out.kept + ' kept'; job.progress = 1; })
+    .catch((err) => { job.status = 'error'; job.error = (err && err.message) || 'The recording failed.'; job.stage = 'Failed'; });
+}));
+
+app.post('/api/varnamale/render', ok(async (req, res) => {
+  const { music } = req.body || {};
+  if (alphabetBusy()) throw new Error('The alphabet video is already recording or rendering. Wait for it to finish.');
+  const jobId = 'abc-' + randomUUID().slice(0, 8);
+  const job = { kind: 'render', status: 'running', done: 0, total: 0, stage: 'Starting…', progress: 0, error: '', url: '' };
+  alphabetJobs.set(jobId, job);
+  res.json({ jobId });
+  renderComposition({
+    id: VARNAMALE_COMPOSITION, inputProps: varnamaleProps({ music }), output: VARNAMALE_VIDEO,
+    onStage: (s) => { job.stage = s; },
+    onProgress: (p) => { job.progress = p; job.stage = 'Drawing frames… ' + Math.round(p * 100) + '%'; },
+  })
+    .then((out) => {
+      job.status = 'done'; job.progress = 1; job.stage = 'Done: ' + out.seconds.toFixed(1) + ' s';
+      job.url = (varnamaleStatus().video || { url: '' }).url;
+    })
+    .catch((err) => { job.status = 'error'; job.error = (err && err.message) || 'The render failed.'; job.stage = 'Failed'; });
+}));
+
+app.get('/api/varnamale/job/:id', (req, res) => {
+  const job = alphabetJobs.get(req.params.id);
+  if (!job) return res.status(404).json({ error: 'That job is not running any more (the helper was restarted).' });
   res.json(job);
 });
 

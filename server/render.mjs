@@ -210,6 +210,31 @@ export function startRender(jobId, inputProps, quality, { videoId = '', onDone }
   return jobId;
 }
 
+/**
+ * Render any composition in this app's bundle to an mp4: for the videos that
+ * are not a quiz, such as the Kannada alphabet. It shares the bundle with every
+ * other render, so it costs no second minute of bundling.
+ */
+export async function renderComposition({ id, inputProps, output, crf = 18, onStage = () => undefined, onProgress = () => undefined }) {
+  onStage('Checking the rendering browser…');
+  await ensureBrowser();
+  const serveUrl = await getBundle(onStage);
+  onStage('Collecting the voice clips…');
+  syncAudioIntoBundle(serveUrl);
+  const composition = await selectComposition({ serveUrl, id, inputProps });
+  fs.mkdirSync(path.dirname(output), { recursive: true });
+  onStage('Drawing frames…');
+  try {
+    await renderMedia({
+      composition, serveUrl, codec: 'h264', audioCodec: 'aac', crf, outputLocation: output, inputProps,
+      onProgress: ({ progress }) => onProgress(progress),
+    });
+  } catch (err) {
+    throw new Error(friendlyRenderError(err));
+  }
+  return { seconds: composition.durationInFrames / composition.fps };
+}
+
 function friendlyRenderError(err) {
   const msg = (err && err.message) || String(err);
   if (/ENOSPC|no space/i.test(msg)) return 'Your disk is full, so the video could not be written.';

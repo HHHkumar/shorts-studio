@@ -17,7 +17,7 @@ How it is joined on:
 | Its code | `studios/history/src` (the page) and `studios/history/server` (mounted by `server/index.mjs` through `mountHistory()`) |
 | Its routes | `/api/history/...` on the Shorts Studio helper |
 | Its projects | `studios/history/projects/` (not committed, as before) |
-| Its pictures and clips | `public/projects/`, shared `public/` folder (the fonts and sounds were already identical) |
+| Its pictures and clips | `studios/history/media/` (not committed), served at `/projects/`; the fonts and sounds come from the shared `public/` folder, where they were already identical |
 | Its finished videos | `studios/history/out/`, served at `/history/out/` |
 | Its tests | part of `npm test` in shorts-studio |
 | API keys | the same ones Shorts Studio stores: a key typed in either studio works in both |

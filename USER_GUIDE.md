@@ -95,6 +95,17 @@ This is one program with two studios in it, started the same way and sharing one
 |---|---|---|
 | **Shorts Studio** | Quiz shorts and explainers, carousels, thumbnails — everything in this guide | It is the page that opens |
 | **History Studio** | Long illustrated history explainers (5–15 minutes, 16:9), and **news explainers** with live research, data graphics and sources | **History & news →** under the name at the top left; **Quiz shorts →** comes back |
+| **Kannada alphabet** | The ವರ್ಣಮಾಲೆ chart, 16:9: all 49 letters, each lit in its group's colour while the voice says it | The **ಅ Alphabet** button in the top bar |
+
+**The Kannada alphabet video** has nothing to write — the letters are the letters — so its page is
+three things. Pick the **voice** and a **model that speaks Kannada** (only those are offered), press
+**Record the voice**, and every letter and heading is recorded as its own clip, so each letter stays
+lit exactly as long as it is said. The page says how many of the 55 lines are already recorded in
+that voice and how many characters the rest will send; recording again only records what is missing
+or out of date, so pressing it twice costs nothing the second time. If the voice gets a letter
+wrong, type it into **Record these letters again** (as ಕ, as *ka*, or *all*). The live preview plays
+the chart with whatever is recorded; **Render the video** writes `out\kannada-varnamale.mp4`,
+1920 × 1080, in about a minute. Before any voice is recorded it renders silent, at fixed timings.
 
 A key typed into either studio is the key in both. History Studio keeps its own projects list, its
 own steps and its own renders; its manual is `studios/history/README.md` and
