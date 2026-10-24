@@ -80,6 +80,8 @@ export interface FormulaSheet {
    * Written in line by line by an explanation scene (WorkingView).
    */
   working?: string[];
+  /** Why the worked solution was left off: its sums did not hold (server/working-check.mjs). */
+  workingNote?: string;
 }
 
 export const MAX_WORKING_LINES = 6;

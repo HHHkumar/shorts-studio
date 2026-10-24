@@ -9,6 +9,7 @@
 // ---------------------------------------------------------------------------
 
 import { fetchRetrying } from './retry.mjs';
+import { checkWorking } from './working-check.mjs';
 import { resolveIcon } from './icons.mjs';
 import { GRAPH_KINDS, MAX_CARDS, tidySheet } from '../src/lib/formula-card.ts';
 
@@ -174,6 +175,25 @@ export async function generateFormulaSheet({ apiKey, model, content, root }) {
   }
   const sheet = tidySheet(parsed);
   if (!sheet) throw new Error('Gemini wrote no usable formulas for this question. Try again, or add them by hand.');
+  holdWorkingToItsSums(sheet, content);
   if (root) await attachFormulaIcons(sheet, { root });
+  return sheet;
+}
+
+/**
+ * A worked solution is shown only if its arithmetic holds (working-check.mjs):
+ * every line of numbers equal to the one before it, the last equal to the
+ * correct option. One that does not is taken off the sheet, and the sheet says
+ * why; the formula cards stay.
+ */
+export function holdWorkingToItsSums(sheet, content) {
+  if (!sheet || !Array.isArray(sheet.working) || !sheet.working.length) return sheet;
+  const c = content || {};
+  const answer = Array.isArray(c.options) && Number.isInteger(c.correctIndex) ? c.options[c.correctIndex] : '';
+  const { problems } = checkWorking(sheet.working, answer);
+  if (problems.length) {
+    sheet.workingNote = 'The worked solution was left out: ' + problems[0];
+    delete sheet.working;
+  }
   return sheet;
 }

@@ -11,7 +11,7 @@ import {
 } from '../lib/script-edit';
 import { ohms, reductionFor } from '../lib/figures/reduce';
 import { MathText } from '../remotion/MathText';
-import { Check, ErrorNote, Select, Spinner, TextInput } from './controls';
+import { Check, ErrorNote, Note, Select, Spinner, TextInput } from './controls';
 
 // ---------------------------------------------------------------------------
 // The formula card, on the Script step: the formulas the question used, as a
@@ -249,8 +249,14 @@ export const FormulaCardPanel: React.FC<{
               rows={Math.max(3, (sheet.working || []).length + 1)}
               value={(sheet.working || []).join('\n')}
               placeholder={'V_{rms} = \\frac{V_0}{\\sqrt{2}}\n= \\frac{325}{\\sqrt{2}}\n= 230\\,V'}
-              onChange={(e) => setSheet({ ...sheet, working: e.target.value.split('\n') })}
+              onChange={(e) => setSheet({ ...sheet, working: e.target.value.split('\n'), workingNote: undefined })}
             />
+            {sheet.workingNote && !(sheet.working || []).length ? (
+              <Note kind="warn" title="Not shown: the sums did not hold">
+                {sheet.workingNote} Write it out yourself above if you want one; it is checked again when the card is
+                written.
+              </Note>
+            ) : null}
             {(sheet.working || []).filter((l) => l.trim()).length ? (
               <div className="working-preview">
                 {(sheet.working || []).filter((l) => l.trim()).map((l, k) => (
