@@ -17,6 +17,7 @@ import { SKETCH_CATALOGUE } from './sketch-catalogue.mjs';
 import { pictureKey, REVIEWED_KINDS } from '../src/lib/picture-review.ts';
 import { readCircuitLine } from '../src/lib/circuit-line.ts';
 import { describeTiming, readTiming } from '../src/lib/timing.ts';
+import { describeBlockDiagram, readBlockDiagram } from '../src/lib/block-diagram.ts';
 
 export { pictureKey, REVIEWED_KINDS };
 
@@ -56,6 +57,10 @@ export function describePicture(visual) {
     parts.push('two sine waves, ' + a + ' and ' + b);
     parts.push(deg ? b + (deg > 0 ? ' lags ' : ' leads ') + a + ' by ' + Math.abs(deg) + ' degrees' : b + ' in phase with ' + a);
     parts.push(ratio === 1 ? 'equal in size' : b + ' is ' + ratio + ' times the size of ' + a);
+  } else if (v.sketch === 'block-diagram') {
+    const { diagram } = readBlockDiagram(p, v.items || []);
+    if (diagram) return describeBlockDiagram(diagram) + (p.labelB ? ' Stated: ' + p.labelB + '.' : '');
+    parts.push('a block diagram that could not be read');
   } else if (v.sketch === 'timing-diagram') {
     // Said as simulated, so the reviewer judges the waves the video shows.
     const { timing } = readTiming(p);

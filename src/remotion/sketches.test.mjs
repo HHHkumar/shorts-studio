@@ -73,6 +73,7 @@ const itemsFor = (name, c) => (c.name === 'typical' && GOOD_ITEMS[name] ? GOOD_I
 /** And a sketch that simulates what it is told draws nothing from settings meant for another. */
 const GOOD_PARAMS = {
   'timing-diagram': { mode: 'jk-flipflop', network: 'J=1100; K=0110' },
+  'block-diagram': { network: 'R > +A > G > C; C > H > -A' },
 };
 const paramsFor = (name, c) => (c.name === 'typical' && GOOD_PARAMS[name] ? { ...c.params, ...GOOD_PARAMS[name] } : c.params);
 

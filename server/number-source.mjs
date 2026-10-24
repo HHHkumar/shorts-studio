@@ -242,6 +242,13 @@ export function unsourcedInVisual(visual, source) {
   // A circuit's parts and its supply: what it is checked against is worked
   // out from those by the solver, so it needs no source of its own.
   if (v.sketch === 'circuit' && p.network) return [...new Set(unsourced(circuitNumbers(p), source))];
+  // A block's transfer function is drawn in its box, so its numbers are held
+  // to account; the closed-loop function it is checked against is solved
+  // from them, and needs no source of its own.
+  if (v.sketch === 'block-diagram') {
+    const inBoxes = (v.items || []).flatMap((it) => numbersIn(String((it && it.symbol) || '')));
+    return [...new Set(unsourced(inBoxes, source))];
+  }
   if (Number.isFinite(p.angle) && !PLAIN_ANGLES.includes(Math.abs(p.angle))) {
     // An angle may also be what is left of a right angle or a half turn.
     bad.push(...unsourced([p.angle], source, [90, 180, 360]));

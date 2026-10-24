@@ -59,6 +59,8 @@ const OPTIONAL = {
   circuit: ['labelA', 'labelB'],
   // How many pulses a counter shows is its own, and the checked fact is there to be used.
   'timing-diagram': ['count', 'labelB'],
+  // A block's transfer function is there when the question gives one; the stated C/R is checked, not demanded.
+  'block-diagram': ['items', 'labelB'],
   // In phase mode the waveform needs more - see needsFor().
   waveform: ['angle', 'ratio', 'labelA', 'labelB'],
 };

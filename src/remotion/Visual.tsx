@@ -11,6 +11,8 @@ import { reductionFor } from '../lib/figures/reduce';
 import { readCircuitLine } from '../lib/circuit-line';
 import { readTiming } from '../lib/timing';
 import { TimingView } from './TimingView';
+import { readBlockDiagram } from '../lib/block-diagram';
+import { BlockDiagramView } from './BlockDiagramView';
 import { isNotation, mathWidth, mendFormula, parseMath } from '../lib/formula-card';
 import { MathText } from './MathText';
 import { P5Sketch, type SketchArgs } from './P5Sketch';
@@ -46,6 +48,11 @@ export const Visual: React.FC<{
     () => (visual && visual.kind === 'sketch' && visual.sketch === 'timing-diagram' ? readTiming(visual.params || {}).timing : null),
     [visual],
   );
+  // A block diagram is read and laid out by elkjs; one it cannot read falls back too.
+  const blocks = React.useMemo(
+    () => (visual && visual.kind === 'sketch' && visual.sketch === 'block-diagram' ? readBlockDiagram(visual.params || {}, visual.items || []).diagram : null),
+    [visual],
+  );
   if (!visual || visual.kind === 'none') return null;
 
   let body: React.ReactNode = null;
@@ -69,6 +76,7 @@ export const Visual: React.FC<{
     body = <FigureView theme={theme} figure={shown} reveal={!setup} />;
   }
   else if (timing) body = <TimingView theme={theme} timing={timing} />;
+  else if (blocks) body = <BlockDiagramView theme={theme} diagram={blocks} />;
   else if (visual.kind === 'sketch' && visual.sketch) {
     body = (
       <Sketch

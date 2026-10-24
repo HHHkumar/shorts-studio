@@ -11,6 +11,7 @@
 import { circuitProblems } from './circuit-check.mjs';
 import { phasorProblems } from '../src/lib/phasors.ts';
 import { readTiming, timingFactProblem } from '../src/lib/timing.ts';
+import { blockDiagramProblems } from './block-check.mjs';
 
 /** A timing diagram: read and simulated, and the one fact it states held to the simulation. */
 function timingProblems(params) {
@@ -25,6 +26,7 @@ const CHECKED = {
   circuit: { noun: 'circuit', check: (params, _items, orientation) => circuitProblems(params, orientation) },
   phasors: { noun: 'phasors', check: (params, items) => phasorProblems(items, (params || {}).mode) },
   'timing-diagram': { noun: 'timing diagram', check: (params) => timingProblems(params) },
+  'block-diagram': { noun: 'block diagram', check: (params, items) => blockDiagramProblems(params, items) },
 };
 
 export const isWorkedOut = (name) => Object.prototype.hasOwnProperty.call(CHECKED, name);

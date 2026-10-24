@@ -26,7 +26,7 @@ export const SHELVES = {
     'op-amp', 'led-circuit', 'switch-circuit', 'relay', 'circuit-breaker', 'fuse-curve', 'earthing',
     'wiring-layout', 'wheatstone-bridge', 'multimeter', 'oscilloscope', 'sensor-chain', 'kirchhoff',
     'capacitor-field', 'material-bands', 'superconductor', 'power-time', 'magnetism', 'vector-field',
-    'sine-wave', 'logic-gate', 'truth-table', 'binary-number', 'timing-diagram', 'carnot-cycle', 'heat-transfer', 'energy-levels',
+    'sine-wave', 'logic-gate', 'truth-table', 'binary-number', 'timing-diagram', 'block-diagram', 'carnot-cycle', 'heat-transfer', 'energy-levels',
     // Borrowed from other subjects for the papers that need them: materials,
     // electroplating, a line that is not matched, a diesel station.
     'atom', 'electrolysis', 'standing-wave', 'engine-cycle',

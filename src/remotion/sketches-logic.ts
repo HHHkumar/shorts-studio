@@ -11,8 +11,41 @@
 import type { SketchDef } from './sketches';
 import { clean } from './sketch-parts';
 import { readTiming } from '../lib/timing';
+import { readBlockDiagram } from '../lib/block-diagram';
 
 export const LOGIC_SKETCHES: Record<string, SketchDef> = {
+  // What the video draws for this is NOT the p5 drawing below: the line is
+  // read by src/lib/block-diagram.ts, laid out by elkjs and drawn by
+  // BlockDiagramView, and any transfer function it states is checked by
+  // solving it (server/block-check.mjs). This is the plain fallback.
+  'block-diagram': {
+    shape: 'wide',
+    label: 'Block diagram',
+    describe: 'A control-system block diagram, laid out for you and SOLVED: blocks, summing points with their signs, take-off points and feedback loops, drawn as a textbook draws them. Use for: closed-loop and open-loop systems, negative or positive feedback, blocks in series or parallel, minor loops, block diagram reduction, the transfer function C/R of a system. Not for a flowchart of steps - block-flow draws that',
+    uses: 'network (the signal paths, each a chain of names joined by ">", separated by semicolons. The first name of the first path is the input and its last name the output. "+A" or "-A" enters summing junction A with that sign, and a later "A" carries on out of it. Every other name is a block. Negative feedback: "R > +A > G > C; C > H > -A". Unity feedback: "R > +A > G > C; C > -A". Two blocks in series inside a loop: "R > +A > G1 > G2 > C; C > H > -A". Parallel blocks: "R > G1 > +B > C; R > G2 > +B". A minor loop: "R > +A > G1 > +B > G2 > C; C > H2 > -B; C > H1 > -A". A block has one input; signals are only ever added at a junction), items (optional - a block\'s transfer function when the question gives one: label = the block\'s name, symbol = its function, e.g. { label: "G", symbol: "10/(s+1)" }. A block without one is drawn with its name), labelB (optional - the transfer function the working arrives at, CHECKED by solving the diagram and the diagram dropped if it is wrong: "C/R = G/(1+GH)", "C/R = 10/(s+11)")',
+    draw: ({ p, progress, width, height, params, items, colors }) => {
+      const { diagram } = readBlockDiagram(params, items);
+      if (!diagram) return;
+      const blocks = diagram.nodes.filter((n) => n.kind !== 'input' && n.kind !== 'output');
+      const step = (width * 0.8) / Math.max(1, blocks.length);
+      const y = height * 0.5;
+      const upto = Math.max(1, Math.round(blocks.length * Math.min(1, progress * 1.4)));
+      p.textAlign(p.CENTER, p.CENTER);
+      p.textSize(Math.max(14, Math.min(30, step * 0.18)));
+      blocks.slice(0, upto).forEach((n, k) => {
+        const x = width * 0.1 + step * (k + 0.5);
+        p.stroke(colors.text);
+        p.strokeWeight(3);
+        p.noFill();
+        if (n.kind === 'junction') p.circle(x, y, Math.min(step * 0.35, height * 0.18));
+        else p.rect(x - step * 0.38, y - height * 0.12, step * 0.76, height * 0.24, 6);
+        p.noStroke();
+        p.fill(colors.text);
+        p.text(n.kind === 'junction' ? '' : clean(n.label, 14), x, y);
+      });
+    },
+  },
+
   'timing-diagram': {
     shape: 'wide',
     label: 'Timing diagram',
