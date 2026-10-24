@@ -16,6 +16,7 @@ import { SKETCH_CATALOGUE } from './sketch-catalogue.mjs';
 // Shared with the browser, which has to recognise the same picture by the same key.
 import { pictureKey, REVIEWED_KINDS } from '../src/lib/picture-review.ts';
 import { readCircuitLine } from '../src/lib/circuit-line.ts';
+import { describeTiming, readTiming } from '../src/lib/timing.ts';
 
 export { pictureKey, REVIEWED_KINDS };
 
@@ -55,6 +56,11 @@ export function describePicture(visual) {
     parts.push('two sine waves, ' + a + ' and ' + b);
     parts.push(deg ? b + (deg > 0 ? ' lags ' : ' leads ') + a + ' by ' + Math.abs(deg) + ' degrees' : b + ' in phase with ' + a);
     parts.push(ratio === 1 ? 'equal in size' : b + ' is ' + ratio + ' times the size of ' + a);
+  } else if (v.sketch === 'timing-diagram') {
+    // Said as simulated, so the reviewer judges the waves the video shows.
+    const { timing } = readTiming(p);
+    if (timing) return describeTiming(timing);
+    parts.push('a timing diagram that could not be read');
   } else if (v.sketch === 'circuit' && p.network) {
     // Read the way the video reads it, so what is said is what is drawn: each
     // part by its kind and value, the supply, and what it was solved to give.

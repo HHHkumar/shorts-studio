@@ -26,7 +26,7 @@ export const SHELVES = {
     'op-amp', 'led-circuit', 'switch-circuit', 'relay', 'circuit-breaker', 'fuse-curve', 'earthing',
     'wiring-layout', 'wheatstone-bridge', 'multimeter', 'oscilloscope', 'sensor-chain', 'kirchhoff',
     'capacitor-field', 'material-bands', 'superconductor', 'power-time', 'magnetism', 'vector-field',
-    'sine-wave', 'logic-gate', 'truth-table', 'binary-number', 'carnot-cycle', 'heat-transfer', 'energy-levels',
+    'sine-wave', 'logic-gate', 'truth-table', 'binary-number', 'timing-diagram', 'carnot-cycle', 'heat-transfer', 'energy-levels',
     // Borrowed from other subjects for the papers that need them: materials,
     // electroplating, a line that is not matched, a diesel station.
     'atom', 'electrolysis', 'standing-wave', 'engine-cycle',
@@ -81,7 +81,7 @@ export const SHELVES = {
     'banking', 'economic-indicators', 'profit-loss', 'gov-structure',
   ],
   computing: [
-    'logic-gate', 'truth-table', 'binary-number', 'network-topology', 'layer-stack', 'cpu-cycle',
+    'logic-gate', 'truth-table', 'binary-number', 'timing-diagram', 'network-topology', 'layer-stack', 'cpu-cycle',
     'sorting-steps', 'binary-search', 'packet-route', 'database-table', 'cyber-safety',
     'generations-timeline', 'recursion', 'cryptography', 'tree',
   ],

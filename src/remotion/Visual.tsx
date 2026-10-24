@@ -9,6 +9,8 @@ import { WorkingView } from './WorkingView';
 import { ReduceView } from './ReduceView';
 import { reductionFor } from '../lib/figures/reduce';
 import { readCircuitLine } from '../lib/circuit-line';
+import { readTiming } from '../lib/timing';
+import { TimingView } from './TimingView';
 import { isNotation, mathWidth, mendFormula, parseMath } from '../lib/formula-card';
 import { MathText } from './MathText';
 import { P5Sketch, type SketchArgs } from './P5Sketch';
@@ -38,6 +40,12 @@ export const Visual: React.FC<{
     () => (visual && visual.kind === 'sketch' && visual.sketch === 'circuit' ? readCircuitLine(visual.params || {}).line : null),
     [visual],
   );
+  // A timing diagram is simulated from its inputs and drawn by WaveDrom; one it
+  // cannot read falls back to the plain drawing, as a circuit does.
+  const timing = React.useMemo(
+    () => (visual && visual.kind === 'sketch' && visual.sketch === 'timing-diagram' ? readTiming(visual.params || {}).timing : null),
+    [visual],
+  );
   if (!visual || visual.kind === 'none') return null;
 
   let body: React.ReactNode = null;
@@ -60,6 +68,7 @@ export const Visual: React.FC<{
     const shown = setup && line.circuit.ask ? { ...line.circuit, ask: undefined } : line.circuit;
     body = <FigureView theme={theme} figure={shown} reveal={!setup} />;
   }
+  else if (timing) body = <TimingView theme={theme} timing={timing} />;
   else if (visual.kind === 'sketch' && visual.sketch) {
     body = (
       <Sketch

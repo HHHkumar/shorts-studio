@@ -10,11 +10,21 @@
 
 import { circuitProblems } from './circuit-check.mjs';
 import { phasorProblems } from '../src/lib/phasors.ts';
+import { readTiming, timingFactProblem } from '../src/lib/timing.ts';
+
+/** A timing diagram: read and simulated, and the one fact it states held to the simulation. */
+function timingProblems(params) {
+  const { timing, errors } = readTiming(params || {});
+  if (!timing) return errors.slice(0, 1);
+  const fact = timingFactProblem(timing, (params || {}).labelB);
+  return fact ? [fact] : [];
+}
 
 /** The sketches with a check of their own, and what each is called in a sentence. */
 const CHECKED = {
   circuit: { noun: 'circuit', check: (params, _items, orientation) => circuitProblems(params, orientation) },
   phasors: { noun: 'phasors', check: (params, items) => phasorProblems(items, (params || {}).mode) },
+  'timing-diagram': { noun: 'timing diagram', check: (params) => timingProblems(params) },
 };
 
 export const isWorkedOut = (name) => Object.prototype.hasOwnProperty.call(CHECKED, name);

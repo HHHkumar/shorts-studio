@@ -57,6 +57,8 @@ const OPTIONAL = {
   // left out - the network then stands between two terminals - and the fact
   // to check it against is there to be used, not demanded.
   circuit: ['labelA', 'labelB'],
+  // How many pulses a counter shows is its own, and the checked fact is there to be used.
+  'timing-diagram': ['count', 'labelB'],
   // In phase mode the waveform needs more - see needsFor().
   waveform: ['angle', 'ratio', 'labelA', 'labelB'],
 };

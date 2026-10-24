@@ -4,6 +4,7 @@ import { EXTRA_SKETCHES } from './sketches-extra';
 import { MORE_SKETCHES } from './sketches-more';
 import { GAP_SKETCHES } from './sketches-gaps';
 import { CURVE_SKETCHES } from './sketches-curves';
+import { LOGIC_SKETCHES } from './sketches-logic';
 import { layoutNet, parseNet } from '../lib/circuit-net';
 
 // ---------------------------------------------------------------------------
@@ -1463,7 +1464,7 @@ function node(
  * and neither it nor the renderer knows or cares which file an entry came from.
  */
 export const SKETCHES: Record<string, SketchDef> = {
-  ...CORE_SKETCHES, ...EXTRA_SKETCHES, ...MORE_SKETCHES, ...GAP_SKETCHES, ...CURVE_SKETCHES,
+  ...CORE_SKETCHES, ...EXTRA_SKETCHES, ...MORE_SKETCHES, ...GAP_SKETCHES, ...CURVE_SKETCHES, ...LOGIC_SKETCHES,
 };
 
 export const SKETCH_NAMES = Object.keys(SKETCHES);

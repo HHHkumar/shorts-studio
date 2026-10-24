@@ -70,6 +70,12 @@ const GOOD_ITEMS = {
 };
 const itemsFor = (name, c) => (c.name === 'typical' && GOOD_ITEMS[name] ? GOOD_ITEMS[name] : c.items);
 
+/** And a sketch that simulates what it is told draws nothing from settings meant for another. */
+const GOOD_PARAMS = {
+  'timing-diagram': { mode: 'jk-flipflop', network: 'J=1100; K=0110' },
+};
+const paramsFor = (name, c) => (c.name === 'typical' && GOOD_PARAMS[name] ? { ...c.params, ...GOOD_PARAMS[name] } : c.params);
+
 const SHAPES = [
   { name: 'wide', width: 900, height: 460 },
   { name: 'square', width: 520, height: 520 },
@@ -98,7 +104,7 @@ for (const name of SKETCH_NAMES) {
             progress,
             width: shape.width,
             height: shape.height,
-            params: c.params,
+            params: paramsFor(name, c),
             items: itemsFor(name, c),
             colors: COLORS,
           });
