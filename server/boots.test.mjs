@@ -20,6 +20,8 @@ for (const [name, path, exported] of [
   ['History Studio', '../studios/history/server/index.mjs', 'mountHistory'],
   ['the voice', './tts.mjs', 'speak'],
   ['the quiz writer', './gemini.mjs', 'generateContent'],
+  ['the ngspice check', './spice.mjs', 'verifyCircuits'],
+  ['the worked-solution check', './working-check.mjs', 'checkWorking'],
 ]) {
   try {
     const mod = await import(path);

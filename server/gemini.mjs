@@ -13,6 +13,7 @@ import { isNotation, mathWidth, mendFormula, parseMath } from '../src/lib/formul
 import { fetchRetrying } from './retry.mjs';
 import { callClaude } from './claude.mjs';
 import { cleanDelivery, deliveryPromptWords } from '../src/lib/delivery.ts';
+import { readCircuitLine } from '../src/lib/circuit-line.ts';
 // Loaded straight from the app's TypeScript: Node strips the types itself, and
 // sharing the one module means the server checks a figure with exactly the
 // arithmetic the renderer will draw it with.
@@ -628,7 +629,14 @@ export async function generateContent(apiKey, model, options) {
     temperature: 0.4 + (Number(options.curiosity) || 5) * 0.06,
     label: 'quiz',
   });
-  return normalizeContent(parsed, options);
+  const content = normalizeContent(parsed, options);
+  // Every circuit it draws, solved again by ngspice (server/spice.mjs). Loaded
+  // only when there is a circuit: the engine is large, and most scripts have none.
+  const hasCircuit = (content.figure && content.figure.type === 'circuit')
+    || content.script.some((s) => s && s.visual && s.visual.kind === 'sketch' && s.visual.sketch === 'circuit');
+  if (!hasCircuit) return content;
+  const { verifyCircuits } = await import('./spice.mjs');
+  return verifyCircuits(content, { readLine: readCircuitLine, figureOf: (c) => c.figure || null });
 }
 
 /**
